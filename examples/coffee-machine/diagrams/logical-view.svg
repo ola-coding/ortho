@@ -1,0 +1,522 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1640.4714666666669" height="1509"
+     viewBox="0 0 1640.4714666666669 1509" font-family="Arial, Helvetica, Segoe UI, sans-serif">
+  <title>Logical View — Coffee Machine (generated from examples/coffee-machine/system.sysml)</title>
+  <defs>
+    <marker id="triangle" markerWidth="14" markerHeight="12" refX="12" refY="5"
+            orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L12,5 L0,10 z" fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+    </marker>
+    <marker id="diamond" markerWidth="18" markerHeight="12" refX="15" refY="5"
+            orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M1,5 L8,1 L15,5 L8,9 z" fill="#2b2b2b" stroke="#2b2b2b" />
+    </marker>
+    <marker id="openArrow" markerWidth="12" markerHeight="12" refX="10" refY="5"
+            orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1640.4714666666669" height="1509" fill="white" />
+  <rect x="8" y="8" width="1624.4714666666669" height="1493" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+  <path d="M8,8 L8,30 L186.644,30 L196.644,21 L196.644,8 Z"
+        fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
+  <text x="16" y="23" font-size="11" font-weight="600" fill="#1a1a1a">Logical View — Coffee Machine</text>
+  <text x="1626.4714666666669" y="1495" text-anchor="end" font-size="9" fill="#8a8a86">examples/coffee-machine/system.sysml</text>
+  
+    <g><rect x="842.2412666666667" y="560" width="158.042" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="921.2622666666666" y="573" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part def&#187;</text>
+      <text x="921.2622666666666" y="586" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">WaterSubsystem</text>
+      <rect x="903.4580666666667" y="597" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="917.4580666666667" y="605"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">hotWaterOut</text>
+      <rect x="939.0664666666667" y="597" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="953.0664666666667" y="605"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">steamOut</text>
+      <rect x="867.8496666666666" y="597" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="881.8496666666666" y="605"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ctrlIn</text></g>
+    <g><rect x="100.99266666666665" y="699.5" width="134.048" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="168.01666666666665" y="712.5" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part def&#187;</text>
+      <text x="168.01666666666665" y="725.5" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">CoffeeSubsystem</text>
+      <rect x="129.50466666666665" y="694.5" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="143.50466666666665" y="702.5"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">waterIn</text>
+      <rect x="196.52866666666665" y="694.5" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="192.52866666666665" y="702.5" text-anchor="end"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">coffeeOut</text>
+      <rect x="183.69133333333332" y="736.5" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="197.69133333333332" y="744.5"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ctrlIn</text></g>
+    <g><rect x="712.6346666666666" y="689.6" width="130" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="777.6346666666666" y="702.6" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part def&#187;</text>
+      <text x="777.6346666666666" y="715.6" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">MilkFrother</text>
+      <rect x="812.6346666666666" y="684.6" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="808.6346666666666" y="692.6" text-anchor="end"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">steamIn</text>
+      <rect x="752.6346666666666" y="684.6" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="766.6346666666666" y="692.6"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">milkOut</text>
+      <rect x="782.6346666666666" y="684.6" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="796.6346666666666" y="692.6"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ctrlIn</text></g>
+    <g><rect x="733.3252666666667" y="305" width="130" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="798.3252666666667" y="318" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part def&#187;</text>
+      <text x="798.3252666666667" y="331" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">DisplayModule</text>
+      <rect x="773.3252666666667" y="342" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="787.3252666666667" y="350"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ctrlOut</text></g>
+    <g><rect x="572.3662666666667" y="434.7142857142857" width="133.022" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="638.8772666666666" y="447.7142857142857" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part def&#187;</text>
+      <text x="638.8772666666666" y="460.7142857142857" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">ControlBoard</text>
+      <rect x="600.6217666666666" y="429.7142857142857" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="614.6217666666666" y="437.7142857142857"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">powerIn</text>
+      <rect x="667.1327666666666" y="429.7142857142857" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="681.1327666666666" y="437.7142857142857"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">uiIn</text>
+      <rect x="674.7838666666667" y="471.7142857142857" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="670.7838666666667" y="479.7142857142857" text-anchor="end"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">waterCtrl</text>
+      <rect x="592.9706666666666" y="471.7142857142857" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="606.9706666666666" y="479.7142857142857"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">coffeeCtrl</text>
+      <rect x="644.1794666666667" y="471.7142857142857" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="658.1794666666667" y="479.7142857142857"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">milkCtrl</text></g>
+    <g><rect x="258.19933333333336" y="305" width="134.03" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="325.21433333333334" y="318" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part def&#187;</text>
+      <text x="325.21433333333334" y="331" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">PowerSupply</text>
+      <rect x="340.886" y="342" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="336.886" y="350" text-anchor="end"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">powerOut</text></g>
+    <g><rect x="140.25691666666665" y="60" width="160.058" height="153"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="220.28591666666665" y="73" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part def&#187;</text>
+      <text x="220.28591666666665" y="86" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">CoffeeMachine</text>
+      <line x1="140.25691666666665" y1="92" x2="300.31491666666665" y2="92"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="148.25691666666665" y="104"
+          font-size="11" fill="#1a1a1a">width_mm : Real = 280</text>
+      <line x1="140.25691666666665" y1="115" x2="300.31491666666665" y2="115"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="148.25691666666665" y="127"
+          font-size="11" fill="#1a1a1a">water : WaterSubsystem</text>
+      <text x="148.25691666666665" y="142"
+          font-size="11" fill="#1a1a1a">coffee : CoffeeSubsystem</text>
+      <text x="148.25691666666665" y="157"
+          font-size="11" fill="#1a1a1a">frother : MilkFrother</text>
+      <text x="148.25691666666665" y="172"
+          font-size="11" fill="#1a1a1a">display : DisplayModule</text>
+      <text x="148.25691666666665" y="187"
+          font-size="11" fill="#1a1a1a">controller : ControlBoard</text>
+      <text x="148.25691666666665" y="202"
+          font-size="11" fill="#1a1a1a">psu : PowerSupply</text>
+      <rect x="196.52866666666665" y="208" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="210.52866666666665" y="216"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">beverageOut</text></g>
+    <g><rect x="1188.1884666666667" y="851.3333333333334" width="130" height="55"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1253.1884666666667" y="864.3333333333334" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part def&#187;</text>
+      <text x="1253.1884666666667" y="877.3333333333334" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">WaterTank</text>
+      <line x1="1188.1884666666667" y1="883.3333333333334" x2="1318.1884666666667" y2="883.3333333333334"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="1196.1884666666667" y="895.3333333333334"
+          font-size="11" fill="#1a1a1a">capacity_l : Real = 1.9</text>
+      <rect x="1228.1884666666667" y="901.3333333333334" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1242.1884666666667" y="909.3333333333334"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">waterOut</text></g>
+    <g><rect x="1156.5069666666668" y="993" width="163.363" height="55"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1238.1884666666667" y="1006" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part def&#187;</text>
+      <text x="1238.1884666666667" y="1019" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">WaterPump</text>
+      <line x1="1156.5069666666668" y1="1025" x2="1319.8699666666669" y2="1025"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="1164.5069666666668" y="1037"
+          font-size="11" fill="#1a1a1a">maxPressure_bar : Real = 15</text>
+      <rect x="1228.1884666666667" y="988" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1242.1884666666667" y="996"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">waterIn</text>
+      <rect x="1207.627966666667" y="1043" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1221.627966666667" y="1051"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">waterOut</text>
+      <rect x="1274.0292166666668" y="988" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1288.0292166666668" y="996"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ctrlIn</text></g>
+    <g><rect x="945.2214666666666" y="1128.8333333333333" width="158.042" height="55"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1024.2424666666666" y="1141.8333333333333" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part def&#187;</text>
+      <text x="1024.2424666666666" y="1154.8333333333333" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">Thermoblock</text>
+      <line x1="945.2214666666666" y1="1160.8333333333333" x2="1103.2634666666665" y2="1160.8333333333333"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="953.2214666666666" y="1172.8333333333333"
+          font-size="11" fill="#1a1a1a">targetTemp_C : Real = 92</text>
+      <rect x="1043.9161333333334" y="1123.8333333333333" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1057.9161333333334" y="1131.8333333333333"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">waterIn</text>
+      <rect x="964.8951333333333" y="1123.8333333333333" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="978.8951333333333" y="1131.8333333333333"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">hotWaterOut</text>
+      <rect x="994.5688" y="1123.8333333333333" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1008.5688" y="1131.8333333333333"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">steamOut</text>
+      <rect x="1073.5898" y="1123.8333333333333" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1069.5898" y="1131.8333333333333" text-anchor="end"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ctrlIn</text></g>
+    <g><rect x="975.0664666666667" y="678" width="196.704" height="85"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1073.4184666666667" y="691" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part def&#187;</text>
+      <text x="1073.4184666666667" y="704" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">ThermoblockWaterSubsystem</text>
+      <line x1="975.0664666666667" y1="710" x2="1171.7704666666666" y2="710"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="983.0664666666667" y="722"
+          font-size="11" fill="#1a1a1a">tank : WaterTank</text>
+      <text x="983.0664666666667" y="737"
+          font-size="11" fill="#1a1a1a">pump : WaterPump</text>
+      <text x="983.0664666666667" y="752"
+          font-size="11" fill="#1a1a1a">heater : Thermoblock</text></g>
+    <g><rect x="173.34199999999998" y="993" width="135.25799999999998" height="55"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="240.97099999999998" y="1006" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part def&#187;</text>
+      <text x="240.97099999999998" y="1019" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">BeanHopper</text>
+      <line x1="173.34199999999998" y1="1025" x2="308.59999999999997" y2="1025"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="181.34199999999998" y="1037"
+          font-size="11" fill="#1a1a1a">capacity_g : Real = 280</text>
+      <rect x="215.09466666666663" y="1043" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="229.09466666666663" y="1051"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">beansOut</text></g>
+    <g><rect x="137.91866666666664" y="1129.25" width="174.352" height="55"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="225.09466666666663" y="1142.25" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part def&#187;</text>
+      <text x="225.09466666666663" y="1155.25" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">Grinder</text>
+      <line x1="137.91866666666664" y1="1161.25" x2="312.27066666666667" y2="1161.25"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="145.91866666666664" y="1173.25"
+          font-size="11" fill="#1a1a1a">burrs : String = conical_ceramic</text>
+      <rect x="215.09466666666663" y="1124.25" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="229.09466666666663" y="1132.25"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">beansIn</text>
+      <rect x="220.09466666666663" y="1179.25" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="234.09466666666663" y="1187.25"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">groundsOut</text>
+      <rect x="263.68266666666665" y="1124.25" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="277.68266666666665" y="1132.25"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ctrlIn</text></g>
+    <g><rect x="145.65766666666667" y="1268" width="168.874" height="55"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="230.09466666666668" y="1281" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part def&#187;</text>
+      <text x="230.09466666666668" y="1294" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">BrewUnit</text>
+      <line x1="145.65766666666667" y1="1300" x2="314.53166666666664" y2="1300"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="153.65766666666667" y="1312"
+          font-size="11" fill="#1a1a1a">chamberVolume_g : Real = 16</text>
+      <rect x="167.13666666666666" y="1263" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="181.13666666666666" y="1271"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">waterIn</text>
+      <rect x="220.09466666666668" y="1263" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="234.09466666666668" y="1271"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">groundsIn</text>
+      <rect x="283.05266666666665" y="1263" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="279.05266666666665" y="1271" text-anchor="end"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">coffeeOut</text>
+      <rect x="251.57366666666667" y="1263" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="265.57366666666667" y="1271"
+          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ctrlIn</text></g>
+    <g><rect x="67" y="833" width="150.684" height="85"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="142.34199999999998" y="846" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part def&#187;</text>
+      <text x="142.34199999999998" y="859" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">BurrCoffeeSubsystem</text>
+      <line x1="67" y1="865" x2="217.684" y2="865"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="75" y="877"
+          font-size="11" fill="#1a1a1a">hopper : BeanHopper</text>
+      <text x="75" y="892"
+          font-size="11" fill="#1a1a1a">grinder : Grinder</text>
+      <text x="75" y="907"
+          font-size="11" fill="#1a1a1a">brewUnit : BrewUnit</text></g>
+    <g><rect x="701.4476666666667" y="833" width="152.374" height="55"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="777.6346666666667" y="846" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part def&#187;</text>
+      <text x="777.6346666666667" y="859" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">SteamMilkFrother</text>
+      <line x1="701.4476666666667" y1="865" x2="853.8216666666667" y2="865"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="709.4476666666667" y="877"
+          font-size="11" fill="#1a1a1a">texture : String = fine_foam</text></g>
+    <g><rect x="232.52866666666665" y="433" width="134.02800000000002" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="299.54266666666666" y="446" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part def&#187;</text>
+      <text x="299.54266666666666" y="459" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">MainsPowerSupply</text></g>
+    <g><rect x="755.3882666666666" y="428" width="135.874" height="55"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="823.3252666666666" y="441" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part def&#187;</text>
+      <text x="823.3252666666666" y="454" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">TouchDisplay</text>
+      <line x1="755.3882666666666" y1="460" x2="891.2622666666666" y2="460"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="763.3882666666666" y="472"
+          font-size="11" fill="#1a1a1a">diagonal_in : Real = 4.3</text></g>
+    <g><rect x="628.9706666666666" y="553" width="128.664" height="55"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="693.3026666666666" y="566" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part def&#187;</text>
+      <text x="693.3026666666666" y="579" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">MainControlBoard</text>
+      <line x1="628.9706666666666" y1="585" x2="757.6346666666666" y2="585"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="636.9706666666666" y="597"
+          font-size="11" fill="#1a1a1a">mcuCores : Real = 2</text></g>
+    <g><rect x="1188.5964666666669" y="1263" width="160.305" height="70"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1268.7489666666668" y="1276" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;requirement def&#187;</text>
+      <text x="1268.7489666666668" y="1289" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">BrewPressure</text>
+      <line x1="1188.5964666666669" y1="1295" x2="1348.901466666667" y2="1295"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="1196.5964666666669" y="1307"
+          font-size="11" fill="#1a1a1a">subject pump</text>
+      <text x="1196.5964666666669" y="1322"
+          font-size="11" fill="#1a1a1a">minPressure_bar : Real = 15</text></g>
+    <g><rect x="950.8109666666667" y="1403" width="146.863" height="70"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1024.2424666666666" y="1416" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;requirement def&#187;</text>
+      <text x="1024.2424666666666" y="1429" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">BrewTemperature</text>
+      <line x1="950.8109666666667" y1="1435" x2="1097.6739666666667" y2="1435"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="958.8109666666667" y="1447"
+          font-size="11" fill="#1a1a1a">subject heater</text>
+      <text x="958.8109666666667" y="1462"
+          font-size="11" fill="#1a1a1a">targetTemp_C : Real = 92</text></g>
+    <g><rect x="1413.1109666666669" y="1123" width="148.689" height="70"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1487.4554666666668" y="1136" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;requirement def&#187;</text>
+      <text x="1487.4554666666668" y="1149" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">WaterCapacity</text>
+      <line x1="1413.1109666666669" y1="1155" x2="1561.799966666667" y2="1155"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="1421.1109666666669" y="1167"
+          font-size="11" fill="#1a1a1a">subject tank</text>
+      <text x="1421.1109666666669" y="1182"
+          font-size="11" fill="#1a1a1a">minCapacity_l : Real = 1.9</text></g>
+    <g><rect x="366.91016666666667" y="1263" width="155.421" height="70"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="444.6206666666667" y="1276" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;requirement def&#187;</text>
+      <text x="444.6206666666667" y="1289" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">BeanCapacity</text>
+      <line x1="366.91016666666667" y1="1295" x2="522.3311666666666" y2="1295"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="374.91016666666667" y="1307"
+          font-size="11" fill="#1a1a1a">subject hopper</text>
+      <text x="374.91016666666667" y="1322"
+          font-size="11" fill="#1a1a1a">minCapacity_g : Real = 280</text></g>
+    <g><rect x="952.2622666666666" y="288" width="242.838" height="70"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1073.6812666666667" y="301" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;requirement def&#187;</text>
+      <text x="1073.6812666666667" y="314" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">OneTouchMilkBeverages</text>
+      <line x1="952.2622666666666" y1="320" x2="1195.1002666666666" y2="320"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="960.2622666666666" y="332"
+          font-size="11" fill="#1a1a1a">subject machine</text>
+      <text x="960.2622666666666" y="347"
+          font-size="11" fill="#1a1a1a">mode : String = single_press_milk_beverages</text></g>
+    <g><rect x="1174.386966666667" y="1137" width="188.724" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1268.748966666667" y="1150" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;requirement&#187;</text>
+      <text x="1268.748966666667" y="1163" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">pressureReq : BrewPressure</text></g>
+    <g><rect x="909.8884666666668" y="1277" width="228.708" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1024.2424666666668" y="1290" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;requirement&#187;</text>
+      <text x="1024.2424666666668" y="1303" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">temperatureReq : BrewTemperature</text></g>
+    <g><rect x="1401.439466666667" y="999.5" width="172.032" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1487.455466666667" y="1012.5" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;requirement&#187;</text>
+      <text x="1487.455466666667" y="1025.5" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">waterReq : WaterCapacity</text></g>
+    <g><rect x="362.27066666666667" y="1137" width="164.7" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="444.6206666666667" y="1150" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;requirement&#187;</text>
+      <text x="444.6206666666667" y="1163" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">beanReq : BeanCapacity</text></g>
+    <g><rect x="944.6572666666666" y="171" width="258.048" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1073.6812666666665" y="184" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;requirement&#187;</text>
+      <text x="1073.6812666666665" y="197" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">oneTouchReq : OneTouchMilkBeverages</text></g>
+  
+    <polyline points="281.55766666666665,213 281.55766666666665,228 921.2622666666666,228 921.2622666666666,560" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
+    <text x="921.2622666666666" y="377.39317199999994" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">water</text>
+    <polyline points="159.01416666666665,213 159.01416666666665,638 168.01666666666665,638 168.01666666666665,699.5" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
+    <text x="159.01416666666665" y="614.31205" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">coffee</text>
+    <polyline points="177.77141666666665,213 177.77141666666665,228 180.01416666666665,228 180.01416666666665,648 732.6346666666666,648 732.6346666666666,689.6" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
+    <text x="588.5712816666667" y="643" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">frother</text>
+    <polyline points="262.80041666666665,213 262.80041666666665,238 798.3252666666667,238 798.3252666666667,305" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
+    <text x="752.3707936666667" y="233" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">display</text>
+    <polyline points="244.04316666666665,213 244.04316666666665,248 638.8772666666666,248 638.8772666666666,434.7142857142857" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
+    <text x="638.8772666666666" y="318.7355762857143" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">controller</text>
+    <polyline points="225.28591666666665,213 225.28591666666665,258 325.21433333333334,258 325.21433333333334,305" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
+    <text x="325.21433333333334" y="265.452885" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">psu</text>
+    <polyline points="974.6748666666667,602 974.6748666666667,628 1073.4184666666667,628 1073.4184666666667,678" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#triangle)" />
+    <polyline points="1122.5944666666667,763 1122.5944666666667,773 1253.1884666666667,773 1253.1884666666667,851.3333333333334" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
+    <text x="1253.1884666666667" y="806.9264133333334" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">tank</text>
+    <polyline points="1073.4184666666667,763 1073.4184666666667,928 1192.3477166666669,928 1192.3477166666669,993" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
+    <text x="1192.3477166666669" y="925.192735" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">pump</text>
+    <polyline points="1024.2424666666668,763 1024.2424666666668,1128.8333333333333" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
+    <text x="1024.2424666666668" y="1057.9833333333331" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">heater</text>
+    <polyline points="142.34199999999998,741.5 142.34199999999998,833" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#triangle)" />
+    <polyline points="180.013,918 180.013,928 240.971,928 240.971,993" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
+    <text x="240.971" y="963.52756" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">hopper</text>
+    <polyline points="142.34199999999998,918 142.34199999999998,1063 176.50666666666666,1063 176.50666666666666,1129.25" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
+    <text x="176.50666666666666" y="1080.07536" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">grinder</text>
+    <polyline points="104.67099999999999,918 104.67099999999999,1203 198.61566666666664,1203 198.61566666666664,1268" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
+    <text x="183.7056266666666" y="1198" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">brewUnit</text>
+    <polyline points="777.6346666666666,731.6 777.6346666666666,833" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#triangle)" />
+    <polyline points="299.54266666666666,347 299.54266666666666,433" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#triangle)" />
+    <polyline points="823.3252666666667,347 823.3252666666667,428" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#triangle)" />
+    <polyline points="623.5750666666667,476.7142857142857 623.5750666666667,513 693.3026666666667,513 693.3026666666667,553" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#triangle)" />
+    <polyline points="679.7838666666667,481.7142857142857 679.7838666666667,493 808.6346666666666,493 808.6346666666666,618 872.8496666666667,618 872.8496666666667,607" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="597.9706666666666,481.7142857142857 597.9706666666666,773 188.69133333333332,773 188.69133333333332,746.5" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="649.1794666666667,481.7142857142857 649.1794666666667,503 787.6346666666666,503 787.6346666666666,684.6" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="345.88599999999997,352 345.88599999999997,368 605.6217666666666,368 605.6217666666666,429.7142857142857" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="778.3252666666667,352 778.3252666666667,368 672.1327666666666,368 672.1327666666666,429.7142857142857" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="908.4580666666668,607 908.4580666666668,628 134.50466666666665,628 134.50466666666665,694.5" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="944.0664666666667,607 944.0664666666667,638 817.6346666666666,638 817.6346666666666,684.6" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="201.52866666666665,694.5 201.52866666666665,218" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="757.6346666666666,684.6 757.6346666666666,638 201.52866666666665,638 201.52866666666665,218" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="1233.1884666666667,911.3333333333334 1233.1884666666667,988" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="1212.627966666667,1053 1212.627966666667,1063 1048.9161333333334,1063 1048.9161333333334,1123.8333333333333" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="969.8951333333334,1123.8333333333333 969.8951333333334,1073 908.4580666666668,1073 908.4580666666668,607" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="999.5688,1123.8333333333333 999.5688,1063 944.0664666666667,1063 944.0664666666667,607" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="872.8496666666667,607 872.8496666666667,618 1603.4714666666669,618 1603.4714666666669,938 1279.0292166666668,938 1279.0292166666668,988" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="872.8496666666667,607 872.8496666666667,618 1603.4714666666669,618 1603.4714666666669,1073 1078.5898,1073 1078.5898,1123.8333333333333" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="220.09466666666665,1053 220.09466666666665,1124.25" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="225.09466666666665,1189.25 225.09466666666665,1263" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="134.50466666666665,694.5 134.50466666666665,628 36,628 36,1213 172.13666666666666,1213 172.13666666666666,1263" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="288.05266666666665,1263 288.05266666666665,1213 577.9706666666666,1213 577.9706666666666,638 201.52866666666665,638 201.52866666666665,694.5" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="188.69133333333332,746.5 188.69133333333332,773 556.9706666666666,773 556.9706666666666,1073 268.68266666666665,1073 268.68266666666665,1124.25" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="188.69133333333332,746.5 188.69133333333332,773 556.9706666666666,773 556.9706666666666,1203 256.57366666666667,1203 256.57366666666667,1263" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="1268.748966666667,1179 1268.7489666666668,1263" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="1268.748966666667" y="1216" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;typed by&#187;</text>
+    <polyline points="1024.2424666666668,1319 1024.2424666666668,1403" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="1024.2424666666668" y="1356" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;typed by&#187;</text>
+    <polyline points="1487.455466666667,1041.5 1487.4554666666668,1123" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="1487.4554666666668" y="1077.25" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;typed by&#187;</text>
+    <polyline points="444.62066666666664,1179 444.62066666666664,1263" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="444.62066666666664" y="1216" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;typed by&#187;</text>
+    <polyline points="1073.6812666666667,213 1073.6812666666667,288" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="1073.6812666666667" y="245.5" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;typed by&#187;</text>
+    <polyline points="1268.7489666666668,1048 1268.748966666667,1137" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="1268.748966666667" y="1087.5" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;satisfy&#187;</text>
+    <polyline points="1024.2424666666666,1183.8333333333333 1024.2424666666668,1277" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="1024.2424666666666" y="1225.4166666666665" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;satisfy&#187;</text>
+    <polyline points="1278.1884666666667,906.3333333333334 1278.1884666666667,928 1487.455466666667,928 1487.455466666667,999.5" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="1407.7386333333336" y="923" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;satisfy&#187;</text>
+    <polyline points="266.8473333333333,1048 266.8473333333333,1063 444.62066666666664,1063 444.62066666666664,1137" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="385.234" y="1058" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;satisfy&#187;</text>
+</svg>

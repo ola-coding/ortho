@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1289.1779999999999" height="506"
+     viewBox="0 0 1289.1779999999999 506" font-family="Arial, Helvetica, Segoe UI, sans-serif">
+  <title>Process View — Follow Person (generated from examples/auv-system/scenario-follow-person.sysml)</title>
+  <defs>
+    <marker id="msgArrow" markerWidth="12" markerHeight="10" refX="10" refY="4" orient="auto"
+            markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,4 L0,8 z" fill="#2b2b2b" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1289.1779999999999" height="506" fill="white" />
+  <rect x="8" y="8" width="1273.1779999999999" height="490" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+  <path d="M8,8 L8,30 L184.829,30 L194.829,21 L194.829,8 Z"
+        fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
+  <text x="16" y="23" font-size="11" font-weight="600" fill="#1a1a1a">Process View — Follow Person</text>
+  <text x="1275.1779999999999" y="492" text-anchor="end" font-size="9" fill="#8a8a86">examples/auv-system/scenario-follow-person.sysml</text>
+  
+    <g><rect x="24" y="48" width="90" height="34"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="69" y="69" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">pilot</text>
+      <line x1="69" y1="82" x2="69" y2="478"
+          stroke="#2b2b2b" stroke-width="1" stroke-dasharray="4 4" /></g>
+    <g><rect x="144" y="48" width="118.668" height="34"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="203.334" y="69" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">rcApp : PilotApp</text>
+      <line x1="203.334" y1="82" x2="203.334" y2="478"
+          stroke="#2b2b2b" stroke-width="1" stroke-dasharray="4 4" /></g>
+    <g><rect x="292.668" y="48" width="213.996" height="34"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="399.666" y="69" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">flightControl : FlightControlStack</text>
+      <line x1="399.666" y1="82" x2="399.666" y2="478"
+          stroke="#2b2b2b" stroke-width="1" stroke-dasharray="4 4" /></g>
+    <g><rect x="557.7059999999999" y="48" width="198.708" height="34"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="657.06" y="69" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">cameraCtrl : CameraController</text>
+      <line x1="657.06" y1="82" x2="657.06" y2="478"
+          stroke="#2b2b2b" stroke-width="1" stroke-dasharray="4 4" /></g>
+    <g><rect x="786.414" y="48" width="244.716" height="34"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="908.7719999999999" y="69" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">targetTracking : TargetTrackingEngine</text>
+      <line x1="908.7719999999999" y1="82" x2="908.7719999999999" y2="478"
+          stroke="#2b2b2b" stroke-width="1" stroke-dasharray="4 4" /></g>
+    <g><rect x="1061.13" y="48" width="204.048" height="34"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1163.154" y="69" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">perception : PerceptionPipeline</text>
+      <line x1="1163.154" y1="82" x2="1163.154" y2="478"
+          stroke="#2b2b2b" stroke-width="1" stroke-dasharray="4 4" /></g>
+    <rect x="199.334" y="118" width="8" height="40"
+          fill="#f1f1e4" stroke="#2b2b2b" stroke-width="1" />
+    <rect x="395.666" y="158" width="8" height="240"
+          fill="#f1f1e4" stroke="#2b2b2b" stroke-width="1" />
+    <rect x="199.334" y="198" width="8" height="80"
+          fill="#f1f1e4" stroke="#2b2b2b" stroke-width="1" />
+    <rect x="199.334" y="238" width="8" height="40"
+          fill="#f1f1e4" stroke="#2b2b2b" stroke-width="1" />
+    <rect x="904.7719999999999" y="278" width="8" height="40"
+          fill="#f1f1e4" stroke="#2b2b2b" stroke-width="1" />
+    <rect x="395.666" y="318" width="8" height="80"
+          fill="#f1f1e4" stroke="#2b2b2b" stroke-width="1" />
+    <rect x="395.666" y="358" width="8" height="40"
+          fill="#f1f1e4" stroke="#2b2b2b" stroke-width="1" />
+    <rect x="395.666" y="398" width="8" height="24"
+          fill="#f1f1e4" stroke="#2b2b2b" stroke-width="1" />
+    <rect x="199.334" y="438" width="8" height="24"
+          fill="#f1f1e4" stroke="#2b2b2b" stroke-width="1" />
+    <g><line x1="73" y1="118" x2="199.334" y2="118"
+          stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
+      <text x="136.167" y="112" text-anchor="middle" font-size="10"
+          fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="3">launch</text></g>
+    <g><line x1="207.334" y1="158" x2="395.666" y2="158"
+          stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
+      <text x="301.5" y="152" text-anchor="middle" font-size="10"
+          fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="3">takeOff</text></g>
+    <g><line x1="653.06" y1="198" x2="207.334" y2="198"
+          stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
+      <text x="430.197" y="192" text-anchor="middle" font-size="10"
+          fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="3">liveVideo : VideoStream</text></g>
+    <g><line x1="73" y1="238" x2="199.334" y2="238"
+          stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
+      <text x="136.167" y="232" text-anchor="middle" font-size="10"
+          fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="3">tapPerson</text></g>
+    <g><line x1="207.334" y1="278" x2="904.7719999999999" y2="278"
+          stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
+      <text x="556.053" y="272" text-anchor="middle" font-size="10"
+          fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="3">trackTarget : TargetBox</text></g>
+    <g><line x1="904.7719999999999" y1="318" x2="403.666" y2="318"
+          stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
+      <text x="654.2189999999999" y="312" text-anchor="middle" font-size="10"
+          fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="3">followSetpoints</text></g>
+    <g><line x1="1159.154" y1="358" x2="403.666" y2="358"
+          stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
+      <text x="781.41" y="352" text-anchor="middle" font-size="10"
+          fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="3">obstacleMap : DepthGrid</text></g>
+    <g><polyline points="403.666,398 439.666,398 439.666,414 407.666,414"
+          fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
+      <text x="445.666" y="410" font-size="10" fill="#1a1a1a">avoidanceManeuver</text></g>
+    <g><line x1="904.7719999999999" y1="438" x2="207.334" y2="438"
+          stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
+      <text x="556.053" y="432" text-anchor="middle" font-size="10"
+          fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="3">trackingStatus</text></g>
+</svg>

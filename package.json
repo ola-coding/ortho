@@ -1,0 +1,45 @@
+{
+  "name": "ortho",
+  "version": "0.1.0",
+  "description": "Orthographic projection for architecture: renders the five 4+1 architectural views as SVG from SysML v2 model files",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "bin": {
+    "ortho": "./bin/ortho.js"
+  },
+  "main": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "grammar"
+  ],
+  "scripts": {
+    "langium:generate": "langium generate",
+    "build": "npm run langium:generate && tsc -p tsconfig.build.json",
+    "prepare": "npm run build",
+    "typecheck": "npm run langium:generate && tsc -p tsconfig.json",
+    "render": "tsx src/cli.ts render",
+    "render:examples": "tsx scripts/render-examples.ts",
+    "deck": "tsx scripts/build-deck.ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "elkjs": "^0.9.3",
+    "langium": "^3.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.2",
+    "langium-cli": "^3.3.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.4"
+  }
+}

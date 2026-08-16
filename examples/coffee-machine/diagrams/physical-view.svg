@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1118.144" height="250"
+     viewBox="0 0 1118.144 250" font-family="Arial, Helvetica, Segoe UI, sans-serif">
+  <title>Physical View — Software Deployment (generated from examples/coffee-machine/software.sysml)</title>
+  <defs>
+    <marker id="triangle" markerWidth="14" markerHeight="12" refX="12" refY="5"
+            orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L12,5 L0,10 z" fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+    </marker>
+    <marker id="diamond" markerWidth="18" markerHeight="12" refX="15" refY="5"
+            orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M1,5 L8,1 L15,5 L8,9 z" fill="#2b2b2b" stroke="#2b2b2b" />
+    </marker>
+    <marker id="openArrow" markerWidth="12" markerHeight="12" refX="10" refY="5"
+            orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1118.144" height="250" fill="white" />
+  <rect x="8" y="8" width="1102.144" height="234" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+  <path d="M8,8 L8,30 L223.945,30 L233.945,21 L233.945,8 Z"
+        fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
+  <text x="16" y="23" font-size="11" font-weight="600" fill="#1a1a1a">Physical View — Software Deployment</text>
+  <text x="1104.144" y="236" text-anchor="end" font-size="9" fill="#8a8a86">examples/coffee-machine/software.sysml</text>
+  
+    <g><rect x="231.356" y="60" width="162.048" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="312.38" y="73" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part&#187;</text>
+      <text x="312.38" y="86" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">recipes : RecipeEngine</text></g>
+    <g><rect x="243.04399999999998" y="172" width="173.34" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="329.714" y="185" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part&#187;</text>
+      <text x="329.714" y="198" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">controller : ControlBoard</text></g>
+    <g><rect x="443.404" y="60" width="155.352" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="521.08" y="73" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part&#187;</text>
+      <text x="521.08" y="86" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">brew : BrewController</text></g>
+    <g><rect x="648.756" y="60" width="240.036" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="768.774" y="73" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part&#187;</text>
+      <text x="768.774" y="86" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">temperature : TemperatureController</text></g>
+    <g><rect x="36" y="60" width="145.356" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="108.678" y="73" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part&#187;</text>
+      <text x="108.678" y="86" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">milk : MilkController</text></g>
+    <g><rect x="938.7919999999999" y="60" width="120" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="998.7919999999999" y="73" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part&#187;</text>
+      <text x="998.7919999999999" y="86" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">uiApp : UiApp</text></g>
+    <g><rect x="915.4399999999999" y="172" width="166.704" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="998.7919999999999" y="185" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part&#187;</text>
+      <text x="998.7919999999999" y="198" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">display : DisplayModule</text></g>
+  
+    <polyline points="312.38,102 312.38,172" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="312.38" y="132" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;allocate&#187;</text>
+    <polyline points="521.0799999999999,102 521.0799999999999,112 347.048,112 347.048,172" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="409.06399999999996" y="107" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;allocate&#187;</text>
+    <polyline points="768.774,102 768.774,122 381.716,122 381.716,172" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="560.245" y="117" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;allocate&#187;</text>
+    <polyline points="108.678,102 108.678,112 277.712,112 277.712,172" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="218.195" y="107" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;allocate&#187;</text>
+    <polyline points="998.7919999999999,102 998.7919999999999,172" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="998.7919999999999" y="132" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;allocate&#187;</text>
+</svg>

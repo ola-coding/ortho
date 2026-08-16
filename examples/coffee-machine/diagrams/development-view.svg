@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="742" height="286"
+     viewBox="0 0 742 286" font-family="Arial, Helvetica, Segoe UI, sans-serif">
+  <title>Development View — Coffee Machine (generated from examples/coffee-machine/requirements.sysml)</title>
+  <defs>
+    <marker id="triangle" markerWidth="14" markerHeight="12" refX="12" refY="5"
+            orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L12,5 L0,10 z" fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+    </marker>
+    <marker id="diamond" markerWidth="18" markerHeight="12" refX="15" refY="5"
+            orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M1,5 L8,1 L15,5 L8,9 z" fill="#2b2b2b" stroke="#2b2b2b" />
+    </marker>
+    <marker id="openArrow" markerWidth="12" markerHeight="12" refX="10" refY="5"
+            orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="742" height="286" fill="white" />
+  <rect x="8" y="8" width="726" height="270" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+  <path d="M8,8 L8,30 L217.202,30 L227.202,21 L227.202,8 Z"
+        fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
+  <text x="16" y="23" font-size="11" font-weight="600" fill="#1a1a1a">Development View — Coffee Machine</text>
+  <text x="728" y="272" text-anchor="end" font-size="9" fill="#8a8a86">examples/coffee-machine/requirements.sysml</text>
+  
+    <g><rect x="172.656" y="190" width="90" height="12"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <rect x="172.656" y="202" width="130.01600000000002" height="48"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="237.66400000000002" y="230" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">Requirements</text></g>
+    <g><rect x="383" y="190" width="59.127" height="12"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <rect x="383" y="202" width="130" height="48"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="448" y="230" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">System</text></g>
+    <g><rect x="36" y="60" width="76.243" height="12"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <rect x="36" y="72" width="130" height="48"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="101" y="100" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">Mechanics</text></g>
+    <g><rect x="396" y="60" width="79.301" height="12"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <rect x="396" y="72" width="130" height="48"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="461" y="100" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">Electronics</text></g>
+    <g><rect x="216" y="60" width="66.453" height="12"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <rect x="216" y="72" width="130" height="48"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="281" y="100" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">Software</text></g>
+    <g><rect x="576" y="60" width="72.58" height="12"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <rect x="576" y="72" width="130" height="48"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="641" y="100" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">UseCases</text></g>
+  
+    <polyline points="122.66666666666669,120 122.66666666666669,140 409,140 409,190" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="280.8333333333333" y="135" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;import&#187;</text>
+    <polyline points="79.33333333333331,120 79.33333333333331,150 215.99466666666666,150 215.99466666666666,190" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="152.664" y="145" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;import&#187;</text>
+    <polyline points="461,120 461,190" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="461" y="150" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;import&#187;</text>
+    <polyline points="302.6666666666667,120 302.6666666666667,130 435,130 435,190" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="393.83333333333337" y="125" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;import&#187;</text>
+    <polyline points="259.3333333333333,120 259.33333333333337,190" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="259.33333333333337" y="150" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;import&#187;</text>
+    <polyline points="641,120 641,130 487,130 487,190" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="539" y="125" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;import&#187;</text>
+</svg>

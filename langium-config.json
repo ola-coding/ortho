@@ -1,0 +1,11 @@
+{
+  "projectName": "Sysml",
+  "languages": [
+    {
+      "id": "sysml",
+      "grammar": "grammar/sysml.langium",
+      "fileExtensions": [".sysml"]
+    }
+  ],
+  "out": "src/generated"
+}

@@ -1,0 +1,885 @@
+<style>
+  /* ---- tokens: light (also the un-stamped default) ------------------- */
+  :root {
+    --ground: #E3E6E2;
+    --ground-2: #D6DAD5;
+    --panel: #F2F4F0;
+    --paper: #FDFDF6;
+    --ink: #1B1F1D;
+    --ink-soft: #5C635F;
+    --ink-faint: #868D89;
+    --rule: #B7BFBA;
+    --rule-strong: #7E8783;
+    --accent: #14616E;
+    --accent-soft: #D8E6E7;
+    --code-bg: #F7F8F4;
+    --t-keyword: #14616E;
+    --t-type: #7A4418;
+    --t-string: #3F6134;
+    --t-number: #7A4418;
+    --t-comment: #8A918C;
+    --shadow: 0 1px 2px rgba(27, 31, 29, .10), 0 10px 24px rgba(27, 31, 29, .09);
+    --sans: "Helvetica Neue", Arial, "Segoe UI", sans-serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", "Segoe UI Mono", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #14181A;
+      --ground-2: #0E1113;
+      --panel: #1C2224;
+      --paper: #FDFDF6;
+      --ink: #E9ECE9;
+      --ink-soft: #9BA29E;
+      --ink-faint: #757C78;
+      --rule: #333B3D;
+      --rule-strong: #4E5759;
+      --accent: #5FBECD;
+      --accent-soft: #16333A;
+      --code-bg: #171D1F;
+      --t-keyword: #6FC7D6;
+      --t-type: #E0A76A;
+      --t-string: #A8CF95;
+      --t-number: #E0A76A;
+      --t-comment: #6E7671;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .5), 0 14px 30px rgba(0, 0, 0, .45);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #14181A;
+    --ground-2: #0E1113;
+    --panel: #1C2224;
+    --paper: #FDFDF6;
+    --ink: #E9ECE9;
+    --ink-soft: #9BA29E;
+    --ink-faint: #757C78;
+    --rule: #333B3D;
+    --rule-strong: #4E5759;
+    --accent: #5FBECD;
+    --accent-soft: #16333A;
+    --code-bg: #171D1F;
+    --t-keyword: #6FC7D6;
+    --t-type: #E0A76A;
+    --t-string: #A8CF95;
+    --t-number: #E0A76A;
+    --t-comment: #6E7671;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .5), 0 14px 30px rgba(0, 0, 0, .45);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    background-image:
+      linear-gradient(var(--ground-2) 1px, transparent 1px),
+      linear-gradient(90deg, var(--ground-2) 1px, transparent 1px);
+    background-size: 48px 48px, 48px 48px;
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: clamp(.95rem, .55vw + .78rem, 1.06rem);
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---- sheet shell --------------------------------------------------- */
+  .deck { padding: clamp(.75rem, 2vw, 1.75rem); padding-bottom: 5.5rem; }
+
+  .sheet { display: none; }
+  .sheet.is-active { display: block; animation: sheet-in .28s ease-out; }
+  @keyframes sheet-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .frame {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1rem, 2.4vw, 2rem);
+    min-height: min(84vh, 900px);
+    padding: clamp(2.6rem, 4vw, 3.4rem) clamp(1.1rem, 3.2vw, 3rem) 0;
+    border: 1px solid var(--rule-strong);
+    background: var(--panel);
+    box-shadow: var(--shadow);
+  }
+
+  .tag {
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    padding: .42rem 1.5rem .42rem .95rem;
+    border: 1px solid var(--rule-strong);
+    background: var(--accent-soft);
+    clip-path: polygon(0 0, 100% 0, 100% 55%, calc(100% - 11px) 100%, 0 100%);
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: .68rem;
+    font-weight: 600;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+  }
+
+  .titleblock {
+    margin-top: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .3rem 1.4rem;
+    padding: .7rem 0 .8rem;
+    border-top: 1px solid var(--rule);
+    color: var(--ink-faint);
+    font-family: var(--mono);
+    font-size: .66rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+  .titleblock .sheet-no { margin-left: auto; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+
+  /* ---- type ---------------------------------------------------------- */
+  .eyebrow {
+    margin: 0 0 1.1rem;
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: .72rem;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+  }
+  h1 {
+    margin: 0;
+    max-width: 18ch;
+    font-size: clamp(2.3rem, 6.2vw, 4.6rem);
+    font-weight: 800;
+    line-height: .96;
+    letter-spacing: -.035em;
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+  h2 {
+    margin: 0;
+    max-width: 22ch;
+    font-size: clamp(1.5rem, 3.3vw, 2.4rem);
+    font-weight: 800;
+    line-height: 1.06;
+    letter-spacing: -.025em;
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+  h3 {
+    margin: 0 0 .4rem;
+    font-size: .74rem;
+    font-weight: 700;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  p { margin: 0; max-width: 66ch; }
+  .lede { font-size: clamp(1.05rem, 1.5vw, 1.3rem); color: var(--ink-soft); max-width: 54ch; }
+  strong { font-weight: 700; color: var(--ink); }
+  .accent { color: var(--accent); }
+
+  .stack { display: flex; flex-direction: column; gap: 1rem; }
+  .stack-tight { display: flex; flex-direction: column; gap: .45rem; }
+
+  /* ---- lists --------------------------------------------------------- */
+  .points { display: flex; flex-direction: column; gap: 1.15rem; margin: 0; padding: 0; list-style: none; max-width: 70ch; }
+  .points li { display: grid; grid-template-columns: auto 1fr; gap: .9rem; align-items: baseline; }
+  .points li::before {
+    content: "";
+    width: 9px; height: 9px;
+    border: 1.5px solid var(--accent);
+    transform: rotate(45deg);
+    translate: 0 -1px;
+  }
+
+  .cols { display: grid; gap: clamp(1rem, 2.4vw, 2.2rem); grid-template-columns: 1fr; }
+  @media (min-width: 900px) { .cols.two { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+  @media (min-width: 900px) { .cols.narrow-left { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); } }
+
+  /* ---- pipeline ------------------------------------------------------ */
+  .pipeline { display: flex; flex-wrap: wrap; align-items: stretch; gap: .55rem; }
+  .stage {
+    flex: 1 1 150px;
+    display: flex; flex-direction: column; gap: .3rem;
+    padding: .9rem 1rem;
+    border: 1px solid var(--rule-strong);
+    background: var(--paper);
+    color: #1B1F1D;
+  }
+  .stage b { font-size: .95rem; letter-spacing: -.01em; }
+  .stage span { font-family: var(--mono); font-size: .68rem; color: #5C635F; letter-spacing: .04em; }
+  .arrow { align-self: center; color: var(--ink-faint); font-family: var(--mono); }
+
+  /* ---- table --------------------------------------------------------- */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--rule); }
+  table { border-collapse: collapse; width: 100%; min-width: 640px; background: var(--panel); }
+  th, td { padding: .68rem .9rem; text-align: left; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  thead th {
+    font-family: var(--mono); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink-soft); background: var(--ground-2); border-bottom: 1px solid var(--rule-strong);
+  }
+  tbody tr:last-child td { border-bottom: 0; }
+  td.view { font-weight: 700; white-space: nowrap; }
+  td.cmd { font-family: var(--mono); font-size: .8rem; color: var(--accent); white-space: nowrap; }
+
+  /* ---- code ---------------------------------------------------------- */
+  .code-mount { display: flex; flex-direction: column; min-width: 0; }
+  pre.code {
+    margin: 0;
+    padding: 1rem 1.1rem;
+    overflow-x: auto;
+    border: 1px solid var(--rule);
+    background: var(--code-bg);
+    font-family: var(--mono);
+    font-size: clamp(.7rem, .82vw, .8rem);
+    line-height: 1.66;
+    tab-size: 4;
+  }
+  .filename {
+    padding: .45rem .9rem;
+    border: 1px solid var(--rule);
+    border-bottom: 0;
+    background: var(--ground-2);
+    color: var(--ink-soft);
+    font-family: var(--mono);
+    font-size: .68rem;
+    letter-spacing: .06em;
+  }
+  .t-keyword { color: var(--t-keyword); font-weight: 600; }
+  .t-type { color: var(--t-type); }
+  .t-string { color: var(--t-string); }
+  .t-number { color: var(--t-number); }
+  .t-comment { color: var(--t-comment); font-style: italic; }
+  .t-op { color: var(--ink-faint); }
+
+  code.inline {
+    padding: .1em .38em;
+    border: 1px solid var(--rule);
+    background: var(--code-bg);
+    font-family: var(--mono);
+    font-size: .86em;
+  }
+
+  .command {
+    padding: .95rem 1.1rem;
+    overflow-x: auto;
+    border-left: 3px solid var(--accent);
+    background: var(--code-bg);
+    font-family: var(--mono);
+    font-size: clamp(.72rem, .9vw, .86rem);
+    white-space: pre;
+  }
+  .command .flag { color: var(--accent); }
+
+  /* ---- figures ------------------------------------------------------- */
+  .figure { display: flex; flex-direction: column; gap: .5rem; min-width: 0; }
+  .figure-head { display: flex; align-items: baseline; gap: .8rem; flex-wrap: wrap; }
+  .figure-mount {
+    --zoom: 1;
+    overflow: auto;
+    max-height: min(56vh, 560px);
+    padding: .7rem;
+    border: 1px solid var(--rule-strong);
+    background: var(--paper);
+  }
+  .figure-mount.is-zoomed { --zoom: 2.6; }
+  .figure-svg { width: calc(100% * var(--zoom)); }
+  .figure-svg svg { display: block; width: 100%; height: auto; }
+  .figure-caption { color: var(--ink-faint); font-family: var(--mono); font-size: .66rem; letter-spacing: .06em; }
+
+  button {
+    font: inherit;
+    color: var(--ink-soft);
+    background: var(--panel);
+    border: 1px solid var(--rule-strong);
+    padding: .3rem .7rem;
+    font-family: var(--mono);
+    font-size: .64rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  button:hover { color: var(--accent); border-color: var(--accent); }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ---- footer controls ----------------------------------------------- */
+  .controls {
+    position: fixed;
+    left: 50%;
+    bottom: clamp(.75rem, 2vw, 1.4rem);
+    translate: -50% 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .4rem .5rem;
+    border: 1px solid var(--rule-strong);
+    background: var(--panel);
+    box-shadow: var(--shadow);
+  }
+  .counter {
+    min-width: 5.4rem;
+    text-align: center;
+    color: var(--ink-soft);
+    font-family: var(--mono);
+    font-size: .7rem;
+    letter-spacing: .1em;
+    font-variant-numeric: tabular-nums;
+  }
+  .progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 11; transition: width .25s ease; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sheet.is-active { animation: none; }
+    .progress { transition: none; }
+  }
+</style>
+
+<div class="progress" id="progress"></div>
+
+<div class="deck" id="deck">
+
+  <!-- 01 ------------------------------------------------------------- -->
+  <section class="sheet is-active">
+    <div class="frame">
+      <div class="tag">Cover</div>
+      <div class="stack" style="gap:1.6rem">
+        <p class="eyebrow">SysML v2 → SVG · everything as code</p>
+        <h1>Diagrams that <span class="accent">can't</span> go stale</h1>
+        <p class="lede">
+          <strong>ortho</strong> renders the five architecture views of the 4+1 model straight from
+          SysML v2 text. No drawing tool, no cloud service, no model repository — a model file,
+          one command, and an SVG you commit next to the code.
+        </p>
+        <div class="command">npx ortho render models -d part-definition <span class="flag">-o</span> diagrams/logical-view.svg</div>
+      </div>
+      <div class="titleblock">
+        <span>Project · ortho</span><span>Reference models · AUV system + coffee machine</span>
+        <span class="sheet-no"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 ------------------------------------------------------------- -->
+  <section class="sheet">
+    <div class="frame">
+      <div class="tag">The problem</div>
+      <div class="stack">
+        <h2>The drawing is the first thing to lie</h2>
+        <ul class="points">
+          <li><span>An architecture diagram drawn by hand is a <strong>snapshot of an intention</strong>. Rename a component in the code and the picture keeps the old name — silently, indefinitely.</span></li>
+          <li><span>The picture lives in a binary file that only one person has the license to open, so it gets redrawn on demand rather than kept true.</span></li>
+          <li><span>Reviewers can't diff it. A pull request shows the model changed and the diagram changed, but not <strong>whether they agree</strong>.</span></li>
+          <li><span>So teams stop trusting diagrams, and the architecture goes back to living in people's heads.</span></li>
+        </ul>
+      </div>
+      <div class="titleblock">
+        <span>Project · ortho</span><span>Why generate</span>
+        <span class="sheet-no"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 ------------------------------------------------------------- -->
+  <section class="sheet">
+    <div class="frame">
+      <div class="tag">The approach</div>
+      <div class="stack">
+        <h2>One model. Five views. One command.</h2>
+        <div class="cols two">
+          <ul class="points">
+            <li><span><strong>The text is the source of truth.</strong> Components, ports, requirements and scenarios are written in SysML v2 — the OMG standard notation, not an invented DSL.</span></li>
+            <li><span><strong>Diagrams are build artifacts.</strong> Regenerate them like you compile code; never edit an SVG by hand.</span></li>
+            <li><span><strong>CI keeps them honest.</strong> Re-render in the pipeline and fail on a dirty git diff — a stale diagram becomes a broken build.</span></li>
+          </ul>
+          <div class="stack">
+            <div class="stack-tight">
+              <h3>Change a component</h3>
+              <div class="command">part <span class="flag">controller</span> : RadioController;</div>
+            </div>
+            <div class="stack-tight">
+              <h3>Every view that shows it updates</h3>
+              <div class="command">npm run diagrams
+git diff --exit-code diagrams/</div>
+            </div>
+            <p style="color:var(--ink-soft)">The five SVGs on the following sheets were produced by exactly this command from the model files quoted beside them. Nothing was touched by hand.</p>
+          </div>
+        </div>
+      </div>
+      <div class="titleblock">
+        <span>Project · ortho</span><span>Working model</span>
+        <span class="sheet-no"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 ------------------------------------------------------------- -->
+  <section class="sheet">
+    <div class="frame">
+      <div class="tag">Pipeline</div>
+      <div class="stack">
+        <h2>Text in, SVG out — nothing else in the chain</h2>
+        <div class="pipeline">
+          <div class="stage"><b>Parse</b><span>Langium</span></div>
+          <div class="arrow">→</div>
+          <div class="stage"><b>Resolve</b><span>scopes &amp; references</span></div>
+          <div class="arrow">→</div>
+          <div class="stage"><b>Extract</b><span>one per view</span></div>
+          <div class="arrow">→</div>
+          <div class="stage"><b>Lay out</b><span>elkjs</span></div>
+          <div class="arrow">→</div>
+          <div class="stage"><b>Render</b><span>SVG text</span></div>
+        </div>
+        <div class="cols two">
+          <ul class="points">
+            <li><span><strong>No browser anywhere.</strong> SVG is written as text, so there is no headless Chrome to install, sandbox, or wait for.</span></li>
+            <li><span><strong>No LLM at render time.</strong> The same model always produces the same bytes — diagrams diff cleanly.</span></li>
+          </ul>
+          <ul class="points">
+            <li><span><strong>Real text metrics.</strong> Font advance widths are embedded, so boxes fit their labels without measuring in a DOM.</span></li>
+            <li><span><strong>Two dependencies</strong> do the heavy lifting: a parser generator and a layout engine. Both plain npm packages.</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="titleblock">
+        <span>Project · ortho</span><span>Architecture</span>
+        <span class="sheet-no"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 ------------------------------------------------------------- -->
+  <section class="sheet">
+    <div class="frame">
+      <div class="tag">4+1 map</div>
+      <div class="stack">
+        <h2>Five views, each answering one question</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>View</th><th>Answers</th><th>Rendered as</th><th>CLI</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="view">Logical</td><td>What are the building blocks, and how are they wired?</td><td>Part definition diagram</td><td class="cmd">part-definition</td></tr>
+              <tr><td class="view">Scenarios</td><td>What does someone actually do with the system?</td><td>Use case diagram</td><td class="cmd">use-case</td></tr>
+              <tr><td class="view">Process</td><td>What talks to what, in which order, at run time?</td><td>Sequence diagram</td><td class="cmd">sequence</td></tr>
+              <tr><td class="view">Development</td><td>How is the model itself organised?</td><td>Package diagram</td><td class="cmd">package</td></tr>
+              <tr><td class="view">Physical</td><td>Which software runs on which hardware?</td><td>Allocation diagram</td><td class="cmd">allocation</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="color:var(--ink-soft)">Every diagram is headed by its view name and the package it came from, and signed in the corner with the file that generated it.</p>
+      </div>
+      <div class="titleblock">
+        <span>Project · ortho</span><span>Kruchten 4+1 mapping</span>
+        <span class="sheet-no"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 ------------------------------------------------------------- -->
+  <section class="sheet">
+    <div class="frame">
+      <div class="tag">Logical view</div>
+      <div class="stack">
+        <h2>The system, as written</h2>
+        <div class="cols narrow-left">
+          <div class="code-mount">
+            <div class="filename">examples/auv-system/system.sysml</div>
+<pre class="code">
+part def AuvSystem {
+    part aircraft : Aircraft;
+    part controller : RadioController;
+    part batteries : FlightBattery [1..3];
+    part charger : BatteryCharger;
+
+    connect batteries.powerOut to aircraft.batteryBay;
+    connect batteries.powerOut to charger.chargePort;
+    connect aircraft.rfLink to controller.rfLink;
+}
+
+part def Aircraft {
+    attribute takeoffWeight_g : Real = 249;
+    port batteryBay : PowerPort;
+
+    part fc : FlightController;
+    part vision : VisionSensor [4];
+    part props : FoldingPropeller [4];
+
+    connect fc.escOut to escs.ctrlIn;
+}
+
+satisfy Requirements::weightReq by Aircraft;
+</pre>
+          </div>
+          <div class="figure">
+            <div class="figure-head">
+              <h3 style="margin:0">Generated · logical-view.svg</h3>
+              <button type="button" data-zoom>Zoom</button>
+            </div>
+            <div class="figure-mount">
+              <div class="figure-svg" data-svg="auv/logical-view.svg"></div>
+            </div>
+            <p class="figure-caption">45 nodes · 62 edges · {{DIM:auv/logical-view.svg}} — composition diamonds, port squares, and dashed satisfy traces, laid out automatically.</p>
+          </div>
+        </div>
+      </div>
+      <div class="titleblock">
+        <span>Project · ortho</span><span>Logical view · aircraft, controller, batteries, charger</span>
+        <span class="sheet-no"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 ------------------------------------------------------------- -->
+  <section class="sheet">
+    <div class="frame">
+      <div class="tag">Scenarios</div>
+      <div class="stack">
+        <h2>Following a person, with obstacle avoidance</h2>
+        <div class="cols narrow-left">
+          <div class="code-mount">
+            <div class="filename">examples/auv-system/use-cases.sysml</div>
+<pre class="code">
+part def Pilot;
+part def TrackedPerson;
+
+use case def OperateDrone {
+    subject system : System::AuvSystem;
+    actor pilot : Pilot;
+}
+
+use case followPerson : OperateDrone {
+    actor person : TrackedPerson;
+    include use case selectTarget;
+    include use case avoidObstacles;
+}
+
+use case launchAircraft {
+    subject system : System::AuvSystem;
+    actor pilot : Pilot;
+}
+</pre>
+          </div>
+          <div class="figure">
+            <div class="figure-head">
+              <h3 style="margin:0">Generated · scenarios-view.svg</h3>
+              <button type="button" data-zoom>Zoom</button>
+            </div>
+            <div class="figure-mount">
+              <div class="figure-svg" data-svg="auv/scenarios-view.svg"></div>
+            </div>
+            <p class="figure-caption">{{DIM:auv/scenarios-view.svg}} — the system boundary is inferred from each use case's subject; actors are de-duplicated by type.</p>
+          </div>
+        </div>
+      </div>
+      <div class="titleblock">
+        <span>Project · ortho</span><span>Scenarios · what the pilot does</span>
+        <span class="sheet-no"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 ------------------------------------------------------------- -->
+  <section class="sheet">
+    <div class="frame">
+      <div class="tag">Process view</div>
+      <div class="stack">
+        <h2>Launch, tap a person, fly itself</h2>
+        <div class="cols narrow-left">
+          <div class="code-mount">
+            <div class="filename">examples/auv-system/scenario-follow-person.sysml</div>
+<pre class="code">
+action def FollowPerson {
+    part pilot;
+    part rcApp : Software::PilotApp;
+    part targetTracking : Software::TargetTrackingEngine;
+    part perception : Software::PerceptionPipeline;
+
+    message launch from pilot to rcApp;
+    then message takeOff from rcApp to flightControl;
+    then message liveVideo of VideoStream
+        from cameraCtrl to rcApp;
+    then message tapPerson from pilot to rcApp;
+    then message trackTarget of TargetBox
+        from rcApp to targetTracking;
+    then message obstacleMap of DepthGrid
+        from perception to flightControl;
+    then message avoidanceManeuver
+        from flightControl to flightControl;
+}
+</pre>
+          </div>
+          <div class="figure">
+            <div class="figure-head">
+              <h3 style="margin:0">Generated · process-view-follow-person.svg</h3>
+              <button type="button" data-zoom>Zoom</button>
+            </div>
+            <div class="figure-mount">
+              <div class="figure-svg" data-svg="auv/process-view-follow-person.svg"></div>
+            </div>
+            <p class="figure-caption">6 lifelines · 9 messages · {{DIM:auv/process-view-follow-person.svg}} — lifeline order, activation bars and the self-message loop are all derived from the text.</p>
+          </div>
+        </div>
+      </div>
+      <div class="titleblock">
+        <span>Project · ortho</span><span>Process view · follow-person scenario</span>
+        <span class="sheet-no"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 09 ------------------------------------------------------------- -->
+  <section class="sheet">
+    <div class="frame">
+      <div class="tag">Physical view</div>
+      <div class="stack">
+        <h2>Which software runs where</h2>
+        <div class="cols narrow-left">
+          <div class="code-mount">
+            <div class="filename">examples/auv-system/software.sysml</div>
+<pre class="code">
+part sw {
+    part flightControl : FlightControlStack;
+    part targetTracking : TargetTrackingEngine;
+    part perception : PerceptionPipeline;
+    part cameraCtrl : CameraController;
+    part pilotApp : PilotApp;
+}
+
+// Which processor or module runs each component.
+allocate sw.flightControl to System::Aircraft::fc;
+allocate sw.targetTracking to System::Aircraft::fc;
+allocate sw.perception to System::Aircraft::fc;
+allocate sw.cameraCtrl to System::Aircraft::camera;
+allocate sw.telemetry to System::Aircraft::radio;
+allocate sw.pilotApp to System::AuvSystem::controller;
+</pre>
+          </div>
+          <div class="figure">
+            <div class="figure-head">
+              <h3 style="margin:0">Generated · physical-view.svg</h3>
+              <button type="button" data-zoom>Zoom</button>
+            </div>
+            <div class="figure-mount">
+              <div class="figure-svg" data-svg="auv/physical-view.svg"></div>
+            </div>
+            <p class="figure-caption">7 allocations · {{DIM:auv/physical-view.svg}} — only the parts that take part in an allocation are drawn, so the deployment decision is the whole picture.</p>
+          </div>
+        </div>
+      </div>
+      <div class="titleblock">
+        <span>Project · ortho</span><span>Physical view · software deployment</span>
+        <span class="sheet-no"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 ------------------------------------------------------------- -->
+  <section class="sheet">
+    <div class="frame">
+      <div class="tag">Development view</div>
+      <div class="stack">
+        <h2>The model's own structure</h2>
+        <div class="cols narrow-left">
+          <div class="code-mount">
+            <div class="filename">Imports across the model files</div>
+<pre class="code">
+// system.sysml - the architecture
+package System {
+    import Requirements::*;
+}
+
+// mechanics.sysml, electronics.sysml - the domains
+package Mechanics {
+    import System::*;
+}
+
+// software.sysml - architecture + deployment
+package Software {
+    import System::*;
+    import Requirements::*;
+}
+</pre>
+            <p style="margin-top:1rem;color:var(--ink-soft)">
+              Files are linked as one workspace, so a reference like
+              <code class="inline">System::Aircraft::fc</code> resolves across them.
+            </p>
+          </div>
+          <div class="figure">
+            <div class="figure-head">
+              <h3 style="margin:0">Generated · development-view.svg</h3>
+              <button type="button" data-zoom>Zoom</button>
+            </div>
+            <div class="figure-mount">
+              <div class="figure-svg" data-svg="auv/development-view.svg"></div>
+            </div>
+            <p class="figure-caption">5 packages · 6 imports · {{DIM:auv/development-view.svg}} — dependency direction is read from the import statements themselves.</p>
+          </div>
+        </div>
+      </div>
+      <div class="titleblock">
+        <span>Project · ortho</span><span>Development view · package dependencies</span>
+        <span class="sheet-no"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 ------------------------------------------------------------- -->
+  <section class="sheet">
+    <div class="frame">
+      <div class="tag">Second example</div>
+      <div class="stack">
+        <h2>Same tool, different domain</h2>
+        <div class="cols narrow-left">
+          <div class="stack">
+            <p>
+              Nothing in <strong>ortho</strong> knows about aircraft. Point it at a bean-to-cup
+              coffee machine and the same five views come out — subsystems and ports, requirement
+              traces, the tasks a user performs, and the sequence behind a single button press.
+            </p>
+            <p style="color:var(--ink-soft)">
+              Both models ship with the tool, and they bracket the range on purpose: the coffee
+              machine is the leaner of the two, while the aerial vehicle pushes the layout harder.
+              Neither needed a line of tool configuration.
+            </p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Model</th><th>Logical view</th><th>Scenario</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td class="view">AUV system</td><td>45 nodes · 62 edges</td><td>6 lifelines · 9 messages</td></tr>
+                  <tr><td class="view">Coffee machine</td><td>29 nodes · 48 edges</td><td>6 lifelines · 8 messages</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="figure">
+            <div class="figure-head">
+              <h3 style="margin:0">Generated · coffee machine scenarios</h3>
+              <button type="button" data-zoom>Zoom</button>
+            </div>
+            <div class="figure-mount">
+              <div class="figure-svg" data-svg="coffee/scenarios-view.svg"></div>
+            </div>
+            <p class="figure-caption">{{DIM:coffee/scenarios-view.svg}} — three beverages under one boundary; a cappuccino brews a shot first, so it includes the espresso use case.</p>
+          </div>
+        </div>
+      </div>
+      <div class="titleblock">
+        <span>Project · ortho</span><span>Second example · coffee machine</span>
+        <span class="sheet-no"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 ------------------------------------------------------------- -->
+  <section class="sheet">
+    <div class="frame">
+      <div class="tag">Self-contained</div>
+      <div class="stack">
+        <h2>Runs anywhere Node runs</h2>
+        <div class="cols two">
+          <ul class="points">
+            <li><span><strong>No external programs.</strong> No Enterprise Architect, no Graphviz binary, no headless browser. Node 18+ and nothing else.</span></li>
+            <li><span><strong>No network at render time.</strong> Nothing is uploaded; models never leave the machine. Air-gapped builds work.</span></li>
+            <li><span><strong>Deterministic output.</strong> The same model produces the same bytes, so an SVG diff means the architecture actually changed.</span></li>
+          </ul>
+          <ul class="points">
+            <li><span><strong>Installs as a dev dependency.</strong> It lives in <code class="inline">node_modules</code> and writes only where you point it — the tool's own sources never mix with yours.</span></li>
+            <li><span><strong>28 tests</strong> cover the grammar, every view extractor, layout and end-to-end rendering of the reference model.</span></li>
+            <li><span><strong>Programmatic API too</strong>, if you would rather call the pipeline than the CLI.</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="titleblock">
+        <span>Project · ortho</span><span>Constraints kept</span>
+        <span class="sheet-no"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 ------------------------------------------------------------- -->
+  <section class="sheet">
+    <div class="frame">
+      <div class="tag">Get started</div>
+      <div class="stack">
+        <h2>Three lines to your first diagram</h2>
+        <div class="cols two">
+          <div class="stack">
+            <div class="stack-tight">
+              <h3>Install</h3>
+              <div class="command">npm install --save-dev ../path/to/ortho</div>
+            </div>
+            <div class="stack-tight">
+              <h3>Render</h3>
+              <div class="command">npx ortho render models \
+  <span class="flag">-d</span> part-definition \
+  <span class="flag">-o</span> diagrams/logical-view.svg</div>
+            </div>
+            <div class="stack-tight">
+              <h3>Keep honest</h3>
+              <div class="command">npm run diagrams &amp;&amp; git diff --exit-code</div>
+            </div>
+          </div>
+          <div class="stack">
+            <p class="lede" style="max-width:40ch">
+              Point it at a folder of <code class="inline">.sysml</code> files, choose a view,
+              and commit the SVG. The picture is now part of the build.
+            </p>
+            <p style="color:var(--ink-soft)">
+              Two complete worked models ship with the tool — an autonomous aerial vehicle and a
+              coffee machine — each with requirements, use cases, a scenario, a design, and all
+              five views generated from them.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="titleblock">
+        <span>Project · ortho</span><span>README.md</span>
+        <span class="sheet-no"></span>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<nav class="controls" aria-label="Slide navigation">
+  <button type="button" id="prev" aria-label="Previous sheet">◀ Prev</button>
+  <span class="counter" id="counter">01 / 12</span>
+  <button type="button" id="next" aria-label="Next sheet">Next ▶</button>
+</nav>
+
+<script>
+  (function () {
+    var sheets = Array.prototype.slice.call(document.querySelectorAll('.sheet'));
+    var counter = document.getElementById('counter');
+    var progress = document.getElementById('progress');
+    var index = 0;
+
+    function pad(n) { return (n < 10 ? '0' : '') + n; }
+
+    function show(next) {
+      index = Math.max(0, Math.min(sheets.length - 1, next));
+      sheets.forEach(function (sheet, i) { sheet.classList.toggle('is-active', i === index); });
+      counter.textContent = pad(index + 1) + ' / ' + pad(sheets.length);
+      progress.style.width = ((index + 1) / sheets.length * 100) + '%';
+      window.scrollTo(0, 0);
+    }
+
+    document.getElementById('prev').addEventListener('click', function () { show(index - 1); });
+    document.getElementById('next').addEventListener('click', function () { show(index + 1); });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') { show(index + 1); event.preventDefault(); }
+      else if (event.key === 'ArrowLeft' || event.key === 'PageUp') { show(index - 1); event.preventDefault(); }
+      else if (event.key === 'Home') { show(0); }
+      else if (event.key === 'End') { show(sheets.length - 1); }
+    });
+
+    document.querySelectorAll('[data-zoom]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        var mount = button.closest('.figure').querySelector('.figure-mount');
+        var zoomed = mount.classList.toggle('is-zoomed');
+        button.textContent = zoomed ? 'Fit' : 'Zoom';
+      });
+    });
+
+    show(0);
+  })();
+</script>

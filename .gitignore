@@ -1,0 +1,7 @@
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Generated from marketing/deck.template.html + the committed diagrams
+marketing/ortho-deck.html
+marketing/ortho-deck.artifact.html

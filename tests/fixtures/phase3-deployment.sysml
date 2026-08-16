@@ -1,0 +1,40 @@
+// Phase 3 smoke model: development view (packages/imports) and
+// physical view (software → hardware allocations).
+package DroneSystem {
+
+    package Requirements {
+        requirement def MassLimit;
+    }
+
+    package Logical {
+        import Requirements::*;
+        part def Airframe;
+    }
+
+    package Physical {
+        import Logical::*;
+
+        part def FlightController;
+        part def CompanionComputer;
+
+        part fc : FlightController;
+        part cc : CompanionComputer;
+    }
+
+    package Software {
+        import Logical::*;
+        import Physical::*;
+
+        part flightStack {
+            part attitudeControl;
+            part navigation;
+            part perception;
+            part telemetry;
+        }
+
+        allocate flightStack.attitudeControl to Physical::fc;
+        allocate flightStack.telemetry to Physical::fc;
+        allocate flightStack.navigation to Physical::cc;
+        allocate flightStack.perception to Physical::cc;
+    }
+}
