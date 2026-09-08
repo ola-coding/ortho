@@ -7,6 +7,9 @@ const elk = new ELK();
 
 export const PORT_SIZE = 10;
 
+/** Depth of the three-dimensional edge on a Deployment-view hardware node. */
+export const NODE_DEPTH = 12;
+
 export interface LayoutOptions {
     direction?: 'DOWN' | 'RIGHT';
 }
@@ -55,8 +58,11 @@ function toElkNode(n: GraphNode): ElkNode {
     };
     if (n.children?.length) {
         elkNode.children = n.children.map(toElkNode);
-        // Extra top padding leaves room for the boundary title.
-        elkNode.layoutOptions!['elk.padding'] = '[top=45,left=25,bottom=25,right=25]';
+        // Extra top padding leaves room for the boundary title; a 3-D node also
+        // has to clear its depth edge, which is drawn inside its own bounds.
+        elkNode.layoutOptions!['elk.padding'] = n.shape === 'node3d'
+            ? `[top=${45 + NODE_DEPTH},left=20,bottom=20,right=${20 + NODE_DEPTH}]`
+            : '[top=45,left=25,bottom=25,right=25]';
         elkNode.layoutOptions!['elk.spacing.nodeNode'] = '40';
     } else {
         elkNode.width = n.width;

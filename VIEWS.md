@@ -1,0 +1,117 @@
+# Six views rendered from SysML v2 models
+
+> **Status: implemented.** `ortho` renders these six views — see
+> [README.md](README.md) for the CLI and [examples/](examples/) for two worked
+> models, each carrying one file per view. Realization is the one relation
+> defined below that no view yet draws.
+
+## Background
+
+The view model is based on Kruchten's 4+1 architectural view with two changes. First, his Physical View is split into Physical and Deployment. Kruchten named the software-onto-nodes mapping "Physical" when the only physical thing worth drawing was which box a process ran on. A mechatronic product needs that name for the product itself, so the mapping view takes the name it is usually given anyway, and Physical describes mechanics, electronics, cabling and computers.
+
+Second, Kruchten's Logical View is the structure that delivers functionality — classes, then blocks. Here it is the functions themselves, medium-independent, with the components that realize them pushed down into Implementation and Physical.
+
+## The six views
+
+The six views we have chosen are the following: Use case view, Logical view, Implementation view, Physical view, Deployment view, and Process view. When developing a new product you should start with the customer needs and what problem to solve. Hence you start with the Use case view. Then you can continue sorting the needs into logical functions. These logical functions are realized in software (Implementation view), hardware (Physical view), or both. How software is deployed on hardware is shown in the Deployment view. Finally, the Process view shows how software modules interact at runtime.
+
+```mermaid
+flowchart TD
+    UC["Use case view - How the system is used"]
+    LOG["Logical view - What the system does"]
+    IMP["Implementation view - Static structure of software"]
+    PHY["Physical view - Structure of physical product"]
+    DEP["Deployment view - Which hardware runs which software"]
+    PROC["Process view - How software modules interact at runtime"]
+
+    UC --> LOG
+    LOG --> IMP
+    LOG --> PHY
+    IMP --> PROC
+    IMP --> DEP
+    PHY --> DEP
+```
+
+### Use case view
+
+How the system is used, and by whom. Says nothing about how anything works — no realization detail reaches this view.
+
+**Rendering.** A use case diagram. Actors are stick figures placed outside a plain rectangle that carries the subject's name; use cases are ellipses inside it. Actor-to-use-case associations are solid, undecorated lines. An `include` is a dashed line with an open arrowhead, labelled «include», pointing at the included use case.
+
+### Logical view
+
+What the system does, as a hierarchy of functions, independent of medium. Says nothing about what performs a function.
+
+Functions outlive their realizations — arming a mechanism can be a mechanical hatch, a relay driven by software, or pure software: one function, three media, three decades. But neutrality is not uniform:
+
+- **Control functions migrate between media** — arming, interlocking,
+  sequencing, regulating. Cams became relays became firmware, and will move
+  again. These are what the insulation is for.
+- **Energy and material functions do not** — containing a volume, raising a
+  temperature. Medium-bound for physical reasons.
+
+Realization is many to many — one function can be realized by software and hardware together, a relay plus its driver, and one function may have several realizations across product variants. A function exists exactly once here; the elements that realize it live on the Implementation and Physical views, though the realization relation itself is drawn on no view.
+
+**Rendering.** An organization chart of rounded rectangles, one box per function. Every function has exactly one parent, so the decomposition is strictly a tree: parents sit above their children, joined by plain connector lines with no arrowheads. A function shared by several branches sits at their lowest common ancestor rather than being duplicated, so its position states how widely it is shared.
+
+### Implementation view
+
+Static structure of the software: modules and their dependencies. Runtime
+behaviour belongs to Process, hardware to Physical.
+
+**Rendering.** Packages are rectangles with a small tab in the top-left corner, nested to show containment. Modules inside them are plain rectangles carrying a name compartment. Dependencies are dashed lines with an open arrowhead pointing at the module depended upon.
+
+### Physical view
+
+Structure of the physical product — mechanics, electronics, cabling and
+computers, and how they connect.
+
+**Topology, not geometry.** What connects, mounts and wires to what.
+Dimensions, placement and enclosure layout are out of scope. A cable is a
+`connect`, not a part, so it carries no properties of its own.
+
+**Rendering.** Parts are rectangles with a name compartment above an attribute compartment. Ports are small squares sitting on the border, labelled just outside the box. Assembly containment is a solid line with a filled diamond at the containing part. Cables, pipes and looms are plain solid lines drawn port to port, with no arrowhead — direction belongs to the ports, not to the line. A connection typed by an `interface def` carries the interface name as a label on the line.
+
+### Deployment view
+
+Which hardware runs which software. The only view whose content is a relation rather than a set of elements: its nodes are borrowed from Implementation and Physical, and the mapping is the whole subject — drawn as containment rather than as an edge.
+
+Narrower than realization — this is the sub-case where the realization happens to be software and therefore needs a host.
+
+**Rendering.** Hardware nodes are drawn as three-dimensional boxes — a rectangle with a shallow depth edge along its top and right. The software they host is drawn as plain rectangles nested inside them. Nesting replaces arrows entirely — there is no allocation edge to follow, and a node with nothing drawn inside it visibly hosts nothing. This is a deliberate change from today's allocation diagram, which separates the boxes and joins them with dashed arrows.
+
+### Process view
+
+How software modules interact at runtime, for one scenario. One scenario per diagram; structure belongs to the other views, and hardware dynamics are out of scope.
+
+**Rendering.** A sequence diagram. Each module is a rectangle across the top with a dashed vertical lifeline hanging beneath it, and a narrow activation bar drawn on the lifeline while the module is active. Messages are solid horizontal arrows with a filled arrowhead, ordered top to bottom and labelled with the message name and its payload. A message a module sends to itself loops back to the same lifeline.
+
+## Summary
+
+| View | Description | SysML v2 |
+| --- | --- | --- |
+| **Use case** | How the system is used, and by whom | `use case def`, `use case`, `actor`, `subject`, `include` |
+| **Logical** | What the system does, as a hierarchy of functions | `action def`, `action` |
+| **Implementation** | Static structure of the software | `package`, `import`, `part def`, `part` |
+| **Physical** | Structure of the physical product, as topology | `part def`, `part`, `port def`, `port`, `connect`, `interface def` |
+| **Deployment** | Which hardware runs which software | `part`, `allocate` |
+| **Process** | How software modules interact at runtime | `action def`, `part`, `message`, `then` |
+
+All six views are expressible in the grammar today: an action may contain
+nested actions, so a function tree parses as it stands. One gap remains outside
+the views themselves — `allocate` cannot name a function, because `ActionUsage`
+is absent from the `Feature` union in
+[grammar/sysml.langium](grammar/sysml.langium), so the realization relation
+from Logical to the two realization views cannot yet be written, and is drawn
+on no view.
+
+## References
+
+- Philippe Kruchten, "Architectural Blueprints — The 4+1 View Model of
+  Software Architecture", *IEEE Software* 12 (6), pp. 42–50, November 1995.
+  The origin of the four views plus scenarios that this document adapts.
+- [OMG Systems Modeling Language (SysML)](https://www.omg.org/spec/SysML/) —
+  the specification the grammar is written against.
+- [SysML v2 Release](https://github.com/Systems-Modeling/SysML-v2-Release) —
+  the public repository for the v2 language specification, textual notation
+  and pilot implementation.

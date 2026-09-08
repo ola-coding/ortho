@@ -1,7 +1,7 @@
 {
   "name": "ortho",
   "version": "0.1.0",
-  "description": "Orthographic projection for architecture: renders the five 4+1 architectural views as SVG from SysML v2 model files",
+  "description": "Orthographic projection for architecture: renders the six architectural views as SVG from SysML v2 model files",
   "private": true,
   "type": "module",
   "license": "MIT",

@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1168.792" height="215"
+     viewBox="0 0 1168.792 215" font-family="Arial, Helvetica, Segoe UI, sans-serif">
+  <title>Deployment view — Coffee Machine (generated from examples/coffee-machine/deployment.sysml)</title>
+  <defs>
+    <marker id="triangle" markerWidth="14" markerHeight="12" refX="12" refY="5"
+            orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L12,5 L0,10 z" fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+    </marker>
+    <marker id="diamond" markerWidth="18" markerHeight="12" refX="15" refY="5"
+            orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M1,5 L8,1 L15,5 L8,9 z" fill="#2b2b2b" stroke="#2b2b2b" />
+    </marker>
+    <marker id="openArrow" markerWidth="12" markerHeight="12" refX="10" refY="5"
+            orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1168.792" height="215" fill="white" />
+  <rect x="8" y="8" width="1152.792" height="199" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+  <path d="M8,8 L8,30 L209.865,30 L219.865,21 L219.865,8 Z"
+        fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
+  <text x="16" y="23" font-size="11" font-weight="600" fill="#1a1a1a">Deployment view — Coffee Machine</text>
+  <text x="1154.792" y="201" text-anchor="end" font-size="9" fill="#8a8a86">examples/coffee-machine/deployment.sysml</text>
+  
+    <g><polygon points="36,72 48,60 910.7919999999999,60 898.7919999999999,72"
+          fill="#f0f0e6" stroke="#2b2b2b" stroke-width="1.25" />
+      <polygon points="898.7919999999999,72 910.7919999999999,60 910.7919999999999,167 898.7919999999999,179"
+          fill="#f0f0e6" stroke="#2b2b2b" stroke-width="1.25" />
+      <rect x="36" y="72" width="862.7919999999999" height="107"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="467.39599999999996" y="92" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">controller : ControlBoard</text></g>
+    <g><rect x="336.03599999999994" y="117" width="162.048" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="417.05999999999995" y="130" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part&#187;</text>
+      <text x="417.05999999999995" y="143" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">recipes : RecipeEngine</text></g>
+    <g><rect x="538.084" y="117" width="155.352" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="615.76" y="130" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part&#187;</text>
+      <text x="615.76" y="143" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">brew : BrewController</text></g>
+    <g><rect x="56" y="117" width="240.036" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="176.018" y="130" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part&#187;</text>
+      <text x="176.018" y="143" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">temperature : TemperatureController</text></g>
+    <g><rect x="733.4359999999999" y="117" width="145.356" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="806.1139999999999" y="130" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part&#187;</text>
+      <text x="806.1139999999999" y="143" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">milk : MilkController</text></g>
+    <g><polygon points="960.7919999999999,72 972.7919999999999,60 1132.792,60 1120.792,72"
+          fill="#f0f0e6" stroke="#2b2b2b" stroke-width="1.25" />
+      <polygon points="1120.792,72 1132.792,60 1132.792,167 1120.792,179"
+          fill="#f0f0e6" stroke="#2b2b2b" stroke-width="1.25" />
+      <rect x="960.7919999999999" y="72" width="160" height="107"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1040.792" y="92" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">display : TouchDisplay</text></g>
+    <g><rect x="980.7919999999999" y="117" width="120" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1040.792" y="130" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part&#187;</text>
+      <text x="1040.792" y="143" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">uiApp : UiApp</text></g>
+  
+</svg>

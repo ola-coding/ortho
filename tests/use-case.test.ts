@@ -21,7 +21,7 @@ async function parseOk(text: string) {
 }
 
 async function parseExample(): Promise<Model> {
-    const text = await readFile(resolve(dirname(fileURLToPath(import.meta.url)), 'fixtures/phase2-usecases.sysml'), 'utf-8');
+    const text = await readFile(resolve(dirname(fileURLToPath(import.meta.url)), 'fixtures/use-case.sysml'), 'utf-8');
     return (await parseOk(text)).parseResult.value;
 }
 

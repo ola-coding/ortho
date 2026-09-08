@@ -1,5 +1,5 @@
 import type { LaidOutDiagram, LaidOutEdge, LaidOutNode } from '../layout/elk-layout.js';
-import { PORT_SIZE } from '../layout/elk-layout.js';
+import { NODE_DEPTH, PORT_SIZE } from '../layout/elk-layout.js';
 import { measureText } from './text-metrics.js';
 
 export const PAD_X = 24;
@@ -51,8 +51,43 @@ function renderNode(n: LaidOutNode): string {
         case 'actor': return renderActorNode(n);
         case 'boundary': return renderBoundaryNode(n);
         case 'package': return renderPackageNode(n);
+        case 'rounded': return renderRoundedNode(n);
+        case 'node3d': return renderNode3dNode(n);
         case 'box': return renderBoxNode(n);
     }
+}
+
+/** Logical view: one function, drawn as a leaf of the capability tree. */
+function renderRoundedNode(n: LaidOutNode): string {
+    const x = n.x + PAD_X;
+    const y = n.y + PAD_TOP;
+    return `
+    <g><rect x="${x}" y="${y}" width="${n.width}" height="${n.height}" rx="11" ry="11"
+          fill="${FILL}" stroke="${STROKE}" stroke-width="1.25" />
+      <text x="${x + n.width / 2}" y="${y + n.height / 2 + 4}" text-anchor="middle"
+          font-size="12" fill="${TEXT_COLOR}">${escapeXml(n.name)}</text></g>`;
+}
+
+/**
+ * Deployment view: a hardware host. The depth edge is drawn *inside* the node's
+ * box, so the front face is inset by NODE_DEPTH at the top and right and the
+ * whole solid still fits the bounds ELK allocated.
+ */
+function renderNode3dNode(n: LaidOutNode): string {
+    const x = n.x + PAD_X;
+    const y = n.y + PAD_TOP;
+    const w = n.width;
+    const h = n.height;
+    const d = NODE_DEPTH;
+    return `
+    <g><polygon points="${x},${y + d} ${x + d},${y} ${x + w},${y} ${x + w - d},${y + d}"
+          fill="#f0f0e6" stroke="${STROKE}" stroke-width="1.25" />
+      <polygon points="${x + w - d},${y + d} ${x + w},${y} ${x + w},${y + h - d} ${x + w - d},${y + h}"
+          fill="#f0f0e6" stroke="${STROKE}" stroke-width="1.25" />
+      <rect x="${x}" y="${y + d}" width="${w - d}" height="${h - d}"
+          fill="${FILL}" stroke="${STROKE}" stroke-width="1.25" />
+      <text x="${x + (w - d) / 2}" y="${y + d + 20}" text-anchor="middle"
+          font-size="12" font-weight="600" fill="${TEXT_COLOR}">${escapeXml(n.name)}</text></g>`;
 }
 
 function renderEllipseNode(n: LaidOutNode): string {
@@ -116,10 +151,17 @@ function renderBoxNode(n: LaidOutNode): string {
     parts.push(`<rect x="${x}" y="${y}" width="${n.width}" height="${n.height}"
           fill="${FILL}" stroke="${STROKE}" stroke-width="1.25" />`);
 
-    parts.push(`<text x="${x + n.width / 2}" y="${y + 13}" text-anchor="middle"
+    // An unstereotyped box (an Implementation-view module, a deployed software
+    // part) centres its name in the header instead of leaving an empty «».
+    if (n.stereotype) {
+        parts.push(`<text x="${x + n.width / 2}" y="${y + 13}" text-anchor="middle"
           font-size="9" fill="${STEREOTYPE_COLOR}">&#171;${escapeXml(n.stereotype)}&#187;</text>`);
-    parts.push(`<text x="${x + n.width / 2}" y="${y + 26}" text-anchor="middle"
+        parts.push(`<text x="${x + n.width / 2}" y="${y + 26}" text-anchor="middle"
           font-size="12" font-weight="600" fill="${TEXT_COLOR}">${escapeXml(n.name)}</text>`);
+    } else {
+        parts.push(`<text x="${x + n.width / 2}" y="${y + 21}" text-anchor="middle"
+          font-size="12" font-weight="600" fill="${TEXT_COLOR}">${escapeXml(n.name)}</text>`);
+    }
 
     let compartmentTop = y + HEADER_HEIGHT;
     for (const compartment of n.compartments) {
@@ -253,6 +295,9 @@ function renderEdge(e: LaidOutEdge, nodeById: Map<string, LaidOutNode>): string 
             break;
         case 'connection':
         case 'association':
+        // Capability-tree branches: a plain line, no arrowhead. Direction is
+        // carried by the layout (parents above children), not by a marker.
+        case 'decomposition':
             break;
     }
     let svg = `\n    <polyline points="${pointsAttr}" fill="none" stroke="${STROKE}" stroke-width="1.25"${dash}${markers} />`;

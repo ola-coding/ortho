@@ -1,11 +1,8 @@
-import type { AstNode } from 'langium';
 import {
-    isAttributeUsage, isConnectionUsage, isInterfaceDef, isPackageDecl, isPartDef, isPartUsage,
-    isPortUsage, isRequirementDef, isRequirementUsage, isSatisfyUsage, isSubjectUsage
+    isAttributeUsage, isConnectionUsage, isPackageDecl, isPartDef, isPartUsage, isPortUsage
 } from '../generated/ast.js';
 import type {
-    AttributeUsage, ConnectionUsage, ConnectorEnd, InterfaceDef, Model, Multiplicity,
-    PartDef, PartUsage, RequirementDef, RequirementUsage, SatisfyUsage
+    AttributeUsage, ConnectionUsage, ConnectorEnd, Model, Multiplicity, PartDef, PartUsage
 } from '../generated/ast.js';
 import type { DiagramGraph, GraphEdge, GraphNode, GraphPort } from '../model/graph.js';
 import { qualifiedName } from '../model/graph.js';
@@ -92,47 +89,6 @@ function partDefNode(def: PartDef): GraphNode {
     });
 }
 
-function interfaceDefNode(def: InterfaceDef): GraphNode {
-    const ends = def.ends.map(e => `end ${e.name} : ${e.type.ref?.name ?? e.type.$refText}`);
-    return makeNode({
-        id: qualifiedName(def),
-        stereotype: 'interface def',
-        name: def.name,
-        compartments: [{ lines: def.members.map(attributeLine) }, { lines: ends }],
-        ports: []
-    });
-}
-
-function requirementDefNode(def: RequirementDef): GraphNode {
-    const lines: string[] = [];
-    for (const member of def.members) {
-        if (isAttributeUsage(member)) {
-            lines.push(attributeLine(member));
-        } else if (isSubjectUsage(member)) {
-            lines.push(`subject ${member.name}${member.type ? ` : ${member.type.ref?.name ?? member.type.$refText}` : ''}`);
-        }
-    }
-    return makeNode({
-        id: qualifiedName(def),
-        stereotype: 'requirement def',
-        name: def.name,
-        compartments: [{ lines }],
-        ports: []
-    });
-}
-
-function requirementUsageNode(usage: RequirementUsage): GraphNode {
-    const lines = usage.members.filter(isAttributeUsage).map(attributeLine);
-    const type = usage.type ? ` : ${usage.type.ref?.name ?? usage.type.$refText}` : '';
-    return makeNode({
-        id: qualifiedName(usage),
-        stereotype: 'requirement',
-        name: `${usage.name}${type}`,
-        compartments: [{ lines }],
-        ports: []
-    });
-}
-
 function partUsageNode(usage: PartUsage): GraphNode {
     const id = qualifiedName(usage);
     const type = usage.type ? ` : ${usage.type.ref?.name ?? usage.type.$refText}` : '';
@@ -157,7 +113,7 @@ interface EdgeAnchor {
 }
 
 /**
- * Maps a connector end (`battery.powerOut`) to a diagram anchor. Part usages
+ * Maps a connector end (`tank.waterOut`) to a diagram anchor. Part usages
  * anchor to their type's definition node (or to their own node when they are
  * package-level usages); ports anchor to the port marker on that node.
  */
@@ -199,41 +155,31 @@ function endAnchor(end: ConnectorEnd, nodePorts: Map<string, Set<string>>): Edge
 }
 
 /**
- * Port defs are deliberately not rendered. No edge kind here can terminate on
- * one — composition, connection, specialization and satisfy all anchor to part
- * or requirement nodes — so a port def could only ever appear as a disconnected
- * box. The topology it would document is already carried by the port markers on
- * each part, and drawing a typing edge from every port usage to its def would
- * bury the diagram. Interface contracts and their attributes belong on a
- * dedicated interface view instead.
+ * The Physical view is topology: the parts of the product, the ports on them,
+ * and what is connected, mounted or wired to what.
+ *
+ * Port defs are not rendered — no edge kind here can terminate on one, so they
+ * could only ever be disconnected boxes, and the topology they document is
+ * already carried by the port markers on each part. Interface defs are not
+ * rendered either: an interface names the contract a connection satisfies, so
+ * it belongs on the connection's label rather than in a box of its own.
  */
-export function extractPartDefinitionGraph(model: Model): DiagramGraph {
+export function extractPhysicalGraph(model: Model): DiagramGraph {
     const nodes: GraphNode[] = [];
     const edges: GraphEdge[] = [];
     const connections: ConnectionUsage[] = [];
-    const satisfies: SatisfyUsage[] = [];
     let edgeCounter = 0;
 
     const partDefs: PartDef[] = [];
-    const requirementUsages: RequirementUsage[] = [];
     for (const pkg of collectPackages(model)) {
         for (const member of pkg.members) {
             if (isPartDef(member)) {
                 partDefs.push(member);
                 nodes.push(partDefNode(member));
-            } else if (isInterfaceDef(member)) {
-                nodes.push(interfaceDefNode(member));
-            } else if (isRequirementDef(member)) {
-                nodes.push(requirementDefNode(member));
-            } else if (isRequirementUsage(member)) {
-                requirementUsages.push(member);
-                nodes.push(requirementUsageNode(member));
             } else if (isPartUsage(member)) {
                 nodes.push(partUsageNode(member));
             } else if (isConnectionUsage(member)) {
                 connections.push(member);
-            } else if (isSatisfyUsage(member)) {
-                satisfies.push(member);
             }
         }
     }
@@ -243,8 +189,8 @@ export function extractPartDefinitionGraph(model: Model): DiagramGraph {
 
     for (const def of partDefs) {
         const defId = qualifiedName(def);
-        // Specializations: laid out super → sub so generalizations point upward;
-        // the renderer draws the triangle at the layout-source (super) end.
+        // Specializations are laid out super → sub so generalizations point
+        // upward; the renderer draws the triangle at the layout-source end.
         for (const supertype of def.supertypes) {
             if (supertype.ref) {
                 const superId = qualifiedName(supertype.ref);
@@ -272,8 +218,6 @@ export function extractPartDefinitionGraph(model: Model): DiagramGraph {
                 }
             } else if (isConnectionUsage(member)) {
                 connections.push(member);
-            } else if (isSatisfyUsage(member)) {
-                satisfies.push(member);
             }
         }
     }
@@ -289,47 +233,9 @@ export function extractPartDefinitionGraph(model: Model): DiagramGraph {
                 targetId: target.nodeId,
                 sourcePortId: source.portId,
                 targetPortId: target.portId,
+                // A typed connection carries its interface name on the line.
                 label: connection.type?.ref?.name ?? connection.name
             });
-        }
-    }
-
-    // A requirement usage is typed by the def that carries the actual values, and
-    // `satisfy` links to the usage. Without this edge the def — the box holding
-    // the number the design has to meet — would sit on the diagram unconnected.
-    for (const usage of requirementUsages) {
-        const def = usage.type?.ref;
-        if (!def) {
-            continue;
-        }
-        const usageId = qualifiedName(usage);
-        const defId = qualifiedName(def);
-        if (nodeIds.has(usageId) && nodeIds.has(defId)) {
-            edges.push({
-                id: `e${edgeCounter++}`,
-                kind: 'typing',
-                sourceId: usageId,
-                targetId: defId,
-                label: 'typed by'
-            });
-        }
-    }
-
-    for (const satisfy of satisfies) {
-        const satisfier = satisfy.satisfier.ref;
-        const requirement = satisfy.requirement.ref;
-        if (satisfier && requirement) {
-            const sourceId = qualifiedName(satisfier);
-            const targetId = qualifiedName(requirement);
-            if (nodeIds.has(sourceId) && nodeIds.has(targetId)) {
-                edges.push({
-                    id: `e${edgeCounter++}`,
-                    kind: 'satisfy',
-                    sourceId,
-                    targetId,
-                    label: 'satisfy'
-                });
-            }
         }
     }
 

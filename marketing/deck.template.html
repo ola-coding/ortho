@@ -332,7 +332,6 @@
 <div class="progress" id="progress"></div>
 
 <div class="deck" id="deck">
-
   <!-- 01 ------------------------------------------------------------- -->
   <section class="sheet is-active">
     <div class="frame">
@@ -341,11 +340,11 @@
         <p class="eyebrow">SysML v2 → SVG · everything as code</p>
         <h1>Diagrams that <span class="accent">can't</span> go stale</h1>
         <p class="lede">
-          <strong>ortho</strong> renders the five architecture views of the 4+1 model straight from
-          SysML v2 text. No drawing tool, no cloud service, no model repository — a model file,
+          <strong>ortho</strong> renders six architecture views straight from SysML v2 text.
+          No drawing tool, no cloud service, no model repository — a model file,
           one command, and an SVG you commit next to the code.
         </p>
-        <div class="command">npx ortho render models -d part-definition <span class="flag">-o</span> diagrams/logical-view.svg</div>
+        <div class="command">npx ortho render models/logical.sysml <span class="flag">-d</span> logical <span class="flag">-o</span> diagrams/logical-view.svg</div>
       </div>
       <div class="titleblock">
         <span>Project · ortho</span><span>Reference models · AUV system + coffee machine</span>
@@ -379,10 +378,10 @@
     <div class="frame">
       <div class="tag">The approach</div>
       <div class="stack">
-        <h2>One model. Five views. One command.</h2>
+        <h2>One file per view. Six views. One command each.</h2>
         <div class="cols two">
           <ul class="points">
-            <li><span><strong>The text is the source of truth.</strong> Components, ports, requirements and scenarios are written in SysML v2 — the OMG standard notation, not an invented DSL.</span></li>
+            <li><span><strong>The text is the source of truth.</strong> Functions, components, ports and scenarios are written in SysML v2 — the OMG standard notation, not an invented DSL.</span></li>
             <li><span><strong>Diagrams are build artifacts.</strong> Regenerate them like you compile code; never edit an SVG by hand.</span></li>
             <li><span><strong>CI keeps them honest.</strong> Re-render in the pipeline and fail on a dirty git diff — a stale diagram becomes a broken build.</span></li>
           </ul>
@@ -396,7 +395,7 @@
               <div class="command">npm run diagrams
 git diff --exit-code diagrams/</div>
             </div>
-            <p style="color:var(--ink-soft)">The five SVGs on the following sheets were produced by exactly this command from the model files quoted beside them. Nothing was touched by hand.</p>
+            <p style="color:var(--ink-soft)">Each view is written in its own model file and rendered from it, so scoping is something you can see in the file tree. The six SVGs on the following sheets came out of exactly this command. Nothing was touched by hand.</p>
           </div>
         </div>
       </div>
@@ -445,27 +444,28 @@ git diff --exit-code diagrams/</div>
   <!-- 05 ------------------------------------------------------------- -->
   <section class="sheet">
     <div class="frame">
-      <div class="tag">4+1 map</div>
+      <div class="tag">View map</div>
       <div class="stack">
-        <h2>Five views, each answering one question</h2>
+        <h2>Six views, each answering one question</h2>
         <div class="table-wrap">
           <table>
             <thead>
               <tr><th>View</th><th>Answers</th><th>Rendered as</th><th>CLI</th></tr>
             </thead>
             <tbody>
-              <tr><td class="view">Logical</td><td>What are the building blocks, and how are they wired?</td><td>Part definition diagram</td><td class="cmd">part-definition</td></tr>
-              <tr><td class="view">Scenarios</td><td>What does someone actually do with the system?</td><td>Use case diagram</td><td class="cmd">use-case</td></tr>
-              <tr><td class="view">Process</td><td>What talks to what, in which order, at run time?</td><td>Sequence diagram</td><td class="cmd">sequence</td></tr>
-              <tr><td class="view">Development</td><td>How is the model itself organised?</td><td>Package diagram</td><td class="cmd">package</td></tr>
-              <tr><td class="view">Physical</td><td>Which software runs on which hardware?</td><td>Allocation diagram</td><td class="cmd">allocation</td></tr>
+              <tr><td class="view">Use case</td><td>What does someone actually do with the system?</td><td>Use case diagram</td><td class="cmd">use-case</td></tr>
+              <tr><td class="view">Logical</td><td>What does the system do, whatever performs it?</td><td>Capability tree</td><td class="cmd">logical</td></tr>
+              <tr><td class="view">Implementation</td><td>How is the software structured?</td><td>Package diagram</td><td class="cmd">implementation</td></tr>
+              <tr><td class="view">Physical</td><td>What is the product made of, and what connects to what?</td><td>Part diagram</td><td class="cmd">physical</td></tr>
+              <tr><td class="view">Deployment</td><td>Which hardware runs which software?</td><td>Nested node diagram</td><td class="cmd">deployment</td></tr>
+              <tr><td class="view">Process</td><td>What talks to what, in which order, at run time?</td><td>Sequence diagram</td><td class="cmd">process</td></tr>
             </tbody>
           </table>
         </div>
-        <p style="color:var(--ink-soft)">Every diagram is headed by its view name and the package it came from, and signed in the corner with the file that generated it.</p>
+        <p style="color:var(--ink-soft)">Kruchten's 4+1, with his Physical view split in two: a mechatronic product needs that name for the product itself, so the software-onto-nodes mapping takes the name it is usually given anyway. Every diagram is headed by its view name and the package it came from, and signed in the corner with the file that generated it.</p>
       </div>
       <div class="titleblock">
-        <span>Project · ortho</span><span>Kruchten 4+1 mapping</span>
+        <span>Project · ortho</span><span>Kruchten 4+1, Physical split in two</span>
         <span class="sheet-no"></span>
       </div>
     </div>
@@ -474,36 +474,81 @@ git diff --exit-code diagrams/</div>
   <!-- 06 ------------------------------------------------------------- -->
   <section class="sheet">
     <div class="frame">
-      <div class="tag">Logical view</div>
+      <div class="tag">Use case view</div>
       <div class="stack">
-        <h2>The system, as written</h2>
+        <h2>What the pilot asks for</h2>
         <div class="cols narrow-left">
           <div class="code-mount">
-            <div class="filename">examples/auv-system/system.sysml</div>
+            <div class="filename">examples/auv-system/use-case.sysml</div>
 <pre class="code">
-part def AuvSystem {
-    part aircraft : Aircraft;
-    part controller : RadioController;
-    part batteries : FlightBattery [1..3];
-    part charger : BatteryCharger;
+part def Pilot;
+part def TrackedPerson;
 
-    connect batteries.powerOut to aircraft.batteryBay;
-    connect batteries.powerOut to charger.chargePort;
-    connect aircraft.rfLink to controller.rfLink;
+use case def OperateDrone {
+    subject AuvSystem;
+    actor pilot : Pilot;
 }
 
-part def Aircraft {
-    attribute takeoffWeight_g : Real = 249;
-    port batteryBay : PowerPort;
+use case launchAircraft : OperateDrone;
+use case selectTarget : OperateDrone;
+use case avoidObstacles : OperateDrone;
 
-    part fc : FlightController;
-    part vision : VisionSensor [4];
-    part props : FoldingPropeller [4];
-
-    connect fc.escOut to escs.ctrlIn;
+use case followPerson : OperateDrone {
+    actor person : TrackedPerson;
+    include use case selectTarget;
+    include use case avoidObstacles;
 }
+</pre>
+          </div>
+          <div class="figure">
+            <div class="figure-head">
+              <h3 style="margin:0">Generated · use-case-view.svg</h3>
+              <button type="button" data-zoom>Zoom</button>
+            </div>
+            <div class="figure-mount">
+              <div class="figure-svg" data-svg="auv/use-case-view.svg"></div>
+            </div>
+            <p class="figure-caption">5 use cases · 2 actors · {{DIM:auv/use-case-view.svg}} — the boundary is inferred from each use case's subject, and actors are de-duplicated by type. The subject is untyped on purpose: naming an airframe part here would be realization detail.</p>
+          </div>
+        </div>
+      </div>
+      <div class="titleblock">
+        <span>Project · ortho</span><span>Use case view · what the pilot does</span>
+        <span class="sheet-no"></span>
+      </div>
+    </div>
+  </section>
 
-satisfy Requirements::weightReq by Aircraft;
+  <!-- 07 ------------------------------------------------------------- -->
+  <section class="sheet">
+    <div class="frame">
+      <div class="tag">Logical view</div>
+      <div class="stack">
+        <h2>What the system does, whatever ends up doing it</h2>
+        <div class="cols narrow-left">
+          <div class="code-mount">
+            <div class="filename">examples/auv-system/logical.sysml</div>
+<pre class="code">
+action def OperateAircraft {
+
+    action fly {
+        action generateThrust;
+        action stabiliseAttitude;
+        action holdPosition;
+    }
+
+    action senseEnvironment {
+        action measureAttitude;
+        action detectObstacles;
+    }
+
+    // Control functions: the migratory ones.
+    action commandAircraft {
+        action selectTarget;
+        action trackTarget;
+        action avoidObstacle;
+    }
+}
 </pre>
           </div>
           <div class="figure">
@@ -514,61 +559,12 @@ satisfy Requirements::weightReq by Aircraft;
             <div class="figure-mount">
               <div class="figure-svg" data-svg="auv/logical-view.svg"></div>
             </div>
-            <p class="figure-caption">45 nodes · 62 edges · {{DIM:auv/logical-view.svg}} — composition diamonds, port squares, and dashed satisfy traces, laid out automatically.</p>
+            <p class="figure-caption">27 functions · {{DIM:auv/logical-view.svg}} — a strict tree: one parent each, no arrowheads, and no gimbal, transceiver or program named anywhere. Attitude stabilisation was mechanical gyros within living memory; this view survives that change, and the two below it do not.</p>
           </div>
         </div>
       </div>
       <div class="titleblock">
-        <span>Project · ortho</span><span>Logical view · aircraft, controller, batteries, charger</span>
-        <span class="sheet-no"></span>
-      </div>
-    </div>
-  </section>
-
-  <!-- 07 ------------------------------------------------------------- -->
-  <section class="sheet">
-    <div class="frame">
-      <div class="tag">Scenarios</div>
-      <div class="stack">
-        <h2>Following a person, with obstacle avoidance</h2>
-        <div class="cols narrow-left">
-          <div class="code-mount">
-            <div class="filename">examples/auv-system/use-cases.sysml</div>
-<pre class="code">
-part def Pilot;
-part def TrackedPerson;
-
-use case def OperateDrone {
-    subject system : System::AuvSystem;
-    actor pilot : Pilot;
-}
-
-use case followPerson : OperateDrone {
-    actor person : TrackedPerson;
-    include use case selectTarget;
-    include use case avoidObstacles;
-}
-
-use case launchAircraft {
-    subject system : System::AuvSystem;
-    actor pilot : Pilot;
-}
-</pre>
-          </div>
-          <div class="figure">
-            <div class="figure-head">
-              <h3 style="margin:0">Generated · scenarios-view.svg</h3>
-              <button type="button" data-zoom>Zoom</button>
-            </div>
-            <div class="figure-mount">
-              <div class="figure-svg" data-svg="auv/scenarios-view.svg"></div>
-            </div>
-            <p class="figure-caption">{{DIM:auv/scenarios-view.svg}} — the system boundary is inferred from each use case's subject; actors are de-duplicated by type.</p>
-          </div>
-        </div>
-      </div>
-      <div class="titleblock">
-        <span>Project · ortho</span><span>Scenarios · what the pilot does</span>
+        <span>Project · ortho</span><span>Logical view · the capability tree</span>
         <span class="sheet-no"></span>
       </div>
     </div>
@@ -577,18 +573,173 @@ use case launchAircraft {
   <!-- 08 ------------------------------------------------------------- -->
   <section class="sheet">
     <div class="frame">
+      <div class="tag">Implementation view</div>
+      <div class="stack">
+        <h2>How the software is structured</h2>
+        <div class="cols narrow-left">
+          <div class="code-mount">
+            <div class="filename">examples/auv-system/implementation.sysml</div>
+<pre class="code">
+package Software {
+
+    package Flight {
+        part def FlightControlStack;
+        part def NavigationEngine;
+    }
+
+    package Perception {
+        part def PerceptionPipeline;
+        part def TargetTrackingEngine;
+    }
+
+    package Ground {
+        import Software::Flight;
+        import Software::Perception;
+
+        part def PilotApp;
+    }
+}
+</pre>
+          </div>
+          <div class="figure">
+            <div class="figure-head">
+              <h3 style="margin:0">Generated · implementation-view.svg</h3>
+              <button type="button" data-zoom>Zoom</button>
+            </div>
+            <div class="figure-mount">
+              <div class="figure-svg" data-svg="auv/implementation-view.svg"></div>
+            </div>
+            <p class="figure-caption">5 packages · 3 imports · {{DIM:auv/implementation-view.svg}} — modules are drawn inside the package that declares them, and dependency direction is read from the import statements themselves. The ground app depends on the airborne packages; nothing depends back.</p>
+          </div>
+        </div>
+      </div>
+      <div class="titleblock">
+        <span>Project · ortho</span><span>Implementation view · software structure</span>
+        <span class="sheet-no"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 09 ------------------------------------------------------------- -->
+  <section class="sheet">
+    <div class="frame">
+      <div class="tag">Physical view</div>
+      <div class="stack">
+        <h2>The product, as written</h2>
+        <div class="cols narrow-left">
+          <div class="code-mount">
+            <div class="filename">examples/auv-system/physical.sysml</div>
+<pre class="code">
+interface def RadioLink {
+    end air : RfPort;
+    end ground : RfPort;
+}
+
+part def Aircraft {
+    attribute takeoffWeight_g : Real = 249;
+    port batteryBay : PowerPort;
+
+    part fc : SocFlightController;
+    part vision : StereoVisionSensor [4];
+    part props : FoldingPropeller [4];
+
+    connect fc.escOut to escs.ctrlIn;
+}
+
+part def AuvSystem {
+    part aircraft : Aircraft;
+    part controller : RadioController;
+
+    connection : RadioLink
+        connect aircraft.rfLink to controller.rfLink;
+}
+</pre>
+          </div>
+          <div class="figure">
+            <div class="figure-head">
+              <h3 style="margin:0">Generated · physical-view.svg</h3>
+              <button type="button" data-zoom>Zoom</button>
+            </div>
+            <div class="figure-mount">
+              <div class="figure-svg" data-svg="auv/physical-view.svg"></div>
+            </div>
+            <p class="figure-caption">19 parts · 37 edges · {{DIM:auv/physical-view.svg}} — composition diamonds, port squares and cabling, laid out automatically. Topology, never geometry: what connects and mounts to what, never where it sits.</p>
+          </div>
+        </div>
+      </div>
+      <div class="titleblock">
+        <span>Project · ortho</span><span>Physical view · airframe, radio, ground kit</span>
+        <span class="sheet-no"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 ------------------------------------------------------------- -->
+  <section class="sheet">
+    <div class="frame">
+      <div class="tag">Deployment view</div>
+      <div class="stack">
+        <h2>Which hardware runs which software</h2>
+        <div class="cols narrow-left">
+          <div class="code-mount">
+            <div class="filename">examples/auv-system/deployment.sysml</div>
+<pre class="code">
+// This file declares nothing of its own. Its whole
+// content is the mapping between the other two.
+package Deployment {
+
+    import Software::*;
+    import Hardware::*;
+
+    allocate Software::sw.flightControl
+        to Hardware::Aircraft::fc;
+    allocate Software::sw.perception
+        to Hardware::Aircraft::fc;
+    allocate Software::sw.cameraCtrl
+        to Hardware::Aircraft::camera;
+    allocate Software::sw.telemetry
+        to Hardware::Aircraft::radio;
+    allocate Software::sw.pilotApp
+        to Hardware::AuvSystem::controller;
+}
+</pre>
+          </div>
+          <div class="figure">
+            <div class="figure-head">
+              <h3 style="margin:0">Generated · deployment-view.svg</h3>
+              <button type="button" data-zoom>Zoom</button>
+            </div>
+            <div class="figure-mount">
+              <div class="figure-svg" data-svg="auv/deployment-view.svg"></div>
+            </div>
+            <p class="figure-caption">7 programs · 4 hosts · zero edges · {{DIM:auv/deployment-view.svg}} — the allocation is drawn as containment, not as arrows. A node with nothing inside it visibly hosts nothing, which is the fact the view exists to show.</p>
+          </div>
+        </div>
+      </div>
+      <div class="titleblock">
+        <span>Project · ortho</span><span>Deployment view · software onto hardware</span>
+        <span class="sheet-no"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 ------------------------------------------------------------- -->
+  <section class="sheet">
+    <div class="frame">
       <div class="tag">Process view</div>
       <div class="stack">
         <h2>Launch, tap a person, fly itself</h2>
         <div class="cols narrow-left">
           <div class="code-mount">
-            <div class="filename">examples/auv-system/scenario-follow-person.sysml</div>
+            <div class="filename">examples/auv-system/process.sysml</div>
 <pre class="code">
 action def FollowPerson {
     part pilot;
-    part rcApp : Software::PilotApp;
-    part targetTracking : Software::TargetTrackingEngine;
-    part perception : Software::PerceptionPipeline;
+    part rcApp : Software::Ground::PilotApp;
+    part targetTracking
+        : Software::Perception::TargetTrackingEngine;
+    part perception
+        : Software::Perception::PerceptionPipeline;
 
     message launch from pilot to rcApp;
     then message takeOff from rcApp to flightControl;
@@ -606,13 +757,13 @@ action def FollowPerson {
           </div>
           <div class="figure">
             <div class="figure-head">
-              <h3 style="margin:0">Generated · process-view-follow-person.svg</h3>
+              <h3 style="margin:0">Generated · process-view.svg</h3>
               <button type="button" data-zoom>Zoom</button>
             </div>
             <div class="figure-mount">
-              <div class="figure-svg" data-svg="auv/process-view-follow-person.svg"></div>
+              <div class="figure-svg" data-svg="auv/process-view.svg"></div>
             </div>
-            <p class="figure-caption">6 lifelines · 9 messages · {{DIM:auv/process-view-follow-person.svg}} — lifeline order, activation bars and the self-message loop are all derived from the text.</p>
+            <p class="figure-caption">6 lifelines · 9 messages · {{DIM:auv/process-view.svg}} — lifeline order, activation bars and the self-message loop are all derived from the text.</p>
           </div>
         </div>
       </div>
@@ -623,103 +774,7 @@ action def FollowPerson {
     </div>
   </section>
 
-  <!-- 09 ------------------------------------------------------------- -->
-  <section class="sheet">
-    <div class="frame">
-      <div class="tag">Physical view</div>
-      <div class="stack">
-        <h2>Which software runs where</h2>
-        <div class="cols narrow-left">
-          <div class="code-mount">
-            <div class="filename">examples/auv-system/software.sysml</div>
-<pre class="code">
-part sw {
-    part flightControl : FlightControlStack;
-    part targetTracking : TargetTrackingEngine;
-    part perception : PerceptionPipeline;
-    part cameraCtrl : CameraController;
-    part pilotApp : PilotApp;
-}
-
-// Which processor or module runs each component.
-allocate sw.flightControl to System::Aircraft::fc;
-allocate sw.targetTracking to System::Aircraft::fc;
-allocate sw.perception to System::Aircraft::fc;
-allocate sw.cameraCtrl to System::Aircraft::camera;
-allocate sw.telemetry to System::Aircraft::radio;
-allocate sw.pilotApp to System::AuvSystem::controller;
-</pre>
-          </div>
-          <div class="figure">
-            <div class="figure-head">
-              <h3 style="margin:0">Generated · physical-view.svg</h3>
-              <button type="button" data-zoom>Zoom</button>
-            </div>
-            <div class="figure-mount">
-              <div class="figure-svg" data-svg="auv/physical-view.svg"></div>
-            </div>
-            <p class="figure-caption">7 allocations · {{DIM:auv/physical-view.svg}} — only the parts that take part in an allocation are drawn, so the deployment decision is the whole picture.</p>
-          </div>
-        </div>
-      </div>
-      <div class="titleblock">
-        <span>Project · ortho</span><span>Physical view · software deployment</span>
-        <span class="sheet-no"></span>
-      </div>
-    </div>
-  </section>
-
-  <!-- 10 ------------------------------------------------------------- -->
-  <section class="sheet">
-    <div class="frame">
-      <div class="tag">Development view</div>
-      <div class="stack">
-        <h2>The model's own structure</h2>
-        <div class="cols narrow-left">
-          <div class="code-mount">
-            <div class="filename">Imports across the model files</div>
-<pre class="code">
-// system.sysml - the architecture
-package System {
-    import Requirements::*;
-}
-
-// mechanics.sysml, electronics.sysml - the domains
-package Mechanics {
-    import System::*;
-}
-
-// software.sysml - architecture + deployment
-package Software {
-    import System::*;
-    import Requirements::*;
-}
-</pre>
-            <p style="margin-top:1rem;color:var(--ink-soft)">
-              Files are linked as one workspace, so a reference like
-              <code class="inline">System::Aircraft::fc</code> resolves across them.
-            </p>
-          </div>
-          <div class="figure">
-            <div class="figure-head">
-              <h3 style="margin:0">Generated · development-view.svg</h3>
-              <button type="button" data-zoom>Zoom</button>
-            </div>
-            <div class="figure-mount">
-              <div class="figure-svg" data-svg="auv/development-view.svg"></div>
-            </div>
-            <p class="figure-caption">5 packages · 6 imports · {{DIM:auv/development-view.svg}} — dependency direction is read from the import statements themselves.</p>
-          </div>
-        </div>
-      </div>
-      <div class="titleblock">
-        <span>Project · ortho</span><span>Development view · package dependencies</span>
-        <span class="sheet-no"></span>
-      </div>
-    </div>
-  </section>
-
-  <!-- 11 ------------------------------------------------------------- -->
+  <!-- 12 ------------------------------------------------------------- -->
   <section class="sheet">
     <div class="frame">
       <div class="tag">Second example</div>
@@ -729,8 +784,8 @@ package Software {
           <div class="stack">
             <p>
               Nothing in <strong>ortho</strong> knows about aircraft. Point it at a bean-to-cup
-              coffee machine and the same five views come out — subsystems and ports, requirement
-              traces, the tasks a user performs, and the sequence behind a single button press.
+              coffee machine and the same six views come out — what the machine does, what it is
+              made of, what runs where, and the sequence behind a single button press.
             </p>
             <p style="color:var(--ink-soft)">
               Both models ship with the tool, and they bracket the range on purpose: the coffee
@@ -740,24 +795,24 @@ package Software {
             <div class="table-wrap">
               <table>
                 <thead>
-                  <tr><th>Model</th><th>Logical view</th><th>Scenario</th></tr>
+                  <tr><th>Model</th><th>Logical</th><th>Physical</th><th>Process</th></tr>
                 </thead>
                 <tbody>
-                  <tr><td class="view">AUV system</td><td>45 nodes · 62 edges</td><td>6 lifelines · 9 messages</td></tr>
-                  <tr><td class="view">Coffee machine</td><td>29 nodes · 48 edges</td><td>6 lifelines · 8 messages</td></tr>
+                  <tr><td class="view">AUV system</td><td>27 functions</td><td>19 parts · 37 edges</td><td>6 lifelines · 9 messages</td></tr>
+                  <tr><td class="view">Coffee machine</td><td>19 functions</td><td>11 parts · 23 edges</td><td>6 lifelines · 9 messages</td></tr>
                 </tbody>
               </table>
             </div>
           </div>
           <div class="figure">
             <div class="figure-head">
-              <h3 style="margin:0">Generated · coffee machine scenarios</h3>
+              <h3 style="margin:0">Generated · coffee machine, logical view</h3>
               <button type="button" data-zoom>Zoom</button>
             </div>
             <div class="figure-mount">
-              <div class="figure-svg" data-svg="coffee/scenarios-view.svg"></div>
+              <div class="figure-svg" data-svg="coffee/logical-view.svg"></div>
             </div>
-            <p class="figure-caption">{{DIM:coffee/scenarios-view.svg}} — three beverages under one boundary; a cappuccino brews a shot first, so it includes the espresso use case.</p>
+            <p class="figure-caption">19 functions · {{DIM:coffee/logical-view.svg}} — heat, grind, extract, froth, and the control functions beside them. Dosing has been a cam and is now firmware; the tree did not change when it moved.</p>
           </div>
         </div>
       </div>
@@ -768,7 +823,7 @@ package Software {
     </div>
   </section>
 
-  <!-- 12 ------------------------------------------------------------- -->
+  <!-- 13 ------------------------------------------------------------- -->
   <section class="sheet">
     <div class="frame">
       <div class="tag">Self-contained</div>
@@ -782,7 +837,7 @@ package Software {
           </ul>
           <ul class="points">
             <li><span><strong>Installs as a dev dependency.</strong> It lives in <code class="inline">node_modules</code> and writes only where you point it — the tool's own sources never mix with yours.</span></li>
-            <li><span><strong>28 tests</strong> cover the grammar, every view extractor, layout and end-to-end rendering of the reference model.</span></li>
+            <li><span><strong>49 tests</strong> cover the grammar, every view extractor, layout and end-to-end rendering of both reference models.</span></li>
             <li><span><strong>Programmatic API too</strong>, if you would rather call the pipeline than the CLI.</span></li>
           </ul>
         </div>
@@ -794,7 +849,7 @@ package Software {
     </div>
   </section>
 
-  <!-- 12 ------------------------------------------------------------- -->
+  <!-- 14 ------------------------------------------------------------- -->
   <section class="sheet">
     <div class="frame">
       <div class="tag">Get started</div>
@@ -808,8 +863,8 @@ package Software {
             </div>
             <div class="stack-tight">
               <h3>Render</h3>
-              <div class="command">npx ortho render models \
-  <span class="flag">-d</span> part-definition \
+              <div class="command">npx ortho render models/logical.sysml \
+  <span class="flag">-d</span> logical \
   <span class="flag">-o</span> diagrams/logical-view.svg</div>
             </div>
             <div class="stack-tight">
@@ -819,13 +874,12 @@ package Software {
           </div>
           <div class="stack">
             <p class="lede" style="max-width:40ch">
-              Point it at a folder of <code class="inline">.sysml</code> files, choose a view,
+              Write one <code class="inline">.sysml</code> file per view, render each one,
               and commit the SVG. The picture is now part of the build.
             </p>
             <p style="color:var(--ink-soft)">
               Two complete worked models ship with the tool — an autonomous aerial vehicle and a
-              coffee machine — each with requirements, use cases, a scenario, a design, and all
-              five views generated from them.
+              coffee machine — each with six model files and all six views generated from them.
             </p>
           </div>
         </div>
@@ -836,12 +890,11 @@ package Software {
       </div>
     </div>
   </section>
-
 </div>
 
 <nav class="controls" aria-label="Slide navigation">
   <button type="button" id="prev" aria-label="Previous sheet">◀ Prev</button>
-  <span class="counter" id="counter">01 / 12</span>
+  <span class="counter" id="counter">01 / 14</span>
   <button type="button" id="next" aria-label="Next sheet">Next ▶</button>
 </nav>
 

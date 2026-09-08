@@ -4,27 +4,24 @@ import { describe, expect, it } from 'vitest';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
 import { parseSysmlFiles } from '../src/parser/parse.js';
 import type { Model } from '../src/generated/ast.js';
-import { extractPartDefinitionGraph } from '../src/diagrams/part-definition.js';
 import { extractUseCaseGraph } from '../src/diagrams/use-case.js';
-import { extractPackageGraph } from '../src/diagrams/package.js';
-import { extractAllocationGraph } from '../src/diagrams/allocation.js';
+import { extractLogicalGraph } from '../src/diagrams/logical.js';
+import { extractImplementationGraph } from '../src/diagrams/implementation.js';
+import { extractPhysicalGraph } from '../src/diagrams/physical.js';
+import { extractDeploymentGraph } from '../src/diagrams/deployment.js';
 import { extractSequenceModel } from '../src/diagrams/sequence.js';
 import { diagramTypes } from '../src/pipeline.js';
 
 const BASE = resolve(dirname(fileURLToPath(import.meta.url)), '../examples/auv-system');
 
+/** One file per view. */
 const ALL = [
-    'requirements.sysml', 'system.sysml', 'mechanics.sysml', 'electronics.sysml',
-    'software.sysml', 'use-cases.sysml', 'scenario-follow-person.sysml'
+    'use-case.sysml', 'logical.sysml', 'implementation.sysml',
+    'physical.sysml', 'deployment.sysml', 'process.sysml'
 ];
 
-/** The system level plus the two domains that realise it physically. */
-const DOMAINS = [
-    'system.sysml', 'mechanics.sysml', 'electronics.sysml', 'requirements.sysml'
-];
-
-/** What the development view renders: architectural packages, no scenarios. */
-const ARCHITECTURE = ALL.filter(f => !f.startsWith('scenario-'));
+/** The four views whose file declares everything it draws. */
+const SELF_CONTAINED = ['use-case.sysml', 'logical.sysml', 'implementation.sysml', 'physical.sysml'];
 
 async function parseSet(...files: string[]): Promise<Model> {
     const services = createSysmlServices();
@@ -33,163 +30,136 @@ async function parseSet(...files: string[]): Promise<Model> {
 }
 
 describe('AUV system example model', () => {
-    it('parses and links all seven files as one workspace', async () => {
+    it('parses and links all six files as one workspace', async () => {
         const model = await parseSet(...ALL);
         expect(model.packages.map(p => p.name)).toEqual([
-            'Requirements', 'System', 'Mechanics', 'Electronics',
-            'Software', 'UseCases', 'FollowPersonScenario'
+            'UseCases', 'Functions', 'Software', 'Hardware', 'Deployment', 'FollowPersonScenario'
         ]);
     });
 
-    it('logical view: system composition, realization and requirement traces', async () => {
-        const graph = extractPartDefinitionGraph(await parseSet(...DOMAINS));
-
-        const system = graph.nodes.find(n => n.name === 'AuvSystem')!;
-        expect(system.compartments[0].lines).toEqual([
-            'aircraft : Aircraft', 'controller : RadioController',
-            'batteries : FlightBattery [1..3]', 'charger : BatteryCharger'
-        ]);
-
-        // The assembly composes architecture blocks, never a domain realization —
-        // that is what keeps System from depending on Mechanics or Electronics.
-        const aircraft = graph.nodes.find(n => n.name === 'Aircraft')!;
-        expect(aircraft.compartments[1].lines).toContain('props : Propeller [4]');
-        expect(aircraft.ports.map(p => p.label).sort()).toEqual(['batteryBay', 'rfLink']);
-
-        // ... and the folding blade is the mechanical design that realizes it.
-        expect(graph.edges).toContainEqual(expect.objectContaining({
-            kind: 'specialization',
-            sourceId: 'System::Propeller',
-            targetId: 'Mechanics::FoldingPropeller'
-        }));
-
-        expect(graph.edges.filter(e => e.kind === 'composition')).toHaveLength(18);
-        expect(graph.edges.filter(e => e.kind === 'connection')).toHaveLength(18);
-        expect(graph.edges.filter(e => e.kind === 'satisfy')).toHaveLength(5);
-        // Every architecture block is realized by exactly one domain design.
-        expect(graph.edges.filter(e => e.kind === 'specialization')).toHaveLength(15);
-
-        // The transceiver is shared: composed by both the aircraft and the controller
-        const transceiverCompositions = graph.edges.filter(
-            e => e.kind === 'composition' && e.targetId === 'System::RadioTransceiver'
-        );
-        expect(transceiverCompositions.map(e => e.sourceId).sort()).toEqual(
-            ['System::Aircraft', 'System::RadioController']
-        );
-    });
-
-    it('logical view: leaves no node unconnected', async () => {
-        const graph = extractPartDefinitionGraph(await parseSet(...DOMAINS));
-        const touched = new Set(graph.edges.flatMap(e => [e.sourceId, e.targetId]));
-        expect(graph.nodes.filter(n => !touched.has(n.id)).map(n => n.name)).toEqual([]);
-    });
-
-    it('scenarios view: system boundary, two actors, follow-person includes', async () => {
-        const graph = extractUseCaseGraph(await parseSet('use-cases.sysml', ...DOMAINS));
-        const boundary = graph.nodes.find(n => n.shape === 'boundary')!;
-        expect(boundary.name).toBe('AuvSystem');
-        expect(boundary.children!.map(c => c.name).sort()).toEqual(
-            ['avoidObstacles', 'followPerson', 'launchAircraft', 'selectTarget', 'viewLiveVideo']
-        );
-        expect(graph.nodes.filter(n => n.shape === 'actor').map(n => n.name).sort()).toEqual(['Pilot', 'TrackedPerson']);
-        expect(graph.edges.filter(e => e.kind === 'association')).toHaveLength(5);
-        const includes = graph.edges.filter(e => e.kind === 'include');
-        expect(includes.map(e => e.targetId).sort()).toEqual(
-            ['UseCases::avoidObstacles', 'UseCases::selectTarget']
-        );
-    });
-
-    it('development view: system level over three domains, acyclic imports', async () => {
-        const graph = extractPackageGraph(await parseSet(...ARCHITECTURE));
-        expect(graph.nodes).toHaveLength(6);
-        expect(graph.edges.map(e => `${e.sourceId} -> ${e.targetId}`).sort()).toEqual([
-            'Electronics -> Requirements',
-            'Electronics -> System',
-            'Mechanics -> System',
-            'Software -> Requirements',
-            'Software -> System',
-            'System -> Requirements',
-            'UseCases -> System'
-        ]);
-    });
-
-    it('development view: every domain depends on the system, never the reverse', async () => {
-        const graph = extractPackageGraph(await parseSet(...ALL));
-        const domains = ['Mechanics', 'Electronics', 'Software'];
-
-        for (const domain of domains) {
-            expect(graph.edges).toContainEqual(
-                expect.objectContaining({ sourceId: domain, targetId: 'System' })
-            );
+    it('each self-contained view parses on its own', async () => {
+        for (const file of SELF_CONTAINED) {
+            await expect(parseSet(file)).resolves.toBeDefined();
         }
-        expect(graph.edges.filter(e => e.sourceId === 'System' && domains.includes(e.targetId)))
-            .toEqual([]);
-
-        // System-level requirements are satisfied by the aircraft as a whole, so
-        // unlike the coffee machine this architecture does trace to Requirements —
-        // which stays the universal sink either way.
-        expect(graph.edges.filter(e => e.sourceId === 'System').map(e => e.targetId))
-            .toEqual(['Requirements']);
-        expect(graph.edges.filter(e => e.sourceId === 'Requirements')).toEqual([]);
     });
 
-    it('development view: the engineering domains do not depend on each other', async () => {
-        const graph = extractPackageGraph(await parseSet(...ALL));
-        const domains = ['Mechanics', 'Electronics', 'Software'];
-        expect(graph.edges.filter(
-            e => domains.includes(e.sourceId) && domains.includes(e.targetId)
-        )).toEqual([]);
-    });
-
-    // system.sysml carries the aircraft-level satisfy traces, so requirements.sysml
-    // travels with it — unlike the coffee machine, whose System is a pure sink.
-    it('each domain resolves without the other domains loaded', async () => {
-        const mechanics = extractPartDefinitionGraph(
-            await parseSet('mechanics.sysml', 'system.sysml', 'requirements.sysml')
-        );
-        expect(mechanics.nodes.map(n => n.name)).toContain('FoldingPropeller');
-        expect(mechanics.nodes.map(n => n.name)).not.toContain('SocFlightController');
-
-        const electronics = extractPartDefinitionGraph(
-            await parseSet('electronics.sysml', 'system.sysml', 'requirements.sysml')
-        );
-        expect(electronics.nodes.map(n => n.name)).toContain('SocFlightController');
-        expect(electronics.nodes.map(n => n.name)).not.toContain('FoldingPropeller');
-    });
-
-    it('physical view: seven allocations onto aircraft modules and the controller', async () => {
-        const graph = extractAllocationGraph(await parseSet('software.sysml', ...DOMAINS));
-        expect(graph.edges).toHaveLength(7);
-        const targets = new Set(graph.edges.map(e => e.targetId));
-        expect([...targets].sort()).toEqual([
-            'System::Aircraft::camera', 'System::Aircraft::fc', 'System::Aircraft::radio',
-            'System::AuvSystem::controller'
+    it('use case view: five use cases, two actors, follow-person includes', async () => {
+        const graph = extractUseCaseGraph(await parseSet('use-case.sysml'));
+        const boundaries = graph.nodes.filter(n => n.shape === 'boundary');
+        expect(boundaries.map(b => b.name)).toEqual(['AuvSystem']);
+        expect(boundaries[0].children!.map(c => c.name).sort()).toEqual([
+            'avoidObstacles', 'followPerson', 'launchAircraft', 'selectTarget', 'viewLiveVideo'
         ]);
-        expect(graph.nodes.map(n => n.name)).toContain('pilotApp : PilotApp');
-        expect(graph.nodes.map(n => n.name)).toContain('controller : RadioController');
+
+        expect(graph.nodes.filter(n => n.shape === 'actor').map(n => n.name).sort())
+            .toEqual(['Pilot', 'TrackedPerson']);
+
+        const includes = graph.edges.filter(e => e.kind === 'include');
+        expect(includes.map(e => e.targetId).sort())
+            .toEqual(['UseCases::avoidObstacles', 'UseCases::selectTarget']);
+    });
+
+    it('logical view: a strict capability tree, larger than the coffee machine', async () => {
+        const graph = extractLogicalGraph(await parseSet('logical.sysml'));
+        expect(graph.edges).toHaveLength(graph.nodes.length - 1);
+        expect(graph.nodes.length).toBeGreaterThan(20);
+
+        const names = graph.nodes.map(n => n.name);
+        expect(names).toContain('stabiliseAttitude');
+        expect(names).toContain('trackTarget');
+        // Nothing that performs a function appears here. (`rechargeBattery` is
+        // a function; `LiPoFlightBattery` is the thing that does it.)
+        for (const realization of [
+            'ThreeAxisGimbal', 'DualBandTransceiver', 'LiPoFlightBattery',
+            'FlightControlStack', 'NavigationEngine'
+        ]) {
+            expect(names).not.toContain(realization);
+        }
+
+        const parents = new Set(graph.edges.map(e => e.targetId));
+        expect(graph.nodes.filter(n => !parents.has(n.id)).map(n => n.name)).toEqual(['OperateAircraft']);
+    });
+
+    it('implementation view: the ground app depends on the airborne packages, never the reverse', async () => {
+        const graph = extractImplementationGraph(await parseSet('implementation.sysml'));
+        const imports = graph.edges.map(e => `${e.sourceId} -> ${e.targetId}`).sort();
+        expect(imports).toEqual([
+            'Software::Ground -> Software::Flight',
+            'Software::Ground -> Software::Link',
+            'Software::Ground -> Software::Perception'
+        ]);
+        expect(imports.some(i => i.includes('-> Software::Ground'))).toBe(false);
+    });
+
+    it('physical view: airframe, ground kit and the radio link contract', async () => {
+        const graph = extractPhysicalGraph(await parseSet('physical.sysml'));
+        const names = graph.nodes.map(n => n.name);
+        expect(names).toContain('Aircraft');
+        expect(names).toContain('RadioController');
+        expect(names).toContain('AuvSystem');
+        expect(names).not.toContain('RadioLink');
+
+        // The one design variant kept as a generalization.
+        expect(graph.edges.filter(e => e.kind === 'specialization')).toEqual([
+            expect.objectContaining({
+                sourceId: 'Hardware::Propeller',
+                targetId: 'Hardware::FoldingPropeller'
+            })
+        ]);
+    });
+
+    it('deployment view: seven programs across three hosts, drawn as containment', async () => {
+        const graph = extractDeploymentGraph(
+            await parseSet('deployment.sysml', 'implementation.sysml', 'physical.sysml')
+        );
+        expect(graph.edges).toHaveLength(0);
+        expect(graph.nodes.map(n => n.id).sort()).toEqual([
+            'Hardware::Aircraft::camera',
+            'Hardware::Aircraft::fc',
+            'Hardware::Aircraft::radio',
+            'Hardware::AuvSystem::controller'
+        ]);
+
+        const fc = graph.nodes.find(n => n.id === 'Hardware::Aircraft::fc')!;
+        expect(fc.children!.map(c => c.name).sort()).toEqual([
+            'flightControl : FlightControlStack',
+            'navigation : NavigationEngine',
+            'perception : PerceptionPipeline',
+            'targetTracking : TargetTrackingEngine'
+        ]);
+
+        const placed = graph.nodes.flatMap(n => n.children!.map(c => c.name));
+        expect(placed).toHaveLength(7);
+        expect(new Set(placed).size).toBe(7);
     });
 
     it('process view: follow-person scenario with obstacle avoidance', async () => {
-        const sequence = extractSequenceModel(await parseSet(
-            'scenario-follow-person.sysml', 'software.sysml', ...DOMAINS
-        ));
-        expect(sequence.lifelines.map(l => l.label)).toEqual([
-            'pilot', 'rcApp : PilotApp', 'flightControl : FlightControlStack',
-            'cameraCtrl : CameraController', 'targetTracking : TargetTrackingEngine',
-            'perception : PerceptionPipeline'
-        ]);
-        expect(sequence.messages).toHaveLength(9);
-        expect(sequence.messages[4].label).toBe('trackTarget : TargetBox');
-        const self = sequence.messages[7];
-        expect(self.label).toBe('avoidanceManeuver');
-        expect(self.sourceId).toBe(self.targetId);
+        const sequence = extractSequenceModel(await parseSet('process.sysml', 'implementation.sysml'));
+        expect(sequence.lifelines).toHaveLength(6);
+        expect(sequence.messages[0].label).toBe('launch');
+
+        // A self-message: the flight stack manoeuvres without asking anyone.
+        const selfMessages = sequence.messages.filter(m => m.sourceId === m.targetId);
+        expect(selfMessages.map(m => m.label)).toEqual(['avoidanceManeuver']);
     });
 
-    it('renders all five views end-to-end', async () => {
-        const full = await parseSet(...ALL);
-        for (const [name, diagramType] of Object.entries(diagramTypes)) {
-            const result = await diagramType.render(full, { heading: `${diagramType.view} — test`, source: 'test' });
-            expect(result.svg, name).toContain('</svg>');
+    it('renders all six views end-to-end', async () => {
+        const jobs: Array<[keyof typeof diagramTypes, string[]]> = [
+            ['use-case', ['use-case.sysml']],
+            ['logical', ['logical.sysml']],
+            ['implementation', ['implementation.sysml']],
+            ['physical', ['physical.sysml']],
+            ['deployment', ['deployment.sysml', 'implementation.sysml', 'physical.sysml']],
+            ['process', ['process.sysml', 'implementation.sysml']]
+        ];
+        for (const [diagram, files] of jobs) {
+            const type = diagramTypes[diagram];
+            const { svg } = await type.render(await parseSet(...files), {
+                heading: `${type.view} — AUV System`,
+                source: files[0]
+            });
+            expect(svg.startsWith('<svg'), diagram).toBe(true);
+            expect(svg, diagram).toContain(type.view);
         }
     });
 });

@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="592.304" height="398"
+     viewBox="0 0 592.304 398" font-family="Arial, Helvetica, Segoe UI, sans-serif">
+  <title>Use case view — AUV System (generated from examples/auv-system/use-case.sysml)</title>
+  <defs>
+    <marker id="triangle" markerWidth="14" markerHeight="12" refX="12" refY="5"
+            orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L12,5 L0,10 z" fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+    </marker>
+    <marker id="diamond" markerWidth="18" markerHeight="12" refX="15" refY="5"
+            orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M1,5 L8,1 L15,5 L8,9 z" fill="#2b2b2b" stroke="#2b2b2b" />
+    </marker>
+    <marker id="openArrow" markerWidth="12" markerHeight="12" refX="10" refY="5"
+            orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="592.304" height="398" fill="white" />
+  <rect x="8" y="8" width="576.304" height="382" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+  <path d="M8,8 L8,30 L178.724,30 L188.724,21 L188.724,8 Z"
+        fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
+  <text x="16" y="23" font-size="11" font-weight="600" fill="#1a1a1a">Use case view — AUV System</text>
+  <text x="578.304" y="384" text-anchor="end" font-size="9" fill="#8a8a86">examples/auv-system/use-case.sysml</text>
+  
+    <g><rect x="195.57999999999998" y="60" width="360.724" height="302"
+          fill="#fbfbf1" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="375.942" y="80" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">AuvSystem</text></g>
+    <g><ellipse cx="305.258" cy="312" rx="64.678" ry="25"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="305.258" y="316" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">launchAircraft</text></g>
+    <g><ellipse cx="306.926" cy="241" rx="66.346" ry="25"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="306.926" y="245" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">viewLiveVideo</text></g>
+    <g><ellipse cx="454.284" cy="134.33333333333334" rx="61.012" ry="25"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="454.284" y="138.33333333333334" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">selectTarget</text></g>
+    <g><ellipse cx="462.288" cy="267.66666666666663" rx="69.01599999999999" ry="25"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="462.288" y="271.66666666666663" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">avoidObstacles</text></g>
+    <g><ellipse cx="306.926" cy="151" rx="62.344" ry="25"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="306.926" y="155" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">followPerson</text></g>
+    <g stroke="#2b2b2b" stroke-width="1.5" fill="none">
+      <circle cx="96.58" cy="202" r="8" fill="#fdfdf6" />
+      <line x1="96.58" y1="210" x2="96.58" y2="229" />
+      <line x1="83.58" y1="217" x2="109.58" y2="217" />
+      <line x1="96.58" y1="229" x2="85.58" y2="245" />
+      <line x1="96.58" y1="229" x2="107.58" y2="245" />
+      <text x="96.58" y="261" text-anchor="middle" stroke="none"
+          font-size="11" fill="#1a1a1a">Pilot</text>
+    </g>
+    <g stroke="#2b2b2b" stroke-width="1.5" fill="none">
+      <circle cx="78.28999999999999" cy="76" r="8" fill="#fdfdf6" />
+      <line x1="78.28999999999999" y1="84" x2="78.28999999999999" y2="103" />
+      <line x1="65.28999999999999" y1="91" x2="91.28999999999999" y2="91" />
+      <line x1="78.28999999999999" y1="103" x2="67.28999999999999" y2="119" />
+      <line x1="78.28999999999999" y1="103" x2="89.28999999999999" y2="119" />
+      <text x="78.28999999999999" y="135" text-anchor="middle" stroke="none"
+          font-size="11" fill="#1a1a1a">TrackedPerson</text>
+    </g>
+  
+    <polyline points="120.58,256.3333333333333 130.57999999999998,256.3333333333333 130.57999999999998,312 240.57999999999998,312" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="120.58,231 150.57999999999998,231 150.57999999999998,241 240.57999999999998,241" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="120.58,205.66666666666666 130.57999999999998,205.66666666666666 130.57999999999998,115 383.272,115 383.272,126 396.7613347549952,126" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="120.58,243.66666666666666 140.57999999999998,243.66666666666666 140.57999999999998,276 397.21909118617236,276" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="120.58,105 230.57999999999998,105 230.57999999999998,142.66666666666666 248.14751311160785,142.66666666666666" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="120.58,218.33333333333334 140.57999999999998,218.33333333333334 140.57999999999998,159.33333333333334 248.14751311160785,159.33333333333334" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="365.7044868883921,142.66666666666666 396.7613347549952,142.66666666666669" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="381.2329108216936" y="137.66666666666669" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;include&#187;</text>
+    <polyline points="365.7044868883921,159.33333333333334 383.272,159.33333333333334 383.272,259.33333333333337 397.2190911861723,259.33333333333337" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="383.272" y="202.52312237061557" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;include&#187;</text>
+</svg>

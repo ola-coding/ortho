@@ -1,6 +1,6 @@
 import type { AstNode } from 'langium';
 
-export type NodeShape = 'box' | 'ellipse' | 'actor' | 'boundary' | 'package';
+export type NodeShape = 'box' | 'ellipse' | 'actor' | 'boundary' | 'package' | 'rounded' | 'node3d';
 
 export interface Compartment {
     lines: string[];
@@ -26,7 +26,8 @@ export interface GraphNode {
 
 export type EdgeKind =
     'specialization' | 'composition' | 'connection' | 'satisfy'
-    | 'association' | 'include' | 'import' | 'allocate' | 'typing';
+    | 'association' | 'include' | 'import' | 'allocate' | 'typing'
+    | 'decomposition';
 
 export interface GraphEdge {
     id: string;

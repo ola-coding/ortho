@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1289.1779999999999" height="506"
      viewBox="0 0 1289.1779999999999 506" font-family="Arial, Helvetica, Segoe UI, sans-serif">
-  <title>Process View — Follow Person (generated from examples/auv-system/scenario-follow-person.sysml)</title>
+  <title>Process view — AUV System (generated from examples/auv-system/process.sysml)</title>
   <defs>
     <marker id="msgArrow" markerWidth="12" markerHeight="10" refX="10" refY="4" orient="auto"
             markerUnits="userSpaceOnUse">
@@ -9,10 +9,10 @@
   </defs>
   <rect x="0" y="0" width="1289.1779999999999" height="506" fill="white" />
   <rect x="8" y="8" width="1273.1779999999999" height="490" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-  <path d="M8,8 L8,30 L184.829,30 L194.829,21 L194.829,8 Z"
+  <path d="M8,8 L8,30 L173.829,30 L183.829,21 L183.829,8 Z"
         fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
-  <text x="16" y="23" font-size="11" font-weight="600" fill="#1a1a1a">Process View — Follow Person</text>
-  <text x="1275.1779999999999" y="492" text-anchor="end" font-size="9" fill="#8a8a86">examples/auv-system/scenario-follow-person.sysml</text>
+  <text x="16" y="23" font-size="11" font-weight="600" fill="#1a1a1a">Process view — AUV System</text>
+  <text x="1275.1779999999999" y="492" text-anchor="end" font-size="9" fill="#8a8a86">examples/auv-system/process.sysml</text>
   
     <g><rect x="24" y="48" width="90" height="34"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />

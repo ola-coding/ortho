@@ -1,17 +1,19 @@
-// Process view scenario: follow a person with obstacle avoidance.
-// Launch, get live video on the radio controller, tap the person to follow;
-// the aircraft then tracks autonomously while avoiding obstacles.
+// Process view: one scenario — the software following a person.
+//
+// Launch, get live video on the handset, tap the person to follow; the aircraft
+// then tracks autonomously while staying clear of obstacles. One scenario per
+// file, because the view renders every message it can see.
 package FollowPersonScenario {
 
     import Software::*;
 
     action def FollowPerson {
         part pilot;
-        part rcApp : Software::PilotApp;
-        part flightControl : Software::FlightControlStack;
-        part cameraCtrl : Software::CameraController;
-        part targetTracking : Software::TargetTrackingEngine;
-        part perception : Software::PerceptionPipeline;
+        part rcApp : Software::Ground::PilotApp;
+        part flightControl : Software::Flight::FlightControlStack;
+        part cameraCtrl : Software::Payload::CameraController;
+        part targetTracking : Software::Perception::TargetTrackingEngine;
+        part perception : Software::Perception::PerceptionPipeline;
 
         message launch from pilot to rcApp;
         then message takeOff from rcApp to flightControl;

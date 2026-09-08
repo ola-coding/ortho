@@ -1,9 +1,10 @@
 import type { Model } from './generated/ast.js';
 import type { DiagramGraph } from './model/graph.js';
-import { extractPartDefinitionGraph } from './diagrams/part-definition.js';
 import { extractUseCaseGraph } from './diagrams/use-case.js';
-import { extractPackageGraph } from './diagrams/package.js';
-import { extractAllocationGraph } from './diagrams/allocation.js';
+import { extractLogicalGraph } from './diagrams/logical.js';
+import { extractImplementationGraph } from './diagrams/implementation.js';
+import { extractPhysicalGraph } from './diagrams/physical.js';
+import { extractDeploymentGraph } from './diagrams/deployment.js';
 import { extractSequenceModel } from './diagrams/sequence.js';
 import { layoutGraph } from './layout/elk-layout.js';
 import { renderSvg } from './render/svg-renderer.js';
@@ -18,7 +19,7 @@ export interface RenderResult {
 export type DiagramRenderer = (model: Model, title: DiagramTitle) => Promise<RenderResult>;
 
 export interface DiagramType {
-    /** 4+1 architectural view this diagram serves; leads the frame heading. */
+    /** Architectural view this diagram serves; leads the frame heading. */
     view: string;
     render: DiagramRenderer;
 }
@@ -34,13 +35,15 @@ function graphDiagram(extract: (model: Model) => DiagramGraph, direction: 'DOWN'
     };
 }
 
+/** The six views, in the order VIEWS.md introduces them. */
 export const diagramTypes = {
-    'part-definition': { view: 'Logical View', render: graphDiagram(extractPartDefinitionGraph, 'DOWN') },
-    'use-case': { view: 'Scenarios', render: graphDiagram(extractUseCaseGraph, 'RIGHT') },
-    'package': { view: 'Development View', render: graphDiagram(extractPackageGraph, 'DOWN') },
-    'allocation': { view: 'Physical View', render: graphDiagram(extractAllocationGraph, 'DOWN') },
-    'sequence': {
-        view: 'Process View',
+    'use-case': { view: 'Use case view', render: graphDiagram(extractUseCaseGraph, 'RIGHT') },
+    'logical': { view: 'Logical view', render: graphDiagram(extractLogicalGraph, 'DOWN') },
+    'implementation': { view: 'Implementation view', render: graphDiagram(extractImplementationGraph, 'DOWN') },
+    'physical': { view: 'Physical view', render: graphDiagram(extractPhysicalGraph, 'DOWN') },
+    'deployment': { view: 'Deployment view', render: graphDiagram(extractDeploymentGraph, 'DOWN') },
+    'process': {
+        view: 'Process view',
         render: async (model, title) => {
             const sequence = extractSequenceModel(model);
             return {

@@ -1,12 +1,40 @@
-import { isPackageDecl } from '../generated/ast.js';
-import type { Model, PackageDecl } from '../generated/ast.js';
+import { isPackageDecl, isPartDef, isPartUsage } from '../generated/ast.js';
+import type { Model, PackageDecl, PartDef, PartUsage } from '../generated/ast.js';
 import type { DiagramGraph, GraphEdge, GraphNode } from '../model/graph.js';
 import { qualifiedName } from '../model/graph.js';
 import { collectPackages } from '../model/packages.js';
 import { measureText } from '../render/text-metrics.js';
 
+function moduleNode(member: PartDef | PartUsage): GraphNode {
+    const name = isPartUsage(member) && member.type
+        ? `${member.name} : ${member.type.ref?.name ?? member.type.$refText}`
+        : member.name;
+    return {
+        id: qualifiedName(member),
+        shape: 'box',
+        stereotype: '',
+        name,
+        compartments: [],
+        ports: [],
+        width: Math.max(120, measureText(name, 12, 'bold') + 28),
+        height: 40
+    };
+}
+
+/**
+ * A package box, with its sub-packages and the modules it declares drawn
+ * inside it. Only top-level part usages become modules — a part nested inside
+ * another part is a detail of that module, not a module of its own.
+ */
 function packageNode(pkg: PackageDecl): GraphNode {
-    const children = pkg.members.filter(isPackageDecl).map(packageNode);
+    const children: GraphNode[] = [];
+    for (const member of pkg.members) {
+        if (isPackageDecl(member)) {
+            children.push(packageNode(member));
+        } else if (isPartDef(member) || isPartUsage(member)) {
+            children.push(moduleNode(member));
+        }
+    }
     return {
         id: qualifiedName(pkg),
         shape: 'package',
@@ -48,7 +76,7 @@ function resolveImportTarget(importer: PackageDecl, path: string, packageIds: Se
     return undefined;
 }
 
-export function extractPackageGraph(model: Model): DiagramGraph {
+export function extractImplementationGraph(model: Model): DiagramGraph {
     const nodes = model.packages.map(packageNode);
 
     const allPackages = collectPackages(model);

@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1969.5639999999999" height="215"
+     viewBox="0 0 1969.5639999999999 215" font-family="Arial, Helvetica, Segoe UI, sans-serif">
+  <title>Deployment view — AUV System (generated from examples/auv-system/deployment.sysml)</title>
+  <defs>
+    <marker id="triangle" markerWidth="14" markerHeight="12" refX="12" refY="5"
+            orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L12,5 L0,10 z" fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+    </marker>
+    <marker id="diamond" markerWidth="18" markerHeight="12" refX="15" refY="5"
+            orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M1,5 L8,1 L15,5 L8,9 z" fill="#2b2b2b" stroke="#2b2b2b" />
+    </marker>
+    <marker id="openArrow" markerWidth="12" markerHeight="12" refX="10" refY="5"
+            orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1969.5639999999999" height="215" fill="white" />
+  <rect x="8" y="8" width="1953.5639999999999" height="199" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+  <path d="M8,8 L8,30 L193.981,30 L203.981,21 L203.981,8 Z"
+        fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
+  <text x="16" y="23" font-size="11" font-weight="600" fill="#1a1a1a">Deployment view — AUV System</text>
+  <text x="1955.5639999999999" y="201" text-anchor="end" font-size="9" fill="#8a8a86">examples/auv-system/deployment.sysml</text>
+  
+    <g><polygon points="572.064,72 584.064,60 1626.8559999999998,60 1614.8559999999998,72"
+          fill="#f0f0e6" stroke="#2b2b2b" stroke-width="1.25" />
+      <polygon points="1614.8559999999998,72 1626.8559999999998,60 1626.8559999999998,167 1614.8559999999998,179"
+          fill="#f0f0e6" stroke="#2b2b2b" stroke-width="1.25" />
+      <rect x="572.064" y="72" width="1042.792" height="107"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1093.46" y="92" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">fc : SocFlightController</text></g>
+    <g><rect x="842.112" y="117" width="219.996" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="952.11" y="130" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part&#187;</text>
+      <text x="952.11" y="143" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">flightControl : FlightControlStack</text></g>
+    <g><rect x="1102.108" y="117" width="202.032" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1203.124" y="130" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part&#187;</text>
+      <text x="1203.124" y="143" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">navigation : NavigationEngine</text></g>
+    <g><rect x="592.064" y="117" width="210.048" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="697.088" y="130" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part&#187;</text>
+      <text x="697.088" y="143" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">perception : PerceptionPipeline</text></g>
+    <g><rect x="1344.1399999999999" y="117" width="250.716" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1469.4979999999998" y="130" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part&#187;</text>
+      <text x="1469.4979999999998" y="143" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">targetTracking : TargetTrackingEngine</text></g>
+    <g><polygon points="1676.8559999999998,72 1688.8559999999998,60 1933.5639999999999,60 1921.5639999999999,72"
+          fill="#f0f0e6" stroke="#2b2b2b" stroke-width="1.25" />
+      <polygon points="1921.5639999999999,72 1933.5639999999999,60 1933.5639999999999,167 1921.5639999999999,179"
+          fill="#f0f0e6" stroke="#2b2b2b" stroke-width="1.25" />
+      <rect x="1676.8559999999998" y="72" width="244.70799999999997" height="107"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1799.2099999999998" y="92" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">camera : HdrCamera</text></g>
+    <g><rect x="1696.8559999999998" y="117" width="204.708" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1799.2099999999998" y="130" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part&#187;</text>
+      <text x="1799.2099999999998" y="143" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">cameraCtrl : CameraController</text></g>
+    <g><polygon points="36,72 48,60 281.404,60 269.404,72"
+          fill="#f0f0e6" stroke="#2b2b2b" stroke-width="1.25" />
+      <polygon points="269.404,72 281.404,60 281.404,167 269.404,179"
+          fill="#f0f0e6" stroke="#2b2b2b" stroke-width="1.25" />
+      <rect x="36" y="72" width="233.404" height="107"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="152.702" y="92" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">radio : DualBandTransceiver</text></g>
+    <g><rect x="56" y="117" width="193.404" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="152.702" y="130" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part&#187;</text>
+      <text x="152.702" y="143" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">telemetry : TelemetryService</text></g>
+    <g><polygon points="331.404,72 343.404,60 522.064,60 510.06399999999996,72"
+          fill="#f0f0e6" stroke="#2b2b2b" stroke-width="1.25" />
+      <polygon points="510.06399999999996,72 522.064,60 522.064,167 510.06399999999996,179"
+          fill="#f0f0e6" stroke="#2b2b2b" stroke-width="1.25" />
+      <rect x="331.404" y="72" width="178.66" height="107"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="420.734" y="92" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">controller : RadioController</text></g>
+    <g><rect x="351.404" y="117" width="138.66" height="42"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="420.734" y="130" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part&#187;</text>
+      <text x="420.734" y="143" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">pilotApp : PilotApp</text></g>
+  
+</svg>

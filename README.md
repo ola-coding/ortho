@@ -2,23 +2,27 @@
 
 **Orthographic projection for architecture.** Just as a technical
 drawing shows one object through several standard views, `ortho` renders the
-five views of the 4+1 model as SVG — straight from SysML v2 text, with no
+six architectural views as SVG — straight from SysML v2 text, with no
 drawing tool in the loop.
 
 It is fully self-contained: no external programs, no network calls, no LLMs at
 render time, so it produces the same bytes on a laptop and in CI.
 
 ```sh
-ortho render models -d part-definition -o diagrams/logical-view.svg
+ortho render models/logical.sysml -d logical -o diagrams/logical-view.svg
 ```
 
-| CLI diagram type | 4+1 view | Shows |
+| CLI diagram type | View | Shows |
 | --- | --- | --- |
-| `part-definition` | Logical View | part/interface/requirement defs, compositions, connections, satisfy traces |
-| `use-case` | Scenarios | actors, use case ellipses, system boundary, includes |
-| `package` | Development View | package folders, nesting, «import» dependencies |
-| `allocation` | Physical View | software parts allocated onto the parts that run them |
-| `sequence` | Process View | lifelines and ordered messages of one scenario |
+| `use-case` | Use case view | actors, use case ellipses, system boundary, includes |
+| `logical` | Logical view | the capability tree: what the system does, as functions |
+| `implementation` | Implementation view | software packages, the modules in them, «import» dependencies |
+| `physical` | Physical view | the product: parts, ports, connections, cabling |
+| `deployment` | Deployment view | hardware nodes with the software they host drawn inside |
+| `process` | Process view | lifelines and ordered messages of one scenario |
+
+[VIEWS.md](VIEWS.md) defines what belongs on each view and why the set divides
+this way.
 
 ## Requirements
 
@@ -55,33 +59,34 @@ npm run render:examples  # regenerate the example diagrams
 
 ## Your first diagram
 
-Create `model.sysml`:
+Create `logical.sysml`:
 
 ```sysml
-package Demo {
-    port def PowerPort;
-
-    part def Robot {
-        attribute mass_kg : Real = 42;
-        part controller : Controller;
-        part battery : Battery;
-        connect battery.out to controller.in_;
+package Functions {
+    action def MakeBeverage {
+        action prepareWater {
+            action storeWater;
+            action heatWater;
+        }
+        action prepareCoffee {
+            action grindBeans;
+            action extractShot;
+        }
+        action controlMachine {
+            action selectBeverage;
+            action sequenceRecipe;
+        }
     }
-    part def Controller { port in_ : PowerPort; }
-    part def Battery { port out : PowerPort; }
-
-    requirement massReq;
-    satisfy massReq by Robot;
 }
 ```
 
 Render it:
 
 ```sh
-npx ortho render model.sysml -d part-definition -o robot.svg
+npx ortho render logical.sysml -d logical -o logical-view.svg
 ```
 
-Open `robot.svg` in any browser.
+Open `logical-view.svg` in any browser.
 
 ## CLI reference
 
@@ -92,22 +97,32 @@ ortho render <models...> -d <type> -o <file.svg> [-t <heading>]
 - `<models...>` — one or more `.sysml` files and/or directories (a directory
   means all `.sysml` files directly inside it). All inputs are parsed and
   linked as one workspace: cross-file references use qualified names
-  (`System::Aircraft::fc`).
-- `-d, --diagram` — one of the five types in the table above.
+  (`Hardware::Aircraft::fc`).
+- `-d, --diagram` — one of the six types in the table above.
 - `-o, --out` — output SVG path. Outputs go wherever you point them; the
   tool never writes anywhere else.
 - `-t, --title` — override the frame heading. Default:
   `<View name> — <root packages of the first input>`. The generating file
   path always appears as small provenance text in the diagram corner.
 
-**File selection is the scoping mechanism.** Each render lists the files
-that belong on that diagram, subject first. In particular, the sequence
-diagram renders *every* message it sees — so keep one scenario per file and
-pass exactly one scenario file (plus the files its types come from):
+**One model file per view.** Each view is rendered from the file that holds
+it. Four of the six stand alone; two need a companion, because their content
+is a relation between other views:
 
 ```sh
-npx ortho render scenario-x.sysml software.sysml system.sysml -d sequence -o x.svg
+# Self-contained
+npx ortho render physical.sysml -d physical -o physical-view.svg
+
+# Deployment is nothing but the mapping between the other two files
+npx ortho render deployment.sysml implementation.sysml physical.sysml \
+    -d deployment -o deployment-view.svg
+
+# The process view's lifelines are typed by the software modules
+npx ortho render process.sysml implementation.sysml -d process -o process-view.svg
 ```
+
+The process view renders *every* message it sees, so keep one scenario per
+file and pass exactly one scenario file.
 
 ## Typical project integration
 
@@ -117,9 +132,9 @@ wire renders into npm scripts:
 ```json
 {
   "scripts": {
-    "diagrams": "npm run diagrams:logical && npm run diagrams:packages",
-    "diagrams:logical": "ortho render models/system.sysml models/mechanics.sysml models/electronics.sysml models/requirements.sysml -d part-definition -o diagrams/logical-view.svg",
-    "diagrams:packages": "ortho render models -d package -o diagrams/development-view.svg"
+    "diagrams": "npm run diagrams:logical && npm run diagrams:physical",
+    "diagrams:logical": "ortho render models/logical.sysml -d logical -o diagrams/logical-view.svg",
+    "diagrams:physical": "ortho render models/physical.sysml -d physical -o diagrams/physical-view.svg"
   }
 }
 ```
@@ -132,8 +147,8 @@ with models.
 
 The grammar is a growing, spec-oriented subset of the SysML v2 textual
 notation: packages/imports, part/port/interface defs and usages, attributes,
-connections (`connect a.x to b.y`), requirements + `satisfy`, use cases with
-actors/subjects/includes, `allocate`, and actions with `message`/`then`.
+connections (`connect a.x to b.y`), use cases with actors/subjects/includes,
+`allocate`, and actions with nesting and `message`/`then`.
 See `grammar/sysml.langium` for the exact grammar and
 [DEVELOPMENT.md](DEVELOPMENT.md) for deliberate deviations (e.g. no UML
 `extend` — SysML v2 dropped it).
@@ -144,21 +159,22 @@ See `grammar/sysml.langium` for the exact grammar and
 import { createSysmlServices, parseSysmlFiles, diagramTypes } from 'ortho';
 
 const services = createSysmlServices();
-const { model } = await parseSysmlFiles(services.Sysml, ['models/system.sysml']);
-const { svg } = await diagramTypes['part-definition'].render(model, {
-    heading: 'Logical View — MySystem',
-    source: 'models/system.sysml'
+const { model } = await parseSysmlFiles(services.Sysml, ['models/logical.sysml']);
+const { svg } = await diagramTypes['logical'].render(model, {
+    heading: 'Logical view — MySystem',
+    source: 'models/logical.sysml'
 });
 ```
 
 ## Further reading
 
+- [VIEWS.md](VIEWS.md) — the six views: what each one admits, and why.
 - [DEVELOPMENT.md](DEVELOPMENT.md) — architecture, design decisions and the
   deliberate spec deviations behind the tool.
 
 ## Example models
 
-Two complete worked models ship with the tool, each with all five generated
+Two complete worked models ship with the tool, each with all six generated
 views:
 
 - [examples/auv-system/](examples/auv-system/) — an autonomous unmanned aerial
@@ -166,27 +182,23 @@ views:
   follow-person scenario. The larger of the two, and the one that pushes the
   layout hardest.
 - [examples/coffee-machine/](examples/coffee-machine/) — a bean-to-cup coffee
-  machine: water and coffee subsystems, a milk frother and one control board,
-  with a make-cappuccino scenario. The leaner one, and the better starting
-  point to read.
+  machine: water and coffee paths, a steam wand and one control board, with a
+  make-cappuccino scenario. The leaner one, and the better starting point to
+  read.
 
-Both use the same partition, and it is the one to copy for a mechatronic
-product — where mass and geometry belong to mechanics and the power budget to
-electronics:
+Both use the same partition — one file per view, named for the view it feeds:
 
 ```text
-requirements.sysml   use-cases.sysml   scenario-*.sysml   system.sysml
-                                                mechanics.sysml
-                                                electronics.sysml
-                                                software.sysml
+use-case.sysml   logical.sysml   implementation.sysml
+                 physical.sysml  deployment.sysml   process.sysml
 ```
 
-It works because `system.sysml` holds only two things — the interfaces that
-cross a domain boundary, and blocks that declare their *ports only* — while
-every domain **specializes** the block it realizes
-(`Mechanics::FoldingPropeller :> System::Propeller`). So all three domains
-depend on the architecture and none of them on each other, which is what lets a
-domain be reviewed, or replaced, on its own.
+It works because the views own distinct content rather than slicing shared
+content. `logical.sysml` names no component, `implementation.sysml` names no
+board, and `physical.sysml` names no program — so each of those three parses
+and renders entirely on its own. Only `deployment.sysml` references anything
+outside itself, and that is the point: its whole content is the mapping
+between the software and the hardware.
 
 ## License
 
