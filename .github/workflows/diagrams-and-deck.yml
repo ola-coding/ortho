@@ -1,0 +1,85 @@
+# Keeps the example diagrams honest and publishes the pitch deck.
+#
+# diagrams  Re-renders every example and fails if the committed SVGs differ.
+#           Rendering is deterministic, so any difference means a model or the
+#           renderer changed without the diagrams being regenerated.
+# deck      On main only: builds the deck from those diagrams.
+# deploy    Publishes the deck to GitHub Pages. A stale diagram blocks it.
+#
+# One-time setup: Settings -> Pages -> Build and deployment -> Source: GitHub Actions.
+name: Diagrams and deck
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # Superseded pull-request runs are cancelled; runs on main always finish.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  diagrams:
+    name: Example diagrams are up to date
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run render:examples
+      - name: Fail if a committed diagram is stale or missing
+        run: |
+          changes="$(git status --porcelain -- examples)"
+          if [ -n "$changes" ]; then
+            echo "$changes"
+            git diff --stat -- examples
+            echo "::error::The committed diagrams differ from a fresh render. Run 'npm run render:examples' and commit the result."
+            exit 1
+          fi
+
+  deck:
+    name: Build pitch deck
+    needs: diagrams
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run deck
+      - name: Assemble site
+        run: |
+          mkdir -p _site
+          cp marketing/ortho-deck.html _site/index.html
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    name: Publish to GitHub Pages
+    needs: deck
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    # Never cancel a deployment part-way through.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

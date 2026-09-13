@@ -1,9 +1,9 @@
 # ortho
 
-**Orthographic projection for architecture.** Just as a technical
-drawing shows one object through several standard views, `ortho` renders the
-six architectural views as SVG — straight from SysML v2 text, with no
-drawing tool in the loop.
+**Orthographic projection for architecture.** Just as a technical drawing
+shows one object through several standard views, `ortho` renders six
+architectural views as SVG — straight from SysML v2 text, with no drawing tool
+in the loop.
 
 It is fully self-contained: no external programs, no network calls, no LLMs at
 render time, so it produces the same bytes on a laptop and in CI.
@@ -21,8 +21,10 @@ ortho render models/logical.sysml -d logical -o diagrams/logical-view.svg
 | `deployment` | Deployment view | hardware nodes with the software they host drawn inside |
 | `process` | Process view | lifelines and ordered messages of one scenario |
 
-[VIEWS.md](VIEWS.md) defines what belongs on each view and why the set divides
-this way.
+The set is Kruchten's 4+1 with two changes: his Physical view is split into
+Physical (the product itself) and Deployment (which hardware runs which
+software), and the Logical view holds functions rather than structure.
+[VIEWS.md](VIEWS.md) defines what belongs on each view and why.
 
 ## Requirements
 
@@ -52,9 +54,10 @@ npx ortho --help
 ### Working on this repo itself
 
 ```sh
-npm install          # also builds dist/ via prepare
-npm test             # vitest suites
+npm install              # also builds dist/ via prepare
+npm test                 # vitest suites
 npm run render:examples  # regenerate the example diagrams
+npm run deck             # build the pitch deck into marketing/
 ```
 
 ## Your first diagram
@@ -86,7 +89,8 @@ Render it:
 npx ortho render logical.sysml -d logical -o logical-view.svg
 ```
 
-Open `logical-view.svg` in any browser.
+Open `logical-view.svg` in any browser: a tree of ten functions, headed
+"Logical view — Functions".
 
 ## CLI reference
 
@@ -102,18 +106,21 @@ ortho render <models...> -d <type> -o <file.svg> [-t <heading>]
 - `-o, --out` — output SVG path. Outputs go wherever you point them; the
   tool never writes anywhere else.
 - `-t, --title` — override the frame heading. Default:
-  `<View name> — <root packages of the first input>`. The generating file
-  path always appears as small provenance text in the diagram corner.
+  `<View name> — <root packages of the first input>`, or the directory name
+  when the first input is a directory. The generating file path always appears
+  as small provenance text in the diagram corner.
 
-**One model file per view.** Each view is rendered from the file that holds
-it. Four of the six stand alone; two need a companion, because their content
-is a relation between other views:
+### One model file per view
+
+Each view is rendered from the file that holds it. Four of the six stand
+alone; two need companions, because their content is a relation to other
+files:
 
 ```sh
-# Self-contained
+# Self-contained: use-case, logical, implementation, physical
 npx ortho render physical.sysml -d physical -o physical-view.svg
 
-# Deployment is nothing but the mapping between the other two files
+# Deployment is nothing but the mapping between software and hardware
 npx ortho render deployment.sysml implementation.sysml physical.sysml \
     -d deployment -o deployment-view.svg
 
@@ -143,15 +150,64 @@ Because rendering is deterministic and dependency-free, a CI job can run
 `npm run diagrams` and fail on a dirty git diff to keep diagrams in sync
 with models.
 
+## Example models
+
+Two complete worked models ship with the tool, each with all six generated
+views in its `diagrams/` folder:
+
+- [examples/auv-system/](examples/auv-system/) — an autonomous unmanned aerial
+  vehicle: aircraft, radio controller, batteries and charger, with a
+  follow-person scenario. The larger of the two — nineteen physical parts —
+  and the one that pushes the layout hardest.
+- [examples/coffee-machine/](examples/coffee-machine/) — a bean-to-cup coffee
+  machine: water and coffee paths, a steam wand and one control board, with a
+  make-cappuccino scenario. Eleven physical parts; the leaner one, and the
+  better starting point to read.
+
+Both use the same partition — one file per view, named for the view it feeds:
+
+```text
+use-case.sysml   logical.sysml   implementation.sysml
+                 physical.sysml  deployment.sysml   process.sysml
+```
+
+It works because the views own distinct content rather than slicing shared
+content, and a view file names nothing from another view unless its content
+*is* that relation:
+
+```text
+use-case, logical, implementation, physical  →  (nothing)
+deployment                                   →  implementation, physical
+process                                      →  implementation
+```
+
+`logical.sysml` names no component, and `implementation.sysml` and
+`physical.sysml` never reference each other — software knows nothing of boards,
+hardware nothing of programs. The mapping between them exists only in
+`deployment.sysml`, which declares nothing of its own.
+
 ## The language subset
 
 The grammar is a growing, spec-oriented subset of the SysML v2 textual
-notation: packages/imports, part/port/interface defs and usages, attributes,
-connections (`connect a.x to b.y`), use cases with actors/subjects/includes,
-`allocate`, and actions with nesting and `message`/`then`.
+notation:
+
+- packages and imports
+- part, port and interface defs and usages, with `:>` specialization and
+  multiplicities such as `[4]` or `[1..3]`
+- attributes
+- connections (`connect a.x to b.y`), optionally named and typed by an
+  interface
+- use cases with actors, subjects and `include`
+- `allocate`
+- actions, nested to any depth, and `message` / `then` for scenarios
+
+`requirement`, `satisfy` and `perform` also parse, but no view draws them. One
+relation cannot be written yet: `allocate` cannot name a function, so the
+realization of a Logical-view function by a component is not expressible.
+
 See `grammar/sysml.langium` for the exact grammar and
-[DEVELOPMENT.md](DEVELOPMENT.md) for deliberate deviations (e.g. no UML
-`extend` — SysML v2 dropped it).
+[DEVELOPMENT.md](DEVELOPMENT.md) for the deliberate deviations from the spec
+(e.g. no UML `extend` — SysML v2 dropped it).
 
 ## Programmatic API
 
@@ -171,34 +227,10 @@ const { svg } = await diagramTypes['logical'].render(model, {
 - [VIEWS.md](VIEWS.md) — the six views: what each one admits, and why.
 - [DEVELOPMENT.md](DEVELOPMENT.md) — architecture, design decisions and the
   deliberate spec deviations behind the tool.
-
-## Example models
-
-Two complete worked models ship with the tool, each with all six generated
-views:
-
-- [examples/auv-system/](examples/auv-system/) — an autonomous unmanned aerial
-  vehicle: aircraft, radio controller, batteries and charger, with a
-  follow-person scenario. The larger of the two, and the one that pushes the
-  layout hardest.
-- [examples/coffee-machine/](examples/coffee-machine/) — a bean-to-cup coffee
-  machine: water and coffee paths, a steam wand and one control board, with a
-  make-cappuccino scenario. The leaner one, and the better starting point to
-  read.
-
-Both use the same partition — one file per view, named for the view it feeds:
-
-```text
-use-case.sysml   logical.sysml   implementation.sysml
-                 physical.sysml  deployment.sysml   process.sysml
-```
-
-It works because the views own distinct content rather than slicing shared
-content. `logical.sysml` names no component, `implementation.sysml` names no
-board, and `physical.sysml` names no program — so each of those three parses
-and renders entirely on its own. Only `deployment.sysml` references anything
-outside itself, and that is the point: its whole content is the mapping
-between the software and the hardware.
+- [Pitch deck](https://ola-coding.github.io/ortho/) — the six views of both
+  example models, model source beside each generated diagram. Rebuilt and
+  published to GitHub Pages on every push to `main`; to build it locally, run
+  `npm run deck` and open `marketing/ortho-deck.html`.
 
 ## License
 
