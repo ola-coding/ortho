@@ -79,4 +79,24 @@ describe('sequence extraction and rendering', () => {
         // messages appear top-to-bottom in document order
         expect(svg.indexOf('planRoute')).toBeLessThan(svg.indexOf('telemetry'));
     });
+
+    it('draws an untyped lifeline as a person', async () => {
+        const document = await parseOk(`
+            package P {
+                part def Server;
+                action def Handshake {
+                    part client;
+                    part server : Server;
+                    message syn from client to server;
+                }
+            }
+        `);
+        const sequence = extractSequenceModel(document.parseResult.value);
+        expect(sequence.lifelines.map(l => [l.label, l.actor])).toEqual([
+            ['client', true],
+            ['server : Server', false]
+        ]);
+        const svg = renderSequenceSvg(sequence, { heading: 'Process view — P', source: 'inline' });
+        expect(svg).toContain('<circle'); // the stick figure's head
+    });
 });

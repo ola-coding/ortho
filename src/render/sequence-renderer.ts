@@ -8,6 +8,8 @@ const STROKE = '#2b2b2b';
 const TEXT_COLOR = '#1a1a1a';
 
 const HEAD_HEIGHT = 34;
+/** A stick figure and the name beneath it. */
+const ACTOR_HEIGHT = 74;
 const MESSAGE_STEP = 40;
 const SELF_LOOP_WIDTH = 44;
 const BAR_WIDTH = 8;
@@ -25,7 +27,9 @@ interface Activation {
 export function renderSequenceSvg(model: SequenceModel, title: DiagramTitle): string {
     const heads = model.lifelines.map(l => ({
         ...l,
-        width: Math.max(90, measureText(l.label, 12, 'bold') + 24)
+        width: l.actor
+            ? Math.max(60, measureText(l.label, 12, 'bold') + 16)
+            : Math.max(90, measureText(l.label, 12, 'bold') + 24)
     }));
     const columnOf = new Map(heads.map((h, i) => [h.id, i]));
 
@@ -70,7 +74,10 @@ export function renderSequenceSvg(model: SequenceModel, title: DiagramTitle): st
     const contentRight = lastHead ? centers.get(lastHead.id)! + lastHead.width / 2 + rightExtra : 200;
 
     const headTop = PAD_TOP;
-    const firstMessageY = headTop + HEAD_HEIGHT + 36;
+    // A stick figure is taller than a box. When one is present every head
+    // takes its height, boxes bottom-aligned, so all lifelines start level.
+    const headsHeight = heads.some(h => h.actor) ? ACTOR_HEIGHT : HEAD_HEIGHT;
+    const firstMessageY = headTop + headsHeight + 36;
     const lifelineBottom = firstMessageY + model.messages.length * MESSAGE_STEP;
     const width = contentRight + PAD_X;
     const height = lifelineBottom + 28;
@@ -93,12 +100,30 @@ export function renderSequenceSvg(model: SequenceModel, title: DiagramTitle): st
 
     for (const head of heads) {
         const cx = centers.get(head.id)!;
-        parts.push(`
-    <g><rect x="${cx - head.width / 2}" y="${headTop}" width="${head.width}" height="${HEAD_HEIGHT}"
-          fill="${FILL}" stroke="${STROKE}" stroke-width="1.25" />
-      <text x="${cx}" y="${headTop + HEAD_HEIGHT / 2 + 4}" text-anchor="middle"
+        if (head.actor) {
+            // The same figure the use case view draws, so a person reads as
+            // one on both views.
+            const top = headTop;
+            parts.push(`
+    <g><g stroke="${STROKE}" stroke-width="1.5" fill="none">
+        <circle cx="${cx}" cy="${top + 9}" r="8" fill="${FILL}" />
+        <line x1="${cx}" y1="${top + 17}" x2="${cx}" y2="${top + 36}" />
+        <line x1="${cx - 13}" y1="${top + 24}" x2="${cx + 13}" y2="${top + 24}" />
+        <line x1="${cx}" y1="${top + 36}" x2="${cx - 11}" y2="${top + 52}" />
+        <line x1="${cx}" y1="${top + 36}" x2="${cx + 11}" y2="${top + 52}" /></g>
+      <text x="${cx}" y="${top + 68}" text-anchor="middle"
           font-size="12" font-weight="600" fill="${TEXT_COLOR}">${escapeXml(head.label)}</text>
-      <line x1="${cx}" y1="${headTop + HEAD_HEIGHT}" x2="${cx}" y2="${lifelineBottom}"
+      <line x1="${cx}" y1="${headTop + headsHeight}" x2="${cx}" y2="${lifelineBottom}"
+          stroke="${STROKE}" stroke-width="1" stroke-dasharray="4 4" /></g>`);
+            continue;
+        }
+        const boxTop = headTop + headsHeight - HEAD_HEIGHT;
+        parts.push(`
+    <g><rect x="${cx - head.width / 2}" y="${boxTop}" width="${head.width}" height="${HEAD_HEIGHT}"
+          fill="${FILL}" stroke="${STROKE}" stroke-width="1.25" />
+      <text x="${cx}" y="${boxTop + HEAD_HEIGHT / 2 + 4}" text-anchor="middle"
+          font-size="12" font-weight="600" fill="${TEXT_COLOR}">${escapeXml(head.label)}</text>
+      <line x1="${cx}" y1="${boxTop + HEAD_HEIGHT}" x2="${cx}" y2="${lifelineBottom}"
           stroke="${STROKE}" stroke-width="1" stroke-dasharray="4 4" /></g>`);
     }
 

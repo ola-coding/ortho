@@ -57,6 +57,14 @@ describe('AUV system example model', () => {
         const includes = graph.edges.filter(e => e.kind === 'include');
         expect(includes.map(e => e.targetId).sort())
             .toEqual(['UseCases::avoidObstacles', 'UseCases::selectTarget']);
+
+        // The pilot comes through the shared use case def: primary, drawn on
+        // the left. The person followed is added on one use case only:
+        // secondary, drawn on the right — which the layout reads from the
+        // direction of the (otherwise undirected) association.
+        const associations = graph.edges.filter(e => e.kind === 'association');
+        expect(associations.filter(e => e.sourceId === 'actor:UseCases::Pilot')).toHaveLength(5);
+        expect(associations.filter(e => e.targetId === 'actor:UseCases::TrackedPerson')).toHaveLength(1);
     });
 
     it('logical view: a strict capability tree, larger than the coffee machine', async () => {
@@ -124,19 +132,35 @@ describe('AUV system example model', () => {
         ]);
     });
 
-    it('deployment view: seven programs across three hosts, drawn as containment', async () => {
+    it('deployment view: seven programs on four hosts, grouped by the device they sit in', async () => {
         const graph = extractDeploymentGraph(
             await parseSet('deployment.sysml', 'implementation.sysml', 'physical.sysml')
         );
         expect(graph.edges).toHaveLength(0);
-        expect(graph.nodes.map(n => n.id).sort()).toEqual([
-            'Hardware::Aircraft::camera',
-            'Hardware::Aircraft::fc',
-            'Hardware::Aircraft::radio',
-            'Hardware::AuvSystem::controller'
-        ]);
 
-        const fc = graph.nodes.find(n => n.id === 'Hardware::Aircraft::fc')!;
+        // The system frame holds the aircraft's frame and the handheld; the
+        // aircraft's frame holds its three boards.
+        expect(graph.nodes.map(n => n.name)).toEqual(['AuvSystem']);
+        const system = graph.nodes[0];
+        const aircraft = system.children!.find(c => c.name === 'aircraft : Aircraft')!;
+        expect(aircraft.children!.map(c => c.id).sort()).toEqual([
+            'Hardware::Aircraft::camera', 'Hardware::Aircraft::fc', 'Hardware::Aircraft::radio'
+        ]);
+        expect(system.children!.map(c => c.id)).toContain('Hardware::AuvSystem::controller');
+
+        const hosts: typeof graph.nodes = [];
+        const walk = (nodes: typeof graph.nodes): void => nodes.forEach(n => {
+            if (n.shape === 'node3d') {
+                hosts.push(n);
+            }
+            walk(n.children ?? []);
+        });
+        walk(graph.nodes);
+        expect(hosts).toHaveLength(4);
+        // Every box inside a host is a deployed program, so none carries a tag.
+        expect(hosts.flatMap(h => h.children!).every(c => c.stereotype === '')).toBe(true);
+
+        const fc = hosts.find(n => n.id === 'Hardware::Aircraft::fc')!;
         expect(fc.children!.map(c => c.name).sort()).toEqual([
             'flightControl : FlightControlStack',
             'navigation : NavigationEngine',
@@ -144,7 +168,7 @@ describe('AUV system example model', () => {
             'targetTracking : TargetTrackingEngine'
         ]);
 
-        const placed = graph.nodes.flatMap(n => n.children!.map(c => c.name));
+        const placed = hosts.flatMap(n => n.children!.map(c => c.name));
         expect(placed).toHaveLength(7);
         expect(new Set(placed).size).toBe(7);
     });
@@ -152,6 +176,8 @@ describe('AUV system example model', () => {
     it('process view: follow-person scenario with obstacle avoidance', async () => {
         const sequence = extractSequenceModel(await parseSet('process.sysml', 'implementation.sysml'));
         expect(sequence.lifelines).toHaveLength(6);
+        // The pilot is untyped in the model: a person, drawn as a stick figure.
+        expect(sequence.lifelines.filter(l => l.actor).map(l => l.label)).toEqual(['pilot']);
         expect(sequence.messages[0].label).toBe('launch');
 
         // A self-message: the flight stack manoeuvres without asking anyone.

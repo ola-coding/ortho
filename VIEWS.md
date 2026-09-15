@@ -36,7 +36,7 @@ flowchart TD
 
 How the system is used, and by whom. Says nothing about how anything works — no realization detail reaches this view.
 
-**Rendering.** A use case diagram. Actors are stick figures placed outside a plain rectangle that carries the subject's name; use cases are ellipses inside it. Actor-to-use-case associations are solid, undecorated lines. An `include` is a dashed line with an open arrowhead, labelled «include», pointing at the included use case.
+**Rendering.** A use case diagram. Actors are stick figures placed outside a plain rectangle that carries the subject's name; use cases are ellipses inside it. Primary actors — those declared on a use case def, and so shared by every use case of that kind — stand on the left; a secondary actor, added on a single use case (someone the system acts on rather than a user of it), stands on the right. Actor-to-use-case associations are solid, undecorated straight lines. An `include` is a dashed line with an open arrowhead, labelled «include», pointing at the included use case.
 
 ### Logical view
 
@@ -52,14 +52,14 @@ Functions outlive their realizations — arming a mechanism can be a mechanical 
 
 Realization is many to many — one function can be realized by software and hardware together, a relay plus its driver, and one function may have several realizations across product variants. A function exists exactly once here; the elements that realize it live on the Implementation and Physical views, though the realization relation itself is drawn on no view.
 
-**Rendering.** An organization chart of rounded rectangles, one box per function. Every function has exactly one parent, so the decomposition is strictly a tree: parents sit above their children, joined by plain connector lines with no arrowheads. A function shared by several branches sits at their lowest common ancestor rather than being duplicated, so its position states how widely it is shared.
+**Rendering.** A work-breakdown chart of rounded rectangles, one box per function. Every function has exactly one parent, so the decomposition is strictly a tree: each parent is centred over its family, and a single stem drops to a line that feeds every child, with no arrowheads. The lowest level of each branch is listed vertically beneath its parent, off a spine, so a broad tree keeps a page's proportions instead of stretching into one long row. A function shared by several branches sits at their lowest common ancestor rather than being duplicated, so its position states how widely it is shared.
 
 ### Implementation view
 
 Static structure of the software: modules and their dependencies. Runtime
 behaviour belongs to Process, hardware to Physical.
 
-**Rendering.** Packages are rectangles with a small tab in the top-left corner, nested to show containment. Modules inside them are plain rectangles carrying a name compartment. Dependencies are drawn between packages, read from their imports: dashed lines with an open arrowhead, labelled «import», pointing at the package depended upon.
+**Rendering.** Packages are rectangles with a small tab in the top-left corner, nested to show containment. Modules — the part defs a package declares — are plain rectangles inside it carrying a name compartment; a package-level part usage is an instance, not a module, and is not drawn. Dependencies are drawn between packages, read from their imports: dashed lines with an open arrowhead, labelled «import», pointing at the package depended upon.
 
 ### Physical view
 
@@ -78,13 +78,13 @@ Which hardware runs which software. The only view whose content is a relation ra
 
 Narrower than realization — this is the sub-case where the realization happens to be software and therefore needs a host.
 
-**Rendering.** Hardware nodes are drawn as three-dimensional boxes — a rectangle with a shallow depth edge along its top and right. The software they host is drawn as plain rectangles nested inside them. Nesting replaces arrows entirely — there is no allocation edge to follow, and a node with nothing drawn inside it visibly hosts nothing. This deliberately replaces the earlier allocation diagram, which kept the boxes apart and joined them with dashed arrows.
+**Rendering.** Hardware nodes are drawn as three-dimensional boxes — a rectangle with a shallow depth edge along its top and right. The software they host is drawn as plain rectangles nested inside them, and the nodes in turn sit inside a frame for the device they are fitted in — the aircraft's boards together, the handheld on its own — so which programs run where reads at a glance. Nesting replaces arrows entirely — there is no allocation edge to follow, and a node with nothing drawn inside it visibly hosts nothing. Boxes are packed into rows rather than lined up, so the view keeps a page's proportions. This deliberately replaces the earlier allocation diagram, which kept the boxes apart and joined them with dashed arrows.
 
 ### Process view
 
 How software modules interact at runtime, for one scenario. One scenario per diagram; structure belongs to the other views, and hardware dynamics are out of scope.
 
-**Rendering.** A sequence diagram. Each module is a rectangle across the top with a dashed vertical lifeline hanging beneath it, and a narrow activation bar drawn on the lifeline while the module is active. Messages are solid horizontal arrows with a filled arrowhead, ordered top to bottom and labelled with the message name and its payload. A message a module sends to itself loops back to the same lifeline.
+**Rendering.** A sequence diagram. Each module is a rectangle across the top with a dashed vertical lifeline hanging beneath it, and a narrow activation bar drawn on the lifeline while the module is active. A person taking part — an untyped lifeline, or one typed as an actor — is a stick figure instead of a rectangle. Messages are solid horizontal arrows with a filled arrowhead, ordered top to bottom and labelled with the message name and its payload. A message a module sends to itself loops back to the same lifeline.
 
 ## Summary
 

@@ -6,7 +6,7 @@ import { parseHelper } from 'langium/test';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
 import type { Model } from '../src/generated/ast.js';
 import { extractLogicalGraph } from '../src/diagrams/logical.js';
-import { layoutGraph } from '../src/layout/elk-layout.js';
+import { layoutTree } from '../src/layout/tree-layout.js';
 import { renderSvg } from '../src/render/svg-renderer.js';
 
 const services = createSysmlServices();
@@ -53,12 +53,57 @@ describe('logical diagram extraction', () => {
     it('renders to SVG with no arrowheads on any branch', async () => {
         const graph = extractLogicalGraph(await parseExample());
         const svg = renderSvg(
-            await layoutGraph(graph, { direction: 'DOWN' }),
+            layoutTree(graph),
             { heading: 'Logical view — DroneFunctions', source: 'fixtures/logical.sysml' }
         );
         expect(svg).toContain('<svg');
         expect(svg).toContain('rx="11"');
         expect(svg).not.toContain('marker-end');
         expect(svg).not.toContain('marker-start');
+    });
+
+    it('lays the tree out as a work-breakdown chart', async () => {
+        const graph = extractLogicalGraph(await parseExample());
+        const laidOut = layoutTree(graph);
+        expect(laidOut.nodes).toHaveLength(graph.nodes.length);
+
+        const at = new Map(laidOut.nodes.map(n => [n.id, n]));
+        const family = new Map<string, string[]>();
+        for (const edge of graph.edges) {
+            family.set(edge.sourceId, [...(family.get(edge.sourceId) ?? []), edge.targetId]);
+        }
+        for (const [parentId, kids] of family) {
+            const parent = at.get(parentId)!;
+            const boxes = kids.map(k => at.get(k)!);
+            expect(boxes.every(b => b.y > parent.y + parent.height)).toBe(true);
+            if (kids.every(k => !family.has(k))) {
+                // The lowest level is listed: one column, in declaration order.
+                expect(new Set(boxes.map(b => b.x)).size).toBe(1);
+                boxes.slice(1).forEach((b, i) => expect(b.y).toBeGreaterThan(boxes[i].y));
+            } else {
+                // Any other family is a row, with its parent centred over it.
+                expect(new Set(boxes.map(b => b.y)).size).toBe(1);
+                const first = boxes[0];
+                const last = boxes[boxes.length - 1];
+                const middle = (first.x + first.width / 2 + last.x + last.width / 2) / 2;
+                expect(parent.x + parent.width / 2).toBeCloseTo(middle, 5);
+            }
+        }
+
+        // No two boxes overlap, and every branch is drawn with right angles.
+        for (const a of laidOut.nodes) {
+            for (const b of laidOut.nodes) {
+                if (a !== b) {
+                    const apart = a.x + a.width <= b.x || b.x + b.width <= a.x
+                        || a.y + a.height <= b.y || b.y + b.height <= a.y;
+                    expect(apart, `${a.name} overlaps ${b.name}`).toBe(true);
+                }
+            }
+        }
+        for (const edge of laidOut.edges) {
+            edge.points.slice(1).forEach((p, i) => {
+                expect(p.x === edge.points[i].x || p.y === edge.points[i].y).toBe(true);
+            });
+        }
     });
 });

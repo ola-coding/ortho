@@ -72,6 +72,22 @@ export function extractUseCaseGraph(model: Model): DiagramGraph {
     const associationSeen = new Set<string>();
     let edgeCounter = 0;
 
+    // An actor declared on a use case def, and so shared by every use case of
+    // that kind, is a primary actor, drawn on the left. One added on a single
+    // use case only — the person the drone follows, not its pilot — is a
+    // secondary actor, drawn on the right. The distinction needs at least one
+    // actor to come through a def; otherwise every actor is primary.
+    const actorKey = (actor: ActorUsage): string => (actor.type?.ref ? qualifiedName(actor.type.ref) : actor.name);
+    const onDef = new Set<string>();
+    for (const useCase of useCases) {
+        if (isUseCaseDef(useCase)) {
+            for (const actor of useCase.members.filter(isActorUsage)) {
+                onDef.add(actorKey(actor));
+            }
+        }
+    }
+    const isSecondary = (key: string): boolean => onDef.size > 0 && !onDef.has(key);
+
     for (const [useCase, node] of ellipseByUseCase) {
         const members = effectiveMembers(useCase);
         const subject = members.find(isSubjectUsage);
@@ -101,7 +117,7 @@ export function extractUseCaseGraph(model: Model): DiagramGraph {
         }
 
         for (const actor of members.filter(isActorUsage)) {
-            const key = actor.type?.ref ? qualifiedName(actor.type.ref) : actor.name;
+            const key = actorKey(actor);
             const label = actor.type?.ref?.name ?? actor.type?.$refText ?? actor.name;
             let actorGraphNode = actorNodes.get(key);
             if (!actorGraphNode) {
@@ -112,11 +128,15 @@ export function extractUseCaseGraph(model: Model): DiagramGraph {
             const pairKey = `${actorGraphNode.id}->${node.id}`;
             if (!associationSeen.has(pairKey)) {
                 associationSeen.add(pairKey);
+                // An association has no direction and is drawn without an
+                // arrowhead; the edge's direction only tells the layout which
+                // side of the use cases the actor belongs on.
+                const secondary = isSecondary(key);
                 edges.push({
                     id: `e${edgeCounter++}`,
                     kind: 'association',
-                    sourceId: actorGraphNode.id,
-                    targetId: node.id
+                    sourceId: secondary ? node.id : actorGraphNode.id,
+                    targetId: secondary ? actorGraphNode.id : node.id
                 });
             }
         }

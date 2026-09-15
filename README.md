@@ -18,7 +18,7 @@ ortho render models/logical.sysml -d logical -o diagrams/logical-view.svg
 | `logical` | Logical view | the capability tree: what the system does, as functions |
 | `implementation` | Implementation view | software packages, the modules in them, «import» dependencies |
 | `physical` | Physical view | the product: parts nested in their assemblies, their ports, and the wiring between them |
-| `deployment` | Deployment view | hardware nodes with the software they host drawn inside |
+| `deployment` | Deployment view | hardware nodes, grouped by the device they sit in, with the software they host drawn inside |
 | `process` | Process view | lifelines and ordered messages of one scenario |
 
 The set is Kruchten's 4+1 with two changes: his Physical view is split into

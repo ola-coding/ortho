@@ -7,6 +7,8 @@ import { extractPhysicalGraph } from './diagrams/physical.js';
 import { extractDeploymentGraph } from './diagrams/deployment.js';
 import { extractSequenceModel } from './diagrams/sequence.js';
 import { layoutGraph } from './layout/elk-layout.js';
+import type { LayoutOptions } from './layout/elk-layout.js';
+import { layoutTree } from './layout/tree-layout.js';
 import { renderSvg } from './render/svg-renderer.js';
 import type { DiagramTitle } from './render/svg-renderer.js';
 import { renderSequenceSvg } from './render/sequence-renderer.js';
@@ -24,10 +26,22 @@ export interface DiagramType {
     render: DiagramRenderer;
 }
 
-function graphDiagram(extract: (model: Model) => DiagramGraph, direction: 'DOWN' | 'RIGHT'): DiagramRenderer {
+function graphDiagram(extract: (model: Model) => DiagramGraph, layout: LayoutOptions): DiagramRenderer {
     return async (model, title) => {
         const graph = extract(model);
-        const laidOut = await layoutGraph(graph, { direction });
+        const laidOut = await layoutGraph(graph, layout);
+        return {
+            svg: renderSvg(laidOut, title),
+            summary: `${laidOut.nodes.length} node(s), ${graph.edges.length} edge(s)`
+        };
+    };
+}
+
+/** Laid out by ortho itself rather than ELK: a tree's shape is fully determined. */
+function treeDiagram(extract: (model: Model) => DiagramGraph): DiagramRenderer {
+    return async (model, title) => {
+        const graph = extract(model);
+        const laidOut = layoutTree(graph);
         return {
             svg: renderSvg(laidOut, title),
             summary: `${laidOut.nodes.length} node(s), ${graph.edges.length} edge(s)`
@@ -37,11 +51,14 @@ function graphDiagram(extract: (model: Model) => DiagramGraph, direction: 'DOWN'
 
 /** The six views, in the order VIEWS.md introduces them. */
 export const diagramTypes = {
-    'use-case': { view: 'Use case view', render: graphDiagram(extractUseCaseGraph, 'RIGHT') },
-    'logical': { view: 'Logical view', render: graphDiagram(extractLogicalGraph, 'DOWN') },
-    'implementation': { view: 'Implementation view', render: graphDiagram(extractImplementationGraph, 'DOWN') },
-    'physical': { view: 'Physical view', render: graphDiagram(extractPhysicalGraph, 'DOWN') },
-    'deployment': { view: 'Deployment view', render: graphDiagram(extractDeploymentGraph, 'DOWN') },
+    'use-case': {
+        view: 'Use case view',
+        render: graphDiagram(extractUseCaseGraph, { direction: 'RIGHT', edgeRouting: 'STRAIGHT' })
+    },
+    'logical': { view: 'Logical view', render: treeDiagram(extractLogicalGraph) },
+    'implementation': { view: 'Implementation view', render: graphDiagram(extractImplementationGraph, { direction: 'DOWN' }) },
+    'physical': { view: 'Physical view', render: graphDiagram(extractPhysicalGraph, { direction: 'DOWN' }) },
+    'deployment': { view: 'Deployment view', render: graphDiagram(extractDeploymentGraph, { algorithm: 'rectpacking' }) },
     'process': {
         view: 'Process view',
         render: async (model, title) => {

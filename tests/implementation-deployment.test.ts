@@ -54,12 +54,11 @@ describe('implementation diagram extraction', () => {
         expect(graph.edges.every(e => e.kind === 'import')).toBe(true);
     });
 
-    it('draws the modules a package declares inside it', async () => {
+    it('draws the modules a package declares inside it, and no instances', async () => {
         const graph = extractImplementationGraph(await parseExample());
         const physical = graph.nodes[0].children!.find(c => c.name === 'Physical')!;
-        expect(physical.children!.map(c => c.name).sort()).toEqual([
-            'CompanionComputer', 'FlightController', 'cc : CompanionComputer', 'fc : FlightController'
-        ]);
+        // `fc` and `cc` are package-level part usages — instances, not modules.
+        expect(physical.children!.map(c => c.name).sort()).toEqual(['CompanionComputer', 'FlightController']);
         // A module box carries its name alone — no stereotype line.
         expect(physical.children!.every(c => c.stereotype === '')).toBe(true);
     });

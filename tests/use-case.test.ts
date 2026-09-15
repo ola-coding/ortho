@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { parseHelper } from 'langium/test';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
+import { parseSysmlFiles } from '../src/parser/parse.js';
 import { isActorUsage, isIncludeUsage, isUseCaseDef, isUseCaseUsage } from '../src/generated/ast.js';
 import type { Model, UseCaseUsage } from '../src/generated/ast.js';
 import { extractUseCaseGraph } from '../src/diagrams/use-case.js';
@@ -99,5 +100,34 @@ describe('use-case diagram extraction', () => {
         expect(svg).toContain('<ellipse');
         expect(svg).toContain('<circle'); // actor head
         expect(svg).toContain('&#171;include&#187;');
+    });
+
+    it('draws every line straight, clear of every use case it does not join', async () => {
+        const examples = resolve(dirname(fileURLToPath(import.meta.url)), '../examples');
+        for (const example of ['auv-system', 'coffee-machine']) {
+            const { model } = await parseSysmlFiles(
+                createSysmlServices().Sysml, [resolve(examples, example, 'use-case.sysml')]
+            );
+            const laidOut = await layoutGraph(extractUseCaseGraph(model), { direction: 'RIGHT', edgeRouting: 'STRAIGHT' });
+            const ellipses = laidOut.nodes.filter(n => n.shape === 'ellipse');
+            for (const edge of laidOut.edges) {
+                const line = `${example}: ${edge.sourceId} -> ${edge.targetId}`;
+                expect(edge.points, line).toHaveLength(2);
+                const [p, q] = edge.points;
+                for (const n of ellipses.filter(e => e.id !== edge.sourceId && e.id !== edge.targetId)) {
+                    // Sampled along the line: how far inside the ellipse it
+                    // reaches, where 1 is on the outline.
+                    const rx = n.width / 2;
+                    const ry = n.height / 2;
+                    let nearest = Infinity;
+                    for (let i = 0; i <= 200; i++) {
+                        const x = p.x + (q.x - p.x) * i / 200;
+                        const y = p.y + (q.y - p.y) * i / 200;
+                        nearest = Math.min(nearest, ((x - n.x - rx) / rx) ** 2 + ((y - n.y - ry) / ry) ** 2);
+                    }
+                    expect(nearest, `${line} crosses ${n.name}`).toBeGreaterThan(1);
+                }
+            }
+        }
     });
 });

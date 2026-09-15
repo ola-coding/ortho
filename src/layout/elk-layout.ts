@@ -2,6 +2,7 @@ import ElkConstructor from 'elkjs';
 import type { ELK, ElkNode, ElkExtendedEdge, ELKConstructorArguments } from 'elkjs/lib/elk-api.js';
 import type { DiagramGraph, EdgeKind, GraphNode, NodeShape } from '../model/graph.js';
 import { measureText } from '../render/text-metrics.js';
+import { straightenEdges } from './straight-edges.js';
 
 const ELK = ElkConstructor as unknown as { new(args?: ELKConstructorArguments): ELK };
 const elk = new ELK();
@@ -21,7 +22,23 @@ export const NODE_DEPTH = 12;
 
 export interface LayoutOptions {
     direction?: 'DOWN' | 'RIGHT';
+    /**
+     * `STRAIGHT` draws each line between ellipses and actors as one segment
+     * wherever that clears every other shape (the use case view; see
+     * straight-edges.ts). ELK still places the shapes, routing with `POLYLINE`
+     * for the lines that cannot be straight.
+     */
+    edgeRouting?: 'ORTHOGONAL' | 'STRAIGHT';
+    /**
+     * `rectpacking` packs boxes into rows at a page-shaped aspect ratio, level
+     * by level, instead of layering them. It is for edge-free views
+     * (deployment), where layering would put every box in one long row.
+     */
+    algorithm?: 'layered' | 'rectpacking';
 }
+
+/** Target width-to-height ratio when packing. */
+const PACKING_ASPECT = '1.6';
 
 export interface LaidOutPort {
     id: string;
@@ -65,19 +82,25 @@ export interface LaidOutDiagram {
     edges: LaidOutEdge[];
 }
 
-function toElkNode(n: GraphNode): ElkNode {
+function toElkNode(n: GraphNode, packing: boolean): ElkNode {
     const elkNode: ElkNode = {
         id: n.id,
         layoutOptions: { 'elk.portConstraints': 'FREE' }
     };
     if (n.children?.length) {
-        elkNode.children = n.children.map(toElkNode);
+        elkNode.children = n.children.map(child => toElkNode(child, packing));
         // Extra top padding leaves room for the boundary title; a 3-D node also
         // has to clear its depth edge, which is drawn inside its own bounds.
         elkNode.layoutOptions!['elk.padding'] = n.shape === 'node3d'
             ? `[top=${45 + NODE_DEPTH},left=20,bottom=20,right=${20 + NODE_DEPTH}]`
             : '[top=45,left=25,bottom=25,right=25]';
-        elkNode.layoutOptions!['elk.spacing.nodeNode'] = '40';
+        elkNode.layoutOptions!['elk.spacing.nodeNode'] = packing ? '24' : '40';
+        if (packing) {
+            // Packing lays out each level on its own, so every container
+            // names the algorithm for its children.
+            elkNode.layoutOptions!['elk.algorithm'] = 'rectpacking';
+            elkNode.layoutOptions!['elk.aspectRatio'] = PACKING_ASPECT;
+        }
     } else {
         elkNode.width = n.width;
         elkNode.height = n.height;
@@ -118,32 +141,37 @@ function indexHierarchy(nodes: GraphNode[], byId: Map<string, GraphNode>, parent
 }
 
 export async function layoutGraph(graph: DiagramGraph, options: LayoutOptions = {}): Promise<LaidOutDiagram> {
+    const packing = options.algorithm === 'rectpacking';
     const elkGraph: ElkNode = {
         id: 'root',
-        layoutOptions: {
-            'elk.algorithm': 'layered',
-            'elk.direction': options.direction ?? 'DOWN',
-            'elk.hierarchyHandling': 'INCLUDE_CHILDREN',
-            'elk.spacing.nodeNode': '50',
-            'elk.layered.spacing.nodeNodeBetweenLayers': '70',
-            'elk.spacing.edgeNode': '30',
-            'elk.spacing.edgeEdge': '20',
-            'elk.edgeRouting': 'ORTHOGONAL'
-        },
-        children: graph.nodes.map(toElkNode),
+        layoutOptions: packing
+            ? { 'elk.algorithm': 'rectpacking', 'elk.aspectRatio': PACKING_ASPECT, 'elk.spacing.nodeNode': '30' }
+            : {
+                'elk.algorithm': 'layered',
+                'elk.direction': options.direction ?? 'DOWN',
+                'elk.hierarchyHandling': 'INCLUDE_CHILDREN',
+                'elk.spacing.nodeNode': '50',
+                'elk.layered.spacing.nodeNodeBetweenLayers': '70',
+                'elk.spacing.edgeNode': '30',
+                'elk.spacing.edgeEdge': '20',
+                'elk.edgeRouting': options.edgeRouting === 'STRAIGHT' ? 'POLYLINE' : 'ORTHOGONAL'
+            },
+        children: graph.nodes.map(n => toElkNode(n, packing)),
         edges: graph.edges.map(e => ({
             id: e.id,
             sources: [e.sourcePortId ?? e.sourceId],
             targets: [e.targetPortId ?? e.targetId],
-            // Wire labels on the physical view (interface names) are real ELK
-            // labels, so the layout keeps them clear of boxes and other lines;
-            // a midpoint label on a wire routed past many boxes lands wherever
-            // the route happens to be busiest.
-            labels: e.label && e.kind === 'connection'
+            // Wire labels on the physical view (interface names), «include» on
+            // the use case view and «import» on the implementation view are
+            // real ELK labels, so the layout keeps them clear of boxes and
+            // other lines; a midpoint label lands wherever the route happens to
+            // be busiest, or on the arrowhead of a short edge.
+            labels: e.label && (e.kind === 'connection' || e.kind === 'include' || e.kind === 'import')
                 ? [{
                     id: `${e.id}@label`,
                     text: e.label,
-                    width: measureText(e.label, EDGE_LABEL_FONT) + 4,
+                    // A keyword is drawn with its guillemets; size it so.
+                    width: measureText(e.kind === 'connection' ? e.label : `«${e.label}»`, EDGE_LABEL_FONT) + 4,
                     height: EDGE_LABEL_HEIGHT
                 }]
                 : undefined
@@ -237,10 +265,11 @@ export async function layoutGraph(graph: DiagramGraph, options: LayoutOptions = 
         };
     });
 
-    return {
+    const laidOut = {
         width: result.width ?? 400,
         height: result.height ?? 300,
         nodes,
         edges
     };
+    return options.edgeRouting === 'STRAIGHT' ? straightenEdges(laidOut) : laidOut;
 }

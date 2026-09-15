@@ -508,7 +508,7 @@ use case followPerson : OperateDrone {
             <div class="figure-mount">
               <div class="figure-svg" data-svg="auv/use-case-view.svg"></div>
             </div>
-            <p class="figure-caption">5 use cases · 2 actors · {{DIM:auv/use-case-view.svg}} — the boundary is inferred from each use case's subject, and actors are de-duplicated by type. The subject is untyped on purpose: naming an airframe part here would be realization detail.</p>
+            <p class="figure-caption">5 use cases · 2 actors · {{DIM:auv/use-case-view.svg}} — the boundary is inferred from each use case's subject, and actors are de-duplicated by type. The pilot, cast on the shared use case def, stands on the left; the person being followed, added on one use case only, stands on the right. The subject is untyped on purpose: naming an airframe part here would be realization detail.</p>
           </div>
         </div>
       </div>
@@ -559,7 +559,7 @@ action def OperateAircraft {
             <div class="figure-mount">
               <div class="figure-svg" data-svg="auv/logical-view.svg"></div>
             </div>
-            <p class="figure-caption">27 functions · {{DIM:auv/logical-view.svg}} — a strict tree: one parent each, no arrowheads, and no gimbal, transceiver or program named anywhere. Attitude stabilisation was mechanical gyros within living memory; this view survives that change, and the two below it do not.</p>
+            <p class="figure-caption">27 functions · {{DIM:auv/logical-view.svg}} — a strict tree: one parent each, no arrowheads, and no gimbal, transceiver or program named anywhere. Each branch's last level is listed beneath its parent, so the tree keeps a page's proportions. Attitude stabilisation was mechanical gyros within living memory; this view survives that change, and the two below it do not.</p>
           </div>
         </div>
       </div>
@@ -716,7 +716,7 @@ package Deployment {
             <div class="figure-mount">
               <div class="figure-svg" data-svg="auv/deployment-view.svg"></div>
             </div>
-            <p class="figure-caption">7 programs · 4 hosts · zero edges · {{DIM:auv/deployment-view.svg}} — the allocation is drawn as containment, not as arrows. A node with nothing inside it visibly hosts nothing, which is the fact the view exists to show.</p>
+            <p class="figure-caption">7 programs · 4 hosts · zero edges · {{DIM:auv/deployment-view.svg}} — the allocation is drawn as containment, not as arrows, and each host sits inside the device it is fitted in: three boards in the aircraft, the handheld on its own. A node with nothing inside it visibly hosts nothing, which is the fact the view exists to show.</p>
           </div>
         </div>
       </div>
@@ -767,7 +767,7 @@ action def FollowPerson {
             <div class="figure-mount">
               <div class="figure-svg" data-svg="auv/process-view.svg"></div>
             </div>
-            <p class="figure-caption">6 lifelines · 9 messages · {{DIM:auv/process-view.svg}} — lifeline order, activation bars and the self-message loop are all derived from the text.</p>
+            <p class="figure-caption">6 lifelines · 9 messages · {{DIM:auv/process-view.svg}} — lifeline order, activation bars and the self-message loop are all derived from the text. The pilot is untyped in the model, so it is drawn as a person, not a module.</p>
           </div>
         </div>
       </div>

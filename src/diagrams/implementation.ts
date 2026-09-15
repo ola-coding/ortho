@@ -1,37 +1,35 @@
-import { isPackageDecl, isPartDef, isPartUsage } from '../generated/ast.js';
-import type { Model, PackageDecl, PartDef, PartUsage } from '../generated/ast.js';
+import { isPackageDecl, isPartDef } from '../generated/ast.js';
+import type { Model, PackageDecl, PartDef } from '../generated/ast.js';
 import type { DiagramGraph, GraphEdge, GraphNode } from '../model/graph.js';
 import { qualifiedName } from '../model/graph.js';
 import { collectPackages } from '../model/packages.js';
 import { measureText } from '../render/text-metrics.js';
 
-function moduleNode(member: PartDef | PartUsage): GraphNode {
-    const name = isPartUsage(member) && member.type
-        ? `${member.name} : ${member.type.ref?.name ?? member.type.$refText}`
-        : member.name;
+function moduleNode(def: PartDef): GraphNode {
     return {
-        id: qualifiedName(member),
+        id: qualifiedName(def),
         shape: 'box',
         stereotype: '',
-        name,
+        name: def.name,
         compartments: [],
         ports: [],
-        width: Math.max(120, measureText(name, 12, 'bold') + 28),
+        width: Math.max(120, measureText(def.name, 12, 'bold') + 28),
         height: 40
     };
 }
 
 /**
  * A package box, with its sub-packages and the modules it declares drawn
- * inside it. Only top-level part usages become modules — a part nested inside
- * another part is a detail of that module, not a module of its own.
+ * inside it. A module is a part def. A package-level part usage is an
+ * instance — the tree of deployable parts the deployment view allocates
+ * from — not a module, so it is left off this view.
  */
 function packageNode(pkg: PackageDecl): GraphNode {
     const children: GraphNode[] = [];
     for (const member of pkg.members) {
         if (isPackageDecl(member)) {
             children.push(packageNode(member));
-        } else if (isPartDef(member) || isPartUsage(member)) {
+        } else if (isPartDef(member)) {
             children.push(moduleNode(member));
         }
     }

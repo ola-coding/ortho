@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="2187.484" height="356"
-     viewBox="0 0 2187.484 356" font-family="Arial, Helvetica, Segoe UI, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="910.744" height="424"
+     viewBox="0 0 910.744 424" font-family="Arial, Helvetica, Segoe UI, sans-serif">
   <title>Logical view — Coffee Machine (generated from examples/coffee-machine/logical.sysml)</title>
   <defs>
     <marker id="triangle" markerWidth="14" markerHeight="12" refX="12" refY="5"
@@ -15,106 +15,106 @@
       <path d="M0,0 L10,5 L0,10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
     </marker>
   </defs>
-  <rect x="0" y="0" width="2187.484" height="356" fill="white" />
-  <rect x="8" y="8" width="2171.484" height="340" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+  <rect x="0" y="0" width="910.744" height="424" fill="white" />
+  <rect x="8" y="8" width="894.744" height="408" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
   <path d="M8,8 L8,30 L185.423,30 L195.423,21 L195.423,8 Z"
         fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
   <text x="16" y="23" font-size="11" font-weight="600" fill="#1a1a1a">Logical view — Coffee Machine</text>
-  <text x="2173.484" y="342" text-anchor="end" font-size="9" fill="#8a8a86">examples/coffee-machine/logical.sysml</text>
+  <text x="896.744" y="410" text-anchor="end" font-size="9" fill="#8a8a86">examples/coffee-machine/logical.sysml</text>
   
-    <g><rect x="113.17933333333333" y="60" width="114.7" height="40" rx="11" ry="11"
+    <g><rect x="364.34" y="60" width="114.7" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="170.52933333333334" y="84" text-anchor="middle"
+      <text x="421.69" y="84" text-anchor="middle"
           font-size="12" fill="#1a1a1a">MakeBeverage</text></g>
-    <g><rect x="1108.984" y="170" width="110" height="40" rx="11" ry="11"
+    <g><rect x="36" y="144" width="110" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1163.984" y="194" text-anchor="middle"
+      <text x="91" y="168" text-anchor="middle"
           font-size="12" fill="#1a1a1a">prepareWater</text></g>
-    <g><rect x="1241.484" y="280" width="110" height="40" rx="11" ry="11"
+    <g><rect x="70" y="198" width="110" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1296.484" y="304" text-anchor="middle"
+      <text x="125" y="222" text-anchor="middle"
           font-size="12" fill="#1a1a1a">storeWater</text></g>
-    <g><rect x="1401.484" y="280" width="110" height="40" rx="11" ry="11"
+    <g><rect x="70" y="248" width="110" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1456.484" y="304" text-anchor="middle"
+      <text x="125" y="272" text-anchor="middle"
           font-size="12" fill="#1a1a1a">pumpWater</text></g>
-    <g><rect x="1081.484" y="280" width="110" height="40" rx="11" ry="11"
+    <g><rect x="70" y="298" width="110" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1136.484" y="304" text-anchor="middle"
+      <text x="125" y="322" text-anchor="middle"
           font-size="12" fill="#1a1a1a">heatWater</text></g>
-    <g><rect x="1594.3432" y="170" width="110.704" height="40" rx="11" ry="11"
+    <g><rect x="208" y="144" width="110.704" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1649.6952" y="194" text-anchor="middle"
+      <text x="263.352" y="168" text-anchor="middle"
           font-size="12" fill="#1a1a1a">prepareCoffee</text></g>
-    <g><rect x="1561.484" y="280" width="110" height="40" rx="11" ry="11"
+    <g><rect x="242" y="198" width="110" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1616.484" y="304" text-anchor="middle"
+      <text x="297" y="222" text-anchor="middle"
           font-size="12" fill="#1a1a1a">storeBeans</text></g>
-    <g><rect x="1881.484" y="280" width="110" height="40" rx="11" ry="11"
+    <g><rect x="242" y="248" width="110" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1936.484" y="304" text-anchor="middle"
+      <text x="297" y="272" text-anchor="middle"
           font-size="12" fill="#1a1a1a">grindBeans</text></g>
-    <g><rect x="2041.484" y="280" width="110" height="40" rx="11" ry="11"
+    <g><rect x="242" y="298" width="110" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="2096.484" y="304" text-anchor="middle"
+      <text x="297" y="322" text-anchor="middle"
           font-size="12" fill="#1a1a1a">doseGrounds</text></g>
-    <g><rect x="1721.484" y="280" width="110" height="40" rx="11" ry="11"
+    <g><rect x="242" y="348" width="110" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1776.484" y="304" text-anchor="middle"
+      <text x="297" y="372" text-anchor="middle"
           font-size="12" fill="#1a1a1a">extractShot</text></g>
-    <g><rect x="779.8173333333334" y="170" width="110" height="40" rx="11" ry="11"
+    <g><rect x="380" y="144" width="110" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="834.8173333333334" y="194" text-anchor="middle"
+      <text x="435" y="168" text-anchor="middle"
           font-size="12" fill="#1a1a1a">prepareMilk</text></g>
-    <g><rect x="761.484" y="280" width="110" height="40" rx="11" ry="11"
+    <g><rect x="414" y="198" width="110" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="816.484" y="304" text-anchor="middle"
+      <text x="469" y="222" text-anchor="middle"
           font-size="12" fill="#1a1a1a">storeMilk</text></g>
-    <g><rect x="921.484" y="280" width="110" height="40" rx="11" ry="11"
+    <g><rect x="414" y="248" width="110" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="976.484" y="304" text-anchor="middle"
+      <text x="469" y="272" text-anchor="middle"
           font-size="12" fill="#1a1a1a">frothMilk</text></g>
-    <g><rect x="939.8173333333334" y="170" width="114.7" height="40" rx="11" ry="11"
+    <g><rect x="552" y="144" width="114.7" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="997.1673333333334" y="194" text-anchor="middle"
+      <text x="609.35" y="168" text-anchor="middle"
           font-size="12" fill="#1a1a1a">serveBeverage</text></g>
-    <g><rect x="74.616" y="170" width="115.36" height="40" rx="11" ry="11"
+    <g><rect x="694.7" y="144" width="115.36" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="132.296" y="194" text-anchor="middle"
+      <text x="752.38" y="168" text-anchor="middle"
           font-size="12" fill="#1a1a1a">controlMachine</text></g>
-    <g><rect x="209.376" y="280" width="116.704" height="40" rx="11" ry="11"
+    <g><rect x="728.7" y="198" width="116.704" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="267.728" y="304" text-anchor="middle"
+      <text x="787.052" y="222" text-anchor="middle"
           font-size="12" fill="#1a1a1a">selectBeverage</text></g>
-    <g><rect x="36" y="280" width="123.376" height="40" rx="11" ry="11"
+    <g><rect x="728.7" y="248" width="123.376" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="97.688" y="304" text-anchor="middle"
+      <text x="790.388" y="272" text-anchor="middle"
           font-size="12" fill="#1a1a1a">sequenceRecipe</text></g>
-    <g><rect x="565.44" y="280" width="146.04399999999998" height="40" rx="11" ry="11"
+    <g><rect x="728.7" y="298" width="146.04399999999998" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="638.462" y="304" text-anchor="middle"
+      <text x="801.722" y="322" text-anchor="middle"
           font-size="12" fill="#1a1a1a">regulateTemperature</text></g>
-    <g><rect x="376.08" y="280" width="139.36" height="40" rx="11" ry="11"
+    <g><rect x="728.7" y="348" width="139.36" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="445.76" y="304" text-anchor="middle"
+      <text x="798.3800000000001" y="372" text-anchor="middle"
           font-size="12" fill="#1a1a1a">interlockBrewGroup</text></g>
   
-    <polyline points="1163.984,210 1163.984,230 1296.484,230 1296.484,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="1191.484,210 1191.484,220 1456.484,220 1456.484,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="1136.484,210 1136.484,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="189.64600000000002,100 189.64600000000002,120 1163.984,120 1163.984,170" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="1616.484,210 1616.484,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="1660.7656,210 1660.7656,230 1936.484,230 1936.484,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="1682.9064,210 1682.9064,220 2096.484,220 2096.484,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="1638.6248,210 1638.6248,240 1776.484,240 1776.484,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="208.7626666666667,100 208.7626666666667,110 1649.6952,110 1649.6952,170" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="816.484,210 816.484,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="853.1506666666668,210 853.1506666666668,220 976.484,220 976.484,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="151.41266666666667,100 151.41266666666667,140 834.8173333333334,140 834.8173333333334,170" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="170.52933333333334,100 170.52933333333334,130 997.1673333333334,130 997.1673333333334,170" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="120.75999999999999,210 120.75999999999999,240 267.728,240 267.728,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="97.688,210 97.688,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="166.904,210 166.904,220 638.462,220 638.462,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="143.832,210 143.832,230 445.76,230 445.76,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="132.296,100 132.296,170" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="54,184 54,218 70,218" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="54,184 54,268 70,268" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="54,184 54,318 70,318" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="421.69,100 421.69,122 91,122 91,144" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="226,184 226,218 242,218" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="226,184 226,268 242,268" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="226,184 226,318 242,318" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="226,184 226,368 242,368" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="421.69,100 421.69,122 263.352,122 263.352,144" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="398,184 398,218 414,218" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="398,184 398,268 414,268" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="421.69,100 421.69,122 435,122 435,144" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="421.69,100 421.69,122 609.35,122 609.35,144" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="712.7,184 712.7,218 728.7,218" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="712.7,184 712.7,268 728.7,268" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="712.7,184 712.7,318 728.7,318" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="712.7,184 712.7,368 728.7,368" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="421.69,100 421.69,122 752.38,122 752.38,144" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
 </svg>

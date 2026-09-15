@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="3321.7520000000004" height="356"
-     viewBox="0 0 3321.7520000000004 356" font-family="Arial, Helvetica, Segoe UI, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="1132.856" height="474"
+     viewBox="0 0 1132.856 474" font-family="Arial, Helvetica, Segoe UI, sans-serif">
   <title>Logical view — AUV System (generated from examples/auv-system/logical.sysml)</title>
   <defs>
     <marker id="triangle" markerWidth="14" markerHeight="12" refX="12" refY="5"
@@ -15,146 +15,146 @@
       <path d="M0,0 L10,5 L0,10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
     </marker>
   </defs>
-  <rect x="0" y="0" width="3321.7520000000004" height="356" fill="white" />
-  <rect x="8" y="8" width="3305.7520000000004" height="340" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+  <rect x="0" y="0" width="1132.856" height="474" fill="white" />
+  <rect x="8" y="8" width="1116.856" height="458" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
   <path d="M8,8 L8,30 L169.539,30 L179.539,21 L179.539,8 Z"
         fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
   <text x="16" y="23" font-size="11" font-weight="600" fill="#1a1a1a">Logical view — AUV System</text>
-  <text x="3307.7520000000004" y="342" text-anchor="end" font-size="9" fill="#8a8a86">examples/auv-system/logical.sysml</text>
+  <text x="1118.856" y="460" text-anchor="end" font-size="9" fill="#8a8a86">examples/auv-system/logical.sysml</text>
   
-    <g><rect x="92.85333333333332" y="60" width="115.36" height="40" rx="11" ry="11"
+    <g><rect x="487.406" y="60" width="115.36" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="150.53333333333333" y="84" text-anchor="middle"
+      <text x="545.086" y="84" text-anchor="middle"
           font-size="12" fill="#1a1a1a">OperateAircraft</text></g>
-    <g><rect x="1895.2" y="170" width="110" height="40" rx="11" ry="11"
+    <g><rect x="36" y="144" width="110" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1950.2" y="194" text-anchor="middle"
+      <text x="91" y="168" text-anchor="middle"
           font-size="12" fill="#1a1a1a">fly</text></g>
-    <g><rect x="2183.576" y="280" width="115.372" height="40" rx="11" ry="11"
+    <g><rect x="70" y="198" width="115.372" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="2241.262" y="304" text-anchor="middle"
+      <text x="127.686" y="222" text-anchor="middle"
           font-size="12" fill="#1a1a1a">generateThrust</text></g>
-    <g><rect x="2348.948" y="280" width="118.036" height="40" rx="11" ry="11"
+    <g><rect x="70" y="248" width="118.036" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="2407.966" y="304" text-anchor="middle"
+      <text x="129.018" y="272" text-anchor="middle"
           font-size="12" fill="#1a1a1a">stabiliseAttitude</text></g>
-    <g><rect x="1862.2" y="280" width="110" height="40" rx="11" ry="11"
+    <g><rect x="70" y="298" width="110" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1917.2" y="304" text-anchor="middle"
+      <text x="125" y="322" text-anchor="middle"
           font-size="12" fill="#1a1a1a">holdPosition</text></g>
-    <g><rect x="2022.2" y="280" width="111.376" height="40" rx="11" ry="11"
+    <g><rect x="70" y="348" width="111.376" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="2077.888" y="304" text-anchor="middle"
+      <text x="125.688" y="372" text-anchor="middle"
           font-size="12" fill="#1a1a1a">navigateRoute</text></g>
-    <g><rect x="1224.7595999999999" y="170" width="133.372" height="40" rx="11" ry="11"
+    <g><rect x="216.036" y="144" width="133.372" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1291.4455999999998" y="194" text-anchor="middle"
+      <text x="282.722" y="168" text-anchor="middle"
           font-size="12" fill="#1a1a1a">senseEnvironment</text></g>
-    <g><rect x="1530.828" y="280" width="121.372" height="40" rx="11" ry="11"
+    <g><rect x="250.036" y="198" width="121.372" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1591.514" y="304" text-anchor="middle"
+      <text x="310.722" y="222" text-anchor="middle"
           font-size="12" fill="#1a1a1a">measureAttitude</text></g>
-    <g><rect x="1702.2" y="280" width="110" height="40" rx="11" ry="11"
+    <g><rect x="250.036" y="248" width="110" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1757.2" y="304" text-anchor="middle"
+      <text x="305.036" y="272" text-anchor="middle"
           font-size="12" fill="#1a1a1a">fixPosition</text></g>
-    <g><rect x="1360.788" y="280" width="120.04" height="40" rx="11" ry="11"
+    <g><rect x="250.036" y="298" width="120.04" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1420.808" y="304" text-anchor="middle"
+      <text x="310.056" y="322" text-anchor="middle"
           font-size="12" fill="#1a1a1a">detectObstacles</text></g>
-    <g><rect x="1192.08" y="280" width="118.708" height="40" rx="11" ry="11"
+    <g><rect x="250.036" y="348" width="118.708" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1251.434" y="304" text-anchor="middle"
+      <text x="309.39" y="372" text-anchor="middle"
           font-size="12" fill="#1a1a1a">rangeToGround</text></g>
-    <g><rect x="381.24266666666665" y="170" width="117.376" height="40" rx="11" ry="11"
+    <g><rect x="399.408" y="144" width="117.376" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="439.93066666666664" y="194" text-anchor="middle"
+      <text x="458.096" y="168" text-anchor="middle"
           font-size="12" fill="#1a1a1a">capturePayload</text></g>
-    <g><rect x="525.3679999999999" y="280" width="120.016" height="40" rx="11" ry="11"
+    <g><rect x="433.408" y="198" width="120.016" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="585.376" y="304" text-anchor="middle"
+      <text x="493.416" y="222" text-anchor="middle"
           font-size="12" fill="#1a1a1a">stabiliseCamera</text></g>
-    <g><rect x="365.368" y="280" width="110" height="40" rx="11" ry="11"
+    <g><rect x="433.408" y="248" width="110" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="420.368" y="304" text-anchor="middle"
+      <text x="488.408" y="272" text-anchor="middle"
           font-size="12" fill="#1a1a1a">captureVideo</text></g>
-    <g><rect x="54.33333333333333" y="170" width="110" height="40" rx="11" ry="11"
+    <g><rect x="581.424" y="144" width="110" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="109.33333333333333" y="194" text-anchor="middle"
+      <text x="636.424" y="168" text-anchor="middle"
           font-size="12" fill="#1a1a1a">storeEnergy</text></g>
-    <g><rect x="36" y="280" width="110" height="40" rx="11" ry="11"
+    <g><rect x="615.424" y="198" width="110" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="91" y="304" text-anchor="middle"
+      <text x="670.424" y="222" text-anchor="middle"
           font-size="12" fill="#1a1a1a">holdCharge</text></g>
-    <g><rect x="196" y="280" width="119.368" height="40" rx="11" ry="11"
+    <g><rect x="615.424" y="248" width="119.368" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="255.684" y="304" text-anchor="middle"
+      <text x="675.108" y="272" text-anchor="middle"
           font-size="12" fill="#1a1a1a">rechargeBattery</text></g>
-    <g><rect x="2555.8933333333334" y="170" width="124.684" height="40" rx="11" ry="11"
+    <g><rect x="762.7919999999999" y="144" width="124.684" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="2618.2353333333335" y="194" text-anchor="middle"
+      <text x="825.1339999999999" y="168" text-anchor="middle"
           font-size="12" fill="#1a1a1a">commandAircraft</text></g>
-    <g><rect x="2516.984" y="280" width="119.38" height="40" rx="11" ry="11"
+    <g><rect x="796.7919999999999" y="198" width="119.38" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="2576.674" y="304" text-anchor="middle"
+      <text x="856.482" y="222" text-anchor="middle"
           font-size="12" fill="#1a1a1a">acceptPilotInput</text></g>
-    <g><rect x="2686.364" y="280" width="119.356" height="40" rx="11" ry="11"
+    <g><rect x="796.7919999999999" y="248" width="119.356" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="2746.042" y="304" text-anchor="middle"
+      <text x="856.4699999999999" y="272" text-anchor="middle"
           font-size="12" fill="#1a1a1a">displayLiveView</text></g>
-    <g><rect x="3015.7520000000004" y="280" width="110" height="40" rx="11" ry="11"
+    <g><rect x="796.7919999999999" y="298" width="110" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="3070.7520000000004" y="304" text-anchor="middle"
+      <text x="851.7919999999999" y="322" text-anchor="middle"
           font-size="12" fill="#1a1a1a">selectTarget</text></g>
-    <g><rect x="3175.7520000000004" y="280" width="110" height="40" rx="11" ry="11"
+    <g><rect x="796.7919999999999" y="348" width="110" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="3230.7520000000004" y="304" text-anchor="middle"
+      <text x="851.7919999999999" y="372" text-anchor="middle"
           font-size="12" fill="#1a1a1a">trackTarget</text></g>
-    <g><rect x="2855.7200000000003" y="280" width="110.032" height="40" rx="11" ry="11"
+    <g><rect x="796.7919999999999" y="398" width="110.032" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="2910.7360000000003" y="304" text-anchor="middle"
+      <text x="851.8079999999999" y="422" text-anchor="middle"
           font-size="12" fill="#1a1a1a">avoidObstacle</text></g>
-    <g><rect x="727.226" y="170" width="110" height="40" rx="11" ry="11"
+    <g><rect x="944.1719999999999" y="144" width="110" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="782.226" y="194" text-anchor="middle"
+      <text x="999.1719999999999" y="168" text-anchor="middle"
           font-size="12" fill="#1a1a1a">communicate</text></g>
-    <g><rect x="1024.068" y="280" width="118.012" height="40" rx="11" ry="11"
+    <g><rect x="978.1719999999999" y="198" width="118.012" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1083.074" y="304" text-anchor="middle"
+      <text x="1037.1779999999999" y="222" text-anchor="middle"
           font-size="12" fill="#1a1a1a">linkToController</text></g>
-    <g><rect x="864.068" y="280" width="110" height="40" rx="11" ry="11"
+    <g><rect x="978.1719999999999" y="248" width="110" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="919.068" y="304" text-anchor="middle"
+      <text x="1033.172" y="272" text-anchor="middle"
           font-size="12" fill="#1a1a1a">streamVideo</text></g>
-    <g><rect x="695.384" y="280" width="118.684" height="40" rx="11" ry="11"
+    <g><rect x="978.1719999999999" y="298" width="118.684" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="754.726" y="304" text-anchor="middle"
+      <text x="1037.514" y="322" text-anchor="middle"
           font-size="12" fill="#1a1a1a">reportTelemetry</text></g>
   
-    <polyline points="1961.2,210 1961.2,230 2241.262,230 2241.262,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="1983.2,210 1983.2,220 2407.966,220 2407.966,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="1917.2,210 1917.2,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="1939.2,210 1939.2,240 2077.888,240 2077.888,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="175.25333333333333,100 175.25333333333333,120 1950.2,120 1950.2,170" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="1304.7828,210 1304.7828,230 1591.514,230 1591.514,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="1331.4571999999998,210 1331.4571999999998,220 1757.2,220 1757.2,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="1278.1083999999998,210 1278.1083999999998,240 1420.808,240 1420.808,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="1251.434,210 1251.434,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="158.7733333333333,100 158.7733333333333,130 1291.4455999999998,130 1291.4455999999998,170" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="459.49333333333334,210 459.49333333333334,220 585.376,220 585.376,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="420.368,210 420.368,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="125.81333333333333,100 125.81333333333333,150 439.93066666666664,150 439.93066666666664,170" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="91,210 91,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="127.66666666666667,210 127.66666666666667,220 255.684,220 255.684,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="109.33333333333333,100 109.33333333333333,170" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="2576.674,210 2576.674,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="2597.454666666667,210 2597.454666666667,250 2746.042,250 2746.042,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="2639.016,210 2639.016,230 3070.7520000000004,230 3070.7520000000004,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="2659.7966666666666,210 2659.7966666666666,220 3230.7520000000004,220 3230.7520000000004,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="2618.2353333333335,210 2618.2353333333335,240 2910.7360000000003,240 2910.7360000000003,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="191.73333333333335,100 191.73333333333335,110 2618.2353333333335,110 2618.2353333333335,170" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="809.726,210 809.726,220 1083.074,220 1083.074,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="782.226,210 782.226,230 919.068,230 919.068,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="754.726,210 754.726,280" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="142.29333333333332,100 142.29333333333332,140 782.226,140 782.226,170" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="54,184 54,218 70,218" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="54,184 54,268 70,268" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="54,184 54,318 70,318" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="54,184 54,368 70,368" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="545.086,100 545.086,122 91,122 91,144" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="234.036,184 234.036,218 250.036,218" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="234.036,184 234.036,268 250.036,268" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="234.036,184 234.036,318 250.036,318" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="234.036,184 234.036,368 250.036,368" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="545.086,100 545.086,122 282.722,122 282.722,144" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="417.408,184 417.408,218 433.408,218" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="417.408,184 417.408,268 433.408,268" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="545.086,100 545.086,122 458.096,122 458.096,144" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="599.424,184 599.424,218 615.424,218" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="599.424,184 599.424,268 615.424,268" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="545.086,100 545.086,122 636.424,122 636.424,144" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="780.7919999999999,184 780.7919999999999,218 796.7919999999999,218" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="780.7919999999999,184 780.7919999999999,268 796.7919999999999,268" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="780.7919999999999,184 780.7919999999999,318 796.7919999999999,318" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="780.7919999999999,184 780.7919999999999,368 796.7919999999999,368" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="780.7919999999999,184 780.7919999999999,418 796.7919999999999,418" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="545.086,100 545.086,122 825.1339999999999,122 825.1339999999999,144" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="962.1719999999999,184 962.1719999999999,218 978.1719999999999,218" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="962.1719999999999,184 962.1719999999999,268 978.1719999999999,268" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="962.1719999999999,184 962.1719999999999,318 978.1719999999999,318" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="545.086,100 545.086,122 999.1719999999999,122 999.1719999999999,144" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
 </svg>

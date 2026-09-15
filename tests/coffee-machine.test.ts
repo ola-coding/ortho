@@ -84,6 +84,16 @@ describe('coffee machine example model', () => {
         const graph = extractImplementationGraph(await parseSet('implementation.sysml'));
         const imports = graph.edges.map(e => `${e.sourceId} -> ${e.targetId}`);
         expect(imports).toEqual(['Software::Application -> Software::Control']);
+
+        // `sw`, the tree of deployable parts, is an instance, not a module.
+        const names: string[] = [];
+        const walk = (nodes: typeof graph.nodes): void => nodes.forEach(n => {
+            names.push(n.name);
+            walk(n.children ?? []);
+        });
+        walk(graph.nodes);
+        expect(names).toContain('RecipeEngine');
+        expect(names).not.toContain('sw');
     });
 
     it('physical view: the machine as nested parts, looms named by their interface', async () => {
@@ -99,16 +109,20 @@ describe('coffee machine example model', () => {
         expect(graph.edges.filter(e => e.kind === 'connection' && e.label === 'ControlLink')).toHaveLength(6);
     });
 
-    it('deployment view: five programs across two hosts, drawn as containment', async () => {
+    it('deployment view: five programs on two hosts, inside the machine', async () => {
         const graph = extractDeploymentGraph(
             await parseSet('deployment.sysml', 'implementation.sysml', 'physical.sysml')
         );
         expect(graph.edges).toHaveLength(0);
-        expect(graph.nodes.map(n => n.id).sort()).toEqual([
+        // Both hosts are fitted in the machine, so they share its frame.
+        expect(graph.nodes.map(n => n.name)).toEqual(['CoffeeMachine']);
+        const hosts = graph.nodes[0].children!;
+        expect(hosts.map(n => n.id).sort()).toEqual([
             'Hardware::CoffeeMachine::controller',
             'Hardware::CoffeeMachine::display'
         ]);
-        const placed = graph.nodes.flatMap(n => n.children!.map(c => c.name));
+        expect(hosts.every(h => h.shape === 'node3d')).toBe(true);
+        const placed = hosts.flatMap(n => n.children!.map(c => c.name));
         expect(placed).toHaveLength(5);
         expect(new Set(placed).size).toBe(5);
     });
@@ -123,6 +137,8 @@ describe('coffee machine example model', () => {
             'brew : BrewController',
             'milk : MilkController'
         ]);
+        // The user is untyped in the model: a person, drawn as a stick figure.
+        expect(sequence.lifelines.filter(l => l.actor).map(l => l.label)).toEqual(['user']);
         expect(sequence.messages[0].label).toBe('selectCappuccino');
         expect(sequence.messages.at(-1)!.label).toBe('beverageReady');
     });

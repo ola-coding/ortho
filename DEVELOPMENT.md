@@ -109,27 +109,67 @@ the deliberate alternative to a headless browser or font-file parsing.
   not topology.
 - **Three views draw containment instead of edges.** The deployment view nests
   software inside the three-dimensional node that hosts it and emits no edges
-  at all, so a host with nothing drawn in it visibly hosts nothing. The
-  implementation view nests modules inside their package the same way, and the
-  physical view nests each part inside its assembly. All three rely on ELK
-  hierarchy; `node3d` also reserves `NODE_DEPTH` of extra padding at the top
-  and right, because its depth edge is drawn *inside* its own bounds.
-- **The logical view has no arrowheads.** Its branches are `decomposition`
-  edges, drawn as plain lines: the capability tree's direction is carried by
-  the layout (parents above children), not by a marker. A test asserts no
-  marker of any kind reaches that SVG.
-- **Label placement.** Port labels and the interface labels on physical-view
-  wires are handed to ELK as real labels, so ELK reserves room for them, puts
+  at all, so a host with nothing drawn in it visibly hosts nothing. The hosts in
+  turn sit in a frame for the device they are fitted in, found from the physical
+  containment: a device fitted exactly once is labelled by that usage
+  (`aircraft : Aircraft`) and nested in its own container's frame. With no
+  edges to layer, ELK's layered algorithm put every box in one row, so the
+  deployment view uses `rectpacking` instead — level by level, because packing
+  cannot lay out a hierarchy in one pass — which keeps the model's order and a
+  page-shaped aspect ratio. (ELK's `box` algorithm packs too, but reorders by
+  size.) The implementation view nests modules inside their package the same
+  way, and the physical view nests each part inside its assembly. `node3d` also
+  reserves `NODE_DEPTH` of extra padding at the top and right, because its
+  depth edge is drawn *inside* its own bounds.
+- **Use case lines are straight, and actors pick a side.** ELK places the use
+  case view's shapes; `src/layout/straight-edges.ts` then redraws each
+  association and include as one straight segment. Right-angled bends are a
+  class-diagram habit, and even ELK's `POLYLINE` routes kinked at every layer.
+  Aimed at an ellipse's centre, a line to a use case standing behind another
+  would clip it, so the end slides round the outline 7.5° at a time until the
+  line clears every other shape by 4 px. Lines to one actor meet it down the
+  side of its figure in the order they leave it, so they never cross there,
+  each as near its even share of that side as a clear line allows. Where a
+  use case stands right behind another as the actor sees it — ELK centres an
+  actor on its use cases, and the included ones stand a column further in —
+  no sliding helps, so the actor is nudged up or down its column, 4 px at a
+  time and at most 60, until all of its lines can be straight; it goes
+  further only to find a place where none of them crosses a line already
+  drawn. Lines between use cases are placed first, since no nudge moves
+  them. A line nothing clears keeps ELK's `POLYLINE` route. Each
+  «include» label then sits beside the middle of its line, on the first side
+  clear of every shape and every other line. An actor declared on a use case
+  def is primary and stands left; one added on a single use case only is
+  secondary and stands right. An association has no direction, so the
+  extractor reverses a secondary actor's edge purely as a layering hint; the
+  renderer draws no marker on either.
+- **The logical view is laid out by ortho, not ELK.** `src/layout/tree-layout.ts`
+  draws the capability tree as a work-breakdown chart: a family whose children
+  are all leaves is listed vertically beneath its parent, off a spine; any other
+  family is spread in a row, the parent centred over its first and last child,
+  one stem feeding a bus. ELK's layered algorithm put every leaf in one row (the
+  AUV's tree was 3322 px wide for 27 functions) and attached each branch at its
+  own point on the parent, which read as wiring. Branches are `decomposition`
+  edges with no arrowhead — direction is carried by the layout — and a test
+  asserts no marker reaches that SVG.
+- **Label placement.** Port labels, the interface labels on physical-view
+  wires, «include» on the use case view and «import» on the implementation
+  view are handed to ELK as real labels, so ELK reserves room for them, puts
   each port label outside its box beside the port (flipping sides when a
-  neighbour would collide) and keeps wire labels clear of boxes; both are
-  painted after the edges, so no line strikes through one. Every other edge
-  label sits at the line's midpoint. Relationship *keywords* get «guillemets»;
-  user-supplied names (e.g. a named allocation) render plainly.
+  neighbour would collide) and keeps wire and keyword labels clear of boxes.
+  Port labels are painted after every edge, so no line strikes through one.
+  Once a use case line is drawn straight, its label moves beside the
+  straight line (see above). Every other edge label sits at the line's
+  midpoint. Relationship *keywords* get «guillemets»; user-supplied names
+  (e.g. a named allocation) render plainly.
 - **Sequence diagrams bypass ELK entirely** — lifeline/message layout is
   deterministic, so `src/render/sequence-renderer.ts` does its own: per-gap
   column spacing (gaps widen only where a message label spans them) and
   activation bars (active from a message's arrival until the lifeline next
-  sends — a heuristic that reads correctly for linear scenarios).
+  sends — a heuristic that reads correctly for linear scenarios). A lifeline
+  whose part is untyped, or typed by a part def some loaded use case casts as
+  an actor, is a person and gets the use case view's stick figure; the heads are
+  then bottom-aligned so every lifeline starts level.
 
 ### Diagram headings
 
@@ -274,9 +314,6 @@ Possible next steps, roughly by value:
 - **`view def` / `viewpoint` elements** — SysML v2's first-class replacement
   for UML diagram kinds. Could drive both diagram scoping and frame headings
   from the model itself, replacing the one-file-per-view convention.
-- **Width of the capability tree.** A tree lays every leaf on one row, so the
-  AUV's logical view is ~3320px across for 27 functions. Row-wrapping deep
-  branches, or an indented-list layout, would help before the tree grows again.
 - State machines, constraints/calculations, item defs (typed message
   payloads), verification cases.
 - Sequence combined fragments (loop/alt) and return-message styling.

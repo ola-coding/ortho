@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="600.915" height="317"
-     viewBox="0 0 600.915 317" font-family="Arial, Helvetica, Segoe UI, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="664.4921428571429" height="317"
+     viewBox="0 0 664.4921428571429 317" font-family="Arial, Helvetica, Segoe UI, sans-serif">
   <title>Use case view — Coffee Machine (generated from examples/coffee-machine/use-case.sysml)</title>
   <defs>
     <marker id="triangle" markerWidth="14" markerHeight="12" refX="12" refY="5"
@@ -15,52 +15,52 @@
       <path d="M0,0 L10,5 L0,10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
     </marker>
   </defs>
-  <rect x="0" y="0" width="600.915" height="317" fill="white" />
-  <rect x="8" y="8" width="584.915" height="301" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+  <rect x="0" y="0" width="664.4921428571429" height="317" fill="white" />
+  <rect x="8" y="8" width="648.4921428571429" height="301" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
   <path d="M8,8 L8,30 L194.608,30 L204.608,21 L204.608,8 Z"
         fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
   <text x="16" y="23" font-size="11" font-weight="600" fill="#1a1a1a">Use case view — Coffee Machine</text>
-  <text x="586.915" y="303" text-anchor="end" font-size="9" fill="#8a8a86">examples/coffee-machine/use-case.sysml</text>
+  <text x="650.4921428571429" y="303" text-anchor="end" font-size="9" fill="#8a8a86">examples/coffee-machine/use-case.sysml</text>
   
-    <g><rect x="210.85899999999998" y="60" width="354.056" height="221"
+    <g><rect x="211.91614285714286" y="60" width="416.576" height="221"
           fill="#fbfbf1" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="387.88699999999994" y="80" text-anchor="middle"
+      <text x="420.20414285714287" y="80" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">CoffeeMachine</text></g>
-    <g><ellipse cx="472.23699999999997" cy="228.33333333333331" rx="67.678" ry="25"
+    <g><ellipse cx="535.8141428571429" cy="228.33333333333331" rx="67.678" ry="25"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="472.23699999999997" y="232.33333333333331" text-anchor="middle"
+      <text x="535.8141428571429" y="232.33333333333331" text-anchor="middle"
           font-size="12" fill="#1a1a1a">makeEspresso</text></g>
-    <g><ellipse cx="310.20899999999995" cy="220" rx="74.35" ry="25"
+    <g><ellipse cx="311.2661428571429" cy="220" rx="74.35" ry="25"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="310.20899999999995" y="224" text-anchor="middle"
+      <text x="311.2661428571429" y="224" text-anchor="middle"
           font-size="12" fill="#1a1a1a">makeCappuccino</text></g>
-    <g><ellipse cx="285.859" cy="130" rx="50" ry="25"
+    <g><ellipse cx="286.91614285714286" cy="130" rx="50" ry="25"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="285.859" y="134" text-anchor="middle"
+      <text x="286.91614285714286" y="134" text-anchor="middle"
           font-size="12" fill="#1a1a1a">descale</text></g>
     <g stroke="#2b2b2b" stroke-width="1.5" fill="none">
-      <circle cx="111.859" cy="203.66666666666666" r="8" fill="#fdfdf6" />
-      <line x1="111.859" y1="211.66666666666666" x2="111.859" y2="230.66666666666666" />
-      <line x1="98.859" y1="218.66666666666666" x2="124.859" y2="218.66666666666666" />
-      <line x1="111.859" y1="230.66666666666666" x2="100.859" y2="246.66666666666666" />
-      <line x1="111.859" y1="230.66666666666666" x2="122.859" y2="246.66666666666666" />
-      <text x="111.859" y="262.66666666666663" text-anchor="middle" stroke="none"
+      <circle cx="111.859" cy="212.49999999999997" r="8" fill="#fdfdf6" />
+      <line x1="111.859" y1="220.49999999999997" x2="111.859" y2="239.49999999999997" />
+      <line x1="98.859" y1="227.49999999999997" x2="124.859" y2="227.49999999999997" />
+      <line x1="111.859" y1="239.49999999999997" x2="100.859" y2="255.49999999999997" />
+      <line x1="111.859" y1="239.49999999999997" x2="122.859" y2="255.49999999999997" />
+      <text x="111.859" y="271.5" text-anchor="middle" stroke="none"
           font-size="11" fill="#1a1a1a">User</text>
     </g>
     <g stroke="#2b2b2b" stroke-width="1.5" fill="none">
-      <circle cx="85.92949999999999" cy="77.66666666666666" r="8" fill="#fdfdf6" />
-      <line x1="85.92949999999999" y1="85.66666666666666" x2="85.92949999999999" y2="104.66666666666666" />
-      <line x1="72.92949999999999" y1="92.66666666666666" x2="98.92949999999999" y2="92.66666666666666" />
-      <line x1="85.92949999999999" y1="104.66666666666666" x2="74.92949999999999" y2="120.66666666666666" />
-      <line x1="85.92949999999999" y1="104.66666666666666" x2="96.92949999999999" y2="120.66666666666666" />
-      <text x="85.92949999999999" y="136.66666666666666" text-anchor="middle" stroke="none"
+      <circle cx="85.92949999999999" cy="82.49999999999999" r="8" fill="#fdfdf6" />
+      <line x1="85.92949999999999" y1="90.49999999999999" x2="85.92949999999999" y2="109.49999999999999" />
+      <line x1="72.92949999999999" y1="97.49999999999999" x2="98.92949999999999" y2="97.49999999999999" />
+      <line x1="85.92949999999999" y1="109.49999999999999" x2="74.92949999999999" y2="125.49999999999999" />
+      <line x1="85.92949999999999" y1="109.49999999999999" x2="96.92949999999999" y2="125.49999999999999" />
+      <text x="85.92949999999999" y="141.5" text-anchor="middle" stroke="none"
           font-size="11" fill="#1a1a1a">ServiceTechnician</text>
     </g>
   
-    <polyline points="135.85899999999998,245.33333333333334 145.85899999999998,245.33333333333334 145.85899999999998,255 394.55899999999997,255 394.55899999999997,236.66666666666666 408.42956968380906,236.66666666666666" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="135.85899999999998,220 235.85899999999998,220" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="135.85899999999998,106.66666666666666 145.85899999999998,106.66666666666666 145.85899999999998,130 235.85899999999998,130" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="384.55899999999997,220 408.42956968380906,220" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
-    <text x="396.4942848419045" y="215" text-anchor="middle" font-size="9"
+    <polyline points="130.85899999999998,248.49999999999997 502.1573670860785,250.02269230674597" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="130.85899999999998,228.49999999999997 237.63546741311572,223.46915721496583" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="104.92949999999999,102.49999999999999 239.0541716743199,122.76757795592265" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="385.16739101714586,222.74259282944712 468.47512683123244,225.8342753729748" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="426.8212589241891" y="217.49944169572674" text-anchor="middle" font-size="9"
           fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;include&#187;</text>
 </svg>

@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1114.808" height="406"
-     viewBox="0 0 1114.808 406" font-family="Arial, Helvetica, Segoe UI, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="1114.808" height="448"
+     viewBox="0 0 1114.808 448" font-family="Arial, Helvetica, Segoe UI, sans-serif">
   <title>Implementation view — AUV System (generated from examples/auv-system/implementation.sysml)</title>
   <defs>
     <marker id="triangle" markerWidth="14" markerHeight="12" refX="12" refY="5"
@@ -15,83 +15,79 @@
       <path d="M0,0 L10,5 L0,10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
     </marker>
   </defs>
-  <rect x="0" y="0" width="1114.808" height="406" fill="white" />
-  <rect x="8" y="8" width="1098.808" height="390" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+  <rect x="0" y="0" width="1114.808" height="448" fill="white" />
+  <rect x="8" y="8" width="1098.808" height="432" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
   <path d="M8,8 L8,30 L212.318,30 L222.318,21 L222.318,8 Z"
         fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
   <text x="16" y="23" font-size="11" font-weight="600" fill="#1a1a1a">Implementation view — AUV System</text>
-  <text x="1100.808" y="392" text-anchor="end" font-size="9" fill="#8a8a86">examples/auv-system/implementation.sysml</text>
+  <text x="1100.808" y="434" text-anchor="end" font-size="9" fill="#8a8a86">examples/auv-system/implementation.sysml</text>
   
     <g><rect x="36" y="60" width="66.453" height="12"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="36" y="72" width="1042.808" height="298"
+      <rect x="36" y="72" width="1042.808" height="340"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
       <text x="46" y="87" font-size="11" font-weight="600" fill="#1a1a1a">Software</text></g>
-    <g><rect x="278.384" y="235" width="49.942" height="12"
+    <g><rect x="278.384" y="277" width="49.942" height="12"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="278.384" y="247" width="354.692" height="98"
+      <rect x="278.384" y="289" width="354.692" height="98"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="288.384" y="262" font-size="11" font-weight="600" fill="#1a1a1a">Flight</text></g>
-    <g><rect x="303.384" y="280" width="135.34" height="40"
+      <text x="288.384" y="304" font-size="11" font-weight="600" fill="#1a1a1a">Flight</text></g>
+    <g><rect x="303.384" y="322" width="135.34" height="40"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="371.05400000000003" y="301" text-anchor="middle"
+      <text x="371.05400000000003" y="343" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">FlightControlStack</text></g>
-    <g><rect x="478.72400000000005" y="280" width="129.352" height="40"
+    <g><rect x="478.72400000000005" y="322" width="129.352" height="40"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="543.4000000000001" y="301" text-anchor="middle"
+      <text x="543.4000000000001" y="343" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">NavigationEngine</text></g>
-    <g><rect x="673.076" y="235" width="76.848" height="12"
+    <g><rect x="673.076" y="277" width="76.848" height="12"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="673.076" y="247" width="380.73199999999997" height="98"
+      <rect x="673.076" y="289" width="380.73199999999997" height="98"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="683.076" y="262" font-size="11" font-weight="600" fill="#1a1a1a">Perception</text></g>
-    <g><rect x="698.076" y="280" width="136.036" height="40"
+      <text x="683.076" y="304" font-size="11" font-weight="600" fill="#1a1a1a">Perception</text></g>
+    <g><rect x="698.076" y="322" width="136.036" height="40"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="766.094" y="301" text-anchor="middle"
+      <text x="766.094" y="343" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">PerceptionPipeline</text></g>
-    <g><rect x="874.1120000000001" y="280" width="154.696" height="40"
+    <g><rect x="874.1120000000001" y="322" width="154.696" height="40"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="951.46" y="301" text-anchor="middle"
+      <text x="951.46" y="343" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">TargetTrackingEngine</text></g>
-    <g><rect x="580.73" y="105" width="62.185" height="12"
+    <g><rect x="516.59" y="105" width="62.185" height="12"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="580.73" y="117" width="179.352" height="98"
+      <rect x="516.59" y="117" width="179.352" height="98"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="590.73" y="132" font-size="11" font-weight="600" fill="#1a1a1a">Payload</text></g>
-    <g><rect x="605.73" y="150" width="129.352" height="40"
+      <text x="526.59" y="132" font-size="11" font-weight="600" fill="#1a1a1a">Payload</text></g>
+    <g><rect x="541.59" y="150" width="129.352" height="40"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="670.4060000000001" y="171" text-anchor="middle"
+      <text x="606.2660000000001" y="171" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">CameraController</text></g>
-    <g><rect x="61" y="235" width="46" height="12"
+    <g><rect x="61" y="277" width="46" height="12"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="61" y="247" width="177.38400000000001" height="98"
+      <rect x="61" y="289" width="177.38400000000001" height="98"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="71" y="262" font-size="11" font-weight="600" fill="#1a1a1a">Link</text></g>
-    <g><rect x="86" y="280" width="127.384" height="40"
+      <text x="71" y="304" font-size="11" font-weight="600" fill="#1a1a1a">Link</text></g>
+    <g><rect x="86" y="322" width="127.384" height="40"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="149.692" y="301" text-anchor="middle"
+      <text x="149.692" y="343" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">TelemetryService</text></g>
-    <g><rect x="370.73" y="105" width="59.721" height="12"
+    <g><rect x="735.942" y="105" width="59.721" height="12"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="370.73" y="117" width="170" height="98"
+      <rect x="735.942" y="117" width="170" height="98"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="380.73" y="132" font-size="11" font-weight="600" fill="#1a1a1a">Ground</text></g>
-    <g><rect x="395.73" y="150" width="120" height="40"
+      <text x="745.942" y="132" font-size="11" font-weight="600" fill="#1a1a1a">Ground</text></g>
+    <g><rect x="760.942" y="150" width="120" height="40"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="455.73" y="171" text-anchor="middle"
+      <text x="820.942" y="171" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">PilotApp</text></g>
-    <g><rect x="210.73000000000002" y="140" width="120" height="40"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="270.73" y="161" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">sw</text></g>
   
-    <polyline points="455.73,215 455.73,235" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
-    <text x="455.73" y="220" text-anchor="middle" font-size="9"
+    <polyline points="820.942,215 820.942,235 455.73,235 455.73,277" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="434.225" y="254" text-anchor="middle" font-size="9"
           fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;import&#187;</text>
-    <polyline points="498.23,215 498.23,225 863.442,225 863.442,235" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
-    <text x="680.836" y="220" text-anchor="middle" font-size="9"
+    <polyline points="863.442,215 863.442,277" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="841.937" y="254" text-anchor="middle" font-size="9"
           fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;import&#187;</text>
-    <polyline points="413.23,215 413.23,225 149.692,225 149.692,235" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
-    <text x="281.461" y="220" text-anchor="middle" font-size="9"
+    <polyline points="778.442,215 778.442,225 149.692,225 149.692,277" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="128.187" y="254" text-anchor="middle" font-size="9"
           fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;import&#187;</text>
 </svg>
