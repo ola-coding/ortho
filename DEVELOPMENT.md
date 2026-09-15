@@ -57,15 +57,18 @@ Two custom Langium services, both load-bearing:
   declare concrete parts rather than realizing abstract blocks), so
   `tests/parser.test.ts` is what keeps it honest.
 
-### elkjs: edge coordinates are relative to the LCA
+### elkjs: edge coordinates are relative to the edge's container
 
-ELK reports edge coordinates relative to the **least common ancestor
-container** of the edge's endpoints, not to the diagram root. With nested
-nodes (use-case system boundaries, nested packages) this silently offsets
-every edge. elkjs 0.9.3 does **not** support
-`org.eclipse.elk.json.edgeCoords: ROOT` (the option is absent from the
-bundle — verified, not assumed), so `src/layout/elk-layout.ts` computes the
-LCA offset itself and translates edge points to root coordinates. If a future
+ELK reports each edge's coordinates relative to the node that **contains**
+the edge, not to the diagram root, and names that node in the edge's
+`container` field. Usually it is the least common ancestor of the two ends —
+but an edge from a box's own port to one of its children (a boundary port on
+the physical view, such as the aircraft's battery bay feeding the flight
+controller) lives *inside* that box, which no ancestor walk finds. elkjs 0.9.3
+does **not** support `org.eclipse.elk.json.edgeCoords: ROOT` (the option is
+absent from the bundle — verified, not assumed), so `src/layout/elk-layout.ts`
+translates every edge, and every label ELK placed on it, by its container's
+absolute position, keeping the ancestor walk only as a fallback. If a future
 elkjs adds the option, that code can go.
 
 ### Text measurement without a browser
@@ -79,38 +82,49 @@ the deliberate alternative to a headless browser or font-file parsing.
 
 ### Rendering conventions
 
-- **Generalization edges are laid out super → sub** so ELK's `DOWN` direction
-  puts supertypes above subtypes (EA convention). The renderer compensates by
-  drawing the hollow triangle at the layout *source* end, via `marker-start`
-  plus `orient="auto-start-reverse"`.
+- **No current view draws generalization or composition.** Since the physical
+  view became an internal block diagram, containment is shown by nesting and
+  types never meet on a diagram. The renderer keeps both markers: a
+  generalization is laid out super → sub, so ELK's `DOWN` direction puts the
+  supertype above, and the hollow triangle is drawn at the layout *source* end
+  via `marker-start` plus `orient="auto-start-reverse"`.
 - **Ellipse clipping**: ELK attaches edges to bounding boxes, so terminal
   segments of edges touching ellipse nodes are extended to the actual curve
   (quadratic intersection). Two guards matter: a point already on/inside the
   curve must not clip — floating point otherwise picks the *far* intersection
   and draws a line straight through the ellipse — and the adjustment is
   capped at one radius.
-- **Nothing on the physical view is left unconnected.** Port defs are not
-  rendered at all: no edge kind in `physical.ts` can terminate on one, so
-  they could only ever be disconnected boxes — they accounted for a third of the
-  nodes on that view before being dropped. Their topology is already carried by
-  the port markers on each part. Interface defs are left out for a related
-  reason: an interface names the contract a connection satisfies, so it belongs
-  on the connection's label rather than in a box nothing points at. A test
-  asserts the orphan count stays zero.
-- **Two views draw containment instead of edges.** The deployment view nests
+- **The physical view draws instances, not types.** It is an internal block
+  diagram: one box per part *in the product*, nested inside the part that
+  contains it, walked from the top-level definitions — those nothing uses as a
+  part type and no other definition specializes — including parts and
+  connections inherited through `:>`. Each connection is resolved segment by
+  segment from the part whose body declares it, so a type fitted twice (the
+  AUV's transceiver, once in the aircraft and once in the controller) is two
+  boxes, each wired on its own. Drawing definitions instead, as the view
+  originally did, collapsed both radios into one box and wired the handheld's
+  sticks to the aircraft's flight controller. Port defs, interface defs and
+  attributes are not drawn: ports are markers on the parts, an interface is the
+  label on the connection it types, and attribute values are specification,
+  not topology.
+- **Three views draw containment instead of edges.** The deployment view nests
   software inside the three-dimensional node that hosts it and emits no edges
   at all, so a host with nothing drawn in it visibly hosts nothing. The
-  implementation view nests modules inside their package the same way. Both
-  rely on ELK hierarchy; `node3d` also reserves `NODE_DEPTH` of extra padding
-  at the top and right, because its depth edge is drawn *inside* its own bounds.
+  implementation view nests modules inside their package the same way, and the
+  physical view nests each part inside its assembly. All three rely on ELK
+  hierarchy; `node3d` also reserves `NODE_DEPTH` of extra padding at the top
+  and right, because its depth edge is drawn *inside* its own bounds.
 - **The logical view has no arrowheads.** Its branches are `decomposition`
   edges, drawn as plain lines: the capability tree's direction is carried by
   the layout (parents above children), not by a marker. A test asserts no
   marker of any kind reaches that SVG.
-- **Label placement**: composition role names sit at 82% along the path (near
-  the part end, EA convention); stereotype labels stay at the midpoint.
-  Relationship *keywords* get «guillemets»; user-supplied names (e.g. a named
-  allocation) render plainly.
+- **Label placement.** Port labels and the interface labels on physical-view
+  wires are handed to ELK as real labels, so ELK reserves room for them, puts
+  each port label outside its box beside the port (flipping sides when a
+  neighbour would collide) and keeps wire labels clear of boxes; both are
+  painted after the edges, so no line strikes through one. Every other edge
+  label sits at the line's midpoint. Relationship *keywords* get «guillemets»;
+  user-supplied names (e.g. a named allocation) render plainly.
 - **Sequence diagrams bypass ELK entirely** — lifeline/message layout is
   deterministic, so `src/render/sequence-renderer.ts` does its own: per-gap
   column spacing (gaps widen only where a message label spans them) and
@@ -266,8 +280,6 @@ Possible next steps, roughly by value:
 - State machines, constraints/calculations, item defs (typed message
   payloads), verification cases.
 - Sequence combined fragments (loop/alt) and return-message styling.
-- Edge bundling or subsystem splitting for wide compositions — the AUV's
-  physical view is ~1980px wide because the aircraft composes eleven parts.
 - Enforced import semantics, once the grammar is broad enough to need them.
 - **The deck's figures are only as fresh as the committed SVGs.**
   `marketing/deck.template.html` quotes node and edge counts in its captions

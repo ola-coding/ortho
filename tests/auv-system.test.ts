@@ -91,19 +91,35 @@ describe('AUV system example model', () => {
         expect(imports.some(i => i.includes('-> Software::Ground'))).toBe(false);
     });
 
-    it('physical view: airframe, ground kit and the radio link contract', async () => {
+    it('physical view: the product as nested parts, each radio wired on its own', async () => {
         const graph = extractPhysicalGraph(await parseSet('physical.sysml'));
-        const names = graph.nodes.map(n => n.name);
-        expect(names).toContain('Aircraft');
-        expect(names).toContain('RadioController');
-        expect(names).toContain('AuvSystem');
-        expect(names).not.toContain('RadioLink');
+        // One top-level assembly; the Propeller supertype is part of nothing.
+        expect(graph.nodes.map(n => n.name)).toEqual(['AuvSystem']);
+        const system = graph.nodes[0];
+        expect(system.children!.map(c => c.name)).toEqual([
+            'aircraft : Aircraft', 'controller : RadioController',
+            'batteries : LiPoFlightBattery [1..3]', 'charger : MultiBayCharger'
+        ]);
+        expect(system.children![0].children).toHaveLength(11);
+        expect(graph.edges).toHaveLength(18);
+        expect(graph.edges.every(e => e.kind === 'connection')).toBe(true);
 
-        // The one design variant kept as a generalization.
-        expect(graph.edges.filter(e => e.kind === 'specialization')).toEqual([
+        // The same transceiver type is fitted at both ends: two boxes, and the
+        // camera's video reaches the aircraft's radio, not the controller's.
+        expect(graph.edges).toContainEqual(expect.objectContaining({
+            sourcePortId: 'Hardware::AuvSystem.aircraft.camera#videoOut',
+            targetPortId: 'Hardware::AuvSystem.aircraft.radio#video'
+        }));
+        expect(graph.edges).toContainEqual(expect.objectContaining({
+            sourcePortId: 'Hardware::AuvSystem.controller.radio#video',
+            targetPortId: 'Hardware::AuvSystem.controller.display#videoIn'
+        }));
+
+        // The air-to-ground link is the one connection typed by an interface.
+        expect(graph.edges.filter(e => e.label === 'RadioLink')).toEqual([
             expect.objectContaining({
-                sourceId: 'Hardware::Propeller',
-                targetId: 'Hardware::FoldingPropeller'
+                sourcePortId: 'Hardware::AuvSystem.aircraft#rfLink',
+                targetPortId: 'Hardware::AuvSystem.controller#rfLink'
             })
         ]);
     });

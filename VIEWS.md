@@ -70,7 +70,7 @@ computers, and how they connect.
 Dimensions, placement and enclosure layout are out of scope. A cable is a
 `connect`, not a part, so it carries no properties of its own.
 
-**Rendering.** Parts are rectangles with a name compartment above an attribute compartment. Ports are small squares sitting on the border, labelled just outside the box. Assembly containment is a solid line with a filled diamond at the containing part. Cables, pipes and looms are plain solid lines drawn port to port, with no arrowhead — direction belongs to the ports, not to the line. A connection typed by an `interface def` carries the interface name as a label on the line.
+**Rendering.** An internal block diagram of the product. Each part *in the product* is a rectangle headed `name : Type`, with its multiplicity where it has one, nested inside the part that contains it — so assembly containment is shown by nesting, and a type fitted twice appears as two boxes, each wired on its own. No attributes are shown: the view is about what connects to what, not about specification values. Ports are small squares sitting on the border, labelled just outside the box. Cables, pipes and looms are plain solid lines drawn port to port, with no arrowhead — direction belongs to the ports, not to the line. A connection typed by an `interface def` carries the interface name as a label on the line.
 
 ### Deployment view
 

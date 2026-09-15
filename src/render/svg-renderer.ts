@@ -1,11 +1,12 @@
 import type { LaidOutDiagram, LaidOutEdge, LaidOutNode } from '../layout/elk-layout.js';
-import { NODE_DEPTH, PORT_SIZE } from '../layout/elk-layout.js';
+import { NODE_DEPTH, PORT_LABEL_FONT, PORT_SIZE } from '../layout/elk-layout.js';
 import { measureText } from './text-metrics.js';
 
 export const PAD_X = 24;
 export const PAD_TOP = 48;
 const PAD_BOTTOM = 24;
 const FILL = '#fdfdf6';
+const CONTAINER_FILL = '#f6f6ec';
 const STROKE = '#2b2b2b';
 const TEXT_COLOR = '#1a1a1a';
 const STEREOTYPE_COLOR = '#555555';
@@ -148,8 +149,10 @@ function renderBoxNode(n: LaidOutNode): string {
     const y = n.y + PAD_TOP;
     const parts: string[] = [];
 
+    // A box that contains other boxes (an assembly on the Physical view) takes
+    // a slightly deeper tint, so nesting reads before any border is traced.
     parts.push(`<rect x="${x}" y="${y}" width="${n.width}" height="${n.height}"
-          fill="${FILL}" stroke="${STROKE}" stroke-width="1.25" />`);
+          fill="${n.hasChildren ? CONTAINER_FILL : FILL}" stroke="${STROKE}" stroke-width="1.25" />`);
 
     // An unstereotyped box (an Implementation-view module, a deployed software
     // part) centres its name in the header instead of leaving an empty «».
@@ -175,20 +178,34 @@ function renderBoxNode(n: LaidOutNode): string {
     }
 
     for (const port of n.ports) {
-        const px = x + port.x;
-        const py = y + port.y;
-        parts.push(`<rect x="${px}" y="${py}" width="${PORT_SIZE}" height="${PORT_SIZE}"
+        parts.push(`<rect x="${x + port.x}" y="${y + port.y}" width="${PORT_SIZE}" height="${PORT_SIZE}"
           fill="white" stroke="${STROKE}" stroke-width="1.25" />`);
-        // Label beside the square (which straddles the border), clear of both
-        // the header text and the edge leaving the port.
-        const labelWidth = measureText(port.label, 9);
-        const rightwards = port.x + PORT_SIZE + 6 + labelWidth <= n.width;
-        const labelX = rightwards ? px + PORT_SIZE + 4 : px - 4;
-        parts.push(`<text x="${labelX}" y="${py + PORT_SIZE / 2 + 3}"${rightwards ? '' : ' text-anchor="end"'}
-          font-size="9" fill="${TEXT_COLOR}" paint-order="stroke" stroke="white" stroke-width="2.5">${escapeXml(port.label)}</text>`);
     }
 
     return `\n    <g>${parts.join('\n      ')}</g>`;
+}
+
+/**
+ * Port labels are painted after every edge, so a line passing a port never
+ * strikes through its name. ELK places them (outside the box, beside the
+ * port, on whichever side avoids a neighbour); the fallback only covers a
+ * port ELK returned no label position for.
+ */
+function renderPortLabels(n: LaidOutNode): string {
+    const x = n.x + PAD_X;
+    const y = n.y + PAD_TOP;
+    return n.ports.map(port => {
+        const px = x + port.x;
+        const py = y + port.y;
+        const halo = `font-size="${PORT_LABEL_FONT}" fill="${TEXT_COLOR}" paint-order="stroke" stroke="white" stroke-width="2.5"`;
+        if (port.labelX !== undefined && port.labelY !== undefined) {
+            return `\n    <text x="${px + port.labelX}" y="${py + port.labelY + PORT_LABEL_FONT}" ${halo}>${escapeXml(port.label)}</text>`;
+        }
+        const labelWidth = measureText(port.label, PORT_LABEL_FONT);
+        const rightwards = port.x + PORT_SIZE + 6 + labelWidth <= n.width;
+        const labelX = rightwards ? px + PORT_SIZE + 4 : px - 4;
+        return `\n    <text x="${labelX}" y="${py + PORT_SIZE / 2 + 3}"${rightwards ? '' : ' text-anchor="end"'} ${halo}>${escapeXml(port.label)}</text>`;
+    }).join('');
 }
 
 function pointAtFraction(points: Array<{ x: number; y: number }>, fraction: number): { x: number; y: number } {
@@ -306,10 +323,15 @@ function renderEdge(e: LaidOutEdge, nodeById: Map<string, LaidOutNode>): string 
         // (e.g. a named allocation) renders plainly, like a role name.
         const stereotyped = ['satisfy', 'include', 'import', 'typing'].includes(e.kind)
             || (e.kind === 'allocate' && e.label === 'allocate');
-        // EA places role names near the far (part) end of a composition.
-        const anchor = pointAtFraction(points, e.kind === 'composition' ? 0.82 : 0.5);
         const label = stereotyped ? `&#171;${escapeXml(e.label)}&#187;` : escapeXml(e.label);
-        svg += `\n    <text x="${anchor.x + PAD_X}" y="${anchor.y + PAD_TOP - 5}" text-anchor="middle" font-size="9"
+        // A label ELK placed is centred in the box ELK reserved for it. Any
+        // other sits just above the line's midpoint — or, for a composition,
+        // near the part end, as EA places role names.
+        const box = e.labelBox;
+        const midpoint = pointAtFraction(points, e.kind === 'composition' ? 0.82 : 0.5);
+        const textX = (box ? box.x + box.width / 2 : midpoint.x) + PAD_X;
+        const textY = box ? box.y + box.height / 2 + 3 + PAD_TOP : midpoint.y + PAD_TOP - 5;
+        svg += `\n    <text x="${textX}" y="${textY}" text-anchor="middle" font-size="9"
           fill="${STEREOTYPE_COLOR}" paint-order="stroke" stroke="white" stroke-width="3">${label}</text>`;
     }
     return svg;
@@ -322,6 +344,7 @@ export function renderSvg(diagram: LaidOutDiagram, title: DiagramTitle): string 
 
     const nodeElements = diagram.nodes.map(renderNode).join('');
     const edgeElements = diagram.edges.map(e => renderEdge(e, nodeById)).join('');
+    const portLabelElements = diagram.nodes.map(renderPortLabels).join('');
 
     return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"
      viewBox="0 0 ${width} ${height}" font-family="${FONT}">
@@ -342,7 +365,7 @@ export function renderSvg(diagram: LaidOutDiagram, title: DiagramTitle): string 
   </defs>
   <rect x="0" y="0" width="${width}" height="${height}" fill="white" />${renderFrame(width, height, title)}
   ${nodeElements}
-  ${edgeElements}
+  ${edgeElements}${portLabelElements ? `\n  ${portLabelElements}` : ''}
 </svg>
 `;
 }

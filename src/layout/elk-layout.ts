@@ -1,11 +1,20 @@
 import ElkConstructor from 'elkjs';
 import type { ELK, ElkNode, ElkExtendedEdge, ELKConstructorArguments } from 'elkjs/lib/elk-api.js';
 import type { DiagramGraph, EdgeKind, GraphNode, NodeShape } from '../model/graph.js';
+import { measureText } from '../render/text-metrics.js';
 
 const ELK = ElkConstructor as unknown as { new(args?: ELKConstructorArguments): ELK };
 const elk = new ELK();
 
 export const PORT_SIZE = 10;
+
+/** Port labels: font size, and the height of the box ELK reserves for one. */
+export const PORT_LABEL_FONT = 9;
+const PORT_LABEL_HEIGHT = 11;
+
+/** Wire labels ELK places (interface names on the physical view). */
+const EDGE_LABEL_FONT = 9;
+const EDGE_LABEL_HEIGHT = 12;
 
 /** Depth of the three-dimensional edge on a Deployment-view hardware node. */
 export const NODE_DEPTH = 12;
@@ -19,6 +28,9 @@ export interface LaidOutPort {
     label: string;
     x: number;
     y: number;
+    /** Top-left of the label's box, relative to the port, as ELK placed it. */
+    labelX?: number;
+    labelY?: number;
 }
 
 export interface LaidOutNode {
@@ -42,6 +54,8 @@ export interface LaidOutEdge {
     targetId: string;
     label?: string;
     points: Array<{ x: number; y: number }>;
+    /** The box ELK reserved for the label, when ELK placed it (root coordinates). */
+    labelBox?: { x: number; y: number; width: number; height: number };
 }
 
 export interface LaidOutDiagram {
@@ -69,10 +83,23 @@ function toElkNode(n: GraphNode): ElkNode {
         elkNode.height = n.height;
     }
     if (n.ports.length > 0) {
+        // ELK places each port's label outside the box beside its port, flips
+        // it to the other side when a neighbouring label would collide, and
+        // grows the box until the ports fit.
+        const options = elkNode.layoutOptions!;
+        options['elk.portLabels.placement'] = 'OUTSIDE';
+        options['elk.nodeSize.constraints'] = 'PORTS PORT_LABELS MINIMUM_SIZE';
+        options['elk.nodeSize.minimum'] = `(${n.width}, ${n.height})`;
         elkNode.ports = n.ports.map(p => ({
             id: p.id,
             width: PORT_SIZE,
             height: PORT_SIZE,
+            labels: [{
+                id: `${p.id}@label`,
+                text: p.label,
+                width: measureText(p.label, PORT_LABEL_FONT) + 2,
+                height: PORT_LABEL_HEIGHT
+            }],
             // straddle the node border, EA-style
             layoutOptions: { 'elk.port.borderOffset': `${-PORT_SIZE / 2}` }
         }));
@@ -107,7 +134,19 @@ export async function layoutGraph(graph: DiagramGraph, options: LayoutOptions = 
         edges: graph.edges.map(e => ({
             id: e.id,
             sources: [e.sourcePortId ?? e.sourceId],
-            targets: [e.targetPortId ?? e.targetId]
+            targets: [e.targetPortId ?? e.targetId],
+            // Wire labels on the physical view (interface names) are real ELK
+            // labels, so the layout keeps them clear of boxes and other lines;
+            // a midpoint label on a wire routed past many boxes lands wherever
+            // the route happens to be busiest.
+            labels: e.label && e.kind === 'connection'
+                ? [{
+                    id: `${e.id}@label`,
+                    text: e.label,
+                    width: measureText(e.label, EDGE_LABEL_FONT) + 4,
+                    height: EDGE_LABEL_HEIGHT
+                }]
+                : undefined
         }))
     };
 
@@ -138,7 +177,9 @@ export async function layoutGraph(graph: DiagramGraph, options: LayoutOptions = 
                     id: p.id,
                     label: portLabels.get(p.id) ?? p.id,
                     x: p.x ?? 0,
-                    y: p.y ?? 0
+                    y: p.y ?? 0,
+                    labelX: p.labels?.[0]?.x,
+                    labelY: p.labels?.[0]?.y
                 })),
                 x,
                 y,
@@ -152,8 +193,11 @@ export async function layoutGraph(graph: DiagramGraph, options: LayoutOptions = 
 
     const absolutePosition = new Map(nodes.map(n => [n.id, { x: n.x, y: n.y }]));
 
-    // ELK reports edge coordinates relative to the least common ancestor
-    // container of the endpoints; translate them back to root coordinates.
+    // ELK reports each edge relative to the node that contains it, and names
+    // that node in `container`. Usually that is the least common ancestor of the
+    // two ends — but an edge from a box's own port to one of its children lives
+    // inside that box, which no ancestor walk finds. The container is
+    // authoritative; the ancestor walk is only a fallback.
     const ancestors = (id: string): string[] => {
         const chain: string[] = [];
         let current = parentOf.get(id);
@@ -175,14 +219,21 @@ export async function layoutGraph(graph: DiagramGraph, options: LayoutOptions = 
             ? [section.startPoint, ...(section.bendPoints ?? []), section.endPoint]
             : [];
         const source = graphEdgeById.get(e.id);
-        const offset = source ? edgeOffset(source.sourceId, source.targetId) : { x: 0, y: 0 };
+        const container = (e as { container?: string }).container;
+        const offset = container !== undefined
+            ? absolutePosition.get(container) ?? { x: 0, y: 0 }
+            : source ? edgeOffset(source.sourceId, source.targetId) : { x: 0, y: 0 };
+        const label = e.labels?.[0];
         return {
             id: e.id,
             kind: source?.kind ?? 'connection',
             sourceId: source?.sourceId ?? '',
             targetId: source?.targetId ?? '',
             label: source?.label,
-            points: rawPoints.map(p => ({ x: p.x + offset.x, y: p.y + offset.y }))
+            points: rawPoints.map(p => ({ x: p.x + offset.x, y: p.y + offset.y })),
+            labelBox: label?.x !== undefined && label.y !== undefined
+                ? { x: label.x + offset.x, y: label.y + offset.y, width: label.width ?? 0, height: label.height ?? 0 }
+                : undefined
         };
     });
 

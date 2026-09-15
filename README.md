@@ -17,7 +17,7 @@ ortho render models/logical.sysml -d logical -o diagrams/logical-view.svg
 | `use-case` | Use case view | actors, use case ellipses, system boundary, includes |
 | `logical` | Logical view | the capability tree: what the system does, as functions |
 | `implementation` | Implementation view | software packages, the modules in them, «import» dependencies |
-| `physical` | Physical view | the product: parts, ports, connections, cabling |
+| `physical` | Physical view | the product: parts nested in their assemblies, their ports, and the wiring between them |
 | `deployment` | Deployment view | hardware nodes with the software they host drawn inside |
 | `process` | Process view | lifelines and ordered messages of one scenario |
 

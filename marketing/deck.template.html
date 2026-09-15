@@ -630,20 +630,24 @@ package Software {
           <div class="code-mount">
             <div class="filename">examples/auv-system/physical.sysml</div>
 <pre class="code">
-interface def RadioLink {
-    end air : RfPort;
-    end ground : RfPort;
-}
-
 part def Aircraft {
-    attribute takeoffWeight_g : Real = 249;
     port batteryBay : PowerPort;
+    port rfLink : RfPort;
 
     part fc : SocFlightController;
-    part vision : StereoVisionSensor [4];
-    part props : FoldingPropeller [4];
+    part camera : HdrCamera;
+    part radio : DualBandTransceiver;
 
-    connect fc.escOut to escs.ctrlIn;
+    connect batteryBay to fc.powerIn;
+    connect camera.videoOut to radio.video;
+    connect radio.rf to rfLink;
+}
+
+part def RadioController {
+    part display : OledTouchScreen;
+    part radio : DualBandTransceiver;
+
+    connect radio.video to display.videoIn;
 }
 
 part def AuvSystem {
@@ -663,7 +667,7 @@ part def AuvSystem {
             <div class="figure-mount">
               <div class="figure-svg" data-svg="auv/physical-view.svg"></div>
             </div>
-            <p class="figure-caption">19 parts · 37 edges · {{DIM:auv/physical-view.svg}} — composition diamonds, port squares and cabling, laid out automatically. Topology, never geometry: what connects and mounts to what, never where it sits.</p>
+            <p class="figure-caption">19 parts · 18 connections · {{DIM:auv/physical-view.svg}} — every part nested inside the one that contains it, ports on the edges, and a line only where something is wired. The two radios share a type but are two boxes, each wired in its own device. Topology, never geometry.</p>
           </div>
         </div>
       </div>
@@ -798,8 +802,8 @@ action def FollowPerson {
                   <tr><th>Model</th><th>Logical</th><th>Physical</th><th>Process</th></tr>
                 </thead>
                 <tbody>
-                  <tr><td class="view">AUV system</td><td>27 functions</td><td>19 parts · 37 edges</td><td>6 lifelines · 9 messages</td></tr>
-                  <tr><td class="view">Coffee machine</td><td>19 functions</td><td>11 parts · 23 edges</td><td>6 lifelines · 9 messages</td></tr>
+                  <tr><td class="view">AUV system</td><td>27 functions</td><td>19 parts · 18 connections</td><td>6 lifelines · 9 messages</td></tr>
+                  <tr><td class="view">Coffee machine</td><td>19 functions</td><td>11 parts · 13 connections</td><td>6 lifelines · 9 messages</td></tr>
                 </tbody>
               </table>
             </div>

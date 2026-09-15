@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { parseHelper } from 'langium/test';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
 import type { Model } from '../src/generated/ast.js';
+import type { GraphNode } from '../src/model/graph.js';
 import { extractPhysicalGraph } from '../src/diagrams/physical.js';
 import { layoutGraph } from '../src/layout/elk-layout.js';
 import { renderSvg } from '../src/render/svg-renderer.js';
@@ -20,75 +21,73 @@ async function parseExample(): Promise<Model> {
     return document.parseResult.value;
 }
 
+function allNodes(nodes: GraphNode[]): GraphNode[] {
+    return nodes.flatMap(n => [n, ...allNodes(n.children ?? [])]);
+}
+
 describe('physical diagram extraction', () => {
-    it('produces one node per part definition/usage with compartments and ports', async () => {
+    it('draws the product, not its types: one box per part, nested in its owner', async () => {
         const graph = extractPhysicalGraph(await parseExample());
-        const ids = graph.nodes.map(n => n.id);
-        expect(ids).toContain('DroneLogical::Drone');
-        expect(ids).toContain('DroneLogical::FlightController');
-        // Port defs are not rendered: no edge kind can terminate on one, so they
-        // could only ever appear as disconnected boxes. Ports show as markers.
-        expect(ids).not.toContain('DroneLogical::PowerPort');
+        // Drone is only a supertype and nothing uses Quadcopter as a part type,
+        // so the quadcopter is the one top-level box, carrying what it inherits.
+        expect(graph.nodes.map(n => n.name)).toEqual(['Quadcopter']);
+        const quadcopter = graph.nodes[0];
+        expect(quadcopter.children!.map(c => c.name)).toEqual([
+            'fc : FlightController', 'battery : Battery', 'motors : Motor [4]'
+        ]);
+        // Port defs are not boxes; ports show as markers on the parts.
+        expect(allNodes(graph.nodes).map(n => n.name)).not.toContain('PowerPort');
+        expect(quadcopter.children![0].ports.map(p => p.label).sort()).toEqual(['motorCtrl', 'powerIn']);
+    });
 
-        const drone = graph.nodes.find(n => n.id === 'DroneLogical::Drone')!;
-        expect(drone.stereotype).toBe('part def');
-        expect(drone.compartments[0].lines).toContain('mass : Real = 249');
-        expect(drone.compartments[1].lines).toContain('motors : Motor [4]');
-
-        const fc = graph.nodes.find(n => n.id === 'DroneLogical::FlightController')!;
-        expect(fc.ports.map(p => p.label).sort()).toEqual(['motorCtrl', 'powerIn']);
+    it('shows no attributes, stereotypes or type-level edges', async () => {
+        const graph = extractPhysicalGraph(await parseExample());
+        for (const node of allNodes(graph.nodes)) {
+            expect(node.compartments, node.name).toEqual([]);
+            expect(node.stereotype, node.name).toBe('');
+        }
+        expect(graph.edges.every(e => e.kind === 'connection')).toBe(true);
     });
 
     it('carries no requirements: the view is the product, not its specification', async () => {
         const graph = extractPhysicalGraph(await parseExample());
-        const ids = graph.nodes.map(n => n.id);
+        const names = allNodes(graph.nodes).map(n => n.name);
         // The fixture declares MassLimit, massReq and a satisfy; none of them
         // belong to any of the six views, so none of them reach this graph.
-        expect(ids).not.toContain('DroneLogical::MassLimit');
-        expect(ids).not.toContain('DroneLogical::massReq');
+        expect(names.some(n => n.includes('MassLimit') || n.includes('massReq'))).toBe(false);
         expect(graph.edges.some(e => e.kind === 'satisfy' || e.kind === 'typing')).toBe(false);
     });
 
-    it('produces specialization, composition and connection edges', async () => {
+    it('wires each connection between the ports of the parts it names', async () => {
         const graph = extractPhysicalGraph(await parseExample());
-        const byKind = (kind: string) => graph.edges.filter(e => e.kind === kind);
-
-        // super → sub, so generalization triangles render at the super end
-        expect(byKind('specialization')).toEqual([
-            expect.objectContaining({ sourceId: 'DroneLogical::Drone', targetId: 'DroneLogical::Quadcopter' })
+        expect(graph.edges.map(e => [e.sourcePortId, e.targetPortId])).toEqual([
+            ['DroneLogical::Quadcopter.battery#powerOut', 'DroneLogical::Quadcopter.fc#powerIn'],
+            ['DroneLogical::Quadcopter.fc#motorCtrl', 'DroneLogical::Quadcopter.motors#ctrlIn']
         ]);
-
-        expect(byKind('composition')).toHaveLength(3);
-        expect(byKind('composition').map(e => e.label)).toContain('motors [4]');
-
-        const connections = byKind('connection');
-        expect(connections).toHaveLength(2);
-        expect(connections[0]).toMatchObject({
-            sourceId: 'DroneLogical::Battery',
-            sourcePortId: 'DroneLogical::Battery.powerOut',
-            targetId: 'DroneLogical::FlightController',
-            targetPortId: 'DroneLogical::FlightController.powerIn'
-        });
     });
 
-    it('leaves no node unconnected', async () => {
-        const graph = extractPhysicalGraph(await parseExample());
-        const touched = new Set(graph.edges.flatMap(e => [e.sourceId, e.targetId]));
-        expect(graph.nodes.filter(n => !touched.has(n.id)).map(n => n.name)).toEqual([]);
-    });
-
-    it('lays out and renders to SVG end-to-end', async () => {
+    it('lays each part out inside its owner and renders without class-diagram markers', async () => {
         const graph = extractPhysicalGraph(await parseExample());
         const laidOut = await layoutGraph(graph);
-        expect(laidOut.nodes).toHaveLength(graph.nodes.length);
+        const byId = new Map(laidOut.nodes.map(n => [n.id, n]));
+        const owner = byId.get('DroneLogical::Quadcopter')!;
+        for (const child of graph.nodes[0].children!) {
+            const box = byId.get(child.id)!;
+            expect(box.x).toBeGreaterThanOrEqual(owner.x);
+            expect(box.y).toBeGreaterThanOrEqual(owner.y);
+            expect(box.x + box.width).toBeLessThanOrEqual(owner.x + owner.width + 0.5);
+            expect(box.y + box.height).toBeLessThanOrEqual(owner.y + owner.height + 0.5);
+        }
+        // ELK placed every port label, so none is left to the fallback.
         for (const node of laidOut.nodes.filter(n => n.ports.length > 0)) {
-            expect(node.ports.every(p => Number.isFinite(p.x) && Number.isFinite(p.y))).toBe(true);
+            expect(node.ports.every(p => p.labelX !== undefined && p.labelY !== undefined), node.name).toBe(true);
         }
 
         const svg = renderSvg(laidOut, { heading: 'Physical view — DroneLogical', source: 'fixtures/physical.sysml' });
         expect(svg).toContain('<svg');
-        expect(svg).toContain('&#171;part def&#187;');
-        expect(svg).toContain('marker-start="url(#triangle)"');
-        expect(svg).toContain('marker-start="url(#diamond)"');
+        expect(svg).toContain('>powerIn</text>');
+        expect(svg).not.toContain('part def');
+        expect(svg).not.toContain('url(#diamond)');
+        expect(svg).not.toContain('url(#triangle)');
     });
 });

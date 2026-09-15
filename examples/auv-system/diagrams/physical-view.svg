@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1978.1520833333332" height="1557"
-     viewBox="0 0 1978.1520833333332 1557" font-family="Arial, Helvetica, Segoe UI, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="1562.8439999999998" height="1178"
+     viewBox="0 0 1562.8439999999998 1178" font-family="Arial, Helvetica, Segoe UI, sans-serif">
   <title>Physical view — AUV System (generated from examples/auv-system/physical.sysml)</title>
   <defs>
     <marker id="triangle" markerWidth="14" markerHeight="12" refX="12" refY="5"
@@ -15,395 +15,199 @@
       <path d="M0,0 L10,5 L0,10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
     </marker>
   </defs>
-  <rect x="0" y="0" width="1978.1520833333332" height="1557" fill="white" />
-  <rect x="8" y="8" width="1962.1520833333332" height="1541" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+  <rect x="0" y="0" width="1562.8439999999998" height="1178" fill="white" />
+  <rect x="8" y="8" width="1546.8439999999998" height="1162" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
   <path d="M8,8 L8,30 L175.666,30 L185.666,21 L185.666,8 Z"
         fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
   <text x="16" y="23" font-size="11" font-weight="600" fill="#1a1a1a">Physical view — AUV System</text>
-  <text x="1964.1520833333332" y="1543" text-anchor="end" font-size="9" fill="#8a8a86">examples/auv-system/physical.sysml</text>
+  <text x="1548.8439999999998" y="1164" text-anchor="end" font-size="9" fill="#8a8a86">examples/auv-system/physical.sysml</text>
   
-    <g><rect x="877.2620833333332" y="868" width="137" height="55"
+    <g><rect x="36" y="60" width="1490.8439999999998" height="1082"
+          fill="#f6f6ec" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="781.4219999999999" y="81" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">AuvSystem</text></g>
+    <g><rect x="288.716" y="545" width="994.4319999999999" height="545"
+          fill="#f6f6ec" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="785.932" y="566" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">aircraft : Aircraft</text>
+      <rect x="1056.792" y="540" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <rect x="1016.5889999999999" y="1085" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+    <g><rect x="733.6633333333333" y="705" width="161.344" height="40"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="945.7620833333332" y="881" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="945.7620833333332" y="894" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">SocFlightController</text>
-      <line x1="877.2620833333332" y1="900" x2="1014.2620833333332" y2="900"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="885.2620833333332" y="912"
-          font-size="11" fill="#1a1a1a">socCores : Real = 4</text>
-      <rect x="975.0120833333332" y="863" width="10" height="10"
+      <text x="814.3353333333333" y="726" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">fc : SocFlightController</text>
+      <rect x="837.8926666666666" y="700" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="971.0120833333332" y="871" text-anchor="end"
-          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">powerIn</text>
-      <rect x="935.7620833333332" y="863" width="10" height="10"
+      <rect x="780.778" y="700" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="949.7620833333332" y="871"
-          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">sensorsIn</text>
-      <rect x="904.0120833333332" y="918" width="10" height="10"
+      <rect x="747.7463333333333" y="740" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="918.0120833333332" y="926"
-          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">escOut</text>
-      <rect x="940.7620833333332" y="918" width="10" height="10"
+      <rect x="870.9243333333333" y="740" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="954.7620833333332" y="926"
-          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">radioLink</text>
-      <rect x="977.5120833333332" y="918" width="10" height="10"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="973.5120833333332" y="926" text-anchor="end"
-          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">gimbalCtrl</text></g>
-    <g><rect x="1055.762083333333" y="742" width="130" height="42"
+      <rect x="803.3413333333333" y="740" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+    <g><rect x="313.716" y="601" width="115.348" height="40"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1120.762083333333" y="755" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="1120.762083333333" y="768" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">MemsImu</text>
-      <rect x="1115.762083333333" y="779" width="10" height="10"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1129.762083333333" y="787"
-          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">dataOut</text></g>
-    <g><rect x="394.8770833333333" y="733" width="242.849" height="55"
+      <text x="371.39" y="622" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">imu : MemsImu</text>
+      <rect x="366.39" y="636" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+    <g><rect x="897.108" y="601" width="154.684" height="40"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="516.3015833333333" y="746" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="516.3015833333333" y="759" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">MultiBandGnss</text>
-      <line x1="394.8770833333333" y1="765" x2="637.7260833333332" y2="765"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="402.8770833333333" y="777"
-          font-size="11" fill="#1a1a1a">constellations : String = GPS_Galileo_BeiDou</text>
-      <rect x="511.30158333333327" y="783" width="10" height="10"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="525.3015833333333" y="791"
-          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">dataOut</text></g>
-    <g><rect x="687.7260833333332" y="742" width="138.036" height="42"
+      <text x="974.4499999999999" y="622" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">gnss : MultiBandGnss</text>
+      <rect x="969.4499999999999" y="636" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+    <g><rect x="469.064" y="601" width="205.384" height="40"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="756.7440833333333" y="755" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="756.7440833333333" y="768" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">StereoVisionSensor</text>
-      <rect x="751.7440833333333" y="779" width="10" height="10"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="765.7440833333333" y="787"
-          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">dataOut</text></g>
-    <g><rect x="875.7620833333332" y="742" width="130" height="42"
+      <text x="571.756" y="622" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">vision : StereoVisionSensor [4]</text>
+      <rect x="566.756" y="636" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+    <g><rect x="714.448" y="601" width="142.66" height="40"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="940.7620833333332" y="755" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="940.7620833333332" y="768" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">TofRangefinder</text>
-      <rect x="935.7620833333332" y="779" width="10" height="10"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="949.7620833333332" y="787"
-          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">dataOut</text></g>
-    <g><rect x="1318.9645833333332" y="1186" width="175.595" height="70"
+      <text x="785.778" y="622" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">tof : TofRangefinder</text>
+      <rect x="780.778" y="636" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+    <g><rect x="915.3396666666666" y="903" width="145.372" height="40"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1406.762083333333" y="1199" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="1406.762083333333" y="1212" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">HdrCamera</text>
-      <line x1="1318.9645833333332" y1="1218" x2="1494.5595833333332" y2="1218"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="1326.9645833333332" y="1230"
-          font-size="11" fill="#1a1a1a">sensor : String = 1/1.3in_CMOS</text>
-      <text x="1326.9645833333332" y="1245"
-          font-size="11" fill="#1a1a1a">maxVideo : String = 4K60_HDR</text>
-      <rect x="1357.8633333333332" y="1181" width="10" height="10"
+      <text x="988.0256666666667" y="924" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">camera : HdrCamera</text>
+      <rect x="957.1303333333333" y="898" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1371.8633333333332" y="1189"
-          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">mount</text>
-      <rect x="1445.6608333333331" y="1181" width="10" height="10"
+      <rect x="1008.9209999999999" y="898" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1459.6608333333331" y="1189"
-          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ctrlIn</text>
-      <rect x="1401.762083333333" y="1251" width="10" height="10"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1415.762083333333" y="1259"
-          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">videoOut</text></g>
-    <g><rect x="1246.762083333333" y="1019" width="130" height="55"
+      <rect x="983.0256666666667" y="938" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+    <g><rect x="874.1083333333332" y="809" width="176.044" height="40"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1311.762083333333" y="1032" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="1311.762083333333" y="1045" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">ThreeAxisGimbal</text>
-      <line x1="1246.762083333333" y1="1051" x2="1376.762083333333" y2="1051"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="1254.762083333333" y="1063"
-          font-size="11" fill="#1a1a1a">axes : Real = 3</text>
-      <rect x="1306.762083333333" y="1069" width="10" height="10"
+      <text x="962.1303333333333" y="830" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">gimbal : ThreeAxisGimbal</text>
+      <rect x="957.1303333333333" y="844" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1320.762083333333" y="1077"
-          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">mount</text>
-      <rect x="1286.762083333333" y="1014" width="10" height="10"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1300.762083333333" y="1022"
-          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ctrlIn</text></g>
-    <g><rect x="283.04774999999995" y="1186" width="130" height="42"
+      <rect x="957.1303333333333" y="804" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+    <g><rect x="658.4063333333334" y="903" width="188.68" height="40"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="348.04774999999995" y="1199" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="348.04774999999995" y="1212" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">BrushlessMotor</text>
-      <rect x="363.04774999999995" y="1181" width="10" height="10"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="377.04774999999995" y="1189"
-          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">drive</text></g>
-    <g><rect x="302.53575" y="1023.3333333333334" width="131.024" height="42"
+      <text x="752.7463333333334" y="924" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">motors : BrushlessMotor [4]</text>
+      <rect x="747.7463333333334" y="898" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+    <g><rect x="671.3843333333333" y="809" width="162.724" height="40"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="368.04775" y="1036.3333333333335" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="368.04775" y="1049.3333333333335" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">BrushlessEsc</text>
-      <rect x="383.2184166666667" y="1018.3333333333334" width="10" height="10"
+      <text x="752.7463333333333" y="830" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">escs : BrushlessEsc [4]</text>
+      <rect x="747.7463333333333" y="804" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="397.2184166666667" y="1026.3333333333335"
-          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ctrlIn</text>
-      <rect x="363.04775" y="1060.3333333333335" width="10" height="10"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="377.04775" y="1068.3333333333335"
-          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">motorOut</text></g>
-    <g><rect x="1832.1520833333332" y="566" width="110" height="42"
+      <rect x="747.7463333333333" y="844" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+    <g><rect x="1072.792" y="609.5" width="185.356" height="40"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1887.1520833333332" y="579" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="1887.1520833333332" y="592" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">Propeller</text></g>
-    <g><rect x="1458.762083333333" y="733" width="119.352" height="42"
+      <text x="1165.4699999999998" y="630.5" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">props : FoldingPropeller [4]</text></g>
+    <g><rect x="925.8989999999999" y="997" width="191.38" height="40"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1518.438083333333" y="746" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="1518.438083333333" y="759" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">FoldingPropeller</text></g>
-    <g><rect x="175.2727500000001" y="1336" width="150.526" height="55"
+      <text x="1021.5889999999999" y="1018" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">radio : DualBandTransceiver</text>
+      <rect x="1050.1523333333332" y="992" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <rect x="983.0256666666666" y="992" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <rect x="1016.5889999999999" y="1032" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+    <g><rect x="61" y="105" width="270.61133333333333" height="309"
+          fill="#f6f6ec" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="196.30566666666667" y="126" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">controller : RadioController</text>
+      <rect x="273.716" y="409" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+    <g><rect x="86" y="338" width="182.716" height="40"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="250.5357500000001" y="1349" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="250.5357500000001" y="1362" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">DualBandTransceiver</text>
-      <line x1="175.2727500000001" y1="1368" x2="325.7987500000001" y2="1368"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="183.2727500000001" y="1380"
-          font-size="11" fill="#1a1a1a">maxRange_km : Real = 20</text>
-      <rect x="275.6234166666668" y="1331" width="10" height="10"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="271.6234166666668" y="1339" text-anchor="end"
-          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">radioLink</text>
-      <rect x="195.36041666666677" y="1331" width="10" height="10"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="209.36041666666677" y="1339"
-          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">video</text>
-      <rect x="245.5357500000001" y="1331" width="10" height="10"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="259.5357500000001" y="1339"
-          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">rf</text></g>
-    <g><rect x="1373.6380576923075" y="230" width="157.874" height="70"
+      <text x="177.358" y="359" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">display : OledTouchScreen</text>
+      <rect x="172.358" y="333" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+    <g><rect x="139.89733333333334" y="150" width="142.048" height="40"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1452.5750576923074" y="243" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="1452.5750576923074" y="256" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">LiPoFlightBattery</text>
-      <line x1="1373.6380576923075" y1="262" x2="1531.5120576923075" y2="262"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="1381.6380576923075" y="274"
-          font-size="11" fill="#1a1a1a">capacity_mAh : Real = 2590</text>
-      <text x="1381.6380576923075" y="289"
-          font-size="11" fill="#1a1a1a">weight_g : Real = 80.5</text>
-      <rect x="1447.5750576923074" y="295" width="10" height="10"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1461.5750576923074" y="303"
-          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">powerOut</text></g>
-    <g><rect x="60.27275000000009" y="1466" width="130" height="55"
+      <text x="210.92133333333334" y="171" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">sticks : GimbalStick</text>
+      <rect x="205.92133333333334" y="185" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+    <g><rect x="115.23133333333334" y="244" width="191.38" height="40"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="125.27275000000009" y="1479" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="125.27275000000009" y="1492" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">OledTouchScreen</text>
-      <line x1="60.27275000000009" y1="1498" x2="190.2727500000001" y2="1498"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="68.27275000000009" y="1510"
-          font-size="11" fill="#1a1a1a">size_in : Real = 5.5</text>
-      <rect x="140.2727500000001" y="1461" width="10" height="10"
+      <text x="210.92133333333334" y="265" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">radio : DualBandTransceiver</text>
+      <rect x="205.92133333333334" y="239" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="154.2727500000001" y="1469"
-          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">videoIn</text></g>
-    <g><rect x="90.53575000000001" y="1200" width="130" height="42"
+      <rect x="172.358" y="279" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+      <rect x="239.48466666666667" y="279" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+    <g><rect x="951.7739999999999" y="451" width="220.036" height="40"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="155.53575" y="1213" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="155.53575" y="1226" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">GimbalStick</text>
-      <rect x="150.53575" y="1237" width="10" height="10"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="164.53575" y="1245"
-          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ctrlOut</text></g>
-    <g><rect x="1638.1140833333332" y="380" width="144.038" height="55"
+      <text x="1061.792" y="472" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">batteries : LiPoFlightBattery [1..3]</text>
+      <rect x="1056.792" y="486" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+    <g><rect x="1323.148" y="545" width="178.696" height="40"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1710.1330833333332" y="393" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="1710.1330833333332" y="406" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">MultiBayCharger</text>
-      <line x1="1638.1140833333332" y1="412" x2="1782.1520833333332" y2="412"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="1646.1140833333332" y="424"
-          font-size="11" fill="#1a1a1a">batterySlots : Real = 3</text>
-      <rect x="1682.7934166666664" y="375" width="10" height="10"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1696.7934166666664" y="383"
-          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">chargePort</text></g>
-    <g><rect x="1341.050391025641" y="380" width="169.787" height="228"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1425.9438910256408" y="393" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="1425.9438910256408" y="406" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">Aircraft</text>
-      <line x1="1341.050391025641" y1="412" x2="1510.837391025641" y2="412"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="1349.050391025641" y="424"
-          font-size="11" fill="#1a1a1a">takeoffWeight_g : Real = 249</text>
-      <line x1="1341.050391025641" y1="435" x2="1510.837391025641" y2="435"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="1349.050391025641" y="447"
-          font-size="11" fill="#1a1a1a">fc : SocFlightController</text>
-      <text x="1349.050391025641" y="462"
-          font-size="11" fill="#1a1a1a">imu : MemsImu</text>
-      <text x="1349.050391025641" y="477"
-          font-size="11" fill="#1a1a1a">gnss : MultiBandGnss</text>
-      <text x="1349.050391025641" y="492"
-          font-size="11" fill="#1a1a1a">vision : StereoVisionSensor [4]</text>
-      <text x="1349.050391025641" y="507"
-          font-size="11" fill="#1a1a1a">tof : TofRangefinder</text>
-      <text x="1349.050391025641" y="522"
-          font-size="11" fill="#1a1a1a">camera : HdrCamera</text>
-      <text x="1349.050391025641" y="537"
-          font-size="11" fill="#1a1a1a">gimbal : ThreeAxisGimbal</text>
-      <text x="1349.050391025641" y="552"
-          font-size="11" fill="#1a1a1a">motors : BrushlessMotor [4]</text>
-      <text x="1349.050391025641" y="567"
-          font-size="11" fill="#1a1a1a">escs : BrushlessEsc [4]</text>
-      <text x="1349.050391025641" y="582"
-          font-size="11" fill="#1a1a1a">props : FoldingPropeller [4]</text>
-      <text x="1349.050391025641" y="597"
-          font-size="11" fill="#1a1a1a">radio : DualBandTransceiver</text>
-      <rect x="1447.5750576923076" y="375" width="10" height="10"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1461.5750576923076" y="383"
-          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">batteryBay</text>
-      <rect x="1353.3416987179487" y="603" width="10" height="10"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1367.3416987179487" y="611"
-          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">rfLink</text></g>
-    <g><rect x="36" y="1003" width="159.381" height="108"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="115.6905" y="1016" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="115.6905" y="1029" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">RadioController</text>
-      <line x1="36" y1="1035" x2="195.381" y2="1035"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="44" y="1047"
-          font-size="11" fill="#1a1a1a">weight_g : Real = 420</text>
-      <line x1="36" y1="1058" x2="195.381" y2="1058"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="44" y="1070"
-          font-size="11" fill="#1a1a1a">display : OledTouchScreen</text>
-      <text x="44" y="1085"
-          font-size="11" fill="#1a1a1a">sticks : GimbalStick</text>
-      <text x="44" y="1100"
-          font-size="11" fill="#1a1a1a">radio : DualBandTransceiver</text>
-      <rect x="135.58733333333333" y="998" width="10" height="10"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="149.58733333333333" y="1006"
-          font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">rfLink</text></g>
-    <g><rect x="1591.3647499999997" y="60" width="182.635" height="100"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1682.6822499999998" y="73" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="1682.6822499999998" y="86" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">AuvSystem</text>
-      <line x1="1591.3647499999997" y1="92" x2="1773.9997499999997" y2="92"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="1599.3647499999997" y="104"
-          font-size="11" fill="#1a1a1a">aircraft : Aircraft</text>
-      <text x="1599.3647499999997" y="119"
-          font-size="11" fill="#1a1a1a">controller : RadioController</text>
-      <text x="1599.3647499999997" y="134"
-          font-size="11" fill="#1a1a1a">batteries : LiPoFlightBattery [1..3]</text>
-      <text x="1599.3647499999997" y="149"
-          font-size="11" fill="#1a1a1a">charger : MultiBayCharger</text></g>
+      <text x="1412.4959999999999" y="566" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">charger : MultiBayCharger</text>
+      <rect x="1407.4959999999999" y="540" width="10" height="10"
+          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
   
-    <polyline points="1887.1520833333332,608 1887.1520833333332,623 1538.3300833333333,623 1538.3300833333333,733" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#triangle)" />
-    <polyline points="1400.2156217948716,608 1400.2156217948716,653 363.8770833333333,653 363.8770833333333,813 906.5120833333332,813 906.5120833333332,868" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
-    <text x="630.4968464102562" y="808" text-anchor="middle" font-size="9"
-          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">fc</text>
-    <polyline points="1449.3808525641025,608 1449.3808525641025,693 1120.762083333333,693 1120.762083333333,742" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
-    <text x="1155.0334617948715" y="688" text-anchor="middle" font-size="9"
-          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">imu</text>
-    <polyline points="1412.5069294871794,608 1412.5069294871794,663 516.3015833333334,663 516.3015833333334,733" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
-    <text x="630.1185456410257" y="658" text-anchor="middle" font-size="9"
-          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">gnss</text>
-    <polyline points="1424.798237179487,608 1424.798237179487,673 756.7440833333333,673 756.7440833333333,742" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
-    <text x="832.1138310256409" y="668" text-anchor="middle" font-size="9"
-          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">vision [4]</text>
-    <polyline points="1437.0895448717947,608 1437.0895448717947,683 940.7620833333332,683 940.7620833333332,742" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
-    <text x="995.2210264102563" y="678" text-anchor="middle" font-size="9"
-          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">tof</text>
-    <polyline points="1473.9634679487178,608 1473.9634679487178,713 1406.762083333333,713 1406.762083333333,1186" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
-    <text x="1406.762083333333" y="1064.8637507692306" text-anchor="middle" font-size="9"
-          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">camera</text>
-    <polyline points="1486.2547756410254,608 1486.2547756410254,723 1427.762083333333,723 1427.762083333333,938 1336.762083333333,938 1336.762083333333,1019" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
-    <text x="1356.6507679487177" y="933" text-anchor="middle" font-size="9"
-          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">gimbal</text>
-    <polyline points="1375.6330064102563,608 1375.6330064102563,633 271.53575,633 271.53575,1121 323.04774999999995,1121 323.04774999999995,1186" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
-    <text x="271.53575" y="920.4623338461538" text-anchor="middle" font-size="9"
-          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">motors [4]</text>
-    <polyline points="1387.924314102564,608 1387.924314102564,643 342.8770833333333,643 342.8770833333333,1023.3333333333334" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
-    <text x="342.8770833333333" y="755.4648317948718" text-anchor="middle" font-size="9"
-          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">escs [4]</text>
-    <polyline points="1498.5460833333332,608 1498.5460833333332,733" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
-    <text x="1498.5460833333332" y="705.5" text-anchor="middle" font-size="9"
-          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">props [4]</text>
-    <polyline points="1461.67216025641,608 1461.67216025641,703 1215.762083333333,703 1215.762083333333,1301 305.71108333333336,1301 305.71108333333336,1336" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
-    <text x="609.8240771794872" y="1296" text-anchor="middle" font-size="9"
-          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">radio</text>
-    <polyline points="75.84525000000008,1111 75.84525000000008,1121 38.53575000000001,1121 38.53575000000001,1401 100.27275000000009,1401 100.27275000000009,1466" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
-    <text x="83.54438000000005" y="1396" text-anchor="middle" font-size="9"
-          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">display</text>
-    <polyline points="155.53575,1111 155.53575,1200" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
-    <text x="155.53575" y="1178.98" text-anchor="middle" font-size="9"
-          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">sticks</text>
-    <polyline points="115.69049999999993,1111 115.69049999999993,1131 59.53575000000001,1131 59.53575000000001,1281 225.44808333333344,1281 225.44808333333344,1336" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
-    <text x="199.97600833333343" y="1276" text-anchor="middle" font-size="9"
-          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">radio</text>
-    <polyline points="1664.4187499999998,160 1664.4187499999998,180 1342.6380576923075,180 1342.6380576923075,315 1394.3127243589743,315 1394.3127243589743,380" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
-    <text x="1352.4907597435895" y="310" text-anchor="middle" font-size="9"
-          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">aircraft</text>
-    <polyline points="1627.8917499999998,160 1627.8917499999998,170 85.7936666666667,170 85.7936666666667,1003" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
-    <text x="85.7936666666667" y="568.6823450000002" text-anchor="middle" font-size="9"
-          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">controller</text>
-    <polyline points="1700.9457499999999,160 1700.9457499999999,190 1452.5750576923076,190 1452.5750576923076,230" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
-    <text x="1469.8817823076922" y="185" text-anchor="middle" font-size="9"
-          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">batteries [1..3]</text>
-    <polyline points="1737.47275,160 1737.47275,380" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-start="url(#diamond)" />
-    <text x="1737.47275" y="335.4" text-anchor="middle" font-size="9"
-          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">charger</text>
-    <polyline points="1452.5750576923076,375 1452.5750576923076,315 1608.1140833333332,315 1608.1140833333332,813 980.0120833333332,813 980.0120833333332,863" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="1120.762083333333,789 1120.762083333333,803 940.7620833333332,803 940.7620833333332,863" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="516.3015833333334,793 516.3015833333334,803 940.7620833333332,803 940.7620833333332,863" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="756.7440833333333,789 756.7440833333333,803 940.7620833333332,803 940.7620833333332,863" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="940.7620833333332,789 940.7620833333332,863" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="909.0120833333332,928 909.0120833333332,938 388.2184166666666,938 388.2184166666666,1018.3333333333334" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="368.04774999999995,1070.3333333333335 368.04774999999995,1181" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="982.5120833333332,928 982.5120833333332,938 1291.762083333333,938 1291.762083333333,1014" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="945.7620833333332,928 945.7620833333332,1271 280.6234166666668,1271 280.6234166666668,1331" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="1406.762083333333,1261 1406.762083333333,1291 200.36041666666665,1291 200.36041666666665,1331" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="1311.762083333333,1079 1311.762083333333,1121 1362.8633333333332,1121 1362.8633333333332,1181" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="250.53575,1331 250.53575,623 1358.3416987179485,623 1358.3416987179485,613" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="200.36041666666665,1331 200.36041666666665,1291 145.2727500000001,1291 145.2727500000001,1461" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="155.53575,1247 155.53575,1271 280.6234166666668,1271 280.6234166666668,1331" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="250.53575,1331 250.53575,938 140.5873333333334,938 140.5873333333334,998" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="1452.5750576923076,305 1452.5750576923076,375" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="1452.5750576923076,305 1452.5750576923076,315 1687.7934166666664,315 1687.7934166666664,375" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="1358.3416987179485,613 1358.3416987179485,623 250.53575,623 250.53575,938 140.5873333333334,938 140.5873333333334,998" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <text x="566.9645160256409" y="618" text-anchor="middle" font-size="9"
+    <polyline points="1061.792,540 1061.792,678 842.8926666666666,678 842.8926666666666,700" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="371.39,646 371.39,668 785.778,668 785.778,700" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="974.4499999999999,646 974.4499999999999,668 785.778,668 785.778,700" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="571.7560000000001,646 571.7560000000001,668 785.778,668 785.778,700" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="785.778,646 785.778,700" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="752.7463333333333,750 752.7463333333333,804" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="752.7463333333333,854 752.7463333333333,898" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="808.3413333333333,750 808.3413333333333,782 962.1303333333333,782 962.1303333333333,804" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="875.9243333333333,750 875.9243333333333,772 1070.7116666666666,772 1070.7116666666666,970 1055.1523333333332,970 1055.1523333333332,992" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="988.0256666666667,948 988.0256666666666,992" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="962.1303333333333,854 962.1303333333333,898" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="1021.5889999999998,1042 1021.5889999999999,1095" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="177.358,289 177.358,333" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="210.92133333333334,195 210.92133333333334,239" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="244.48466666666667,289 244.48466666666667,311 278.716,311 278.716,419" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="1061.792,496 1061.792,540" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="1061.792,496 1061.792,518 1412.4959999999999,518 1412.4959999999999,540" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="1021.5889999999999,1095 1021.5889999999999,1117 278.716,1117 278.716,419" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <text x="254.709" y="482.5" text-anchor="middle" font-size="9"
           fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">RadioLink</text>
+  
+    <text x="1067.792" y="537" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">batteryBay</text>
+    <text x="1027.589" y="1105" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">rfLink</text>
+    <text x="848.8926666666666" y="697" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">powerIn</text>
+    <text x="738.763" y="697" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">sensorsIn</text>
+    <text x="758.7463333333333" y="760" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">escOut</text>
+    <text x="881.9243333333333" y="760" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">radioLink</text>
+    <text x="814.3413333333333" y="760" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">gimbalCtrl</text>
+    <text x="377.39" y="656" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">dataOut</text>
+    <text x="980.4499999999999" y="656" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">dataOut</text>
+    <text x="577.756" y="656" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">dataOut</text>
+    <text x="791.778" y="656" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">dataOut</text>
+    <text x="929.1193333333333" y="895" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">mount</text>
+    <text x="1019.9209999999999" y="895" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ctrlIn</text>
+    <text x="994.0256666666667" y="958" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">videoOut</text>
+    <text x="968.1303333333333" y="864" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">mount</text>
+    <text x="968.1303333333333" y="801" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ctrlIn</text>
+    <text x="758.7463333333334" y="895" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">drive</text>
+    <text x="758.7463333333333" y="801" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ctrlIn</text>
+    <text x="758.7463333333333" y="864" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">motorOut</text>
+    <text x="1061.1523333333332" y="989" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">radioLink</text>
+    <text x="958.5156666666666" y="989" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">video</text>
+    <text x="1027.589" y="1052" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">rf</text>
+    <text x="284.716" y="429" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">rfLink</text>
+    <text x="183.358" y="330" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">videoIn</text>
+    <text x="216.92133333333334" y="205" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ctrlOut</text>
+    <text x="216.92133333333334" y="236" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">radioLink</text>
+    <text x="147.848" y="299" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">video</text>
+    <text x="250.48466666666667" y="299" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">rf</text>
+    <text x="1067.792" y="506" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">powerOut</text>
+    <text x="1418.4959999999999" y="537" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">chargePort</text>
 </svg>

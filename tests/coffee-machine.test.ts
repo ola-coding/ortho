@@ -86,13 +86,16 @@ describe('coffee machine example model', () => {
         expect(imports).toEqual(['Software::Application -> Software::Control']);
     });
 
-    it('physical view: parts and looms, with the interface named on the line', async () => {
+    it('physical view: the machine as nested parts, looms named by their interface', async () => {
         const graph = extractPhysicalGraph(await parseSet('physical.sysml'));
-        const names = graph.nodes.map(n => n.name);
-        expect(names).toContain('Thermoblock');
-        expect(names).toContain('ControlBoard');
+        expect(graph.nodes.map(n => n.name)).toEqual(['CoffeeMachine']);
+        const names = graph.nodes[0].children!.map(n => n.name);
+        expect(names).toHaveLength(10);
+        expect(names).toContain('heater : Thermoblock');
+        expect(names).toContain('controller : ControlBoard');
         // Interface defs label their connection rather than becoming a box.
-        expect(names).not.toContain('ControlLink');
+        expect(names.some(n => n.includes('ControlLink'))).toBe(false);
+        expect(graph.edges).toHaveLength(13);
         expect(graph.edges.filter(e => e.kind === 'connection' && e.label === 'ControlLink')).toHaveLength(6);
     });
 
