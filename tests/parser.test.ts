@@ -18,7 +18,7 @@ async function parseOk(text: string): Promise<LangiumDocument<Model>> {
     return document;
 }
 
-describe('Phase 1 grammar', () => {
+describe('core grammar', () => {
     it('parses part defs with attributes, ports and nested parts', async () => {
         const document = await parseOk(`
             package P {

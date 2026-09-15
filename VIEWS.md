@@ -59,7 +59,7 @@ Realization is many to many — one function can be realized by software and har
 Static structure of the software: modules and their dependencies. Runtime
 behaviour belongs to Process, hardware to Physical.
 
-**Rendering.** Packages are rectangles with a small tab in the top-left corner, nested to show containment. Modules inside them are plain rectangles carrying a name compartment. Dependencies are dashed lines with an open arrowhead pointing at the module depended upon.
+**Rendering.** Packages are rectangles with a small tab in the top-left corner, nested to show containment. Modules inside them are plain rectangles carrying a name compartment. Dependencies are drawn between packages, read from their imports: dashed lines with an open arrowhead, labelled «import», pointing at the package depended upon.
 
 ### Physical view
 
@@ -78,7 +78,7 @@ Which hardware runs which software. The only view whose content is a relation ra
 
 Narrower than realization — this is the sub-case where the realization happens to be software and therefore needs a host.
 
-**Rendering.** Hardware nodes are drawn as three-dimensional boxes — a rectangle with a shallow depth edge along its top and right. The software they host is drawn as plain rectangles nested inside them. Nesting replaces arrows entirely — there is no allocation edge to follow, and a node with nothing drawn inside it visibly hosts nothing. This is a deliberate change from today's allocation diagram, which separates the boxes and joins them with dashed arrows.
+**Rendering.** Hardware nodes are drawn as three-dimensional boxes — a rectangle with a shallow depth edge along its top and right. The software they host is drawn as plain rectangles nested inside them. Nesting replaces arrows entirely — there is no allocation edge to follow, and a node with nothing drawn inside it visibly hosts nothing. This deliberately replaces the earlier allocation diagram, which kept the boxes apart and joined them with dashed arrows.
 
 ### Process view
 

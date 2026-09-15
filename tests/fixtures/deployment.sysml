@@ -1,5 +1,5 @@
-// Phase 3 smoke model: development view (packages/imports) and
-// physical view (software → hardware allocations).
+// Smoke model for the implementation view (packages and imports) and the
+// deployment view (software allocated to hardware).
 package DroneSystem {
 
     package Requirements {

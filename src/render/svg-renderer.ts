@@ -25,7 +25,7 @@ export function escapeXml(text: string): string {
 }
 
 /**
- * Diagram identity: the 4+1 view heading shown in the frame pentagon, and the
+ * Diagram identity: the view heading shown in the frame pentagon, and the
  * source model file shown as provenance in the frame's bottom-right corner
  * (everything-as-code: every SVG names the file that generated it).
  */

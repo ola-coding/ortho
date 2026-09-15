@@ -1,4 +1,4 @@
-// Phase 4 smoke model: process view — message exchange during a mission.
+// Smoke model for the process view: message exchange during a mission.
 package DroneProcess {
 
     part def Pilot;

@@ -1,4 +1,4 @@
-// Phase 1 smoke model: logical view of a small quadcopter.
+// Smoke model for the physical view: parts, ports and connections of a small quadcopter.
 package DroneLogical {
 
     port def PowerPort {

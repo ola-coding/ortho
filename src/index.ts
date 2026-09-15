@@ -1,4 +1,4 @@
-// Public programmatic API: parse .sysml files and render 4+1 view diagrams.
+// Public programmatic API: parse .sysml files and render the six architectural views.
 export { createSysmlServices } from './parser/sysml-module.js';
 export type { SysmlServices } from './parser/sysml-module.js';
 export { parseSysmlFiles } from './parser/parse.js';

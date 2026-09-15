@@ -1,4 +1,4 @@
-// Phase 2 smoke model: scenarios view for a small quadcopter.
+// Smoke model for the use case view of a small quadcopter.
 package DroneUseCases {
 
     part def Pilot;

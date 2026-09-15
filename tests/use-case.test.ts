@@ -25,7 +25,7 @@ async function parseExample(): Promise<Model> {
     return (await parseOk(text)).parseResult.value;
 }
 
-describe('Phase 2 grammar', () => {
+describe('use case grammar', () => {
     it('parses use case defs/usages with actors, subjects and includes', async () => {
         const document = await parseOk(`
             package P {

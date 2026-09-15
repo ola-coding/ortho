@@ -24,7 +24,7 @@ async function parseExample(): Promise<Model> {
     return (await parseOk(text)).parseResult.value;
 }
 
-describe('Phase 4 grammar', () => {
+describe('action and message grammar', () => {
     it('parses action defs with ordered messages', async () => {
         const model = await parseExample();
         const actionDef = model.packages[0].members.find(isActionDef)!;

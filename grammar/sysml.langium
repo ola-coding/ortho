@@ -104,7 +104,7 @@ IncludeUsage:
 PerformUsage:
     'perform' ('use' 'case')? target=[UseCaseElement:QualifiedName] ';';
 
-// Allocation defs are out of scope until Phase 7; only the usage form exists.
+// Only the usage form of allocation exists; `allocation def` is not supported.
 AllocationUsage:
     ('allocation' (name=ID)?)?
     'allocate' source=ConnectorEnd 'to' target=ConnectorEnd ';';
