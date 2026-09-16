@@ -1,4 +1,4 @@
-import { writeFile, readdir, stat } from 'node:fs/promises';
+import { readFile, writeFile, readdir, stat } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import { Command } from 'commander';
 import { createSysmlServices } from './parser/sysml-module.js';
@@ -23,11 +23,18 @@ async function expandInput(path: string): Promise<ExpandedInput> {
     };
 }
 
+// Read from the package rather than hard-coding, so `--version` cannot drift.
+// Resolves the same from src/ under tsx and from dist/ once built.
+const pkg = JSON.parse(
+    await readFile(new URL('../package.json', import.meta.url), 'utf-8')
+) as { version: string };
+
 const program = new Command();
 
 program
     .name('ortho')
-    .description('Render diagrams from SysML v2 model files');
+    .description('Render diagrams from SysML v2 model files')
+    .version(pkg.version);
 
 program
     .command('render')
