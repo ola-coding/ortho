@@ -331,4 +331,22 @@ Possible next steps, roughly by value:
 - State machines, constraints/calculations, item defs (typed message
   payloads), verification cases.
 - Sequence combined fragments (loop/alt) and return-message styling.
+- **Align the stem with the middle child in the logical view.** A parent is
+  centred on the midpoint between its first and last child's centres
+  (`firstCentre`/`lastCentre` in `src/layout/tree-layout.ts`), which lands on
+  a child's own stem only when the row happens to be symmetric. Unequal box
+  widths are enough to throw it: in the survey drone today
+  `PerformAerialSurvey` sits at x=683.96 while `communicate` — the middle one
+  of its seven children — sits at x=688.45, 4.5 px out, which reads as a
+  wobble rather than a stem. The rule to implement: with an odd number of
+  children the parent's stem lands on the middle child's stem; with an even
+  number it stays at the middle of the row, as it does now.
 - Enforced import semantics, once the grammar is broad enough to need them.
+- **Raise the Node floor.** `engines` declares `>=18` and CI now proves it —
+  the suite, the build and a render all pass on 18.20.8. But 18 reached
+  end-of-life in April 2025 and 20 in April 2026, so the floor sits two EOL
+  generations back, and the deck gate depends on it staying green. Moving to
+  22 (LTS into 2027) is a bump to `engines`, dropping 18 from the test matrix
+  and a line in the README's requirements: nothing under `src/` uses a
+  post-18 API, so no code has to change. Housekeeping, not capability, which
+  is why it sits last.
