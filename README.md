@@ -30,8 +30,8 @@ software), and the Logical view holds functions rather than structure.
 
 - Node.js 18 or newer. Nothing else.
 
-That is the floor `package.json` declares. CI builds and renders on Node 24
-only, so treat 18 as supported by intent rather than by a verified run.
+CI typechecks and runs the suite on both 18 and 24, so the floor is tested
+rather than merely declared.
 
 ## Install
 

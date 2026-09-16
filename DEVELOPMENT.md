@@ -234,6 +234,11 @@ npm test             # vitest
 npm run render:examples  # regenerate every example's diagrams/
 ```
 
+CI runs `typecheck` and `test` on Node 18 and 24 — the floor `package.json`
+declares and the version the other jobs use — then checks that a fresh render
+matches the committed diagrams, and only then builds and publishes the deck.
+Nothing reaches GitHub Pages past a failing test or a stale SVG.
+
 Grammar changes require `npm run langium:generate` (folded into `build`),
 which regenerates `src/generated/`. That directory is committed so a fresh
 clone can typecheck before building.

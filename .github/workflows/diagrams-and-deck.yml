@@ -1,10 +1,12 @@
 # Keeps the example diagrams honest and publishes the pitch deck.
 #
+# test      Typechecks and runs the suite on both ends of the supported range.
 # diagrams  Re-renders every example and fails if the committed SVGs differ.
 #           Rendering is deterministic, so any difference means a model or the
 #           renderer changed without the diagrams being regenerated.
 # deck      On main only: builds the deck from those diagrams.
-# deploy    Publishes the deck to GitHub Pages. A stale diagram blocks it.
+# deploy    Publishes the deck to GitHub Pages. A stale diagram or a failing
+#           test blocks it.
 #
 # One-time setup: Settings -> Pages -> Build and deployment -> Source: GitHub Actions.
 name: Diagrams and deck
@@ -24,6 +26,27 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  test:
+    name: Tests (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      # Report both ends rather than stopping at the first failure: which end
+      # broke is the whole point of running two.
+      fail-fast: false
+      matrix:
+        # 18 is the floor package.json declares, so it is tested rather than
+        # asserted; 24 is what the other jobs build and render on.
+        node: [18, 24]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+
   diagrams:
     name: Example diagrams are up to date
     runs-on: ubuntu-latest
@@ -47,7 +70,7 @@ jobs:
 
   deck:
     name: Build pitch deck
-    needs: diagrams
+    needs: [test, diagrams]
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
