@@ -30,6 +30,9 @@ software), and the Logical view holds functions rather than structure.
 
 - Node.js 18 or newer. Nothing else.
 
+That is the floor `package.json` declares. CI builds and renders on Node 24
+only, so treat 18 as supported by intent rather than by a verified run.
+
 ## Install
 
 ### Into another project (recommended)
@@ -56,6 +59,7 @@ npx ortho --help
 ```sh
 npm install              # also builds dist/ via prepare
 npm test                 # vitest suites
+npm run typecheck        # noEmit check over src, tests and scripts
 npm run render:examples  # regenerate the example diagrams
 npm run deck             # build the pitch deck into marketing/
 ```
@@ -107,8 +111,12 @@ ortho render <models...> -d <type> -o <file.svg> [-t <heading>]
   tool never writes anywhere else.
 - `-t, --title` — override the frame heading. Default:
   `<View name> — <root packages of the first input>`, or the directory name
-  when the first input is a directory. The generating file path always appears
-  as small provenance text in the diagram corner.
+  when the first input is a directory. Every input file is listed as small
+  provenance text in the diagram corner, so a view rendered with companions
+  names all of them.
+
+`ortho --version` prints the package version; `ortho --help` and
+`ortho render --help` list the commands and options.
 
 ### One model file per view
 
@@ -130,6 +138,11 @@ npx ortho render process.sysml implementation.sysml -d process -o process-view.s
 
 The process view renders *every* message it sees, so keep one scenario per
 file and pass exactly one scenario file.
+
+Pass `-t` for those two. The default heading names the first input's root
+package, so `deployment.sysml` renders as "Deployment view — Deployment"
+rather than naming your system — which is why the bundled examples override
+it and read "Deployment view — Survey Drone".
 
 ## Typical project integration
 
@@ -173,19 +186,12 @@ use-case.sysml   logical.sysml   implementation.sysml
 ```
 
 It works because the views own distinct content rather than slicing shared
-content, and a view file names nothing from another view unless its content
-*is* that relation:
-
-```text
-use-case, logical, implementation, physical  →  (nothing)
-deployment                                   →  implementation, physical
-process                                      →  implementation
-```
-
-`logical.sysml` names no component, and `implementation.sysml` and
-`physical.sysml` never reference each other — software knows nothing of boards,
-hardware nothing of programs. The mapping between them exists only in
-`deployment.sysml`, which declares nothing of its own.
+content: `logical.sysml` names no component, and `implementation.sysml` and
+`physical.sysml` never reference each other — software knows nothing of
+boards, hardware nothing of programs. The mapping between them exists only in
+`deployment.sysml`, which declares nothing of its own. DEVELOPMENT.md's
+[one model file per view](DEVELOPMENT.md#one-model-file-per-view) gives the
+full rule and the three conventions that keep it true.
 
 ## The language subset
 

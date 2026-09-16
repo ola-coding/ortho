@@ -103,10 +103,10 @@ the deliberate alternative to a headless browser or font-file parsing.
   drone's IP radio, once in the drone and once in the ground station) is two
   boxes, each wired on its own. Drawing definitions instead, as the view
   originally did, collapsed both radios into one box and wired the operator's
-  tablet straight to the drone's companion computer. Port defs, interface defs and
-  attributes are not drawn: ports are markers on the parts, an interface is the
-  label on the connection it types, and attribute values are specification,
-  not topology.
+  tablet straight to the drone's companion computer. Port defs, interface
+  defs and attributes are not drawn: ports are markers on the parts, an
+  interface is the label on the connection it types, and attribute values are
+  specification, not topology.
 - **Three views draw containment instead of edges.** The deployment view nests
   software inside the three-dimensional node that hosts it and emits no edges
   at all, so a host with nothing drawn in it visibly hosts nothing. The hosts in
@@ -147,11 +147,11 @@ the deliberate alternative to a headless browser or font-file parsing.
   draws the capability tree as a work-breakdown chart: a family whose children
   are all leaves is listed vertically beneath its parent, off a spine; any other
   family is spread in a row, the parent centred over its first and last child,
-  one stem feeding a bus. ELK's layered algorithm put every leaf in one row (the
-  measured 3322 px across for a 27-function tree) and attached each branch at its
-  own point on the parent, which read as wiring. Branches are `decomposition`
-  edges with no arrowhead — direction is carried by the layout — and a test
-  asserts no marker reaches that SVG.
+  one stem feeding a bus. ELK's layered algorithm put every leaf in one row —
+  one such tree measured 3322 px across for 27 functions — and attached each
+  branch at its own point on the parent, which read as wiring. Branches are
+  `decomposition` edges with no arrowhead — direction is carried by the
+  layout — and a test asserts no marker reaches that SVG.
 - **Label placement.** Port labels, the interface labels on physical-view
   wires, «include» on the use case view and «import» on the implementation
   view are handed to ELK as real labels, so ELK reserves room for them, puts
@@ -174,11 +174,12 @@ the deliberate alternative to a headless browser or font-file parsing.
 ### Diagram headings
 
 The frame pentagon carries the **view name plus the model's root package**
-(`Logical view — Functions`), not UML diagram-kind jargon. The generating
-`.sysml` path stays visible as small gray provenance text in the bottom-right
-corner — everything-as-code means a diagram always names its source — and the
-SVG `<title>` holds the combined string. The CLI's `-d logical` etc. are
-command-line vocabulary only.
+(`Logical view — Functions`), not UML diagram-kind jargon. The `.sysml` paths
+the diagram came from stay visible as small gray provenance text in the
+bottom-right corner — every input, so the two views rendered with companions
+name all of theirs — because everything-as-code means a diagram always names
+its source. The SVG `<title>` holds the combined string. The CLI's
+`-d logical` etc. are command-line vocabulary only.
 
 ### One model file per view
 
@@ -252,10 +253,9 @@ reviewed in a browser) whenever rendering changes.
 
 Both carry the **same partition**, deliberately: one model file per view, each
 named for the view it feeds. The two examples differ in subject and in scale —
-the drone has fourteen physical parts against the machine's ten, two stacks of
-software where the machine has one, and a capability tree half again as large —
-not in structure. A change that only
-suits one of them shows up in the other's diagrams immediately.
+the drone has fourteen physical parts against the machine's ten, two stacks
+of software where the machine has one, and a capability tree a third again as
+large — but not in structure.
 
 ```text
 use-case.sysml   logical.sysml   implementation.sysml
@@ -299,6 +299,14 @@ load-bearing, not stylistic: bare names do not resolve across files, so the
 `Software::` and `Hardware::` prefixes in `deployment.sysml` are what make the
 crossing visible in the source.
 
+**The deck's figures are only as fresh as the examples' committed SVGs.**
+`marketing/deck.template.html` inlines the diagrams by filename and quotes
+node and edge counts in its captions, so a model or rendering change means
+`npm run render:examples` *and* a pass over those captions before
+`npm run deck`. Nothing checks the numbers — and a caption still naming a
+diagram the examples no longer produce fails the deck build outright, which
+takes the Pages deploy down with it.
+
 ## Backlog
 
 Grammar surface that parses but no diagram consumes yet: `perform`,
@@ -319,8 +327,3 @@ Possible next steps, roughly by value:
   payloads), verification cases.
 - Sequence combined fragments (loop/alt) and return-message styling.
 - Enforced import semantics, once the grammar is broad enough to need them.
-- **The deck's figures are only as fresh as the committed SVGs.**
-  `marketing/deck.template.html` quotes node and edge counts in its captions
-  and inlines the diagrams by filename, so a rendering change means
-  `npm run render:examples` *and* a pass over those captions before
-  `npm run deck`. Nothing checks the numbers.
