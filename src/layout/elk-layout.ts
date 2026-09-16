@@ -35,10 +35,21 @@ export interface LayoutOptions {
      * (deployment), where layering would put every box in one long row.
      */
     algorithm?: 'layered' | 'rectpacking';
+    /**
+     * Lay out the contents of each innermost container — one whose children
+     * hold nothing and no edge touches — as a grid ortho computes, instead of
+     * ELK's single row. For the implementation view, where a package's modules
+     * never carry an edge, and a long row of them set the whole drawing's width.
+     */
+    gridLeaves?: boolean;
 }
 
 /** Target width-to-height ratio when packing. */
 const PACKING_ASPECT = '1.6';
+
+/** Gaps between the cells of a grid. */
+const GRID_GAP_X = 40;
+const GRID_GAP_Y = 20;
 
 export interface LaidOutPort {
     id: string;
@@ -82,18 +93,73 @@ export interface LaidOutDiagram {
     edges: LaidOutEdge[];
 }
 
-function toElkNode(n: GraphNode, packing: boolean): ElkNode {
+/** Contents ortho places itself (see `gridLeaves`), relative to the container's top-left. */
+type Grid = Array<{ node: GraphNode; x: number; y: number }>;
+
+interface Conversion {
+    packing: boolean;
+    /** Present when innermost containers are gridded; collects each one's grid. */
+    grids?: Map<string, Grid>;
+    /** Every node an edge touches. */
+    endpoints: Set<string>;
+}
+
+/**
+ * Room round a container's contents. The extra at the top leaves room for its
+ * title; a 3-D node also has to clear its depth edge, drawn inside its bounds.
+ */
+function paddingOf(n: GraphNode): { top: number; left: number; bottom: number; right: number } {
+    return n.shape === 'node3d'
+        ? { top: 45 + NODE_DEPTH, left: 20, bottom: 20, right: 20 + NODE_DEPTH }
+        : { top: 45, left: 25, bottom: 25, right: 25 };
+}
+
+/**
+ * A container's contents as a grid, in declaration order: one row of up to
+ * three, else as square as it goes, each box centred in its cell.
+ */
+function gridOf(n: GraphNode, children: GraphNode[]): { cells: Grid; width: number; height: number } {
+    const columns = children.length <= 3 ? children.length : Math.ceil(Math.sqrt(children.length));
+    const widths = Array.from({ length: columns }, (_, column) =>
+        Math.max(...children.filter((_, i) => i % columns === column).map(child => child.width)));
+    const heights = Array.from({ length: Math.ceil(children.length / columns) }, (_, row) =>
+        Math.max(...children.slice(row * columns, (row + 1) * columns).map(child => child.height)));
+    const before = (sizes: number[], index: number, gap: number): number =>
+        sizes.slice(0, index).reduce((sum, size) => sum + size + gap, 0);
+    const pad = paddingOf(n);
+    return {
+        cells: children.map((node, i) => {
+            const column = i % columns;
+            const row = Math.floor(i / columns);
+            return {
+                node,
+                x: pad.left + before(widths, column, GRID_GAP_X) + (widths[column] - node.width) / 2,
+                y: pad.top + before(heights, row, GRID_GAP_Y) + (heights[row] - node.height) / 2
+            };
+        }),
+        width: pad.left + before(widths, columns, GRID_GAP_X) - GRID_GAP_X + pad.right,
+        height: pad.top + before(heights, heights.length, GRID_GAP_Y) - GRID_GAP_Y + pad.bottom
+    };
+}
+
+function toElkNode(n: GraphNode, conversion: Conversion): ElkNode {
+    const { packing, grids, endpoints } = conversion;
     const elkNode: ElkNode = {
         id: n.id,
         layoutOptions: { 'elk.portConstraints': 'FREE' }
     };
-    if (n.children?.length) {
-        elkNode.children = n.children.map(child => toElkNode(child, packing));
-        // Extra top padding leaves room for the boundary title; a 3-D node also
-        // has to clear its depth edge, which is drawn inside its own bounds.
-        elkNode.layoutOptions!['elk.padding'] = n.shape === 'node3d'
-            ? `[top=${45 + NODE_DEPTH},left=20,bottom=20,right=${20 + NODE_DEPTH}]`
-            : '[top=45,left=25,bottom=25,right=25]';
+    const children = n.children ?? [];
+    if (grids && children.length > 0
+        && children.every(c => !c.children?.length && c.ports.length === 0 && !endpoints.has(c.id))) {
+        // ELK sees a plain box of the grid's size; flattening fills it in.
+        const grid = gridOf(n, children);
+        grids.set(n.id, grid.cells);
+        elkNode.width = grid.width;
+        elkNode.height = grid.height;
+    } else if (children.length > 0) {
+        elkNode.children = children.map(child => toElkNode(child, conversion));
+        const pad = paddingOf(n);
+        elkNode.layoutOptions!['elk.padding'] = `[top=${pad.top},left=${pad.left},bottom=${pad.bottom},right=${pad.right}]`;
         elkNode.layoutOptions!['elk.spacing.nodeNode'] = packing ? '24' : '40';
         if (packing) {
             // Packing lays out each level on its own, so every container
@@ -142,6 +208,11 @@ function indexHierarchy(nodes: GraphNode[], byId: Map<string, GraphNode>, parent
 
 export async function layoutGraph(graph: DiagramGraph, options: LayoutOptions = {}): Promise<LaidOutDiagram> {
     const packing = options.algorithm === 'rectpacking';
+    const conversion: Conversion = {
+        packing,
+        grids: options.gridLeaves ? new Map() : undefined,
+        endpoints: new Set(graph.edges.flatMap(e => [e.sourceId, e.targetId]))
+    };
     const elkGraph: ElkNode = {
         id: 'root',
         layoutOptions: packing
@@ -156,7 +227,7 @@ export async function layoutGraph(graph: DiagramGraph, options: LayoutOptions = 
                 'elk.spacing.edgeEdge': '20',
                 'elk.edgeRouting': options.edgeRouting === 'STRAIGHT' ? 'POLYLINE' : 'ORTHOGONAL'
             },
-        children: graph.nodes.map(n => toElkNode(n, packing)),
+        children: graph.nodes.map(n => toElkNode(n, conversion)),
         edges: graph.edges.map(e => ({
             id: e.id,
             sources: [e.sourcePortId ?? e.sourceId],
@@ -214,6 +285,21 @@ export async function layoutGraph(graph: DiagramGraph, options: LayoutOptions = 
                 width: c.width ?? 80,
                 height: c.height ?? 40
             });
+            for (const cell of conversion.grids?.get(c.id) ?? []) {
+                nodes.push({
+                    id: cell.node.id,
+                    shape: cell.node.shape,
+                    stereotype: cell.node.stereotype,
+                    name: cell.node.name,
+                    compartments: cell.node.compartments,
+                    ports: [],
+                    hasChildren: false,
+                    x: x + cell.x,
+                    y: y + cell.y,
+                    width: cell.node.width,
+                    height: cell.node.height
+                });
+            }
             flatten(c.children, x, y);
         }
     };

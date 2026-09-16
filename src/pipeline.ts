@@ -56,7 +56,10 @@ export const diagramTypes = {
         render: graphDiagram(extractUseCaseGraph, { direction: 'RIGHT', edgeRouting: 'STRAIGHT' })
     },
     'logical': { view: 'Logical view', render: treeDiagram(extractLogicalGraph) },
-    'implementation': { view: 'Implementation view', render: graphDiagram(extractImplementationGraph, { direction: 'DOWN' }) },
+    'implementation': {
+        view: 'Implementation view',
+        render: graphDiagram(extractImplementationGraph, { direction: 'DOWN', gridLeaves: true })
+    },
     'physical': { view: 'Physical view', render: graphDiagram(extractPhysicalGraph, { direction: 'DOWN' }) },
     'deployment': { view: 'Deployment view', render: graphDiagram(extractDeploymentGraph, { algorithm: 'rectpacking' }) },
     'process': {
