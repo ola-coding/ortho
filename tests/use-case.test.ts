@@ -104,7 +104,7 @@ describe('use-case diagram extraction', () => {
 
     it('draws every line straight, clear of every use case it does not join', async () => {
         const examples = resolve(dirname(fileURLToPath(import.meta.url)), '../examples');
-        for (const example of ['auv-system', 'coffee-machine']) {
+        for (const example of ['survey-drone', 'coffee-machine']) {
             const { model } = await parseSysmlFiles(
                 createSysmlServices().Sysml, [resolve(examples, example, 'use-case.sysml')]
             );

@@ -101,7 +101,7 @@ ortho render <models...> -d <type> -o <file.svg> [-t <heading>]
 - `<models...>` — one or more `.sysml` files and/or directories (a directory
   means all `.sysml` files directly inside it). All inputs are parsed and
   linked as one workspace: cross-file references use qualified names
-  (`Hardware::Aircraft::fc`).
+  (`Hardware::SurveyDrone::fc`).
 - `-d, --diagram` — one of the six types in the table above.
 - `-o, --out` — output SVG path. Outputs go wherever you point them; the
   tool never writes anywhere else.
@@ -155,14 +155,15 @@ with models.
 Two complete worked models ship with the tool, each with all six generated
 views in its `diagrams/` folder:
 
-- [examples/auv-system/](examples/auv-system/) — an autonomous unmanned aerial
-  vehicle: aircraft, radio controller, batteries and charger, with a
-  follow-person scenario. The larger of the two — nineteen physical parts —
-  and the one that pushes the layout hardest.
+- [examples/survey-drone/](examples/survey-drone/) — a quadcopter that surveys
+  a ground area from the air: airframe, avionics and a tablet ground station,
+  with an ArduPilot-style flight stack and a whole survey mission as its
+  scenario. The larger of the two — fourteen parts across two assemblies and
+  twenty-four deployed modules — and the one that pushes the layout hardest.
 - [examples/coffee-machine/](examples/coffee-machine/) — a bean-to-cup coffee
   machine: water and coffee paths, a steam wand and one control board, with a
-  make-cappuccino scenario. Eleven physical parts; the leaner one, and the
-  better starting point to read.
+  make-cappuccino scenario. Ten physical parts in one enclosure; the leaner
+  one, and the better starting point to read.
 
 Both use the same partition — one file per view, named for the view it feeds:
 

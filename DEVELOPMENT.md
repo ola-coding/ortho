@@ -63,8 +63,8 @@ ELK reports each edge's coordinates relative to the node that **contains**
 the edge, not to the diagram root, and names that node in the edge's
 `container` field. Usually it is the least common ancestor of the two ends —
 but an edge from a box's own port to one of its children (a boundary port on
-the physical view, such as the aircraft's battery bay feeding the flight
-controller) lives *inside* that box, which no ancestor walk finds. elkjs 0.9.3
+the physical view, such as the drone's `rfLink` feeding the radio fitted
+inside it) lives *inside* that box, which no ancestor walk finds. elkjs 0.9.3
 does **not** support `org.eclipse.elk.json.edgeCoords: ROOT` (the option is
 absent from the bundle — verified, not assumed), so `src/layout/elk-layout.ts`
 translates every edge, and every label ELK placed on it, by its container's
@@ -100,10 +100,10 @@ the deliberate alternative to a headless browser or font-file parsing.
   part type and no other definition specializes — including parts and
   connections inherited through `:>`. Each connection is resolved segment by
   segment from the part whose body declares it, so a type fitted twice (the
-  AUV's transceiver, once in the aircraft and once in the controller) is two
+  drone's IP radio, once in the drone and once in the ground station) is two
   boxes, each wired on its own. Drawing definitions instead, as the view
-  originally did, collapsed both radios into one box and wired the handheld's
-  sticks to the aircraft's flight controller. Port defs, interface defs and
+  originally did, collapsed both radios into one box and wired the operator's
+  tablet straight to the drone's companion computer. Port defs, interface defs and
   attributes are not drawn: ports are markers on the parts, an interface is the
   label on the connection it types, and attribute values are specification,
   not topology.
@@ -112,7 +112,7 @@ the deliberate alternative to a headless browser or font-file parsing.
   at all, so a host with nothing drawn in it visibly hosts nothing. The hosts in
   turn sit in a frame for the device they are fitted in, found from the physical
   containment: a device fitted exactly once is labelled by that usage
-  (`aircraft : Aircraft`) and nested in its own container's frame. With no
+  (`drone : SurveyDrone`) and nested in its own container's frame. With no
   edges to layer, ELK's layered algorithm put every box in one row, so the
   deployment view uses `rectpacking` instead — level by level, because packing
   cannot lay out a hierarchy in one pass — which keeps the model's order and a
@@ -148,7 +148,7 @@ the deliberate alternative to a headless browser or font-file parsing.
   are all leaves is listed vertically beneath its parent, off a spine; any other
   family is spread in a row, the parent centred over its first and last child,
   one stem feeding a bus. ELK's layered algorithm put every leaf in one row (the
-  AUV's tree was 3322 px wide for 27 functions) and attached each branch at its
+  measured 3322 px across for a 27-function tree) and attached each branch at its
   own point on the parent, which read as wiring. Branches are `decomposition`
   edges with no arrowhead — direction is carried by the layout — and a test
   asserts no marker reaches that SVG.
@@ -245,15 +245,16 @@ bug). Let it resolve transitively. If that error ever appears, compare
 `node_modules/chevrotain/package.json` against Langium's declared range first.
 
 Test fixtures in `tests/fixtures/*.sysml` are inputs only. The real example
-models are `examples/auv-system/` and `examples/coffee-machine/` — two
+models are `examples/survey-drone/` and `examples/coffee-machine/` — two
 deliberately different domains, so a rendering change that only suits one of
 them shows up immediately. Their committed SVGs should be regenerated (and
 reviewed in a browser) whenever rendering changes.
 
 Both carry the **same partition**, deliberately: one model file per view, each
 named for the view it feeds. The two examples differ in subject and in scale —
-the aircraft has nineteen physical parts against the machine's eleven, and a
-capability tree half again as large — not in structure. A change that only
+the drone has fourteen physical parts against the machine's ten, two stacks of
+software where the machine has one, and a capability tree half again as large —
+not in structure. A change that only
 suits one of them shows up in the other's diagrams immediately.
 
 ```text

@@ -1,0 +1,155 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1404.9080000000001" height="424"
+     viewBox="0 0 1404.9080000000001 424" font-family="Arial, Helvetica, Segoe UI, sans-serif">
+  <title>Logical view — Survey Drone (generated from examples/survey-drone/logical.sysml)</title>
+  <defs>
+    <marker id="triangle" markerWidth="14" markerHeight="12" refX="12" refY="5"
+            orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L12,5 L0,10 z" fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+    </marker>
+    <marker id="diamond" markerWidth="18" markerHeight="12" refX="15" refY="5"
+            orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M1,5 L8,1 L15,5 L8,9 z" fill="#2b2b2b" stroke="#2b2b2b" />
+    </marker>
+    <marker id="openArrow" markerWidth="12" markerHeight="12" refX="10" refY="5"
+            orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1404.9080000000001" height="424" fill="white" />
+  <rect x="8" y="8" width="1388.9080000000001" height="408" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+  <path d="M8,8 L8,30 L175.655,30 L185.655,21 L185.655,8 Z"
+        fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
+  <text x="16" y="23" font-size="11" font-weight="600" fill="#1a1a1a">Logical view — Survey Drone</text>
+  <text x="1390.9080000000001" y="410" text-anchor="end" font-size="9" fill="#8a8a86">examples/survey-drone/logical.sysml</text>
+  
+    <g><rect x="611.613" y="60" width="144.688" height="40" rx="11" ry="11"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="683.9570000000001" y="84" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">PerformAerialSurvey</text></g>
+    <g><rect x="36" y="144" width="114.04" height="40" rx="11" ry="11"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="93.02000000000001" y="168" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">operateVehicle</text></g>
+    <g><rect x="70" y="198" width="111.364" height="40" rx="11" ry="11"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="125.682" y="222" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">produceThrust</text></g>
+    <g><rect x="70" y="248" width="110" height="40" rx="11" ry="11"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="125" y="272" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">supplyPower</text></g>
+    <g><rect x="70" y="298" width="131.368" height="40" rx="11" ry="11"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="135.684" y="322" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">provideComputing</text></g>
+    <g><rect x="229.368" y="144" width="170.728" height="40" rx="11" ry="11"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="314.73199999999997" y="168" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">guideNavigateAndControl</text></g>
+    <g><rect x="263.368" y="198" width="110" height="40" rx="11" ry="11"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="318.368" y="222" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">guide</text></g>
+    <g><rect x="263.368" y="248" width="110" height="40" rx="11" ry="11"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="318.368" y="272" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">navigate</text></g>
+    <g><rect x="263.368" y="298" width="110" height="40" rx="11" ry="11"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="318.368" y="322" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">control</text></g>
+    <g><rect x="263.368" y="348" width="116.032" height="40" rx="11" ry="11"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="321.384" y="372" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">avoidObstacles</text></g>
+    <g><rect x="428.096" y="144" width="110" height="40" rx="11" ry="11"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="483.096" y="168" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">perceive</text></g>
+    <g><rect x="462.096" y="198" width="110" height="40" rx="11" ry="11"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="517.096" y="222" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">captureVideo</text></g>
+    <g><rect x="462.096" y="248" width="120.04" height="40" rx="11" ry="11"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="522.116" y="272" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">fuseSensorData</text></g>
+    <g><rect x="462.096" y="298" width="143.356" height="40" rx="11" ry="11"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="533.774" y="322" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">maintainWorldModel</text></g>
+    <g><rect x="633.452" y="144" width="110" height="40" rx="11" ry="11"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="688.452" y="168" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">communicate</text></g>
+    <g><rect x="667.452" y="198" width="110" height="40" rx="11" ry="11"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="722.452" y="222" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">streamVideo</text></g>
+    <g><rect x="667.452" y="248" width="139.372" height="40" rx="11" ry="11"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="737.138" y="272" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">exchangeTelemetry</text></g>
+    <g><rect x="834.8240000000001" y="144" width="110" height="40" rx="11" ry="11"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="889.8240000000001" y="168" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">plan</text></g>
+    <g><rect x="868.8240000000001" y="198" width="110" height="40" rx="11" ry="11"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="923.8240000000001" y="222" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">planMission</text></g>
+    <g><rect x="868.8240000000001" y="248" width="110" height="40" rx="11" ry="11"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="923.8240000000001" y="272" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">planRoute</text></g>
+    <g><rect x="1006.8240000000001" y="144" width="144.7" height="40" rx="11" ry="11"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1079.174" y="168" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">interactWithOperator</text></g>
+    <g><rect x="1040.824" y="198" width="134.04399999999998" height="40" rx="11" ry="11"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1107.846" y="222" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">presentInformation</text></g>
+    <g><rect x="1040.824" y="248" width="143.392" height="40" rx="11" ry="11"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1112.52" y="272" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">acceptOperatorInput</text></g>
+    <g><rect x="1212.2160000000001" y="144" width="125.356" height="40" rx="11" ry="11"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1274.8940000000002" y="168" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">superviseSystem</text></g>
+    <g><rect x="1246.2160000000001" y="198" width="110" height="40" rx="11" ry="11"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1301.2160000000001" y="222" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">monitorHealth</text></g>
+    <g><rect x="1246.2160000000001" y="248" width="122.692" height="40" rx="11" ry="11"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1307.5620000000001" y="272" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">recordFlightData</text></g>
+  
+    <polyline points="54,184 54,218 70,218" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="54,184 54,268 70,268" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="54,184 54,318 70,318" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="683.9570000000001,100 683.9570000000001,122 93.02000000000001,122 93.02000000000001,144" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="247.368,184 247.368,218 263.368,218" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="247.368,184 247.368,268 263.368,268" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="247.368,184 247.368,318 263.368,318" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="247.368,184 247.368,368 263.368,368" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="683.9570000000001,100 683.9570000000001,122 314.73199999999997,122 314.73199999999997,144" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="446.096,184 446.096,218 462.096,218" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="446.096,184 446.096,268 462.096,268" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="446.096,184 446.096,318 462.096,318" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="683.9570000000001,100 683.9570000000001,122 483.096,122 483.096,144" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="651.452,184 651.452,218 667.452,218" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="651.452,184 651.452,268 667.452,268" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="683.9570000000001,100 683.9570000000001,122 688.452,122 688.452,144" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="852.8240000000001,184 852.8240000000001,218 868.8240000000001,218" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="852.8240000000001,184 852.8240000000001,268 868.8240000000001,268" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="683.9570000000001,100 683.9570000000001,122 889.8240000000001,122 889.8240000000001,144" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="1024.824,184 1024.824,218 1040.824,218" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="1024.824,184 1024.824,268 1040.824,268" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="683.9570000000001,100 683.9570000000001,122 1079.174,122 1079.174,144" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="1230.2160000000001,184 1230.2160000000001,218 1246.2160000000001,218" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="1230.2160000000001,184 1230.2160000000001,268 1246.2160000000001,268" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="683.9570000000001,100 683.9570000000001,122 1274.8940000000002,122 1274.8940000000002,144" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+</svg>

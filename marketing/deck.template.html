@@ -347,7 +347,7 @@
         <div class="command">npx ortho render models/logical.sysml <span class="flag">-d</span> logical <span class="flag">-o</span> diagrams/logical-view.svg</div>
       </div>
       <div class="titleblock">
-        <span>Project · ortho</span><span>Reference models · AUV system + coffee machine</span>
+        <span>Project · ortho</span><span>Reference models · survey drone + coffee machine</span>
         <span class="sheet-no"></span>
       </div>
     </div>
@@ -476,28 +476,28 @@ git diff --exit-code diagrams/</div>
     <div class="frame">
       <div class="tag">Use case view</div>
       <div class="stack">
-        <h2>What the pilot asks for</h2>
+        <h2>What the operator asks for</h2>
         <div class="cols narrow-left">
           <div class="code-mount">
-            <div class="filename">examples/auv-system/use-case.sysml</div>
+            <div class="filename">examples/survey-drone/use-case.sysml</div>
 <pre class="code">
-part def Pilot;
-part def TrackedPerson;
+part def Operator;
 
-use case def OperateDrone {
-    subject AuvSystem;
-    actor pilot : Pilot;
+use case def SurveyTask {
+    subject SurveyDroneSystem;
+    actor operator : Operator;
 }
 
-use case launchAircraft : OperateDrone;
-use case selectTarget : OperateDrone;
-use case avoidObstacles : OperateDrone;
-
-use case followPerson : OperateDrone {
-    actor person : TrackedPerson;
-    include use case selectTarget;
-    include use case avoidObstacles;
+// Surveying an area always means planning it
+// first and following it as it flies.
+use case surveyArea : SurveyTask {
+    include use case planSurvey;
+    include use case followProgress;
 }
+
+use case planSurvey : SurveyTask;
+
+use case followProgress : SurveyTask;
 </pre>
           </div>
           <div class="figure">
@@ -506,14 +506,14 @@ use case followPerson : OperateDrone {
               <button type="button" data-zoom>Zoom</button>
             </div>
             <div class="figure-mount">
-              <div class="figure-svg" data-svg="auv/use-case-view.svg"></div>
+              <div class="figure-svg" data-svg="drone/use-case-view.svg"></div>
             </div>
-            <p class="figure-caption">5 use cases · 2 actors · {{DIM:auv/use-case-view.svg}} — the boundary is inferred from each use case's subject, and actors are de-duplicated by type. The pilot, cast on the shared use case def, stands on the left; the person being followed, added on one use case only, stands on the right. The subject is untyped on purpose: naming an airframe part here would be realization detail.</p>
+            <p class="figure-caption">3 use cases · 1 actor · {{DIM:drone/use-case-view.svg}} — the boundary is inferred from each use case’s subject, and actors are de-duplicated by type. The operator is cast on the shared use case def, so they stand on the left against all three: planning tomorrow’s survey and checking on one already flying each stand on their own. The subject is untyped on purpose — naming the drone or the tablet here would be realization detail.</p>
           </div>
         </div>
       </div>
       <div class="titleblock">
-        <span>Project · ortho</span><span>Use case view · what the pilot does</span>
+        <span>Project · ortho</span><span>Use case view · what the operator does</span>
         <span class="sheet-no"></span>
       </div>
     </div>
@@ -527,26 +527,29 @@ use case followPerson : OperateDrone {
         <h2>What the system does, whatever ends up doing it</h2>
         <div class="cols narrow-left">
           <div class="code-mount">
-            <div class="filename">examples/auv-system/logical.sysml</div>
+            <div class="filename">examples/survey-drone/logical.sysml</div>
 <pre class="code">
-action def OperateAircraft {
+action def PerformAerialSurvey {
 
-    action fly {
-        action generateThrust;
-        action stabiliseAttitude;
-        action holdPosition;
-    }
-
-    action senseEnvironment {
-        action measureAttitude;
-        action detectObstacles;
+    // Energy functions: medium-bound.
+    action operateVehicle {
+        action produceThrust;
+        action supplyPower;
+        action provideComputing;
     }
 
     // Control functions: the migratory ones.
-    action commandAircraft {
-        action selectTarget;
-        action trackTarget;
-        action avoidObstacle;
+    action guideNavigateAndControl {
+        action guide;
+        action navigate;
+        action control;
+        action avoidObstacles;
+    }
+
+    action perceive {
+        action captureVideo;
+        action fuseSensorData;
+        action maintainWorldModel;
     }
 }
 </pre>
@@ -557,9 +560,9 @@ action def OperateAircraft {
               <button type="button" data-zoom>Zoom</button>
             </div>
             <div class="figure-mount">
-              <div class="figure-svg" data-svg="auv/logical-view.svg"></div>
+              <div class="figure-svg" data-svg="drone/logical-view.svg"></div>
             </div>
-            <p class="figure-caption">27 functions · {{DIM:auv/logical-view.svg}} — a strict tree: one parent each, no arrowheads, and no gimbal, transceiver or program named anywhere. Each branch's last level is listed beneath its parent, so the tree keeps a page's proportions. Attitude stabilisation was mechanical gyros within living memory; this view survives that change, and the two below it do not.</p>
+            <p class="figure-caption">26 functions · {{DIM:drone/logical-view.svg}} — a strict tree: one parent each, no arrowheads, and no airframe, computer or program named anywhere. Each branch’s last level is listed beneath its parent, so the tree keeps a page’s proportions. Guidance and navigation were a pilot’s and a navigator’s job within living memory; this view survives that change, and the two below it do not.</p>
           </div>
         </div>
       </div>
@@ -578,25 +581,31 @@ action def OperateAircraft {
         <h2>How the software is structured</h2>
         <div class="cols narrow-left">
           <div class="code-mount">
-            <div class="filename">examples/auv-system/implementation.sysml</div>
+            <div class="filename">examples/survey-drone/implementation.sysml</div>
 <pre class="code">
 package Software {
 
+    // ArduPilot-style firmware. Each comment names
+    // the libraries the module stands for.
     package Flight {
-        part def FlightControlStack;
-        part def NavigationEngine;
+        import Software::FlightPlatform;
+
+        part def MissionExecutor;  // AP_Mission
+        part def StateEstimator;   // AP_NavEKF3
+        part def FlightControl;    // AP_Motors
+        part def MavlinkInterface; // GCS_MAVLink
     }
 
-    package Perception {
-        part def PerceptionPipeline;
-        part def TargetTrackingEngine;
+    package FlightPlatform {
+        part def HardwareAbstraction;  // AP_HAL
+        part def RealTimeKernel;       // ChibiOS
     }
 
-    package Ground {
-        import Software::Flight;
-        import Software::Perception;
+    package Middleware {
+        import Software::LinuxPlatform;
 
-        part def PilotApp;
+        part def ZenohRouter;
+        part def MavlinkBridge;
     }
 }
 </pre>
@@ -607,9 +616,9 @@ package Software {
               <button type="button" data-zoom>Zoom</button>
             </div>
             <div class="figure-mount">
-              <div class="figure-svg" data-svg="auv/implementation-view.svg"></div>
+              <div class="figure-svg" data-svg="drone/implementation-view.svg"></div>
             </div>
-            <p class="figure-caption">5 packages · 3 imports · {{DIM:auv/implementation-view.svg}} — modules are drawn inside the package that declares them, and dependency direction is read from the import statements themselves. The ground app depends on the airborne packages; nothing depends back.</p>
+            <p class="figure-caption">10 packages · 5 imports · {{DIM:drone/implementation-view.svg}} — modules are drawn inside the package that declares them, and dependency direction is read from the import statements themselves. Two stacks stand side by side: the ArduPilot-style firmware on its real-time platform, the containerised applications on Linux. Neither imports the other — they meet over MAVLink at runtime, never at build time.</p>
           </div>
         </div>
       </div>
@@ -628,34 +637,43 @@ package Software {
         <h2>The product, as written</h2>
         <div class="cols narrow-left">
           <div class="code-mount">
-            <div class="filename">examples/auv-system/physical.sysml</div>
+            <div class="filename">examples/survey-drone/physical.sysml</div>
 <pre class="code">
-part def Aircraft {
-    port batteryBay : PowerPort;
+part def SurveyDrone {
     port rfLink : RfPort;
 
-    part fc : SocFlightController;
-    part camera : HdrCamera;
-    part radio : DualBandTransceiver;
+    part motors : BrushlessMotor [4];
+    part props : Propeller [4];
+    part esc : FourInOneEsc;
+    part fc : ControlComputer;
+    part companion : GpuComputer;
+    part camera : Camera;
+    part radio : IpRadio;
 
-    connect batteryBay to fc.powerIn;
-    connect camera.videoOut to radio.video;
+    connect esc.phasesOut to motors.phases;
+    connect motors.shaft to props.hub;
+    connect fc.mavlink to companion.autopilot;
+    connect camera.videoOut to companion.cameraIn;
+    connect companion.ethernet to radio.ethernet;
     connect radio.rf to rfLink;
 }
 
-part def RadioController {
-    part display : OledTouchScreen;
-    part radio : DualBandTransceiver;
+part def GroundStation {
+    port rfLink : RfPort;
 
-    connect radio.video to display.videoIn;
+    part tablet : OperatorTablet;
+    part radio : IpRadio;
+
+    connect tablet.network to radio.ethernet;
+    connect radio.rf to rfLink;
 }
 
-part def AuvSystem {
-    part aircraft : Aircraft;
-    part controller : RadioController;
+part def SurveyDroneSystem {
+    part drone : SurveyDrone;
+    part ground : GroundStation;
 
     connection : RadioLink
-        connect aircraft.rfLink to controller.rfLink;
+        connect drone.rfLink to ground.rfLink;
 }
 </pre>
           </div>
@@ -665,14 +683,14 @@ part def AuvSystem {
               <button type="button" data-zoom>Zoom</button>
             </div>
             <div class="figure-mount">
-              <div class="figure-svg" data-svg="auv/physical-view.svg"></div>
+              <div class="figure-svg" data-svg="drone/physical-view.svg"></div>
             </div>
-            <p class="figure-caption">19 parts · 18 connections · {{DIM:auv/physical-view.svg}} — every part nested inside the one that contains it, ports on the edges, and a line only where something is wired. The two radios share a type but are two boxes, each wired in its own device. Topology, never geometry.</p>
+            <p class="figure-caption">14 parts · 18 connections · {{DIM:drone/physical-view.svg}} — every part nested inside the one that contains it, ports on the edges, and a line only where something is wired. The two radios share a type but are two boxes, each wired in its own device. Topology, never geometry.</p>
           </div>
         </div>
       </div>
       <div class="titleblock">
-        <span>Project · ortho</span><span>Physical view · airframe, radio, ground kit</span>
+        <span>Project · ortho</span><span>Physical view · airframe, avionics, ground kit</span>
         <span class="sheet-no"></span>
       </div>
     </div>
@@ -686,7 +704,7 @@ part def AuvSystem {
         <h2>Which hardware runs which software</h2>
         <div class="cols narrow-left">
           <div class="code-mount">
-            <div class="filename">examples/auv-system/deployment.sysml</div>
+            <div class="filename">examples/survey-drone/deployment.sysml</div>
 <pre class="code">
 // This file declares nothing of its own. Its whole
 // content is the mapping between the other two.
@@ -695,16 +713,23 @@ package Deployment {
     import Software::*;
     import Hardware::*;
 
-    allocate Software::sw.flightControl
-        to Hardware::Aircraft::fc;
-    allocate Software::sw.perception
-        to Hardware::Aircraft::fc;
-    allocate Software::sw.cameraCtrl
-        to Hardware::Aircraft::camera;
-    allocate Software::sw.telemetry
-        to Hardware::Aircraft::radio;
-    allocate Software::sw.pilotApp
-        to Hardware::AuvSystem::controller;
+    // The firmware has the control computer
+    // to itself, kernel included.
+    allocate Software::sw.mission
+        to Hardware::SurveyDrone::fc;
+    allocate Software::sw.control
+        to Hardware::SurveyDrone::fc;
+    allocate Software::sw.rtos
+        to Hardware::SurveyDrone::fc;
+
+    // Every container shares the GPU computer.
+    allocate Software::sw.planner
+        to Hardware::SurveyDrone::companion;
+    allocate Software::sw.zenoh
+        to Hardware::SurveyDrone::companion;
+
+    allocate Software::sw.app
+        to Hardware::GroundStation::tablet;
 }
 </pre>
           </div>
@@ -714,9 +739,9 @@ package Deployment {
               <button type="button" data-zoom>Zoom</button>
             </div>
             <div class="figure-mount">
-              <div class="figure-svg" data-svg="auv/deployment-view.svg"></div>
+              <div class="figure-svg" data-svg="drone/deployment-view.svg"></div>
             </div>
-            <p class="figure-caption">7 programs · 4 hosts · zero edges · {{DIM:auv/deployment-view.svg}} — the allocation is drawn as containment, not as arrows, and each host sits inside the device it is fitted in: three boards in the aircraft, the handheld on its own. A node with nothing inside it visibly hosts nothing, which is the fact the view exists to show.</p>
+            <p class="figure-caption">24 programs · 3 hosts · zero edges · {{DIM:drone/deployment-view.svg}} — the allocation is drawn as containment, not as arrows, and each host sits inside the device it is fitted in: two computers in the drone, the tablet on its own. The flight controller carries the firmware and its kernel; everything containerised sits on the GPU computer beside it.</p>
           </div>
         </div>
       </div>
@@ -732,30 +757,35 @@ package Deployment {
     <div class="frame">
       <div class="tag">Process view</div>
       <div class="stack">
-        <h2>Launch, tap a person, fly itself</h2>
+        <h2>Mark an area, upload it, fly it</h2>
         <div class="cols narrow-left">
           <div class="code-mount">
-            <div class="filename">examples/auv-system/process.sysml</div>
+            <div class="filename">examples/survey-drone/process.sysml</div>
 <pre class="code">
-action def FollowPerson {
-    part pilot;
-    part rcApp : Software::Ground::PilotApp;
-    part targetTracking
-        : Software::Perception::TargetTrackingEngine;
-    part perception
-        : Software::Perception::PerceptionPipeline;
+action def SurveyMission {
+    part operator;
+    part app : Software::Ground::SurveyPlanner;
+    part bridge : Software::Middleware::MavlinkBridge;
+    part mavlink : Software::Flight::MavlinkInterface;
+    part mission : Software::Flight::MissionExecutor;
 
-    message launch from pilot to rcApp;
-    then message takeOff from rcApp to flightControl;
-    then message liveVideo of VideoStream
-        from cameraCtrl to rcApp;
-    then message tapPerson from pilot to rcApp;
-    then message trackTarget of TargetBox
-        from rcApp to targetTracking;
-    then message obstacleMap of DepthGrid
-        from perception to flightControl;
-    then message avoidanceManeuver
-        from flightControl to flightControl;
+    message markArea from operator to app;
+    then message approve from operator to app;
+
+    // MAVLink's mission protocol: the vehicle
+    // asks for each item in turn.
+    then message missionCount of MissionCount
+        from bridge to mavlink;
+    then message requestItem of MissionRequestInt
+        from mavlink to bridge;
+    then message missionItem of MissionItemInt
+        from bridge to mavlink;
+    then message missionAck of MissionAck
+        from mavlink to bridge;
+
+    then message startAuto from mavlink to mission;
+    then message flySurveyLegs
+        from mission to mission;
 }
 </pre>
           </div>
@@ -765,14 +795,14 @@ action def FollowPerson {
               <button type="button" data-zoom>Zoom</button>
             </div>
             <div class="figure-mount">
-              <div class="figure-svg" data-svg="auv/process-view.svg"></div>
+              <div class="figure-svg" data-svg="drone/process-view.svg"></div>
             </div>
-            <p class="figure-caption">6 lifelines · 9 messages · {{DIM:auv/process-view.svg}} — lifeline order, activation bars and the self-message loop are all derived from the text. The pilot is untyped in the model, so it is drawn as a person, not a module.</p>
+            <p class="figure-caption">7 lifelines · 24 messages · {{DIM:drone/process-view.svg}} — lifeline order, activation bars and the self-message loops are all derived from the text. The operator is untyped in the model, so they are drawn as a person, not a module. The handshake down the middle is MAVLink’s own mission protocol, which is where the two software stacks actually meet.</p>
           </div>
         </div>
       </div>
       <div class="titleblock">
-        <span>Project · ortho</span><span>Process view · follow-person scenario</span>
+        <span>Project · ortho</span><span>Process view · survey-mission scenario</span>
         <span class="sheet-no"></span>
       </div>
     </div>
@@ -787,7 +817,7 @@ action def FollowPerson {
         <div class="cols narrow-left">
           <div class="stack">
             <p>
-              Nothing in <strong>ortho</strong> knows about aircraft. Point it at a bean-to-cup
+              Nothing in <strong>ortho</strong> knows about drones. Point it at a bean-to-cup
               coffee machine and the same six views come out — what the machine does, what it is
               made of, what runs where, and the sequence behind a single button press.
             </p>
@@ -802,8 +832,8 @@ action def FollowPerson {
                   <tr><th>Model</th><th>Logical</th><th>Physical</th><th>Process</th></tr>
                 </thead>
                 <tbody>
-                  <tr><td class="view">AUV system</td><td>27 functions</td><td>19 parts · 18 connections</td><td>6 lifelines · 9 messages</td></tr>
-                  <tr><td class="view">Coffee machine</td><td>19 functions</td><td>11 parts · 13 connections</td><td>6 lifelines · 9 messages</td></tr>
+                  <tr><td class="view">Survey drone</td><td>26 functions</td><td>14 parts · 18 connections</td><td>7 lifelines · 24 messages</td></tr>
+                  <tr><td class="view">Coffee machine</td><td>19 functions</td><td>10 parts · 13 connections</td><td>6 lifelines · 9 messages</td></tr>
                 </tbody>
               </table>
             </div>

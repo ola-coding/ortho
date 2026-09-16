@@ -61,10 +61,10 @@ function deviceFrame(id: string, name: string): GraphNode {
  * which is the fact the view exists to show.
  *
  * Hosts sit inside a frame for the device they are fitted in, borrowed from the
- * physical containment: the flight controller, radio and camera inside the
- * aircraft, the handheld on its own. Which programs run in the air and which on
- * the ground then reads at a glance. A device fitted exactly once is labelled by
- * that usage (`aircraft : Aircraft`) and nested in the frame of the device that
+ * physical containment: both computers inside the drone, the tablet in the
+ * ground station. Which programs run in the air and which on the ground then
+ * reads at a glance. A device fitted exactly once is labelled by that usage
+ * (`drone : SurveyDrone`) and nested in the frame of the device that
  * contains it; a top-level definition, or one fitted in several places, is a
  * frame of its own. A host declared directly in a package has no frame.
  *

@@ -1,0 +1,158 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1255.572" height="954"
+     viewBox="0 0 1255.572 954" font-family="Arial, Helvetica, Segoe UI, sans-serif">
+  <title>Deployment view — Survey Drone (generated from examples/survey-drone/deployment.sysml)</title>
+  <defs>
+    <marker id="triangle" markerWidth="14" markerHeight="12" refX="12" refY="5"
+            orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L12,5 L0,10 z" fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+    </marker>
+    <marker id="diamond" markerWidth="18" markerHeight="12" refX="15" refY="5"
+            orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M1,5 L8,1 L15,5 L8,9 z" fill="#2b2b2b" stroke="#2b2b2b" />
+    </marker>
+    <marker id="openArrow" markerWidth="12" markerHeight="12" refX="10" refY="5"
+            orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1255.572" height="954" fill="white" />
+  <rect x="8" y="8" width="1239.572" height="938" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+  <path d="M8,8 L8,30 L200.097,30 L210.097,21 L210.097,8 Z"
+        fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
+  <text x="16" y="23" font-size="11" font-weight="600" fill="#1a1a1a">Deployment view — Survey Drone</text>
+  <text x="1241.572" y="940" text-anchor="end" font-size="9" fill="#8a8a86">examples/survey-drone/deployment.sysml</text>
+  
+    <g><rect x="39" y="63" width="1177.572" height="852"
+          fill="#f6f6ec" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="627.786" y="84" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">SurveyDroneSystem</text></g>
+    <g><rect x="64" y="108" width="1127.572" height="507"
+          fill="#f6f6ec" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="627.786" y="129" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">drone : SurveyDrone</text></g>
+    <g><polygon points="89,165 101,153 513.108,153 501.10799999999995,165"
+          fill="#f0f0e6" stroke="#2b2b2b" stroke-width="1.25" />
+      <polygon points="501.10799999999995,165 513.108,153 513.108,450 501.10799999999995,462"
+          fill="#f0f0e6" stroke="#2b2b2b" stroke-width="1.25" />
+      <rect x="89" y="165" width="412.108" height="297"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="295.054" y="185" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">fc : ControlComputer</text></g>
+    <g><rect x="109" y="210" width="182.04" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="200.01999999999998" y="231" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">mission : MissionExecutor</text></g>
+    <g><rect x="109" y="274" width="179.364" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="198.68200000000002" y="295" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">estimator : StateEstimator</text></g>
+    <g><rect x="312.36400000000003" y="274" width="156.66" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="390.694" y="295" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">control : FlightControl</text></g>
+    <g><rect x="109" y="338" width="168.72" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="193.36" y="359" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">sensors : SensorDrivers</text></g>
+    <g><rect x="301.72" y="338" width="179.388" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="391.41400000000004" y="359" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">mavlink : MavlinkInterface</text></g>
+    <g><rect x="109" y="402" width="179.364" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="198.68200000000002" y="423" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">hal : HardwareAbstraction</text></g>
+    <g><rect x="312.36400000000003" y="402" width="154.03199999999998" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="389.38" y="423" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">rtos : RealTimeKernel</text></g>
+    <g><polygon points="537.108,165 549.108,153 1166.572,153 1154.572,165"
+          fill="#f0f0e6" stroke="#2b2b2b" stroke-width="1.25" />
+      <polygon points="1154.572,165 1166.572,153 1166.572,578 1154.572,590"
+          fill="#f0f0e6" stroke="#2b2b2b" stroke-width="1.25" />
+      <rect x="537.108" y="165" width="617.4639999999999" height="425"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="845.8399999999999" y="185" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">companion : GpuComputer</text></g>
+    <g><rect x="557.108" y="210" width="162.024" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="638.1199999999999" y="231" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">planner : RoutePlanner</text></g>
+    <g><rect x="743.132" y="210" width="210.732" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="848.4979999999999" y="231" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">avoidance : ObstacleAvoidance</text></g>
+    <g><rect x="977.8639999999999" y="210" width="156.708" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1056.2179999999998" y="231" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">video : VideoStreamer</text></g>
+    <g><rect x="557.108" y="274" width="156.684" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="635.4499999999999" y="295" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">fusion : SensorFusion</text></g>
+    <g><rect x="737.7919999999999" y="274" width="141.336" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="808.4599999999999" y="295" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">world : WorldModel</text></g>
+    <g><rect x="903.1279999999999" y="274" width="175.368" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="990.8119999999999" y="295" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">diagnostics : Diagnostics</text></g>
+    <g><rect x="557.108" y="338" width="144.012" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="629.1139999999999" y="359" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">logger : DataLogger</text></g>
+    <g><rect x="725.1199999999999" y="338" width="150" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="800.1199999999999" y="359" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">zenoh : ZenohRouter</text></g>
+    <g><rect x="899.1199999999999" y="338" width="159.36" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="978.8" y="359" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">bridge : MavlinkBridge</text></g>
+    <g><rect x="557.108" y="402" width="160.044" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="637.13" y="423" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">gstreamer : GStreamer</text></g>
+    <g><rect x="741.1519999999999" y="402" width="195.36" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="838.8319999999999" y="423" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">airTunnel : WireGuardTunnel</text></g>
+    <g><rect x="557.108" y="466" width="188.676" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="651.4459999999999" y="487" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">runtime : ContainerRuntime</text></g>
+    <g><rect x="769.7839999999999" y="466" width="153.336" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="846.4519999999999" y="487" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">ota : OtaUpdateAgent</text></g>
+    <g><rect x="947.1199999999999" y="466" width="145.356" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1019.7979999999999" y="487" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">linux : MinimalLinux</text></g>
+    <g><rect x="557.108" y="530" width="174.024" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="644.1199999999999" y="551" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">secureBoot : SecureBoot</text></g>
+    <g><rect x="64" y="639" width="324.012" height="251"
+          fill="#f6f6ec" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="226.006" y="660" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">ground : GroundStation</text></g>
+    <g><polygon points="89,696 101,684 363.012,684 351.012,696"
+          fill="#f0f0e6" stroke="#2b2b2b" stroke-width="1.25" />
+      <polygon points="351.012,696 363.012,684 363.012,853 351.012,865"
+          fill="#f0f0e6" stroke="#2b2b2b" stroke-width="1.25" />
+      <rect x="89" y="696" width="262.012" height="169"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="220.006" y="716" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">tablet : OperatorTablet</text></g>
+    <g><rect x="109" y="741" width="146.04000000000002" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="182.02" y="762" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">app : SurveyPlanner</text></g>
+    <g><rect x="109" y="805" width="222.012" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="220.006" y="826" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">groundTunnel : WireGuardTunnel</text></g>
+  
+</svg>

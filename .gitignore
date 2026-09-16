@@ -5,3 +5,6 @@ dist/
 # Generated from marketing/deck.template.html + the committed diagrams
 marketing/ortho-deck.html
 marketing/ortho-deck.artifact.html
+
+# Ad hoc diagram screenshots and the browser profile used to take them
+.review/

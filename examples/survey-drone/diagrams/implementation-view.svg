@@ -1,0 +1,183 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1707.7420000000002" height="952"
+     viewBox="0 0 1707.7420000000002 952" font-family="Arial, Helvetica, Segoe UI, sans-serif">
+  <title>Implementation view — Survey Drone (generated from examples/survey-drone/implementation.sysml)</title>
+  <defs>
+    <marker id="triangle" markerWidth="14" markerHeight="12" refX="12" refY="5"
+            orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L12,5 L0,10 z" fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+    </marker>
+    <marker id="diamond" markerWidth="18" markerHeight="12" refX="15" refY="5"
+            orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M1,5 L8,1 L15,5 L8,9 z" fill="#2b2b2b" stroke="#2b2b2b" />
+    </marker>
+    <marker id="openArrow" markerWidth="12" markerHeight="12" refX="10" refY="5"
+            orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1707.7420000000002" height="952" fill="white" />
+  <rect x="8" y="8" width="1691.7420000000002" height="936" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+  <path d="M8,8 L8,30 L218.434,30 L228.434,21 L228.434,8 Z"
+        fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
+  <text x="16" y="23" font-size="11" font-weight="600" fill="#1a1a1a">Implementation view — Survey Drone</text>
+  <text x="1693.7420000000002" y="938" text-anchor="end" font-size="9" fill="#8a8a86">examples/survey-drone/implementation.sysml</text>
+  
+    <g><rect x="36" y="60" width="66.453" height="12"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <rect x="36" y="72" width="1635.7420000000002" height="844"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="46" y="87" font-size="11" font-weight="600" fill="#1a1a1a">Software</text></g>
+    <g><rect x="1476.7420000000002" y="337" width="59.721" height="12"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <rect x="1476.7420000000002" y="349" width="170" height="98"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1486.7420000000002" y="364" font-size="11" font-weight="600" fill="#1a1a1a">Ground</text></g>
+    <g><rect x="1501.7420000000002" y="382" width="120" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1561.7420000000002" y="403" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">SurveyPlanner</text></g>
+    <g><rect x="597.056" y="105" width="65.837" height="12"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <rect x="597.056" y="117" width="839.686" height="330"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="607.056" y="132" font-size="11" font-weight="600" fill="#1a1a1a">Onboard</text></g>
+    <g><rect x="992.056" y="150" width="74.384" height="12"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <rect x="992.056" y="162" width="349.372" height="98"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1002.056" y="177" font-size="11" font-weight="600" fill="#1a1a1a">Autonomy</text></g>
+    <g><rect x="1017.056" y="195" width="120" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1077.056" y="216" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">RoutePlanner</text></g>
+    <g><rect x="1177.056" y="195" width="139.372" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1246.742" y="216" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">ObstacleAvoidance</text></g>
+    <g><rect x="921.7420000000001" y="312" width="76.848" height="12"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <rect x="921.7420000000001" y="324" width="490" height="98"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="931.7420000000001" y="339" font-size="11" font-weight="600" fill="#1a1a1a">Perception</text></g>
+    <g><rect x="946.7420000000001" y="357" width="120" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1006.7420000000001" y="378" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">VideoStreamer</text></g>
+    <g><rect x="1106.7420000000002" y="357" width="120" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1166.7420000000002" y="378" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">SensorFusion</text></g>
+    <g><rect x="1266.7420000000002" y="357" width="120" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1326.7420000000002" y="378" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">WorldModel</text></g>
+    <g><rect x="622.056" y="150" width="65.25399999999999" height="12"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <rect x="622.056" y="162" width="330" height="98"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="632.056" y="177" font-size="11" font-weight="600" fill="#1a1a1a">Services</text></g>
+    <g><rect x="647.056" y="195" width="120" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="707.056" y="216" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">Diagnostics</text></g>
+    <g><rect x="807.056" y="195" width="120" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="867.056" y="216" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">DataLogger</text></g>
+    <g><rect x="904.0056666666667" y="499" width="79.906" height="12"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <rect x="904.0056666666667" y="511" width="338.68" height="158"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="914.0056666666667" y="526" font-size="11" font-weight="600" fill="#1a1a1a">Middleware</text></g>
+    <g><rect x="929.0056666666667" y="544" width="120" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="989.0056666666667" y="565" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">ZenohRouter</text></g>
+    <g><rect x="1093.3456666666666" y="544" width="120" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1153.3456666666666" y="565" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">MavlinkBridge</text></g>
+    <g><rect x="929.0056666666667" y="604" width="120" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="989.0056666666667" y="625" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">GStreamer</text></g>
+    <g><rect x="1089.0056666666667" y="604" width="128.68" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1153.3456666666666" y="625" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">WireGuardTunnel</text></g>
+    <g><rect x="901.0096666666667" y="721" width="90" height="12"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <rect x="901.0096666666667" y="733" width="344.672" height="158"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="911.0096666666667" y="748" font-size="11" font-weight="600" fill="#1a1a1a">LinuxPlatform</text></g>
+    <g><rect x="926.0096666666667" y="766" width="132.00400000000002" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="992.0116666666668" y="787" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">ContainerRuntime</text></g>
+    <g><rect x="1098.0136666666667" y="766" width="122.668" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1159.3476666666668" y="787" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">OtaUpdateAgent</text></g>
+    <g><rect x="932.0116666666668" y="826" width="120" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="992.0116666666668" y="847" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">MinimalLinux</text></g>
+    <g><rect x="1099.3476666666668" y="826" width="120" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1159.3476666666668" y="847" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">SecureBoot</text></g>
+    <g><rect x="61" y="277" width="49.942" height="12"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <rect x="61" y="289" width="496.056" height="158"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="71" y="304" font-size="11" font-weight="600" fill="#1a1a1a">Flight</text></g>
+    <g><rect x="86" y="322" width="124.024" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="148.012" y="343" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">MissionExecutor</text></g>
+    <g><rect x="251.04" y="322" width="120" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="311.03999999999996" y="343" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">StateEstimator</text></g>
+    <g><rect x="412.056" y="322" width="120" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="472.056" y="343" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">FlightControl</text></g>
+    <g><rect x="88.012" y="382" width="120" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="148.012" y="403" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">SensorDrivers</text></g>
+    <g><rect x="250.024" y="382" width="122.032" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="311.04" y="403" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">MavlinkInterface</text></g>
+    <g><rect x="129.35" y="499" width="90" height="12"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <rect x="129.35" y="511" width="359.356" height="98"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="139.35" y="526" font-size="11" font-weight="600" fill="#1a1a1a">FlightPlatform</text></g>
+    <g><rect x="154.35" y="544" width="149.356" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="229.028" y="565" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">HardwareAbstraction</text></g>
+    <g><rect x="343.706" y="544" width="120" height="40"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="403.706" y="565" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">RealTimeKernel</text></g>
+  
+    <polyline points="1561.7420000000002,447 1561.7420000000002,489 1129.7923333333333,489 1129.7923333333333,499" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="1540.2370000000003" y="476" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;import&#187;</text>
+    <polyline points="1016.8990000000001,447 1016.899,499" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="995.3940000000001" y="476" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;import&#187;</text>
+    <polyline points="1166.7420000000002,260 1166.7420000000002,312" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="1145.237" y="289" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;import&#187;</text>
+    <polyline points="1073.3456666666666,669 1073.3456666666666,721" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="1051.8406666666667" y="698" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;import&#187;</text>
+    <polyline points="309.028,447 309.028,499" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="287.523" y="476" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;import&#187;</text>
+</svg>

@@ -104,10 +104,10 @@ function expand(owner: Instance, type: PartDef | undefined, body: UsageMember[],
 }
 
 /**
- * Walks a connector end (`aircraft.rfLink`, `batteryBay`) from the part whose
- * body declares the connection down to the box it names, and the port on it.
- * Resolving per instance is the point: the aircraft's radio and the
- * controller's radio share a type but are two boxes, each wired on its own.
+ * Walks a connector end (`drone.rfLink`, `radio.rf`) from the part whose body
+ * declares the connection down to the box it names, and the port on it.
+ * Resolving per instance is the point: the drone's radio and the ground
+ * station's radio share a type but are two boxes, each wired on its own.
  */
 function resolveEnd(end: ConnectorEnd, context: Instance): { nodeId: string; portId?: string } | undefined {
     let current = context;
@@ -140,8 +140,8 @@ function resolveEnd(end: ConnectorEnd, context: Instance): { nodeId: string; por
  * connects to what, not about specification values.
  *
  * Drawing instances rather than definitions matters: a type used twice (the
- * same transceiver in the aircraft and in the handheld controller) becomes two
- * boxes, and each connection lands on the part it actually names.
+ * same IP radio in the drone and in the ground station) becomes two boxes, and
+ * each connection lands on the part it actually names.
  *
  * The top-level boxes are the definitions nothing else uses as a part type and
  * that no other definition specializes, plus any package-level part usages.

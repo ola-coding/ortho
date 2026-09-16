@@ -74,7 +74,7 @@ export function extractUseCaseGraph(model: Model): DiagramGraph {
 
     // An actor declared on a use case def, and so shared by every use case of
     // that kind, is a primary actor, drawn on the left. One added on a single
-    // use case only — the person the drone follows, not its pilot — is a
+    // use case only — someone the system acts on, not a user of it — is a
     // secondary actor, drawn on the right. The distinction needs at least one
     // actor to come through a def; otherwise every actor is primary.
     const actorKey = (actor: ActorUsage): string => (actor.type?.ref ? qualifiedName(actor.type.ref) : actor.name);

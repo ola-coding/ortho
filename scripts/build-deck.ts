@@ -9,7 +9,7 @@ const ARTIFACT_OUT = 'marketing/ortho-deck.artifact.html';
 
 /** Short prefixes used in the template's data-svg / {{DIM:...}} references. */
 const DIAGRAM_DIRS: Record<string, string> = {
-    auv: 'examples/auv-system/diagrams',
+    drone: 'examples/survey-drone/diagrams',
     coffee: 'examples/coffee-machine/diagrams'
 };
 
@@ -51,7 +51,7 @@ function highlightSysml(code: string): string {
     return out + escapeHtml(code.slice(last));
 }
 
-/** "auv/logical-view.svg" -> repo-relative path. */
+/** "drone/logical-view.svg" -> repo-relative path. */
 function resolveRef(ref: string): { path: string; key: string } {
     const [prefix, file] = ref.split('/');
     const dir = DIAGRAM_DIRS[prefix];

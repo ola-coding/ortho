@@ -35,7 +35,7 @@ function standardJobs(): Job[] {
 }
 
 const examples = [
-    { base: 'examples/auv-system', system: 'AUV System' },
+    { base: 'examples/survey-drone', system: 'Survey Drone' },
     { base: 'examples/coffee-machine', system: 'Coffee Machine' }
 ];
 
