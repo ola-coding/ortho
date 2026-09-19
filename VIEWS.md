@@ -50,7 +50,7 @@ Functions outlive their realizations — arming a mechanism can be a mechanical 
 - **Energy and material functions do not** — containing a volume, raising a
   temperature. Medium-bound for physical reasons.
 
-Realization is many to many — one function can be realized by software and hardware together, a relay plus its driver, and one function may have several realizations across product variants. A function exists exactly once here; the elements that realize it live on the Implementation and Physical views, though the realization relation itself is drawn on no view.
+Realization is many to many — one function can be realized by software and hardware together, a relay plus its driver, and one function may have several realizations across product variants. A function exists exactly once here; the elements that realize it live on the Implementation and Physical views, and say so themselves: each names the functions it performs, so this view never names them back. A function nothing performs is a gap, and the diagrams show it by omission.
 
 **Rendering.** A work-breakdown chart of rounded rectangles, one box per function. Every function has exactly one parent, so the decomposition is strictly a tree: each parent stands over its family, directly above the middle child when there is one, and a single stem drops to a line that feeds every child, with no arrowheads. The lowest level of each branch is listed vertically beneath its parent, off a spine, so a broad tree keeps a page's proportions instead of stretching into one long row. A function shared by several branches sits at their lowest common ancestor rather than being duplicated, so its position states how widely it is shared.
 
@@ -59,7 +59,7 @@ Realization is many to many — one function can be realized by software and har
 Static structure of the software: modules and their dependencies. Runtime
 behaviour belongs to Process, hardware to Physical.
 
-**Rendering.** Packages are rectangles with a small tab in the top-left corner, nested to show containment. Modules — the part defs a package declares — are plain rectangles inside it carrying a name compartment; a package-level part usage is an instance, not a module, and is not drawn. Dependencies are drawn between packages, read from their imports: dashed lines with an open arrowhead, labelled «import», pointing at the package depended upon.
+**Rendering.** Packages are rectangles with a small tab in the top-left corner, nested to show containment. Modules — the part defs a package declares — are plain rectangles inside it carrying a name compartment; a package-level part usage is an instance, not a module, and is not drawn. Dependencies are drawn between packages, read from their imports: dashed lines with an open arrowhead, labelled «import», pointing at the package depended upon. A module that realizes functions carries them in a *perform actions* compartment, so the view also says what each module is for.
 
 ### Physical view
 
@@ -70,7 +70,7 @@ computers, and how they connect.
 Dimensions, placement and enclosure layout are out of scope. A cable is a
 `connect`, not a part, so it carries no properties of its own.
 
-**Rendering.** An internal block diagram of the product. Each part *in the product* is a rectangle headed `name : Type`, with its multiplicity where it has one, nested inside the part that contains it — so assembly containment is shown by nesting, and a type fitted twice appears as two boxes, each wired on its own. No attributes are shown: the view is about what connects to what, not about specification values. Ports are small squares sitting on the border, labelled just outside the box. Cables, pipes and looms are plain solid lines drawn port to port, with no arrowhead — direction belongs to the ports, not to the line. A connection typed by an `interface def` carries the interface name as a label on the line.
+**Rendering.** An internal block diagram of the product. Each part *in the product* is a rectangle headed `name : Type`, with its multiplicity where it has one, nested inside the part that contains it — so assembly containment is shown by nesting, and a type fitted twice appears as two boxes, each wired on its own. No attributes are shown: the view is about what connects to what, not about specification values. Ports are small squares sitting on the border, labelled just outside the box. Cables, pipes and looms are plain solid lines drawn port to port, with no arrowhead — direction belongs to the ports, not to the line. A connection typed by an `interface def` carries the interface name as a label on the line. A part that realizes functions lists them in a *perform actions* compartment, its own and its definition's alike, so the view says what each piece of hardware is there to do.
 
 ### Deployment view
 
@@ -92,17 +92,17 @@ How software modules interact at runtime, for one scenario. One scenario per dia
 | --- | --- | --- |
 | **Use case** | How the system is used, and by whom | `use case def`, `use case`, `actor`, `subject`, `include` |
 | **Logical** | What the system does, as a hierarchy of functions | `action def`, `action` |
-| **Implementation** | Static structure of the software | `package`, `private import`, `part def`, `part` |
-| **Physical** | Structure of the physical product, as topology | `part def`, `part`, `port def`, `port`, `connect`, `interface def` |
+| **Implementation** | Static structure of the software | `package`, `private import`, `part def`, `part`, `perform` |
+| **Physical** | Structure of the physical product, as topology | `part def`, `part`, `port def`, `port`, `connect`, `interface def`, `perform` |
 | **Deployment** | Which hardware runs which software | `part`, `allocate` |
 | **Process** | How software modules interact at runtime | `action def`, `part`, `message`, `then`, `attribute def` |
 
 All six views are expressible in the grammar today, and
-[LANGUAGE.md](LANGUAGE.md) sets out the exact subset, view by view. One gap
-remains outside the views themselves: the realization relation from Logical to
-the two realization views cannot yet be written, and is drawn on no view.
-SysML v2 writes it as `perform` inside the part that realizes a function
-(§7.17.6), which is on the backlog.
+[LANGUAGE.md](LANGUAGE.md) sets out the exact subset, view by view. The
+relation between them is expressible too: a component states the functions it
+realizes with `perform` (§7.17.6), and the Implementation and Physical views
+draw it as the spec's *perform actions* compartment — so the link from
+Logical to what realizes it needs no view of its own.
 
 ## References
 

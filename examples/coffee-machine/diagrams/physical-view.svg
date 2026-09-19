@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1020.6216666666668" height="679"
-     viewBox="0 0 1020.6216666666668 679" font-family="Arial, Helvetica, Segoe UI, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="1020.6216666666668" height="827"
+     viewBox="0 0 1020.6216666666668 827" font-family="Arial, Helvetica, Segoe UI, sans-serif">
   <title>Physical view — Coffee Machine (generated from examples/coffee-machine/physical.sysml)</title>
   <defs>
     <marker id="triangle" markerWidth="14" markerHeight="12" refX="12" refY="5"
@@ -15,160 +15,208 @@
       <path d="M0,0 L10,5 L0,10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
     </marker>
   </defs>
-  <rect x="0" y="0" width="1020.6216666666668" height="679" fill="white" />
-  <rect x="8" y="8" width="1004.6216666666668" height="663" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+  <rect x="0" y="0" width="1020.6216666666668" height="827" fill="white" />
+  <rect x="8" y="8" width="1004.6216666666668" height="811" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
   <path d="M8,8 L8,30 L191.55,30 L201.55,21 L201.55,8 Z"
         fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
   <text x="16" y="23" font-size="11" font-weight="600" fill="#1a1a1a">Physical view — Coffee Machine</text>
-  <text x="1006.6216666666668" y="665" text-anchor="end" font-size="9" fill="#8a8a86">examples/coffee-machine/physical.sysml</text>
+  <text x="1006.6216666666668" y="813" text-anchor="end" font-size="9" fill="#8a8a86">examples/coffee-machine/physical.sysml</text>
   
-    <g><rect x="36" y="60" width="948.6216666666668" height="583"
+    <g><rect x="36" y="60" width="948.6216666666668" height="731"
           fill="#f6f6ec" stroke="#2b2b2b" stroke-width="1.25" />
       <text x="510.3108333333334" y="81" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">machine : CoffeeMachine</text></g>
-    <g><rect x="561.7280000000001" y="296" width="124.684" height="40"
+          font-size="12" font-weight="600" fill="#1a1a1a">machine : CoffeeMachine</text>
+      <line x1="36" y1="92" x2="984.6216666666668" y2="92"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="44" y="103"
+          font-size="9" fill="#555555">perform actions</text>
+      <text x="44" y="117"
+          font-size="11" fill="#1a1a1a">serveBeverage</text></g>
+    <g><rect x="561.7280000000001" y="332" width="124.684" height="68"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="624.07" y="317" text-anchor="middle"
+      <text x="624.07" y="353" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">tank : WaterTank</text>
-      <rect x="619.07" y="331" width="10" height="10"
+      <line x1="561.7280000000001" y1="364" x2="686.412" y2="364"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="569.7280000000001" y="375"
+          font-size="9" fill="#555555">perform actions</text>
+      <text x="569.7280000000001" y="389"
+          font-size="11" fill="#1a1a1a">storeWater</text>
+      <rect x="619.07" y="395" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
-    <g><rect x="530.4006666666668" y="390" width="138.00400000000002" height="40"
+    <g><rect x="530.4006666666668" y="454" width="138.00400000000002" height="68"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="599.4026666666668" y="411" text-anchor="middle"
+      <text x="599.4026666666668" y="475" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">pump : WaterPump</text>
-      <rect x="619.0700000000002" y="385" width="10" height="10"
+      <line x1="530.4006666666668" y1="486" x2="668.4046666666668" y2="486"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="538.4006666666668" y="497"
+          font-size="9" fill="#555555">perform actions</text>
+      <text x="538.4006666666668" y="511"
+          font-size="11" fill="#1a1a1a">pumpWater</text>
+      <rect x="619.0700000000002" y="449" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="594.4026666666668" y="425" width="10" height="10"
+      <rect x="594.4026666666668" y="517" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="569.7353333333334" y="385" width="10" height="10"
+      <rect x="569.7353333333334" y="449" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
-    <g><rect x="497.71733333333344" y="484" width="150.02800000000002" height="40"
+    <g><rect x="497.71733333333344" y="576" width="150.02800000000002" height="68"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="572.7313333333334" y="505" text-anchor="middle"
+      <text x="572.7313333333334" y="597" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">heater : Thermoblock</text>
-      <rect x="594.4026666666668" y="479" width="10" height="10"
+      <line x1="497.71733333333344" y1="608" x2="647.7453333333335" y2="608"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="505.71733333333344" y="619"
+          font-size="9" fill="#555555">perform actions</text>
+      <text x="505.71733333333344" y="633"
+          font-size="11" fill="#1a1a1a">heatWater</text>
+      <rect x="594.4026666666668" y="571" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="541.0600000000002" y="519" width="10" height="10"
+      <rect x="541.0600000000002" y="639" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="594.4026666666668" y="519" width="10" height="10"
+      <rect x="594.4026666666668" y="639" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="541.0600000000002" y="479" width="10" height="10"
+      <rect x="541.0600000000002" y="571" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
-    <g><rect x="216.02600000000012" y="296" width="150.676" height="40"
+    <g><rect x="216.02600000000012" y="332" width="150.676" height="68"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="291.36400000000015" y="317" text-anchor="middle"
+      <text x="291.36400000000015" y="353" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">hopper : BeanHopper</text>
-      <rect x="286.36400000000015" y="331" width="10" height="10"
+      <line x1="216.02600000000012" y1="364" x2="366.7020000000001" y2="364"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="224.02600000000012" y="375"
+          font-size="9" fill="#555555">perform actions</text>
+      <text x="224.02600000000012" y="389"
+          font-size="11" fill="#1a1a1a">storeBeans</text>
+      <rect x="286.36400000000015" y="395" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
-    <g><rect x="207.4626666666668" y="390" width="123.352" height="40"
+    <g><rect x="207.4626666666668" y="454" width="123.352" height="68"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="269.1386666666668" y="411" text-anchor="middle"
+      <text x="269.1386666666668" y="475" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">grinder : Grinder</text>
-      <rect x="286.36400000000015" y="385" width="10" height="10"
+      <line x1="207.4626666666668" y1="486" x2="330.81466666666677" y2="486"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="215.4626666666668" y="497"
+          font-size="9" fill="#555555">perform actions</text>
+      <text x="215.4626666666668" y="511"
+          font-size="11" fill="#1a1a1a">grindBeans</text>
+      <rect x="286.36400000000015" y="449" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="264.1386666666668" y="425" width="10" height="10"
+      <rect x="264.1386666666668" y="517" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="241.91333333333347" y="385" width="10" height="10"
+      <rect x="241.91333333333347" y="449" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
-    <g><rect x="211.6356666666668" y="578" width="188.037" height="40"
+    <g><rect x="211.6356666666668" y="698" width="188.037" height="68"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="305.6541666666668" y="599" text-anchor="middle"
+      <text x="305.6541666666668" y="719" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">brewUnit : BrewUnit</text>
-      <rect x="327.1616666666668" y="573" width="10" height="10"
+      <line x1="211.6356666666668" y1="730" x2="399.6726666666668" y2="730"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="219.6356666666668" y="741"
+          font-size="9" fill="#555555">perform actions</text>
+      <text x="219.6356666666668" y="755"
+          font-size="11" fill="#1a1a1a">extractShot</text>
+      <rect x="327.1616666666668" y="693" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="264.1386666666668" y="573" width="10" height="10"
+      <rect x="264.1386666666668" y="693" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="379.6726666666668" y="573" width="10" height="10"
+      <rect x="379.6726666666668" y="693" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="221.6356666666668" y="573" width="10" height="10"
+      <rect x="221.6356666666668" y="693" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
-    <g><rect x="684.6546666666668" y="578" width="138.01600000000002" height="40"
+    <g><rect x="684.6546666666668" y="698" width="138.01600000000002" height="68"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="753.6626666666668" y="599" text-anchor="middle"
+      <text x="753.6626666666668" y="719" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">wand : SteamWand</text>
-      <rect x="697.2796666666668" y="573" width="10" height="10"
+      <line x1="684.6546666666668" y1="730" x2="822.6706666666669" y2="730"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="692.6546666666668" y="741"
+          font-size="9" fill="#555555">perform actions</text>
+      <text x="692.6546666666668" y="755"
+          font-size="11" fill="#1a1a1a">frothMilk</text>
+      <rect x="697.2796666666668" y="693" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="800.0456666666669" y="573" width="10" height="10"
+      <rect x="800.0456666666669" y="693" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="754.9176666666668" y="573" width="10" height="10"
+      <rect x="754.9176666666668" y="693" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
-    <g><rect x="691.7706666666668" y="199" width="203.499" height="40"
+    <g><rect x="691.7706666666668" y="235" width="203.499" height="40"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="793.5201666666668" y="220" text-anchor="middle"
+      <text x="793.5201666666668" y="256" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">controller : ControlBoard</text>
-      <rect x="788.5201666666668" y="194" width="10" height="10"
+      <rect x="788.5201666666668" y="230" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="875.2696666666668" y="234" width="10" height="10"
+      <rect x="875.2696666666668" y="270" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="763.2816666666668" y="234" width="10" height="10"
+      <rect x="763.2816666666668" y="270" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="701.7706666666668" y="234" width="10" height="10"
+      <rect x="701.7706666666668" y="270" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="822.2816666666668" y="234" width="10" height="10"
+      <rect x="822.2816666666668" y="270" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
-    <g><rect x="800.9176666666668" y="390" width="158.704" height="40"
+    <g><rect x="800.9176666666668" y="454" width="158.704" height="40"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="880.2696666666668" y="411" text-anchor="middle"
+      <text x="880.2696666666668" y="475" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">display : TouchDisplay</text>
-      <rect x="875.2696666666668" y="385" width="10" height="10"
+      <rect x="875.2696666666668" y="449" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
-    <g><rect x="726.5101666666668" y="105" width="134.01999999999998" height="40"
+    <g><rect x="726.5101666666668" y="141" width="134.01999999999998" height="40"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="793.5201666666668" y="126" text-anchor="middle"
+      <text x="793.5201666666668" y="162" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">psu : MainsSupply</text>
-      <rect x="788.5201666666668" y="140" width="10" height="10"
+      <rect x="788.5201666666668" y="176" width="10" height="10"
           fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
   
-    <polyline points="624.0700000000002,341 624.0700000000002,385" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="599.4026666666668,435 599.4026666666668,479" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="546.0600000000002,529 546.0600000000002,551 332.1616666666668,551 332.1616666666668,573" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="599.4026666666668,529 599.4026666666668,551 702.2796666666668,551 702.2796666666668,573" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="291.36400000000015,341 291.36400000000015,385" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="269.1386666666668,435 269.1386666666668,573" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="793.5201666666668,150 793.5201666666668,194" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="768.2816666666668,244 768.2816666666668,276 469.21500000000015,276 469.21500000000015,363 574.7353333333334,363 574.7353333333334,385" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <text x="496.97150000000016" y="327.5" text-anchor="middle" font-size="9"
+    <polyline points="624.0700000000002,405 624.0700000000002,449" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="599.4026666666668,527 599.4026666666668,571" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="546.0600000000002,649 546.0600000000002,671 332.1616666666668,671 332.1616666666668,693" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="599.4026666666668,649 599.4026666666668,671 702.2796666666668,671 702.2796666666668,693" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="291.36400000000015,405 291.36400000000015,449" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="269.1386666666668,527 269.1386666666668,693" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="793.5201666666668,186 793.5201666666668,230" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="768.2816666666668,280 768.2816666666668,312 469.21500000000015,312 469.21500000000015,427 574.7353333333334,427 574.7353333333334,449" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <text x="496.97150000000016" y="377.5" text-anchor="middle" font-size="9"
           fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">ControlLink</text>
-    <polyline points="768.2816666666668,244 768.2816666666668,276 458.21500000000015,276 458.21500000000015,457 546.0600000000002,457 546.0600000000002,479" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <text x="431.45850000000013" y="327.5" text-anchor="middle" font-size="9"
+    <polyline points="768.2816666666668,280 768.2816666666668,312 458.21500000000015,312 458.21500000000015,549 546.0600000000002,549 546.0600000000002,571" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <text x="431.45850000000013" y="377.5" text-anchor="middle" font-size="9"
           fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">ControlLink</text>
-    <polyline points="706.7706666666668,244 706.7706666666668,266 123.51300000000003,266 123.51300000000003,363 246.91333333333347,363 246.91333333333347,385" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <text x="151.26950000000005" y="327.5" text-anchor="middle" font-size="9"
+    <polyline points="706.7706666666668,280 706.7706666666668,302 123.51300000000003,302 123.51300000000003,427 246.91333333333347,427 246.91333333333347,449" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <text x="151.26950000000005" y="377.5" text-anchor="middle" font-size="9"
           fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">ControlLink</text>
-    <polyline points="706.7706666666668,244 706.7706666666668,266 112.51300000000003,266 112.51300000000003,551 226.6356666666668,551 226.6356666666668,573" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <text x="85.7565" y="413" text-anchor="middle" font-size="9"
+    <polyline points="706.7706666666668,280 706.7706666666668,302 112.51300000000003,302 112.51300000000003,671 226.6356666666668,671 226.6356666666668,693" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <text x="85.7565" y="491" text-anchor="middle" font-size="9"
           fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">ControlLink</text>
-    <polyline points="827.2816666666668,244 827.2816666666668,286 759.9176666666668,286 759.9176666666668,573" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <text x="733.1611666666668" y="413" text-anchor="middle" font-size="9"
+    <polyline points="827.2816666666668,280 827.2816666666668,322 759.9176666666668,322 759.9176666666668,693" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <text x="733.1611666666668" y="491" text-anchor="middle" font-size="9"
           fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">ControlLink</text>
-    <polyline points="880.2696666666668,244 880.2696666666668,385" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <text x="908.0261666666668" y="327.5" text-anchor="middle" font-size="9"
+    <polyline points="880.2696666666668,280 880.2696666666668,449" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <text x="908.0261666666668" y="377.5" text-anchor="middle" font-size="9"
           fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">ControlLink</text>
   
-    <text x="630.07" y="351" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">waterOut</text>
-    <text x="630.0700000000002" y="382" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">waterIn</text>
-    <text x="605.4026666666668" y="445" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">waterOut</text>
-    <text x="547.2323333333334" y="382" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ctrlIn</text>
-    <text x="605.4026666666668" y="476" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">waterIn</text>
-    <text x="487.03900000000016" y="539" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">hotWaterOut</text>
-    <text x="605.4026666666668" y="539" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">steamOut</text>
-    <text x="518.5570000000001" y="476" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ctrlIn</text>
-    <text x="297.36400000000015" y="351" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">beansOut</text>
-    <text x="297.36400000000015" y="382" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">beansIn</text>
-    <text x="275.1386666666668" y="445" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">groundsOut</text>
-    <text x="219.41033333333348" y="382" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ctrlIn</text>
-    <text x="338.1616666666668" y="570" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">waterIn</text>
-    <text x="275.1386666666668" y="570" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">groundsIn</text>
-    <text x="390.6726666666668" y="570" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">coffeeOut</text>
-    <text x="232.6356666666668" y="570" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ctrlIn</text>
-    <text x="708.2796666666668" y="570" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">steamIn</text>
-    <text x="811.0456666666669" y="570" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">milkOut</text>
-    <text x="765.9176666666668" y="570" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ctrlIn</text>
-    <text x="799.5201666666668" y="191" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">powerIn</text>
-    <text x="886.2696666666668" y="254" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">uiLink</text>
-    <text x="774.2816666666668" y="254" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">waterCtrl</text>
-    <text x="712.7706666666668" y="254" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">coffeeCtrl</text>
-    <text x="833.2816666666668" y="254" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">milkCtrl</text>
-    <text x="886.2696666666668" y="382" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ctrlOut</text>
-    <text x="799.5201666666668" y="160" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">powerOut</text>
+    <text x="630.07" y="415" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">waterOut</text>
+    <text x="630.0700000000002" y="446" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">waterIn</text>
+    <text x="605.4026666666668" y="537" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">waterOut</text>
+    <text x="547.2323333333334" y="446" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ctrlIn</text>
+    <text x="605.4026666666668" y="568" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">waterIn</text>
+    <text x="487.03900000000016" y="659" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">hotWaterOut</text>
+    <text x="605.4026666666668" y="659" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">steamOut</text>
+    <text x="518.5570000000001" y="568" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ctrlIn</text>
+    <text x="297.36400000000015" y="415" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">beansOut</text>
+    <text x="297.36400000000015" y="446" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">beansIn</text>
+    <text x="275.1386666666668" y="537" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">groundsOut</text>
+    <text x="219.41033333333348" y="446" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ctrlIn</text>
+    <text x="338.1616666666668" y="690" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">waterIn</text>
+    <text x="275.1386666666668" y="690" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">groundsIn</text>
+    <text x="390.6726666666668" y="690" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">coffeeOut</text>
+    <text x="232.6356666666668" y="690" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ctrlIn</text>
+    <text x="708.2796666666668" y="690" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">steamIn</text>
+    <text x="811.0456666666669" y="690" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">milkOut</text>
+    <text x="765.9176666666668" y="690" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ctrlIn</text>
+    <text x="799.5201666666668" y="227" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">powerIn</text>
+    <text x="886.2696666666668" y="290" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">uiLink</text>
+    <text x="774.2816666666668" y="290" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">waterCtrl</text>
+    <text x="712.7706666666668" y="290" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">coffeeCtrl</text>
+    <text x="833.2816666666668" y="290" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">milkCtrl</text>
+    <text x="886.2696666666668" y="446" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ctrlOut</text>
+    <text x="799.5201666666668" y="196" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">powerOut</text>
 </svg>

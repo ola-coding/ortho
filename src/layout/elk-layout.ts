@@ -1,6 +1,7 @@
 import ElkConstructor from 'elkjs';
 import type { ELK, ElkNode, ElkExtendedEdge, ELKConstructorArguments } from 'elkjs/lib/elk-api.js';
-import type { DiagramGraph, EdgeKind, GraphNode, NodeShape } from '../model/graph.js';
+import type { Compartment, DiagramGraph, EdgeKind, GraphNode, NodeShape } from '../model/graph.js';
+import { compartmentsHeight } from '../model/graph.js';
 import { measureText } from '../render/text-metrics.js';
 import { straightenEdges } from './straight-edges.js';
 
@@ -66,7 +67,7 @@ export interface LaidOutNode {
     shape: NodeShape;
     stereotype: string;
     name: string;
-    compartments: Array<{ lines: string[] }>;
+    compartments: Compartment[];
     ports: LaidOutPort[];
     hasChildren: boolean;
     x: number;
@@ -109,9 +110,12 @@ interface Conversion {
  * title; a 3-D node also has to clear its depth edge, drawn inside its bounds.
  */
 function paddingOf(n: GraphNode): { top: number; left: number; bottom: number; right: number } {
+    // A container's own compartments sit under its title, so its contents
+    // start below them.
+    const top = 45 + compartmentsHeight(n.compartments);
     return n.shape === 'node3d'
-        ? { top: 45 + NODE_DEPTH, left: 20, bottom: 20, right: 20 + NODE_DEPTH }
-        : { top: 45, left: 25, bottom: 25, right: 25 };
+        ? { top: top + NODE_DEPTH, left: 20, bottom: 20, right: 20 + NODE_DEPTH }
+        : { top, left: 25, bottom: 25, right: 25 };
 }
 
 /**

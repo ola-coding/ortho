@@ -12,6 +12,11 @@ package Hardware {
     // Real is the spec's own value type, from its library.
     private import ScalarValues::*;
 
+    // The functions this hardware realizes, said on the part that realizes
+    // each one. Sensors and the radio carry data for functions the software
+    // performs, so they realize none of their own.
+    private import Functions::*;
+
     port def PowerPort;
     port def DataPort;
     port def DrivePort;
@@ -33,12 +38,16 @@ package Hardware {
     }
 
     part def BrushlessMotor {
+        perform Functions::survey.operateVehicle.produceThrust;
+
         port arm : MountPort;
         port phases : DrivePort;
         port shaft : MountPort;
     }
 
     part def Propeller {
+        perform Functions::survey.operateVehicle.produceThrust;
+
         port hub : MountPort;
     }
 
@@ -51,6 +60,8 @@ package Hardware {
 
     // --- power -------------------------------------------------------------
     part def LiPoBattery {
+        perform Functions::survey.operateVehicle.supplyPower;
+
         attribute cells : Real = 6;
         attribute capacity_mAh : Real = 10000;
         port powerOut : PowerPort;
@@ -59,6 +70,8 @@ package Hardware {
     // Measures battery voltage and current for the control computer, and
     // gives each consumer its own supply.
     part def PowerModule {
+        perform Functions::survey.operateVehicle.supplyPower;
+
         port batteryIn : PowerPort;
         port escOut : PowerPort;
         port controlOut : PowerPort;
@@ -69,6 +82,8 @@ package Hardware {
     // ArduPilot-style flight controller: reads the sensors, drives the motors
     // and talks MAVLink to the computer beside it.
     part def ControlComputer {
+        perform Functions::survey.operateVehicle.provideComputing;
+
         port powerIn : PowerPort;
         port imuIn : DataPort;
         port gpsIn : DataPort;
@@ -78,6 +93,8 @@ package Hardware {
 
     // Jetson-style computer with a GPU, for everything above flying.
     part def GpuComputer {
+        perform Functions::survey.operateVehicle.provideComputing;
+
         attribute aiPerformance_TOPS : Real = 100;
         port powerIn : PowerPort;
         port cameraIn : DataPort;
@@ -87,6 +104,8 @@ package Hardware {
 
     // --- sensors -----------------------------------------------------------
     part def Camera {
+        perform Functions::survey.perceive.captureVideo;
+
         port mount : MountPort;
         port videoOut : DataPort;
     }

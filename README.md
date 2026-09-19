@@ -120,29 +120,32 @@ ortho render <models...> -d <type> -o <file.svg> [-t <heading>]
 
 ### One model file per view
 
-Each view is rendered from the file that holds it. Four of the six stand
-alone; two need companions, because their content is a relation to other
+Each view is rendered from the file that holds it. Use case and logical stand
+alone; the rest need companions, because their content is a relation to other
 files:
 
 ```sh
-# Self-contained: use-case, logical, implementation, physical
-npx ortho render physical.sysml -d physical -o physical-view.svg
+# Self-contained: use-case, logical
+npx ortho render logical.sysml -d logical -o logical-view.svg
+
+# Software and hardware name the functions their parts perform
+npx ortho render physical.sysml logical.sysml -d physical -o physical-view.svg
 
 # Deployment is nothing but the mapping between software and hardware
-npx ortho render deployment.sysml implementation.sysml physical.sysml \
+npx ortho render deployment.sysml implementation.sysml physical.sysml logical.sysml \
     -d deployment -o deployment-view.svg
 
 # The process view's lifelines are typed by the software modules
-npx ortho render process.sysml implementation.sysml -d process -o process-view.svg
+npx ortho render process.sysml implementation.sysml logical.sysml -d process -o process-view.svg
 ```
 
 The process view renders *every* message it sees, so keep one scenario per
 file and pass exactly one scenario file.
 
-Pass `-t` for those two. The default heading names the first input's root
-package, so `deployment.sysml` renders as "Deployment view — Deployment"
-rather than naming your system — which is why the bundled examples override
-it and read "Deployment view — Survey Drone".
+Pass `-t` for the four that take companions. The default heading names the
+first input's root package, so `deployment.sysml` renders as "Deployment view
+— Deployment" rather than naming your system — which is why the bundled
+examples override it and read "Deployment view — Survey Drone".
 
 ## Typical project integration
 

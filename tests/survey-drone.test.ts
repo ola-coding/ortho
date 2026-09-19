@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
 import { parseSysmlFiles } from '../src/parser/parse.js';
 import type { Model } from '../src/generated/ast.js';
+import type { GraphNode } from '../src/model/graph.js';
 import { extractUseCaseGraph } from '../src/diagrams/use-case.js';
 import { extractLogicalGraph } from '../src/diagrams/logical.js';
 import { extractImplementationGraph } from '../src/diagrams/implementation.js';
@@ -20,8 +21,13 @@ const ALL = [
     'physical.sysml', 'deployment.sysml', 'process.sysml'
 ];
 
-/** The four views whose file declares everything it draws. */
-const SELF_CONTAINED = ['use-case.sysml', 'logical.sysml', 'implementation.sysml', 'physical.sysml'];
+/** The two views whose file declares everything it draws. */
+const SELF_CONTAINED = ['use-case.sysml', 'logical.sysml'];
+
+/** Every box, nested ones included. */
+function allNodes(nodes: GraphNode[]): GraphNode[] {
+    return nodes.flatMap(n => [n, ...allNodes(n.children ?? [])]);
+}
 
 async function parseSet(...files: string[]): Promise<Model> {
     const services = createSysmlServices();
@@ -88,10 +94,33 @@ describe('survey drone example model', () => {
         const parents = new Set(graph.edges.map(e => e.targetId));
         expect(graph.nodes.filter(n => !parents.has(n.id)).map(n => n.name))
             .toEqual(['PerformAerialSurvey']);
+
+        // `action survey : PerformAerialSurvey` is what the realizing parts
+        // point into. It is one use of the tree, not a second tree.
+        expect(names).not.toContain('survey');
+    });
+
+    it('implementation view: each module lists the functions it realizes', async () => {
+        const graph = extractImplementationGraph(await parseSet('implementation.sysml', 'logical.sysml'));
+        const modules = new Map(allNodes(graph.nodes).map(n => [n.name, n]));
+
+        expect(modules.get('VideoStreamer')!.compartments)
+            .toEqual([{ title: 'perform actions', lines: ['streamVideo'] }]);
+        expect(modules.get('SurveyPlanner')!.compartments[0].lines)
+            .toEqual(['planMission', 'presentInformation', 'acceptOperatorInput']);
+
+        // A platform module realizes nothing of the function tree: it is what
+        // the modules above it stand on.
+        for (const platform of ['RealTimeKernel', 'MinimalLinux', 'ZenohRouter', 'SensorDrivers']) {
+            expect(modules.get(platform)!.compartments, platform).toEqual([]);
+        }
+
+        // The function tree is a companion file, not part of this view.
+        expect(graph.nodes.map(n => n.name)).not.toContain('Functions');
     });
 
     it('implementation view: the firmware stack and the Linux stack never import each other', async () => {
-        const graph = extractImplementationGraph(await parseSet('implementation.sysml'));
+        const graph = extractImplementationGraph(await parseSet('implementation.sysml', 'logical.sysml'));
         const imports = graph.edges.map(e => `${e.sourceId} -> ${e.targetId}`).sort();
         expect(imports).toEqual([
             'Software::Flight -> Software::FlightPlatform',
@@ -111,7 +140,7 @@ describe('survey drone example model', () => {
     });
 
     it('physical view: the product as nested parts, each radio wired on its own', async () => {
-        const graph = extractPhysicalGraph(await parseSet('physical.sysml'));
+        const graph = extractPhysicalGraph(await parseSet('physical.sysml', 'logical.sysml'));
         expect(graph.nodes.map(n => n.name)).toEqual(['system : SurveyDroneSystem']);
         const system = graph.nodes[0];
         expect(system.children!.map(c => c.name)).toEqual([
@@ -141,9 +170,23 @@ describe('survey drone example model', () => {
         ]);
     });
 
+    it('physical view: a part inherits what its definition performs', async () => {
+        const graph = extractPhysicalGraph(await parseSet('physical.sysml', 'logical.sysml'));
+        const boxes = new Map(allNodes(graph.nodes).map(n => [n.name, n]));
+
+        // The perform sits on BrushlessMotor; the box is the usage.
+        expect(boxes.get('motors : BrushlessMotor [4]')!.compartments)
+            .toEqual([{ title: 'perform actions', lines: ['produceThrust'] }]);
+        // Both computers provide computing: realization is many to many.
+        expect(boxes.get('fc : ControlComputer')!.compartments[0].lines).toEqual(['provideComputing']);
+        expect(boxes.get('companion : GpuComputer')!.compartments[0].lines).toEqual(['provideComputing']);
+        // The radio carries what the software says; it performs nothing.
+        expect(boxes.get('radio : IpRadio')!.compartments).toEqual([]);
+    });
+
     it('deployment view: every module hosted, on three computers in two devices', async () => {
         const graph = extractDeploymentGraph(
-            await parseSet('deployment.sysml', 'implementation.sysml', 'physical.sysml')
+            await parseSet('deployment.sysml', 'implementation.sysml', 'physical.sysml', 'logical.sysml')
         );
         expect(graph.edges).toHaveLength(0);
 
@@ -188,7 +231,7 @@ describe('survey drone example model', () => {
     });
 
     it('process view: a survey mission, uploaded over the MAVLink mission protocol', async () => {
-        const sequence = extractSequenceModel(await parseSet('process.sysml', 'implementation.sysml'));
+        const sequence = extractSequenceModel(await parseSet('process.sysml', 'implementation.sysml', 'logical.sysml'));
         expect(sequence.lifelines).toHaveLength(7);
         // The operator is untyped in the model: a person, drawn as a stick figure.
         expect(sequence.lifelines.filter(l => l.actor).map(l => l.label)).toEqual(['operator']);
@@ -214,10 +257,10 @@ describe('survey drone example model', () => {
         const jobs: Array<[keyof typeof diagramTypes, string[]]> = [
             ['use-case', ['use-case.sysml']],
             ['logical', ['logical.sysml']],
-            ['implementation', ['implementation.sysml']],
-            ['physical', ['physical.sysml']],
-            ['deployment', ['deployment.sysml', 'implementation.sysml', 'physical.sysml']],
-            ['process', ['process.sysml', 'implementation.sysml']]
+            ['implementation', ['implementation.sysml', 'logical.sysml']],
+            ['physical', ['physical.sysml', 'logical.sysml']],
+            ['deployment', ['deployment.sysml', 'implementation.sysml', 'physical.sysml', 'logical.sysml']],
+            ['process', ['process.sysml', 'implementation.sysml', 'logical.sysml']]
         ];
         for (const [diagram, files] of jobs) {
             const type = diagramTypes[diagram];

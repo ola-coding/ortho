@@ -219,6 +219,32 @@ describe('SysML v2 conformance', () => {
         expect(await errorsOf(model('subject Machine; actor technician : Operator;'))).toEqual([]);
     });
 
+    it('performs an action through a chain that starts at a usage', async () => {
+        const model = (target: string) => `
+            package Functions {
+                action def Survey { action communicate { action streamVideo; } }
+                action survey : Survey;
+            }
+            package Software {
+                part def Streamer { port data; perform ${target}; }
+            }`;
+        expect(await errorsOf(model('Functions::survey.communicate.streamVideo'))).toEqual([]);
+        // The spec's own rule, and the pilot implementation's: a path into a
+        // definition's features is not a feature chain.
+        expect(await errorsOf(model('Functions::Survey::communicate::streamVideo'))).toEqual([
+            "'Functions::Survey::communicate::streamVideo' names a feature through its owner."
+                + ' Start at a usage and continue with dots.'
+        ]);
+    });
+
+    it('refuses to perform something that is not an action or a use case', async () => {
+        const errors = await errorsOf(`
+            package P {
+                part def Streamer { port data; perform data; }
+            }`);
+        expect(errors).toEqual(["'data' is not an action or a use case, so it cannot be performed."]);
+    });
+
     it('resolves a message payload to an attribute def', async () => {
         const text = (payload: string) => `
             package P {

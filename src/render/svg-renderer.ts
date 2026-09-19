@@ -1,5 +1,8 @@
 import type { LaidOutDiagram, LaidOutEdge, LaidOutNode } from '../layout/elk-layout.js';
 import { NODE_DEPTH, PORT_LABEL_FONT, PORT_SIZE } from '../layout/elk-layout.js';
+import {
+    BOX_HEADER_HEIGHT, COMPARTMENT_LINE_HEIGHT, COMPARTMENT_PADDING, COMPARTMENT_TITLE_HEIGHT
+} from '../model/graph.js';
 import { measureText } from './text-metrics.js';
 
 export const PAD_X = 24;
@@ -13,9 +16,8 @@ const STEREOTYPE_COLOR = '#555555';
 export const FONT = 'Arial, Helvetica, Segoe UI, sans-serif';
 
 // Must match the extractor's sizing constants.
-const HEADER_HEIGHT = 32;
-const LINE_HEIGHT = 15;
-const COMPARTMENT_PADDING = 8;
+const HEADER_HEIGHT = BOX_HEADER_HEIGHT;
+const LINE_HEIGHT = COMPARTMENT_LINE_HEIGHT;
 
 export function escapeXml(text: string): string {
     return text
@@ -170,11 +172,18 @@ function renderBoxNode(n: LaidOutNode): string {
     for (const compartment of n.compartments) {
         parts.push(`<line x1="${x}" y1="${compartmentTop}" x2="${x + n.width}" y2="${compartmentTop}"
           stroke="${STROKE}" stroke-width="1" />`);
+        let linesTop = compartmentTop;
+        if (compartment.title) {
+            parts.push(`<text x="${x + 8}" y="${compartmentTop + 11}"
+          font-size="9" fill="${STEREOTYPE_COLOR}">${escapeXml(compartment.title)}</text>`);
+            linesTop += COMPARTMENT_TITLE_HEIGHT;
+        }
         compartment.lines.forEach((line, i) => {
-            parts.push(`<text x="${x + 8}" y="${compartmentTop + 12 + i * LINE_HEIGHT}"
+            parts.push(`<text x="${x + 8}" y="${linesTop + 12 + i * LINE_HEIGHT}"
           font-size="11" fill="${TEXT_COLOR}">${escapeXml(line)}</text>`);
         });
-        compartmentTop += COMPARTMENT_PADDING + compartment.lines.length * LINE_HEIGHT;
+        compartmentTop += COMPARTMENT_PADDING + (compartment.title ? COMPARTMENT_TITLE_HEIGHT : 0)
+            + compartment.lines.length * LINE_HEIGHT;
     }
 
     for (const port of n.ports) {

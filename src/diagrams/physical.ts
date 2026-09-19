@@ -1,12 +1,12 @@
 import { AstUtils } from 'langium';
-import { isConnectionUsage, isPartDef, isPartUsage, isPortUsage } from '../generated/ast.js';
+import { isConnectionUsage, isPartDef, isPartUsage, isPerformUsage, isPortUsage } from '../generated/ast.js';
 import type {
     ConnectionUsage, ConnectorEnd, Model, Multiplicity, PartDef, PartUsage, PortUsage, UsageMember
 } from '../generated/ast.js';
-import type { DiagramGraph, GraphEdge, GraphNode } from '../model/graph.js';
+import type { Compartment, DiagramGraph, GraphEdge, GraphNode } from '../model/graph.js';
 import { qualifiedName } from '../model/graph.js';
 import { collectPackages } from '../model/packages.js';
-import { partLabel } from './connector-ends.js';
+import { boxSize, partLabel, performCompartments } from './connector-ends.js';
 import { measureText } from '../render/text-metrics.js';
 
 const HEADER_HEIGHT = 40;
@@ -58,21 +58,25 @@ function effectiveMembers<T extends UsageMember & { name?: string }>(
     return uniqueByName([...own, ...inherited]);
 }
 
-function partBox(id: string, name: string, ports: PortUsage[]): GraphNode {
+function partBox(id: string, name: string, ports: PortUsage[], performs: Compartment[] = []): GraphNode {
     return {
         id,
         shape: 'box',
         stereotype: '',
         name,
-        compartments: [],
+        compartments: performs,
         ports: ports.map(p => ({ id: `${id}#${p.name}`, label: p.name })),
-        width: Math.max(MIN_WIDTH, measureText(name, 12, 'bold') + 28),
-        height: HEADER_HEIGHT
+        ...boxSize(name, performs, MIN_WIDTH, HEADER_HEIGHT)
     };
 }
 
 function portsOf(type: PartDef | undefined, body: UsageMember[]): PortUsage[] {
     return uniqueByName([...body.filter(isPortUsage), ...(type ? effectiveMembers(type, isPortUsage) : [])]);
+}
+
+/** What a part performs: what its body says, plus what its type contributes. */
+function performsOf(type: PartDef | undefined, body: UsageMember[]): Compartment[] {
+    return performCompartments([...body, ...(type ? effectiveMembers(type, isPerformUsage) : [])]);
 }
 
 /**
@@ -86,7 +90,12 @@ function expand(owner: Instance, type: PartDef | undefined, body: UsageMember[],
         const partType = part.type?.ref;
         const id = `${owner.node!.id}.${part.name}`;
         const child: Instance = {
-            node: partBox(id, `${partLabel(part)}${multiplicityText(part.multiplicity)}`, portsOf(partType, part.members)),
+            node: partBox(
+                id,
+                `${partLabel(part)}${multiplicityText(part.multiplicity)}`,
+                portsOf(partType, part.members),
+                performsOf(partType, part.members)
+            ),
             usage: part,
             children: new Map()
         };
@@ -166,7 +175,7 @@ export function extractPhysicalGraph(model: Model): DiagramGraph {
             continue;
         }
         const root: Instance = {
-            node: partBox(qualifiedName(def), def.name, portsOf(def, [])),
+            node: partBox(qualifiedName(def), def.name, portsOf(def, []), performsOf(def, [])),
             children: new Map()
         };
         expand(root, def, [], new Set([def]), pending);
@@ -178,7 +187,12 @@ export function extractPhysicalGraph(model: Model): DiagramGraph {
         for (const usage of pkg.members.filter(isPartUsage)) {
             const type = usage.type?.ref;
             const root: Instance = {
-                node: partBox(qualifiedName(usage), `${partLabel(usage)}${multiplicityText(usage.multiplicity)}`, portsOf(type, usage.members)),
+                node: partBox(
+                    qualifiedName(usage),
+                    `${partLabel(usage)}${multiplicityText(usage.multiplicity)}`,
+                    portsOf(type, usage.members),
+                    performsOf(type, usage.members)
+                ),
                 usage,
                 children: new Map()
             };

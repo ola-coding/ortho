@@ -74,7 +74,7 @@ export function isActionMember(item: unknown): item is ActionMember {
     return reflection.isInstance(item, ActionMember);
 }
 
-export type Feature = AttributeUsage | InterfaceEnd | PartUsage | PortUsage | SubjectUsage;
+export type Feature = ActionUsage | AttributeUsage | InterfaceEnd | PartUsage | PortUsage | SubjectUsage | UseCaseUsage;
 
 export const Feature = 'Feature';
 
@@ -235,7 +235,7 @@ export function isConnectionUsage(item: unknown): item is ConnectionUsage {
 }
 
 export interface ConnectorEnd extends langium.AstNode {
-    readonly $container: AllocationUsage | ConnectionUsage | MessageUsage;
+    readonly $container: AllocationUsage | ConnectionUsage | MessageUsage | PerformUsage;
     readonly $type: 'ConnectorEnd';
     segments: Array<langium.Reference<Feature>>;
 }
@@ -385,7 +385,7 @@ export function isPartUsage(item: unknown): item is PartUsage {
 export interface PerformUsage extends langium.AstNode {
     readonly $container: PartDef | PartUsage;
     readonly $type: 'PerformUsage';
-    target: langium.Reference<UseCaseUsage>;
+    target: ConnectorEnd;
 }
 
 export const PerformUsage = 'PerformUsage';
@@ -552,12 +552,12 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
             case PartDef:
             case PortDef:
             case RequirementDef:
-            case UseCaseDef:
-            case UseCaseUsage: {
+            case UseCaseDef: {
                 return this.isSubtype(PackageMember, supertype);
             }
-            case ActionUsage: {
-                return this.isSubtype(ActionMember, supertype) || this.isSubtype(PackageMember, supertype) || this.isSubtype(UsageMember, supertype);
+            case ActionUsage:
+            case PartUsage: {
+                return this.isSubtype(ActionMember, supertype) || this.isSubtype(Feature, supertype) || this.isSubtype(PackageMember, supertype) || this.isSubtype(UsageMember, supertype);
             }
             case ActorUsage:
             case IncludeUsage: {
@@ -578,9 +578,6 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
             case MessageUsage: {
                 return this.isSubtype(ActionMember, supertype);
             }
-            case PartUsage: {
-                return this.isSubtype(ActionMember, supertype) || this.isSubtype(Feature, supertype) || this.isSubtype(PackageMember, supertype) || this.isSubtype(UsageMember, supertype);
-            }
             case PerformUsage: {
                 return this.isSubtype(UsageMember, supertype);
             }
@@ -589,6 +586,9 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
             }
             case SubjectUsage: {
                 return this.isSubtype(Feature, supertype) || this.isSubtype(RequirementMember, supertype) || this.isSubtype(UseCaseMember, supertype);
+            }
+            case UseCaseUsage: {
+                return this.isSubtype(Feature, supertype) || this.isSubtype(PackageMember, supertype);
             }
             default: {
                 return false;
@@ -614,8 +614,7 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
             case 'ConnectorEnd:segments': {
                 return Feature;
             }
-            case 'IncludeUsage:target':
-            case 'PerformUsage:target': {
+            case 'IncludeUsage:target': {
                 return UseCaseUsage;
             }
             case 'InterfaceEnd:type':

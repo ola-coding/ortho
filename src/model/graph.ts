@@ -3,7 +3,24 @@ import type { AstNode } from 'langium';
 export type NodeShape = 'box' | 'ellipse' | 'actor' | 'boundary' | 'package' | 'rounded' | 'node3d';
 
 export interface Compartment {
+    /** Drawn small and grey above the lines, as the spec labels a compartment. */
+    title?: string;
     lines: string[];
+}
+
+/** Box metrics shared by the renderer, the layouter and the extractors. */
+export const BOX_HEADER_HEIGHT = 32;
+export const COMPARTMENT_LINE_HEIGHT = 15;
+export const COMPARTMENT_TITLE_HEIGHT = 13;
+export const COMPARTMENT_PADDING = 8;
+
+/** How much height a box's compartments take below its header. */
+export function compartmentsHeight(compartments: Compartment[]): number {
+    return compartments.reduce(
+        (sum, c) => sum + COMPARTMENT_PADDING + (c.title ? COMPARTMENT_TITLE_HEIGHT : 0)
+            + c.lines.length * COMPARTMENT_LINE_HEIGHT,
+        0
+    );
 }
 
 export interface GraphPort {

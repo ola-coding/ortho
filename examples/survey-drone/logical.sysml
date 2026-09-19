@@ -53,4 +53,9 @@ package Functions {
             action recordFlightData;
         }
     }
+
+    // The survey itself. The tree above says what is done; this names one
+    // performance of it, so the parts that realize a function can point into
+    // the tree — a `perform` chain has to start at a usage.
+    action survey : PerformAerialSurvey;
 }

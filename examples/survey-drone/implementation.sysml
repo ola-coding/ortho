@@ -9,11 +9,19 @@
 // Which computer runs what is deployment.sysml's business, not this file's.
 package Software {
 
+    // The functions this software realizes, said on the module that realizes
+    // each one. Nothing here knows which computer runs it: that is deployment.
+    private import Functions::*;
+
     // Plans the survey and shows its progress.
     package Ground {
         private import Software::Middleware;
 
-        part def SurveyPlanner;
+        part def SurveyPlanner {
+            perform Functions::survey.plan.planMission;
+            perform Functions::survey.interactWithOperator.presentInformation;
+            perform Functions::survey.interactWithOperator.acceptOperatorInput;
+        }
     }
 
     // One Docker container per module. Modules never call each other: they
@@ -25,19 +33,33 @@ package Software {
         package Autonomy {
             private import Software::Onboard::Perception;
 
-            part def RoutePlanner;
-            part def ObstacleAvoidance;
+            part def RoutePlanner {
+            perform Functions::survey.plan.planRoute;
+        }
+            part def ObstacleAvoidance {
+            perform Functions::survey.guideNavigateAndControl.avoidObstacles;
+        }
         }
 
         package Perception {
-            part def VideoStreamer;
-            part def SensorFusion;
-            part def WorldModel;
+            part def VideoStreamer {
+            perform Functions::survey.communicate.streamVideo;
+        }
+            part def SensorFusion {
+            perform Functions::survey.perceive.fuseSensorData;
+        }
+            part def WorldModel {
+            perform Functions::survey.perceive.maintainWorldModel;
+        }
         }
 
         package Services {
-            part def Diagnostics;
-            part def DataLogger;
+            part def Diagnostics {
+            perform Functions::survey.superviseSystem.monitorHealth;
+        }
+            part def DataLogger {
+            perform Functions::survey.superviseSystem.recordFlightData;
+        }
         }
     }
 
@@ -47,7 +69,9 @@ package Software {
         // Carries every message between the containers, and to the tablet.
         part def ZenohRouter;
         // Turns the flight firmware's MAVLink into Zenoh topics, and back.
-        part def MavlinkBridge;
+        part def MavlinkBridge {
+            perform Functions::survey.communicate.exchangeTelemetry;
+        }
         // Video capture, encoding and streaming.
         part def GStreamer;
         // Encrypts everything that crosses the radio link.
@@ -68,11 +92,29 @@ package Software {
     package Flight {
         private import Software::FlightPlatform;
 
-        part def MissionExecutor;   // AP_Mission, AC_WPNav
-        part def StateEstimator;    // AP_AHRS, AP_NavEKF3
-        part def FlightControl;     // AC_AttitudeControl, AC_PosControl, AP_Motors
-        part def SensorDrivers;     // AP_InertialSensor, AP_GPS, AP_Compass, AP_Baro
-        part def MavlinkInterface;  // GCS_MAVLink
+        // AP_Mission, AC_WPNav
+        part def MissionExecutor {
+            perform Functions::survey.guideNavigateAndControl.guide;
+        }
+
+        // AP_AHRS, AP_NavEKF3
+        part def StateEstimator {
+            perform Functions::survey.guideNavigateAndControl.navigate;
+        }
+
+        // AC_AttitudeControl, AC_PosControl, AP_Motors
+        part def FlightControl {
+            perform Functions::survey.guideNavigateAndControl.control;
+        }
+
+        // AP_InertialSensor, AP_GPS, AP_Compass, AP_Baro. Drivers feed the
+        // functions above; they realize none of their own.
+        part def SensorDrivers;
+
+        // GCS_MAVLink
+        part def MavlinkInterface {
+            perform Functions::survey.communicate.exchangeTelemetry;
+        }
     }
 
     // The bottom of the firmware stack — the counterpart of LinuxPlatform, and

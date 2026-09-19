@@ -1,7 +1,8 @@
 import { AstUtils, DefaultScopeComputation, DefaultScopeProvider, EMPTY_SCOPE, MultiMap } from 'langium';
 import type { AstNode, AstNodeDescription, LangiumDocument, PrecomputedScopes, ReferenceInfo, Scope } from 'langium';
 import {
-    isAttributeUsage, isConnectorEnd, isInterfaceEnd, isPartDef, isPartUsage, isPortUsage, isSubjectUsage
+    isActionUsage, isAttributeUsage, isConnectorEnd, isInterfaceEnd, isPartDef, isPartUsage, isPortUsage,
+    isSubjectUsage, isUseCaseUsage
 } from '../generated/ast.js';
 import type { Feature, PartDef, PortDef } from '../generated/ast.js';
 import { qualifiedName } from '../model/graph.js';
@@ -131,6 +132,15 @@ function featureMembers(feature: Feature | undefined): AstNode[] {
     if (isSubjectUsage(feature)) {
         return feature.type?.ref ? partDefFeatures(feature.type.ref, new Set()) : [];
     }
+    // An action's own nested actions, plus those its definition contributes —
+    // how a `perform` chain walks down a function tree.
+    if (isActionUsage(feature) || isUseCaseUsage(feature)) {
+        const members: AstNode[] = feature.members.filter(isNamedFeature);
+        if (isActionUsage(feature) && feature.type?.ref) {
+            members.push(...feature.type.ref.members.filter(isNamedFeature));
+        }
+        return members;
+    }
     return [];
 }
 
@@ -163,5 +173,6 @@ function portDefFeatures(def: PortDef, seen: Set<PortDef>): AstNode[] {
 }
 
 function isNamedFeature(node: AstNode): boolean {
-    return isPartUsage(node) || isPortUsage(node) || isAttributeUsage(node);
+    return isPartUsage(node) || isPortUsage(node) || isAttributeUsage(node)
+        || isActionUsage(node) || isUseCaseUsage(node);
 }

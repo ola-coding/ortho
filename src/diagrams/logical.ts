@@ -34,6 +34,11 @@ function childFunctions(fn: Function_): ActionUsage[] {
  * Messages are deliberately ignored. A scenario file also nests actions, but
  * its content belongs to the Process view; keeping one file per view is what
  * separates the two.
+ *
+ * A typed action usage in a package is one use of a tree, not a tree of its
+ * own: `action survey : PerformAerialSurvey` is what a realizing part's
+ * `perform` chain starts from, and the tree it names is already drawn from
+ * its definition. Drawing it too would double the diagram.
  */
 export function extractLogicalGraph(model: Model): DiagramGraph {
     const nodes: GraphNode[] = [];
@@ -62,7 +67,7 @@ export function extractLogicalGraph(model: Model): DiagramGraph {
 
     for (const pkg of collectPackages(model)) {
         for (const member of pkg.members) {
-            if (isActionDef(member) || isActionUsage(member)) {
+            if (isActionDef(member) || (isActionUsage(member) && !member.type)) {
                 visit(member);
             }
         }

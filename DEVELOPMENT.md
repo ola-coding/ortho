@@ -177,6 +177,15 @@ the deliberate alternative to a headless browser or font-file parsing.
   branch at its own point on the parent, which read as wiring. Branches are
   `decomposition` edges with no arrowhead — direction is carried by the
   layout — and a test asserts no marker reaches that SVG.
+- **Realization is a compartment, not an edge.** A part that `perform`s a
+  function lists it in the spec's *perform actions* compartment
+  (§7.17.6) — on the implementation view for a module, on the physical view
+  for a device, and on both where a program and a device realize the same
+  function. An edge would need the function and the component on one diagram,
+  which is a seventh view; a compartment needs only the box that is already
+  there. A part usage shows what its definition performs as well as its own,
+  and `paddingOf` in `src/layout/elk-layout.ts` adds the compartment's height
+  to a container's top padding so nested parts start below it.
 - **Label placement.** Port labels, the interface labels on physical-view
   wires, «include» on the use case view and «import» on the implementation
   view are handed to ELK as real labels, so ELK reserves room for them, puts
@@ -209,14 +218,17 @@ its source. The SVG `<title>` holds the combined string. The CLI's
 ### One model file per view
 
 There is no `--scope` flag. Each view is rendered from the file that holds it,
-and all inputs are linked as one workspace. Four of the six views are
-self-contained; the other two are rendered with companions because their
+and all inputs are linked as one workspace. Use case and logical are
+self-contained; the other four are rendered with companions because their
 content is a relation between files:
 
+- **implementation** and **physical** need `logical.sysml`, since their parts
+  name the functions they `perform`.
 - **deployment** needs `implementation.sysml` and `physical.sysml`, since it
-  declares nothing but the mapping between them.
+  declares nothing but the mapping between them, and `logical.sysml` behind
+  them.
 - **process** needs `implementation.sysml`, since its lifelines are typed by
-  the software modules.
+  the software modules, and `logical.sysml` behind it.
 
 This also keeps two extractors apart that would otherwise collide: a scenario
 file nests actions just as a capability tree does, so `logical.ts` would happily
@@ -241,9 +253,12 @@ These are choices, not bugs:
   requirement is often what proposes a technical solution on the
   implementation or physical view, so a model that carries requirements must
   keep loading.
-- **Realization cannot be written.** SysML v2 writes it as `perform` inside
-  the part that realizes a function (§7.17.6), and ortho's `perform` takes use
-  cases only so far. See the backlog.
+- **Realization is written with `perform`, not `allocate`.** The spec defines
+  allocation as a connection whose target realizes the source's intent
+  (§7.15), and its own examples allocate a logical *component* to a physical
+  one. ortho's logical view holds no components, so the relation runs from a
+  function straight to what does it, which is what `perform` states (§7.17.6).
+  `allocate` stays where both ends are components: the deployment view.
 - **Attribute types are plain qualified names**, not cross-references —
   there is no standard library to resolve `Real`/`String` against yet. The
   examples import `ScalarValues::*` so that tools which have one resolve them.
@@ -319,14 +334,17 @@ use-case.sysml   logical.sysml   implementation.sysml
 The load-bearing rule is that **a view file names nothing from another view**:
 
 ```text
-use-case, logical, implementation, physical  →  (nothing)
+use-case, logical                            →  (nothing)
+implementation, physical                     →  logical
 deployment                                   →  implementation, physical
 process                                      →  implementation
 ```
 
 This works because the six views own distinct content rather than slicing
-shared content. It is what lets four of the six parse and render entirely on
-their own — a test asserts exactly that for both examples.
+shared content. The dependencies all point the same way, towards what the
+system does: a component names the functions it realizes, and no function
+ever names a component. A test asserts that use case and logical still parse
+and render entirely on their own, for both examples.
 
 Three conventions produce that shape, and the example tests enforce all three:
 
@@ -337,7 +355,8 @@ Three conventions produce that shape, and the example tests enforce all three:
 - **`implementation.sysml` and `physical.sysml` never reference each other.**
   Software knows nothing of boards and hardware knows nothing of programs. The
   mapping between them exists only in `deployment.sysml`, which is why that
-  file declares nothing of its own.
+  file declares nothing of its own. Both may name `logical.sysml`, because
+  both realize functions.
 - **Both ends of an allocation are named once.** `implementation.sysml`
   declares a single `part sw { ... }` tree of deployable parts, and
   `physical.sysml` ends with one usage of the whole product,
@@ -393,32 +412,20 @@ Possible next steps, in priority order:
   declared before its subject. The grammar now requires what it can, a
   validator checks the rest, and tests keep the page, the grammar and the
   examples in step. Requirements stay, parsed but not drawn.
-- [ ] **Realization through `perform`.** A part that realizes a function says
-  so in its own body, which is the SysML v2 form for a performer whose action
-  is defined elsewhere, "perhaps by an action usage in a functionally
-  decomposed action tree" (§7.17.6). The grammar already accepts `perform` in
-  part bodies, but only for use cases; widening its target to actions is most
-  of the language change. Each part's box on the implementation and physical
-  views then gains the spec's *perform actions* compartment, so realization is
-  drawn on the six views rather than on a seventh. This replaces the earlier
-  plan of adding `ActionUsage` to the `Feature` union for `allocate`, which
-  could only be drawn on a seventh view or from a mapping file of its own.
-  Three things the spec alignment settled first:
-  - The target has to start at a usage, so `logical.sysml` ends with one usage
-    of its tree, `action survey : PerformAerialSurvey;`, exactly as
-    `implementation.sysml` ends with `part sw` and `physical.sysml` with the
-    product. A part then writes
-    `perform Functions::survey.communicate.streamVideo;`. Confirm it against
-    the OMG pilot implementation before building on it.
-  - The logical view must keep drawing one tree: that usage names the same
-    functions the definition already contributes.
-  - `src/parser/sysml-validator.ts` should check `perform` targets the way it
-    checks connector ends.
-  `logical.sysml` still names no component, and software and hardware still
-  never name each other, but implementation and physical will name functions:
-  they render with `logical.sysml` as a companion, leaving use case and
-  logical as the only self-contained views, and VIEWS.md's "drawn on no view"
-  changes with it.
+- [x] **Realization through `perform`.** A component now states the functions
+  it realizes in its own body, and the implementation and physical views draw
+  them in the spec's *perform actions* compartment (§7.17.6), so the relation
+  between the logical view and the two that realize it needs no seventh view.
+  The form was confirmed against the OMG pilot implementation first: a chain
+  from a usage, `perform Functions::survey.communicate.streamVideo`, is valid,
+  while a `::` path into the definition is not, so each logical file ends with
+  one usage of its tree. `perform` now takes a feature chain where it took a
+  bare use case name, and the validator checks that what is performed is an
+  action or a use case. Implementation and physical render with
+  `logical.sysml` alongside, leaving use case and logical the only
+  self-contained views. In the coffee machine every leaf function is realized
+  but one — nothing stores milk — and that gap is visible on the diagrams and
+  asserted by a test.
 - [ ] **Dark glass renderer** - Add a new outputformat renderer. My suggestion is a .PNG with some transparency. Make it slightly glossy and cool for input in a Powerpoint with dark gray background.
 - [ ] **Prepare for NPX** - Let us publish this cool tool in the right place such that it will be super easy to get started withou downloading the full repo. Before we do that I would like to see a proper cleaning of package.json README and other files that will be needed for that action.
 - [ ] **Imports that make names visible.** An import currently changes

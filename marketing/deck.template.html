@@ -586,17 +586,27 @@ action def PerformAerialSurvey {
 <pre class="code">
 package Software {
 
-    // ArduPilot-style firmware. Each comment names
-    // the libraries the module stands for.
+    // Each module says which function it realizes.
     package Flight {
         private import Software::FlightPlatform;
 
-        part def MissionExecutor;  // AP_Mission
-        part def StateEstimator;   // AP_NavEKF3
-        part def FlightControl;    // AP_Motors
-        part def MavlinkInterface; // GCS_MAVLink
+        // AP_Mission
+        part def MissionExecutor {
+            perform survey.guideNavigateAndControl.guide;
+        }
+
+        // AP_Motors
+        part def FlightControl {
+            perform survey.guideNavigateAndControl.control;
+        }
+
+        // GCS_MAVLink
+        part def MavlinkInterface {
+            perform survey.communicate.exchangeTelemetry;
+        }
     }
 
+    // A platform realizes no function of its own.
     package FlightPlatform {
         part def HardwareAbstraction;  // AP_HAL
         part def RealTimeKernel;       // ChibiOS
@@ -639,6 +649,11 @@ package Software {
           <div class="code-mount">
             <div class="filename">examples/survey-drone/physical.sysml</div>
 <pre class="code">
+part def BrushlessMotor {
+    perform survey.operateVehicle.produceThrust;
+    ...
+}
+
 part def SurveyDrone {
     port rfLink : RfPort;
 

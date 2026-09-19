@@ -143,10 +143,12 @@ package Functions {
 |---|---|
 | `action def Name { ... }` in a package | the root of a tree |
 | `action name;` or `action name { ... }` nested in another | a box under its parent. Nesting is the decomposition. |
+| `action name : Def;` in a package | nothing. It is one use of a tree already drawn, and what a realizing part's `perform` points into. |
 
 Nothing else in the file is drawn. Keep components out of this file: a
 capability tree that names what realizes a function has stopped being
-medium-independent.
+medium-independent. The file ends with one usage of its tree, as the example
+above does, because a `perform` chain has to start at a usage.
 
 ## Implementation view
 
@@ -156,19 +158,33 @@ The software, as packages of modules and the dependencies between packages
 ```sysml
 package Software {
     package Control {
-        part def BrewController;
+        part def BrewController {
+            perform Functions::beverage.controlMachine.interlockBrewGroup;
+        }
     }
 
     package Application {
         private import Software::Control::*;
 
-        part def RecipeEngine;
+        part def RecipeEngine {
+            perform Functions::beverage.controlMachine.sequenceRecipe;
+        }
     }
 
     part sw {
         part recipes : Application::RecipeEngine;
         part brew : Control::BrewController;
     }
+}
+
+package Functions {
+    action def MakeBeverage {
+        action controlMachine {
+            action sequenceRecipe;
+            action interlockBrewGroup;
+        }
+    }
+    action beverage : MakeBeverage;
 }
 ```
 
@@ -178,6 +194,11 @@ package Software {
 | `part def Name;` in a package | a module inside its package |
 | `private import Pkg::*;` (or `Pkg::Element`) | an «import» dependency from the importing package to `Pkg` |
 | `part sw { part x : Module; ... }` in a package | nothing. It is the tree of deployable parts the deployment view allocates from. |
+| `perform Functions::use.branch.leaf;` in a module | a *perform actions* compartment in the module's box, listing the functions it realizes |
+| a package holding no part at all, such as the function tree | nothing. It is a companion file, not software. |
+
+Because the modules name functions, this view is rendered with
+`logical.sysml` alongside.
 
 ## Physical view
 
@@ -223,8 +244,11 @@ package Hardware {
 | `connection : Interface connect a.p to b.q;` (optionally named) | the same line, labelled with the interface |
 | `interface def` with its `end`s, `port def` | nothing of their own: they type ports and connections |
 | `attribute name : Type = value;` | nothing. Values are specification, not topology. |
+| `perform Functions::use.branch.leaf;` in a part or its definition | a *perform actions* compartment in that part's box |
 
-Parts and connections inherited through `:>` are drawn as if declared.
+Parts and connections inherited through `:>` are drawn as if declared, and so
+is what a part's definition performs. Because the parts name functions, this
+view is rendered with `logical.sysml` alongside.
 
 ## Deployment view
 
@@ -299,6 +323,36 @@ package Scenario {
 | `attribute def Payload;` | nothing: it types a payload |
 | `then` before a message | nothing more. It states the order the file already gives. |
 
+## Realization
+
+A component says which functions it realizes, in its own body. That is
+SysML v2's `perform` (§7.17.6): the action is "defined in a different context
+than that of the performer", namely the capability tree in `logical.sysml`.
+
+```sysml
+package Functions {
+    action def MakeBeverage {
+        action prepareWater { action heatWater; }
+    }
+    action beverage : MakeBeverage;
+}
+
+package Hardware {
+    part def Thermoblock {
+        perform Functions::beverage.prepareWater.heatWater;
+    }
+}
+```
+
+- It is written on the component, never on the function: the logical view
+  stays free of anything that realizes it.
+- Software writes it in `implementation.sysml`, hardware in `physical.sysml`,
+  and both are then rendered with `logical.sysml` alongside.
+- It is many to many. A function may be realized by a program and a device
+  together, and a part may realize several functions.
+- A function nothing performs is a gap, and a part that performs nothing is
+  worth a question. Both are visible: the compartment is simply absent.
+
 ## Parsed, not drawn
 
 These parse, resolve and must be valid, but no view draws them.
@@ -328,10 +382,10 @@ package Requirements {
 `satisfy` names a requirement usage and the part usage that satisfies it,
 never a definition.
 
-**`perform`** (§7.17.6) inside a part names a use case usage the part
-performs. Performing *functions* is how realization will be written: a part
-that `perform`s an action from the logical view, drawn as a *perform actions*
-compartment. That is on the backlog; today `perform` takes use cases only.
+**A `perform` that names a use case** (§7.17.6). A part performing a *function*
+is realization, and the implementation and physical views draw it. A part
+performing a *use case* is the same keyword put to a different use, and no
+view draws that.
 
 ```sysml
 package Operations {
@@ -368,7 +422,6 @@ Common SysML v2 that ortho does not parse, so a model using it fails to load:
 | `enum def` | 7.8 | |
 | `calc`, `constraint` | 7.19–7.20 | |
 | `view def`, `viewpoint` | 7.26 | one model file per view (see DEVELOPMENT.md) |
-| `perform action` (realization) | 7.17.6 | not yet; see the backlog |
 | `ref`, `abstract`, `redefines`/`:>>`, `subsets` | 7.6 | |
 | units on values, `100 [kg]` | 7.7 | put the unit in the name, `mass_kg` |
 | `doc`, `comment` elements | 7.4 | plain `//` and `/* */` comments |
@@ -401,7 +454,7 @@ and `grammar/sysml.langium` in step.
 | `of` | 7.16 | message payloads |
 | `package` | 7.5 | every file |
 | `part` | 7.11 | physical, implementation, deployment, process |
-| `perform` | 7.17.6 | parsed, not drawn |
+| `perform` | 7.17.6 | realization, on the implementation and physical views |
 | `port` | 7.12 | physical |
 | `private` | 7.5.3 | imports |
 | `protected` | 7.5.3 | imports |

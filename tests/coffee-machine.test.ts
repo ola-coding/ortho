@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
 import { parseSysmlFiles } from '../src/parser/parse.js';
 import type { Model } from '../src/generated/ast.js';
+import type { GraphNode } from '../src/model/graph.js';
 import { extractUseCaseGraph } from '../src/diagrams/use-case.js';
 import { extractLogicalGraph } from '../src/diagrams/logical.js';
 import { extractImplementationGraph } from '../src/diagrams/implementation.js';
@@ -20,8 +21,13 @@ const ALL = [
     'physical.sysml', 'deployment.sysml', 'process.sysml'
 ];
 
-/** The four views whose file declares everything it draws. */
-const SELF_CONTAINED = ['use-case.sysml', 'logical.sysml', 'implementation.sysml', 'physical.sysml'];
+/** The two views whose file declares everything it draws. */
+const SELF_CONTAINED = ['use-case.sysml', 'logical.sysml'];
+
+/** Every box, nested ones included. */
+function allNodes(nodes: GraphNode[]): GraphNode[] {
+    return nodes.flatMap(n => [n, ...allNodes(n.children ?? [])]);
+}
 
 async function parseSet(...files: string[]): Promise<Model> {
     const services = createSysmlServices();
@@ -81,7 +87,7 @@ describe('coffee machine example model', () => {
     });
 
     it('implementation view: the application layer depends on control, never the reverse', async () => {
-        const graph = extractImplementationGraph(await parseSet('implementation.sysml'));
+        const graph = extractImplementationGraph(await parseSet('implementation.sysml', 'logical.sysml'));
         const imports = graph.edges.map(e => `${e.sourceId} -> ${e.targetId}`);
         expect(imports).toEqual(['Software::Application -> Software::Control']);
 
@@ -97,7 +103,7 @@ describe('coffee machine example model', () => {
     });
 
     it('physical view: the machine as nested parts, looms named by their interface', async () => {
-        const graph = extractPhysicalGraph(await parseSet('physical.sysml'));
+        const graph = extractPhysicalGraph(await parseSet('physical.sysml', 'logical.sysml'));
         expect(graph.nodes.map(n => n.name)).toEqual(['machine : CoffeeMachine']);
         const names = graph.nodes[0].children!.map(n => n.name);
         expect(names).toHaveLength(10);
@@ -109,9 +115,32 @@ describe('coffee machine example model', () => {
         expect(graph.edges.filter(e => e.kind === 'connection' && e.label === 'ControlLink')).toHaveLength(6);
     });
 
+    it('realization: every function is performed by something, except storing milk', async () => {
+        const logical = extractLogicalGraph(await parseSet('logical.sysml'));
+        const parents = new Set(logical.edges.map(e => e.sourceId));
+        const leaves = logical.nodes.filter(n => !parents.has(n.id)).map(n => n.name);
+
+        const software = extractImplementationGraph(await parseSet('implementation.sysml', 'logical.sysml'));
+        const hardware = extractPhysicalGraph(await parseSet('physical.sysml', 'logical.sysml'));
+        const performed = new Set(
+            [...allNodes(software.nodes), ...allNodes(hardware.nodes)]
+                .flatMap(n => n.compartments.flatMap(c => c.lines))
+        );
+
+        // The machine has no milk tank, so storing milk is a function nothing
+        // realizes — which is the kind of hole this relation exists to show.
+        expect(leaves.filter(leaf => !performed.has(leaf))).toEqual(['storeMilk']);
+        // Frothing it is realized twice over, by the wand and by the program
+        // that drives the wand: realization is many to many.
+        const frothers = [...allNodes(software.nodes), ...allNodes(hardware.nodes)]
+            .filter(n => n.compartments.some(c => c.lines.includes('frothMilk')))
+            .map(n => n.name);
+        expect(frothers.sort()).toEqual(['MilkController', 'wand : SteamWand']);
+    });
+
     it('deployment view: five programs on two hosts, inside the machine', async () => {
         const graph = extractDeploymentGraph(
-            await parseSet('deployment.sysml', 'implementation.sysml', 'physical.sysml')
+            await parseSet('deployment.sysml', 'implementation.sysml', 'physical.sysml', 'logical.sysml')
         );
         expect(graph.edges).toHaveLength(0);
         // Both hosts are fitted in the machine, so they share its frame.
@@ -128,7 +157,7 @@ describe('coffee machine example model', () => {
     });
 
     it('process view: one press produces a cappuccino', async () => {
-        const sequence = extractSequenceModel(await parseSet('process.sysml', 'implementation.sysml'));
+        const sequence = extractSequenceModel(await parseSet('process.sysml', 'implementation.sysml', 'logical.sysml'));
         expect(sequence.lifelines.map(l => l.label)).toEqual([
             'user',
             'ui : UiApp',
@@ -147,10 +176,10 @@ describe('coffee machine example model', () => {
         const jobs: Array<[keyof typeof diagramTypes, string[]]> = [
             ['use-case', ['use-case.sysml']],
             ['logical', ['logical.sysml']],
-            ['implementation', ['implementation.sysml']],
-            ['physical', ['physical.sysml']],
-            ['deployment', ['deployment.sysml', 'implementation.sysml', 'physical.sysml']],
-            ['process', ['process.sysml', 'implementation.sysml']]
+            ['implementation', ['implementation.sysml', 'logical.sysml']],
+            ['physical', ['physical.sysml', 'logical.sysml']],
+            ['deployment', ['deployment.sysml', 'implementation.sysml', 'physical.sysml', 'logical.sysml']],
+            ['process', ['process.sysml', 'implementation.sysml', 'logical.sysml']]
         ];
         for (const [diagram, files] of jobs) {
             const type = diagramTypes[diagram];

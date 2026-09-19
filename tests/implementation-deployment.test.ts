@@ -41,12 +41,13 @@ describe('implementation diagram extraction', () => {
         expect(graph.nodes).toHaveLength(1);
         const root = graph.nodes[0];
         expect(root.shape).toBe('package');
+        // Requirements holds no module, so it is not software and not drawn;
+        // the import into it goes with it.
         expect(root.children!.filter(c => c.shape === 'package').map(c => c.name).sort())
-            .toEqual(['Logical', 'Physical', 'Requirements', 'Software']);
+            .toEqual(['Logical', 'Physical', 'Software']);
 
         const imports = graph.edges.map(e => `${e.sourceId} -> ${e.targetId}`).sort();
         expect(imports).toEqual([
-            'DroneSystem::Logical -> DroneSystem::Requirements',
             'DroneSystem::Physical -> DroneSystem::Logical',
             'DroneSystem::Software -> DroneSystem::Logical',
             'DroneSystem::Software -> DroneSystem::Physical'

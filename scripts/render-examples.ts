@@ -13,23 +13,28 @@ interface Job {
 }
 
 /**
- * One model file per view. Four of the six stand alone; deployment is nothing
- * but the mapping between the other two, and the process view's lifelines are
- * typed by the software modules, so both are rendered with their companions.
+ * One model file per view. Use case and logical stand alone; the other four
+ * are rendered with their companions, because their content is a relation
+ * between files: implementation and physical name the functions their parts
+ * perform, deployment is nothing but the mapping between those two, and the
+ * process view's lifelines are typed by the software modules.
  */
 function standardJobs(): Job[] {
     return [
         { out: 'use-case-view.svg', diagram: 'use-case', files: ['use-case.sysml'] },
         { out: 'logical-view.svg', diagram: 'logical', files: ['logical.sysml'] },
-        { out: 'implementation-view.svg', diagram: 'implementation', files: ['implementation.sysml'] },
-        { out: 'physical-view.svg', diagram: 'physical', files: ['physical.sysml'] },
+        {
+            out: 'implementation-view.svg', diagram: 'implementation',
+            files: ['implementation.sysml', 'logical.sysml']
+        },
+        { out: 'physical-view.svg', diagram: 'physical', files: ['physical.sysml', 'logical.sysml'] },
         {
             out: 'deployment-view.svg', diagram: 'deployment',
-            files: ['deployment.sysml', 'implementation.sysml', 'physical.sysml']
+            files: ['deployment.sysml', 'implementation.sysml', 'physical.sysml', 'logical.sysml']
         },
         {
             out: 'process-view.svg', diagram: 'process',
-            files: ['process.sysml', 'implementation.sysml']
+            files: ['process.sysml', 'implementation.sysml', 'logical.sysml']
         }
     ];
 }

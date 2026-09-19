@@ -1,21 +1,33 @@
-import { isPackageDecl, isPartDef } from '../generated/ast.js';
+import { isPackageDecl, isPartDef, isPartUsage } from '../generated/ast.js';
 import type { Model, PackageDecl, PartDef } from '../generated/ast.js';
 import type { DiagramGraph, GraphEdge, GraphNode } from '../model/graph.js';
 import { qualifiedName } from '../model/graph.js';
+import { boxSize, performCompartments } from './connector-ends.js';
 import { collectPackages } from '../model/packages.js';
 import { measureText } from '../render/text-metrics.js';
 
 function moduleNode(def: PartDef): GraphNode {
+    const compartments = performCompartments(def.members);
     return {
         id: qualifiedName(def),
         shape: 'box',
         stereotype: '',
         name: def.name,
-        compartments: [],
+        compartments,
         ports: [],
-        width: Math.max(120, measureText(def.name, 12, 'bold') + 28),
-        height: 40
+        ...boxSize(def.name, compartments, 120, 40)
     };
+}
+
+/**
+ * A package this view draws: one holding something part-like, a module or a
+ * deployable part, at any depth. The view is rendered with `logical.sysml`
+ * alongside, because the modules name the functions they perform, and a
+ * package of functions — or of requirements — is not software.
+ */
+function holdsParts(pkg: PackageDecl): boolean {
+    return pkg.members.some(member =>
+        isPartDef(member) || isPartUsage(member) || (isPackageDecl(member) && holdsParts(member)));
 }
 
 /**
@@ -27,7 +39,7 @@ function moduleNode(def: PartDef): GraphNode {
 function packageNode(pkg: PackageDecl): GraphNode {
     const children: GraphNode[] = [];
     for (const member of pkg.members) {
-        if (isPackageDecl(member)) {
+        if (isPackageDecl(member) && holdsParts(member)) {
             children.push(packageNode(member));
         } else if (isPartDef(member)) {
             children.push(moduleNode(member));
@@ -75,9 +87,13 @@ function resolveImportTarget(importer: PackageDecl, path: string, packageIds: Se
 }
 
 export function extractImplementationGraph(model: Model): DiagramGraph {
-    const nodes = model.packages.map(packageNode);
+    const drawn = model.packages.filter(holdsParts);
+    const nodes = drawn.map(packageNode);
 
-    const allPackages = collectPackages(model);
+    // Imports are drawn between the packages on this view; one reaching
+    // outside it, such as a module's import of the function tree, or a
+    // package of requirements, is not.
+    const allPackages = collectPackages(model).filter(holdsParts);
     const packageIds = new Set(allPackages.map(qualifiedName));
 
     const edges: GraphEdge[] = [];

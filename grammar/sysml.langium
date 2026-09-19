@@ -108,13 +108,17 @@ UseCaseMember:
 ActorUsage:
     'actor' name=ID (':' type=[PartDef:QualifiedName])? ';';
 
-// Both name a use case usage, never a definition. `include use case x` is
-// spec notation; `perform` takes the bare name only.
+// `include use case x` is spec notation and names a use case usage, never a
+// definition.
 IncludeUsage:
     'include' ('use' 'case')? target=[UseCaseUsage:QualifiedName] ';';
 
+// What the owning part carries out: an action of the function tree, or a use
+// case. The target is a feature chain like any other, so it starts at a usage
+// — `perform Functions::survey.communicate.streamVideo` — which is what the
+// spec requires (§7.17.6).
 PerformUsage:
-    'perform' target=[UseCaseUsage:QualifiedName] ';';
+    'perform' target=ConnectorEnd ';';
 
 // Only the usage form of allocation exists; `allocation def` is not supported.
 AllocationUsage:
@@ -137,7 +141,7 @@ MessageUsage:
     (then?='then')? 'message' (name=ID)? ('of' payload=[AttributeDef:QualifiedName])?
     'from' source=ConnectorEnd 'to' target=ConnectorEnd ';';
 
-type Feature = PartUsage | PortUsage | AttributeUsage | InterfaceEnd | SubjectUsage;
+type Feature = PartUsage | PortUsage | AttributeUsage | InterfaceEnd | SubjectUsage | ActionUsage | UseCaseUsage;
 
 QualifiedName returns string:
     ID ('::' ID)*;

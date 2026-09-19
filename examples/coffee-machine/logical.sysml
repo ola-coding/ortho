@@ -40,4 +40,9 @@ package Functions {
             action interlockBrewGroup;
         }
     }
+
+    // One beverage being made. The tree above says what is done; the parts
+    // that realize a function point into this usage, because a `perform`
+    // chain has to start at one.
+    action beverage : MakeBeverage;
 }

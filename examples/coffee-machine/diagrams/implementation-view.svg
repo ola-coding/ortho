@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="650.02" height="438"
-     viewBox="0 0 650.02 438" font-family="Arial, Helvetica, Segoe UI, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="650.02" height="509"
+     viewBox="0 0 650.02 509" font-family="Arial, Helvetica, Segoe UI, sans-serif">
   <title>Implementation view — Coffee Machine (generated from examples/coffee-machine/implementation.sysml)</title>
   <defs>
     <marker id="triangle" markerWidth="14" markerHeight="12" refX="12" refY="5"
@@ -15,50 +15,82 @@
       <path d="M0,0 L10,5 L0,10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
     </marker>
   </defs>
-  <rect x="0" y="0" width="650.02" height="438" fill="white" />
-  <rect x="8" y="8" width="634.02" height="422" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+  <rect x="0" y="0" width="650.02" height="509" fill="white" />
+  <rect x="8" y="8" width="634.02" height="493" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
   <path d="M8,8 L8,30 L228.202,30 L238.202,21 L238.202,8 Z"
         fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
   <text x="16" y="23" font-size="11" font-weight="600" fill="#1a1a1a">Implementation view — Coffee Machine</text>
-  <text x="636.02" y="424" text-anchor="end" font-size="9" fill="#8a8a86">examples/coffee-machine/implementation.sysml</text>
+  <text x="636.02" y="495" text-anchor="end" font-size="9" fill="#8a8a86">examples/coffee-machine/implementation.sysml</text>
   
     <g><rect x="36" y="60" width="66.453" height="12"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="36" y="72" width="578.02" height="330"
+      <rect x="36" y="72" width="578.02" height="401"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
       <text x="46" y="87" font-size="11" font-weight="600" fill="#1a1a1a">Software</text></g>
-    <g><rect x="61" y="267" width="59.105" height="12"
+    <g><rect x="61" y="295" width="59.105" height="12"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="61" y="279" width="528.02" height="98"
+      <rect x="61" y="307" width="528.02" height="141"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="71" y="294" font-size="11" font-weight="600" fill="#1a1a1a">Control</text></g>
-    <g><rect x="86" y="312" width="120" height="40"
+      <text x="71" y="322" font-size="11" font-weight="600" fill="#1a1a1a">Control</text></g>
+    <g><rect x="86" y="340" width="120" height="83"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="146" y="333" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">BrewController</text></g>
-    <g><rect x="246" y="312" width="158.02" height="40"
+      <text x="146" y="361" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">BrewController</text>
+      <line x1="86" y1="372" x2="206" y2="372"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="94" y="383"
+          font-size="9" fill="#555555">perform actions</text>
+      <text x="94" y="397"
+          font-size="11" fill="#1a1a1a">doseGrounds</text>
+      <text x="94" y="412"
+          font-size="11" fill="#1a1a1a">interlockBrewGroup</text></g>
+    <g><rect x="246" y="347.5" width="158.02" height="68"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="325.01" y="333" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">TemperatureController</text></g>
-    <g><rect x="444.02" y="312" width="120" height="40"
+      <text x="325.01" y="368.5" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">TemperatureController</text>
+      <line x1="246" y1="379.5" x2="404.02" y2="379.5"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="254" y="390.5"
+          font-size="9" fill="#555555">perform actions</text>
+      <text x="254" y="404.5"
+          font-size="11" fill="#1a1a1a">regulateTemperature</text></g>
+    <g><rect x="444.02" y="347.5" width="120" height="68"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="504.02" y="333" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">MilkController</text></g>
+      <text x="504.02" y="368.5" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">MilkController</text>
+      <line x1="444.02" y1="379.5" x2="564.02" y2="379.5"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="452.02" y="390.5"
+          font-size="9" fill="#555555">perform actions</text>
+      <text x="452.02" y="404.5"
+          font-size="11" fill="#1a1a1a">frothMilk</text></g>
     <g><rect x="160.01" y="105" width="79.89500000000001" height="12"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="160.01" y="117" width="330" height="98"
+      <rect x="160.01" y="117" width="330" height="126"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
       <text x="170.01" y="132" font-size="11" font-weight="600" fill="#1a1a1a">Application</text></g>
-    <g><rect x="185.01" y="150" width="120" height="40"
+    <g><rect x="185.01" y="150" width="120" height="68"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
       <text x="245.01" y="171" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">RecipeEngine</text></g>
-    <g><rect x="345.01" y="150" width="120" height="40"
+          font-size="12" font-weight="600" fill="#1a1a1a">RecipeEngine</text>
+      <line x1="185.01" y1="182" x2="305.01" y2="182"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="193.01" y="193"
+          font-size="9" fill="#555555">perform actions</text>
+      <text x="193.01" y="207"
+          font-size="11" fill="#1a1a1a">sequenceRecipe</text></g>
+    <g><rect x="345.01" y="150" width="120" height="68"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
       <text x="405.01" y="171" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">UiApp</text></g>
+          font-size="12" font-weight="600" fill="#1a1a1a">UiApp</text>
+      <line x1="345.01" y1="182" x2="465.01" y2="182"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="353.01" y="193"
+          font-size="9" fill="#555555">perform actions</text>
+      <text x="353.01" y="207"
+          font-size="11" fill="#1a1a1a">selectBeverage</text></g>
   
-    <polyline points="325.01,215 325.01,267" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
-    <text x="303.505" y="244" text-anchor="middle" font-size="9"
+    <polyline points="325.01,243 325.01,295" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="303.505" y="272" text-anchor="middle" font-size="9"
           fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;import&#187;</text>
 </svg>

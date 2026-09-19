@@ -1,6 +1,8 @@
 import type { AstNode, ValidationAcceptor, ValidationChecks } from 'langium';
-import { isActorUsage, isPackageDecl, isSubjectUsage } from '../generated/ast.js';
-import type { ConnectorEnd, SysmlAstType, UseCaseDef, UseCaseUsage } from '../generated/ast.js';
+import {
+    isActionUsage, isActorUsage, isPackageDecl, isSubjectUsage, isUseCaseUsage
+} from '../generated/ast.js';
+import type { ConnectorEnd, PerformUsage, SysmlAstType, UseCaseDef, UseCaseUsage } from '../generated/ast.js';
 import type { SysmlServices } from './sysml-module.js';
 
 /**
@@ -36,6 +38,7 @@ export function registerValidationChecks(services: SysmlServices): void {
     const checks: ValidationChecks<SysmlAstType> = {
         AstNode: checkNameNotReserved,
         ConnectorEnd: checkEndStartsAtAccessibleFeature,
+        PerformUsage: checkPerformTarget,
         UseCaseDef: checkSubjectBeforeActors,
         UseCaseUsage: checkSubjectBeforeActors
     };
@@ -78,4 +81,21 @@ function checkSubjectBeforeActors(useCase: UseCaseDef | UseCaseUsage, accept: Va
             `Declare the subject of '${useCase.name}' before its actors: the subject is a use case's first parameter.`,
             { node: first });
     }
+}
+
+/**
+ * `perform` names something its owner can carry out: an action of the
+ * function tree, or a use case. A port or an attribute is neither, and the
+ * chain is otherwise the same as any connector end, so it is checked there.
+ */
+function checkPerformTarget(perform: PerformUsage, accept: ValidationAcceptor): void {
+    const target = perform.target.segments[perform.target.segments.length - 1]?.ref;
+    if (target && !isActionUsage(target) && !isUseCaseUsage(target)) {
+        accept('error', `'${performText(perform)}' is not an action or a use case, so it cannot be performed.`,
+            { node: perform, property: 'target' });
+    }
+}
+
+function performText(perform: PerformUsage): string {
+    return perform.target.segments.map(s => s.$refText).join('.');
 }
