@@ -189,7 +189,7 @@
 
   .cols { display: grid; gap: clamp(1rem, 2.4vw, 2.2rem); grid-template-columns: 1fr; }
   @media (min-width: 900px) { .cols.two { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
-  @media (min-width: 900px) { .cols.narrow-left { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); } }
+  @media (min-width: 900px) { .cols.narrow-left { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); } }
 
   /* ---- pipeline ------------------------------------------------------ */
   .pipeline { display: flex; flex-wrap: wrap; align-items: stretch; gap: .55rem; }
@@ -271,16 +271,19 @@
   .figure-head { display: flex; align-items: baseline; gap: .8rem; flex-wrap: wrap; }
   .figure-mount {
     --zoom: 1;
+    --fit: min(74vh, 800px);
     overflow: auto;
-    max-height: min(56vh, 560px);
+    max-height: var(--fit);
     padding: .7rem;
     border: 1px solid var(--rule-strong);
     background: var(--paper);
   }
   .figure-mount.is-zoomed { --zoom: 2.6; }
   .figure-svg { width: calc(100% * var(--zoom)); }
-  .figure-svg svg { display: block; width: 100%; height: auto; }
-  .figure-caption { color: var(--ink-faint); font-family: var(--mono); font-size: .66rem; letter-spacing: .06em; }
+  /* Fit: the whole diagram, scaled to the mount's width or height, whichever
+     binds first. Zoom lifts the height cap and scrolls instead. */
+  .figure-svg svg { display: block; width: 100%; height: auto; max-height: calc(var(--fit) - 1.4rem - 2px); }
+  .figure-mount.is-zoomed .figure-svg svg { max-height: none; }
 
   button {
     font: inherit;
@@ -508,7 +511,6 @@ use case followProgress : SurveyTask;
             <div class="figure-mount">
               <div class="figure-svg" data-svg="drone/use-case-view.svg"></div>
             </div>
-            <p class="figure-caption">3 use cases · 1 actor · {{DIM:drone/use-case-view.svg}} — the boundary is inferred from each use case’s subject, and actors are de-duplicated by type. The operator is cast on the shared use case def, so they stand on the left against all three: planning tomorrow’s survey and checking on one already flying each stand on their own. The subject is untyped on purpose — naming the drone or the tablet here would be realization detail.</p>
           </div>
         </div>
       </div>
@@ -562,7 +564,6 @@ action def PerformAerialSurvey {
             <div class="figure-mount">
               <div class="figure-svg" data-svg="drone/logical-view.svg"></div>
             </div>
-            <p class="figure-caption">26 functions · {{DIM:drone/logical-view.svg}} — a strict tree: one parent each, no arrowheads, and no airframe, computer or program named anywhere. Each branch’s last level is listed beneath its parent, so the tree keeps a page’s proportions. Guidance and navigation were a pilot’s and a navigator’s job within living memory; this view survives that change, and the two below it do not.</p>
           </div>
         </div>
       </div>
@@ -618,7 +619,6 @@ package Software {
             <div class="figure-mount">
               <div class="figure-svg" data-svg="drone/implementation-view.svg"></div>
             </div>
-            <p class="figure-caption">10 packages · 5 imports · {{DIM:drone/implementation-view.svg}} — modules are drawn inside the package that declares them, and dependency direction is read from the import statements themselves. Two stacks stand side by side: the ArduPilot-style firmware on its real-time platform, the containerised applications on Linux. Neither imports the other — they meet over MAVLink at runtime, never at build time.</p>
           </div>
         </div>
       </div>
@@ -687,7 +687,6 @@ part system : SurveyDroneSystem;
             <div class="figure-mount">
               <div class="figure-svg" data-svg="drone/physical-view.svg"></div>
             </div>
-            <p class="figure-caption">14 parts · 18 connections · {{DIM:drone/physical-view.svg}} — every part nested inside the one that contains it, ports on the edges, and a line only where something is wired. The two radios share a type but are two boxes, each wired in its own device. Topology, never geometry.</p>
           </div>
         </div>
       </div>
@@ -743,7 +742,6 @@ package Deployment {
             <div class="figure-mount">
               <div class="figure-svg" data-svg="drone/deployment-view.svg"></div>
             </div>
-            <p class="figure-caption">24 programs · 3 hosts · zero edges · {{DIM:drone/deployment-view.svg}} — the allocation is drawn as containment, not as arrows, and each host sits inside the device it is fitted in: two computers in the drone, the tablet on its own. The flight controller carries the firmware and its kernel; everything containerised sits on the GPU computer beside it.</p>
           </div>
         </div>
       </div>
@@ -799,7 +797,6 @@ action def SurveyMission {
             <div class="figure-mount">
               <div class="figure-svg" data-svg="drone/process-view.svg"></div>
             </div>
-            <p class="figure-caption">7 lifelines · 24 messages · {{DIM:drone/process-view.svg}} — lifeline order, activation bars and the self-message loops are all derived from the text. The operator is untyped in the model, so they are drawn as a person, not a module. The handshake down the middle is MAVLink’s own mission protocol, which is where the two software stacks actually meet.</p>
           </div>
         </div>
       </div>
@@ -848,7 +845,6 @@ action def SurveyMission {
             <div class="figure-mount">
               <div class="figure-svg" data-svg="coffee/logical-view.svg"></div>
             </div>
-            <p class="figure-caption">19 functions · {{DIM:coffee/logical-view.svg}} — heat, grind, extract, froth, and the control functions beside them. Dosing has been a cam and is now firmware; the tree did not change when it moved.</p>
           </div>
         </div>
       </div>
@@ -873,7 +869,7 @@ action def SurveyMission {
           </ul>
           <ul class="points">
             <li><span><strong>Installs as a dev dependency.</strong> It lives in <code class="inline">node_modules</code> and writes only where you point it — the tool's own sources never mix with yours.</span></li>
-            <li><span><strong>49 tests</strong> cover the grammar, every view extractor, layout and end-to-end rendering of both reference models.</span></li>
+            <li><span><strong>{{TESTS}} tests</strong> cover the grammar, every view extractor, layout and end-to-end rendering of both reference models.</span></li>
             <li><span><strong>Programmatic API too</strong>, if you would rather call the pipeline than the CLI.</span></li>
           </ul>
         </div>

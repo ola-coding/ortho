@@ -1,23 +1,23 @@
 // Builds the marketing deck from marketing/deck.template.html by inlining the
-// real generated diagrams, syntax-highlighting the SysML excerpts and
-// numbering the sheets. Run with: npm run deck
+// real generated diagrams, syntax-highlighting the SysML excerpts, counting
+// the tests and numbering the sheets. Run with: npm run deck
+import { execFileSync } from 'node:child_process';
 import { readFile, writeFile } from 'node:fs/promises';
 
 const TEMPLATE = 'marketing/deck.template.html';
 const STANDALONE_OUT = 'marketing/ortho-deck.html';
 const ARTIFACT_OUT = 'marketing/ortho-deck.artifact.html';
 
-/** Short prefixes used in the template's data-svg / {{DIM:...}} references. */
+/** Short prefixes used in the template's data-svg references. */
 const DIAGRAM_DIRS: Record<string, string> = {
     drone: 'examples/survey-drone/diagrams',
     coffee: 'examples/coffee-machine/diagrams'
 };
 
-const KEYWORDS = new Set([
-    'package', 'import', 'part', 'def', 'port', 'interface', 'attribute', 'requirement',
-    'satisfy', 'by', 'connect', 'to', 'allocate', 'use', 'case', 'actor', 'subject',
-    'include', 'perform', 'action', 'message', 'from', 'then', 'of', 'end', 'specializes'
-]);
+/** The grammar's own keywords, so a keyword it gains is highlighted without a change here. */
+const KEYWORDS = new Set(
+    [...(await readFile('grammar/sysml.langium', 'utf-8')).matchAll(/'([a-z]+)'/g)].map(m => m[1])
+);
 
 function escapeHtml(text: string): string {
     return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -25,7 +25,7 @@ function escapeHtml(text: string): string {
 
 /** Single-pass tokenizer so highlighting never re-matches inside emitted markup. */
 function highlightSysml(code: string): string {
-    const pattern = /(\/\/[^\n]*)|("[^"]*")|(\b\d+(?:\.\d+)?\b)|([A-Za-z_][A-Za-z0-9_]*)|(::|:>)/g;
+    const pattern = /(\/\/[^\r\n]*)|("[^"]*")|(\b\d+(?:\.\d+)?\b)|([A-Za-z_][A-Za-z0-9_]*)|(::|:>)/g;
     let out = '';
     let last = 0;
     for (const match of code.matchAll(pattern)) {
@@ -80,9 +80,20 @@ function prepareSvg(svg: string, key: string): string {
     );
 }
 
-function viewBoxSize(svg: string): string {
-    const match = svg.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/);
-    return match ? `${Math.round(Number(match[1]))} × ${Math.round(Number(match[2]))} px` : 'unknown';
+/**
+ * How many tests the suite holds, as vitest itself counts them. `vitest list`
+ * collects without running, so this takes seconds and never goes stale.
+ */
+function countTests(): number {
+    const listing = execFileSync(process.execPath, ['node_modules/vitest/vitest.mjs', 'list', '--json'], {
+        encoding: 'utf-8',
+        stdio: ['ignore', 'pipe', 'inherit']
+    });
+    const tests: unknown = JSON.parse(listing);
+    if (!Array.isArray(tests) || tests.length === 0) {
+        throw new Error('vitest list found no tests; refusing to quote a count.');
+    }
+    return tests.length;
 }
 
 let html = await readFile(TEMPLATE, 'utf-8');
@@ -93,12 +104,13 @@ for (const ref of new Set([...html.matchAll(/data-svg="([^"]+)"/g)].map(m => m[1
     const { path, key } = resolveRef(ref);
     const raw = await readFile(path, 'utf-8');
     html = html
-        .replaceAll(`{{DIM:${ref}}}`, viewBoxSize(raw))
         .replace(
             new RegExp(`<div class="figure-svg" data-svg="${ref.replace('/', '\\/')}"></div>`),
             `<div class="figure-svg">${prepareSvg(raw, key)}</div>`
         );
 }
+
+html = html.replaceAll('{{TESTS}}', String(countTests()));
 
 html = html.replace(
     /<pre class="code"([^>]*)>([\s\S]*?)<\/pre>/g,

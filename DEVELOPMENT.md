@@ -359,12 +359,13 @@ load-bearing, not stylistic: bare names do not resolve across files, so the
 crossing visible in the source.
 
 **The deck's figures are only as fresh as the examples' committed SVGs.**
-`marketing/deck.template.html` inlines the diagrams by filename and quotes
-node and edge counts in its captions, so a model or rendering change means
-`npm run render:examples` *and* a pass over those captions before
-`npm run deck`. Nothing checks the numbers — and a caption still naming a
-diagram the examples no longer produce fails the deck build outright, which
-takes the Pages deploy down with it.
+`marketing/deck.template.html` inlines the diagrams by filename, so a model or
+rendering change means `npm run render:examples` before `npm run deck`, and a
+figure still naming a diagram the examples no longer produce fails the deck
+build outright, which takes the Pages deploy down with it. The test count on
+the constraints sheet is filled in at build time from `vitest list`. The only
+numbers still typed by hand are in the table comparing the two examples'
+sizes, which wants a look when a model grows.
 
 ## Backlog
 
