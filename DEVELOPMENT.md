@@ -234,9 +234,10 @@ npm test             # vitest
 npm run render:examples  # regenerate every example's diagrams/
 ```
 
-CI runs `typecheck` and `test` on Node 18 and 24 — the floor `package.json`
-declares and the version the other jobs use — then checks that a fresh render
-matches the committed diagrams, and only then builds and publishes the deck.
+CI runs `typecheck` and `test` on Node 24 and 26 — the floor `package.json`
+declares, which the other jobs also use, and the newest line — then checks
+that a fresh render matches the committed diagrams, and only then builds and
+publishes the deck.
 Nothing reaches GitHub Pages past a failing test or a stale SVG.
 
 Grammar changes require `npm run langium:generate` (folded into `build`),
@@ -316,14 +317,12 @@ takes the Pages deploy down with it.
 
 Possible next steps, in priority order:
 
-- [ ] **Raise the Node floor.** `engines` declares `>=18` and CI now proves it —
-  the suite, the build and a render all pass on 18.20.8. But 18 reached
-  end-of-life in April 2025 and 20 in April 2026, so the floor sits two EOL
-  generations back, and the deck gate depends on it staying green. Moving to
-  22 (LTS into 2027) is a bump to `engines`, dropping 18 from the test matrix
-  and a line in the README's requirements: nothing under `src/` uses a
-  post-18 API, so no code has to change. Housekeeping, not capability, but it
-  goes first: once the package is on npm, `engines` is a public promise.
+- [x] **Raise the Node floor.** `engines` now declares `>=24`, the current LTS
+  (supported until April 2028), and CI tests 24 and 26. It was `>=18`, two
+  end-of-life generations back. 22 would have been the conventional floor, but
+  it reaches end-of-life in April 2027, months after a first npm release, and
+  raising a published floor is a breaking change. Nothing under `src/` had to
+  change.
 - [ ] **Prepare for NPX** - Let us publish this cool tool in the right place such that it will be super easy to get started withou downloading the full repo. Before we do that I would like to see a proper cleaning of package.json README and other files that will be needed for that action.
 - [ ] **Align the stem with the middle child in the logical view.** A parent is
   centred on the midpoint between its first and last child's centres

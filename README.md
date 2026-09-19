@@ -28,9 +28,9 @@ software), and the Logical view holds functions rather than structure.
 
 ## Requirements
 
-- Node.js 18 or newer. Nothing else.
+- Node.js 24 or newer. Nothing else.
 
-CI typechecks and runs the suite on both 18 and 24, so the floor is tested
+CI typechecks and runs the suite on both 24 and 26, so the floor is tested
 rather than merely declared.
 
 ## Install

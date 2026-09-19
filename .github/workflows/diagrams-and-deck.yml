@@ -34,9 +34,10 @@ jobs:
       # broke is the whole point of running two.
       fail-fast: false
       matrix:
-        # 18 is the floor package.json declares, so it is tested rather than
-        # asserted; 24 is what the other jobs build and render on.
-        node: [18, 24]
+        # 24 is the floor package.json declares, so it is tested rather than
+        # asserted, and what the other jobs build and render on; 26 is the
+        # newest line, so a break in the next LTS shows before users hit it.
+        node: [24, 26]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
