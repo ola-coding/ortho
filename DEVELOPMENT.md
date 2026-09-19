@@ -393,28 +393,46 @@ Possible next steps, in priority order:
   declared before its subject. The grammar now requires what it can, a
   validator checks the rest, and tests keep the page, the grammar and the
   examples in step. Requirements stay, parsed but not drawn.
-- [ ] **Prepare for NPX** - Let us publish this cool tool in the right place such that it will be super easy to get started withou downloading the full repo. Before we do that I would like to see a proper cleaning of package.json README and other files that will be needed for that action.
-- [ ] **Dark glass renderer** - Add a new outputformat renderer. My suggestion is a .PNG with some transparency. Make it slightly glossy and cool for input in a Powerpoint with dark gray background.
 - [ ] **Realization through `perform`.** A part that realizes a function says
-  so in its own body, `perform Functions::PerformAerialSurvey::communicate::streamVideo;`,
-  which is the SysML v2 form for a performer whose action is defined
-  elsewhere, "perhaps by an action usage in a functionally decomposed action
-  tree" (§7.17). The grammar already accepts `perform` in part bodies, but
-  only for use cases; widening its target to actions is most of the language
-  change. Each part's box on the implementation and physical views then gains
-  the spec's *perform actions* compartment, so realization is drawn on the
-  six views rather than on a seventh. `logical.sysml` still names no
-  component, and software and hardware still never name each other, but
-  implementation and physical will name functions: they render with
-  `logical.sysml` as a companion, leaving use case and logical as the only
-  self-contained views, and VIEWS.md's "drawn on no view" changes with it.
-  This replaces the earlier plan of adding `ActionUsage` to the `Feature`
-  union for `allocate`, which could only be drawn on a seventh view or from a
-  mapping file of its own.
-- [ ] **`view def` / `viewpoint` elements** — SysML v2's first-class replacement
-  for UML diagram kinds. Could drive both diagram scoping and frame headings
-  from the model itself, replacing the one-file-per-view convention.
-- [ ] Sequence combined fragments (loop/alt) and return-message styling.
-- [ ] State machines, constraints/calculations, item defs (typed message
-  payloads), verification cases.
-- [ ] Enforced import semantics, once the grammar is broad enough to need them.
+  so in its own body, which is the SysML v2 form for a performer whose action
+  is defined elsewhere, "perhaps by an action usage in a functionally
+  decomposed action tree" (§7.17.6). The grammar already accepts `perform` in
+  part bodies, but only for use cases; widening its target to actions is most
+  of the language change. Each part's box on the implementation and physical
+  views then gains the spec's *perform actions* compartment, so realization is
+  drawn on the six views rather than on a seventh. This replaces the earlier
+  plan of adding `ActionUsage` to the `Feature` union for `allocate`, which
+  could only be drawn on a seventh view or from a mapping file of its own.
+  Three things the spec alignment settled first:
+  - The target has to start at a usage, so `logical.sysml` ends with one usage
+    of its tree, `action survey : PerformAerialSurvey;`, exactly as
+    `implementation.sysml` ends with `part sw` and `physical.sysml` with the
+    product. A part then writes
+    `perform Functions::survey.communicate.streamVideo;`. Confirm it against
+    the OMG pilot implementation before building on it.
+  - The logical view must keep drawing one tree: that usage names the same
+    functions the definition already contributes.
+  - `src/parser/sysml-validator.ts` should check `perform` targets the way it
+    checks connector ends.
+  `logical.sysml` still names no component, and software and hardware still
+  never name each other, but implementation and physical will name functions:
+  they render with `logical.sysml` as a companion, leaving use case and
+  logical as the only self-contained views, and VIEWS.md's "drawn on no view"
+  changes with it.
+- [ ] **Dark glass renderer** - Add a new outputformat renderer. My suggestion is a .PNG with some transparency. Make it slightly glossy and cool for input in a Powerpoint with dark gray background.
+- [ ] **Prepare for NPX** - Let us publish this cool tool in the right place such that it will be super easy to get started withou downloading the full repo. Before we do that I would like to see a proper cleaning of package.json README and other files that will be needed for that action.
+- [ ] **Imports that make names visible.** An import currently changes
+  nothing: everything resolves by qualified name, and nothing else does. That
+  makes ortho stricter than the spec rather than looser — a valid model that
+  writes `private import Software::*;` and then `sw.video` fails to load here,
+  and [LANGUAGE.md](LANGUAGE.md) has to tell people to qualify every
+  cross-file reference. Once the package is on npm and people write ordinary
+  SysML v2 against it, that is the first thing they will hit.
+- [ ] **Declare each view with the spec's own view definitions.** The standard
+  library defines `GeneralView`, `InterconnectionView`, `SequenceView`,
+  `ActionFlowView` and `StateTransitionView` (§9.2.20). A model file could
+  declare which of them it feeds — physical an interconnection view, process a
+  sequence view, the rest general views — and the CLI could take the view from
+  the model rather than from `-d`. This is the useful half of the old
+  `view def` / `viewpoint` item; the other half, replacing one model file per
+  view, is not wanted.
