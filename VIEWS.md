@@ -52,7 +52,7 @@ Functions outlive their realizations — arming a mechanism can be a mechanical 
 
 Realization is many to many — one function can be realized by software and hardware together, a relay plus its driver, and one function may have several realizations across product variants. A function exists exactly once here; the elements that realize it live on the Implementation and Physical views, though the realization relation itself is drawn on no view.
 
-**Rendering.** A work-breakdown chart of rounded rectangles, one box per function. Every function has exactly one parent, so the decomposition is strictly a tree: each parent is centred over its family, and a single stem drops to a line that feeds every child, with no arrowheads. The lowest level of each branch is listed vertically beneath its parent, off a spine, so a broad tree keeps a page's proportions instead of stretching into one long row. A function shared by several branches sits at their lowest common ancestor rather than being duplicated, so its position states how widely it is shared.
+**Rendering.** A work-breakdown chart of rounded rectangles, one box per function. Every function has exactly one parent, so the decomposition is strictly a tree: each parent stands over its family, directly above the middle child when there is one, and a single stem drops to a line that feeds every child, with no arrowheads. The lowest level of each branch is listed vertically beneath its parent, off a spine, so a broad tree keeps a page's proportions instead of stretching into one long row. A function shared by several branches sits at their lowest common ancestor rather than being duplicated, so its position states how widely it is shared.
 
 ### Implementation view
 

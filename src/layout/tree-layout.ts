@@ -37,8 +37,9 @@ function withoutRepeats(points: Point[]): Point[] {
  * Lays out a capability tree as a work-breakdown chart, deterministically and
  * without ELK. A family whose children are all leaves is listed vertically
  * beneath its parent, hanging off a spine. Any other family is spread in a
- * row, with the parent centred over its first and last child and a single
- * stem dropping to a bus that feeds every child. Listing the lowest level is
+ * row, with a single stem dropping to a bus that feeds every child. The
+ * parent stands over its middle child when the row has one, and over the
+ * middle of the row when it does not. Listing the lowest level is
  * what keeps a broad tree page-shaped: a row holding every leaf is a strip.
  *
  * The graph is expected to be a forest. An edge that would give a function a
@@ -100,7 +101,16 @@ export function layoutTree(graph: DiagramGraph): LaidOutDiagram {
             const last = byId.get(list[list.length - 1])!;
             const firstCentre = row[0].boxLeft + first.width / 2;
             const lastCentre = rowWidth - row[row.length - 1].width + row[row.length - 1].boxLeft + last.width / 2;
-            let boxLeft = (firstCentre + lastCentre) / 2 - node.width / 2;
+            // An odd row has a middle child, and the stem drops straight onto
+            // it: centring on the row instead is off by however much the box
+            // widths differ, which reads as a wobble. An even row has no
+            // middle child, so the parent stays over the middle of the row.
+            const middle = (row.length - 1) / 2;
+            const stemAt = row.length % 2 === 1
+                ? row.slice(0, middle).reduce((sum, r) => sum + r.width + SIBLING_GAP, 0)
+                    + row[middle].boxLeft + byId.get(list[middle])!.width / 2
+                : (firstCentre + lastCentre) / 2;
+            let boxLeft = stemAt - node.width / 2;
             let rowLeft = 0;
             if (boxLeft < 0) {
                 rowLeft = -boxLeft;
@@ -166,18 +176,25 @@ export function layoutTree(graph: DiagramGraph): LaidOutDiagram {
                 y += leaf.height + LIST_GAP;
             }
         } else if (list.length > 0) {
-            const stemX = x + node.width / 2;
             const busY = bottom + LEVEL_GAP / 2;
             const rowTop = bottom + LEVEL_GAP;
+            const lefts: number[] = [];
             let childLeft = left + m.rowLeft;
             for (const childId of list) {
-                const child = byId.get(childId)!;
-                const cm = measures.get(childId)!;
-                place(childId, childLeft, rowTop);
-                const childX = childLeft + cm.boxLeft + child.width / 2;
-                branch(childId, [{ x: stemX, y: bottom }, { x: stemX, y: busY }, { x: childX, y: busY }, { x: childX, y: rowTop }]);
-                childLeft += cm.width + SIBLING_GAP;
+                lefts.push(childLeft);
+                childLeft += measures.get(childId)!.width + SIBLING_GAP;
             }
+            const centreOf = (i: number): number =>
+                lefts[i] + measures.get(list[i])!.boxLeft + byId.get(list[i])!.width / 2;
+            // Over an odd row the stem is taken from the middle child itself,
+            // not from the parent's centre, so the two meet exactly rather than
+            // to within rounding, and the middle branch is one straight line.
+            const stemX = list.length % 2 === 1 ? centreOf((list.length - 1) / 2) : x + node.width / 2;
+            list.forEach((childId, i) => {
+                place(childId, lefts[i], rowTop);
+                const childX = centreOf(i);
+                branch(childId, [{ x: stemX, y: bottom }, { x: stemX, y: busY }, { x: childX, y: busY }, { x: childX, y: rowTop }]);
+            });
         }
     };
 

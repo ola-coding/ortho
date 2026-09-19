@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { parseHelper } from 'langium/test';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
 import type { Model } from '../src/generated/ast.js';
+import type { DiagramGraph, GraphEdge, GraphNode } from '../src/model/graph.js';
 import { extractLogicalGraph } from '../src/diagrams/logical.js';
 import { layoutTree } from '../src/layout/tree-layout.js';
 import { renderSvg } from '../src/render/svg-renderer.js';
@@ -81,12 +82,14 @@ describe('logical diagram extraction', () => {
                 expect(new Set(boxes.map(b => b.x)).size).toBe(1);
                 boxes.slice(1).forEach((b, i) => expect(b.y).toBeGreaterThan(boxes[i].y));
             } else {
-                // Any other family is a row, with its parent centred over it.
+                // Any other family is a row. Its parent stands over the middle
+                // child when there is one, and over the middle of the row when not.
                 expect(new Set(boxes.map(b => b.y)).size).toBe(1);
-                const first = boxes[0];
-                const last = boxes[boxes.length - 1];
-                const middle = (first.x + first.width / 2 + last.x + last.width / 2) / 2;
-                expect(parent.x + parent.width / 2).toBeCloseTo(middle, 5);
+                const centre = (b: { x: number; width: number }) => b.x + b.width / 2;
+                const middle = boxes.length % 2 === 1
+                    ? centre(boxes[(boxes.length - 1) / 2])
+                    : (centre(boxes[0]) + centre(boxes[boxes.length - 1])) / 2;
+                expect(centre(parent)).toBeCloseTo(middle, 5);
             }
         }
 
@@ -105,5 +108,40 @@ describe('logical diagram extraction', () => {
                 expect(p.x === edge.points[i].x || p.y === edge.points[i].y).toBe(true);
             });
         }
+    });
+
+    describe('where the stem lands', () => {
+        const box = (id: string, width: number): GraphNode =>
+            ({ id, shape: 'rounded', stereotype: '', name: id, compartments: [], ports: [], width, height: 40 });
+        const decompose = (parent: string, child: string): GraphEdge =>
+            ({ id: `${parent}-${child}`, kind: 'decomposition', sourceId: parent, targetId: child });
+
+        // `a` carries a wide listed leaf, so the row is lopsided: the middle of
+        // the row is 67 px from the middle child, which the check below confirms
+        // before relying on it.
+        const lopsided = (extra: GraphNode[]): DiagramGraph => ({
+            nodes: [box('root', 100), box('a', 40), box('a1', 150), box('b', 200), box('c', 60), ...extra],
+            edges: [decompose('root', 'a'), decompose('a', 'a1'), decompose('root', 'b'), decompose('root', 'c'),
+                ...extra.map(n => decompose('root', n.id))]
+        });
+        const centres = (graph: DiagramGraph) => {
+            const laidOut = layoutTree(graph);
+            const at = new Map(laidOut.nodes.map(n => [n.id, n]));
+            return { laidOut, centre: (id: string) => at.get(id)!.x + at.get(id)!.width / 2 };
+        };
+
+        it('drops straight onto the middle child of an odd row', () => {
+            const { laidOut, centre } = centres(lopsided([]));
+            expect(Math.abs((centre('a') + centre('c')) / 2 - centre('b'))).toBeGreaterThan(50);
+
+            expect(centre('root')).toBeCloseTo(centre('b'), 9);
+            const stem = laidOut.edges.find(e => e.targetId === 'b')!;
+            expect(new Set(stem.points.map(p => p.x)).size).toBe(1);
+        });
+
+        it('stays over the middle of an even row, which has no middle child', () => {
+            const { centre } = centres(lopsided([box('d', 80)]));
+            expect(centre('root')).toBeCloseTo((centre('a') + centre('d')) / 2, 9);
+        });
     });
 });

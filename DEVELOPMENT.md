@@ -146,8 +146,12 @@ the deliberate alternative to a headless browser or font-file parsing.
 - **The logical view is laid out by ortho, not ELK.** `src/layout/tree-layout.ts`
   draws the capability tree as a work-breakdown chart: a family whose children
   are all leaves is listed vertically beneath its parent, off a spine; any other
-  family is spread in a row, the parent centred over its first and last child,
-  one stem feeding a bus. ELK's layered algorithm put every leaf in one row —
+  family is spread in a row, one stem feeding a bus. The parent stands over its
+  middle child, so the stem runs straight down into it; a row with an even
+  number of children has no middle child, and there the parent stands over the
+  middle of the row. Centring over the row in every case put the stem a few
+  pixels beside the middle child whenever box widths differed, which read as a
+  wobble rather than a line. ELK's layered algorithm put every leaf in one row —
   one such tree measured 3322 px across for 27 functions — and attached each
   branch at its own point on the parent, which read as wiring. Branches are
   `decomposition` edges with no arrowhead — direction is carried by the
@@ -323,17 +327,12 @@ Possible next steps, in priority order:
   it reaches end-of-life in April 2027, months after a first npm release, and
   raising a published floor is a breaking change. Nothing under `src/` had to
   change.
+- [x] **Align the stem with the middle child in the logical view.** With an
+  odd number of children the parent's stem now lands on the middle child's
+  stem; with an even number it stays at the middle of the row. Both examples
+  had the wobble: the survey drone's root sat 4.5 px beside `communicate`, the
+  coffee machine's 13.3 px beside `prepareMilk`.
 - [ ] **Prepare for NPX** - Let us publish this cool tool in the right place such that it will be super easy to get started withou downloading the full repo. Before we do that I would like to see a proper cleaning of package.json README and other files that will be needed for that action.
-- [ ] **Align the stem with the middle child in the logical view.** A parent is
-  centred on the midpoint between its first and last child's centres
-  (`firstCentre`/`lastCentre` in `src/layout/tree-layout.ts`), which lands on
-  a child's own stem only when the row happens to be symmetric. Unequal box
-  widths are enough to throw it: in the survey drone today
-  `PerformAerialSurvey` sits at x=683.96 while `communicate` — the middle one
-  of its seven children — sits at x=688.45, 4.5 px out, which reads as a
-  wobble rather than a stem. The rule to implement: with an odd number of
-  children the parent's stem lands on the middle child's stem; with an even
-  number it stays at the middle of the row, as it does now.
 - [ ] **Dark glass renderer** - Add a new outputformat renderer. My suggestion is a .PNG with some transparency. Make it slightly glossy and cool for input in a Powerpoint with dark gray background.
 - [ ] **`ActionUsage` in the `Feature` union** — the one change that unblocks
   realization. `allocate` resolves its ends through `Feature`, so today a
