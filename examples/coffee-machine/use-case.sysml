@@ -5,16 +5,17 @@
 package UseCases {
 
     part def User;
-    part def ServiceTechnician;
 
     use case def OperateMachine {
         subject CoffeeMachine;
         actor user : User;
     }
 
+    // Looking after the machine is the user's job too: descaling is a task
+    // the machine asks its owner for, not a call-out.
     use case def ServiceMachine {
         subject CoffeeMachine;
-        actor technician : ServiceTechnician;
+        actor user : User;
     }
 
     use case makeEspresso : OperateMachine;

@@ -102,6 +102,47 @@ describe('use-case diagram extraction', () => {
         expect(svg).toContain('&#171;include&#187;');
     });
 
+    it('stands a primary actor left of the boundary and a secondary one right', async () => {
+        // The customer comes with every order, so it is declared on the def:
+        // primary. The courier joins one use case only: secondary.
+        const document = await parseOk(`
+            package Shop {
+                part def Customer;
+                part def Courier;
+                use case def Order {
+                    subject Webshop;
+                    actor customer : Customer;
+                }
+                use case browse : Order;
+                use case checkout : Order;
+                use case deliver : Order {
+                    subject Webshop;
+                    actor courier : Courier;
+                }
+            }
+        `);
+        const laidOut = await layoutGraph(
+            extractUseCaseGraph(document.parseResult.value), { direction: 'RIGHT', edgeRouting: 'STRAIGHT' }
+        );
+        const byName = (name: string) => laidOut.nodes.find(n => n.name === name)!;
+        const boundary = laidOut.nodes.find(n => n.shape === 'boundary')!;
+        const customer = byName('Customer');
+        const courier = byName('Courier');
+        expect(laidOut.nodes.filter(n => n.shape === 'actor')).toHaveLength(2);
+
+        expect(customer.x + customer.width).toBeLessThanOrEqual(boundary.x);
+        expect(courier.x).toBeGreaterThanOrEqual(boundary.x + boundary.width);
+
+        // Each actor is joined to its own use cases and no others; the
+        // customer's come through the def, deliver's included.
+        const joined = (actorId: string) => laidOut.edges
+            .filter(e => e.kind === 'association' && (e.sourceId === actorId || e.targetId === actorId))
+            .map(e => (e.sourceId === actorId ? e.targetId : e.sourceId))
+            .sort();
+        expect(joined(customer.id)).toEqual(['Shop::browse', 'Shop::checkout', 'Shop::deliver']);
+        expect(joined(courier.id)).toEqual(['Shop::deliver']);
+    });
+
     it('draws every line straight, clear of every use case it does not join', async () => {
         const examples = resolve(dirname(fileURLToPath(import.meta.url)), '../examples');
         for (const example of ['survey-drone', 'coffee-machine']) {

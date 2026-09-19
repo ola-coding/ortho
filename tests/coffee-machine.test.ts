@@ -52,7 +52,7 @@ describe('coffee machine example model', () => {
             .toEqual(['descale', 'makeCappuccino', 'makeEspresso']);
 
         expect(graph.nodes.filter(n => n.shape === 'actor').map(n => n.name).sort())
-            .toEqual(['ServiceTechnician', 'User']);
+            .toEqual(['User']);
 
         const includes = graph.edges.filter(e => e.kind === 'include');
         expect(includes).toHaveLength(1);
