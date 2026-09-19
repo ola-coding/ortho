@@ -332,13 +332,50 @@ Possible next steps, in priority order:
   stem; with an even number it stays at the middle of the row. Both examples
   had the wobble: the survey drone's root sat 4.5 px beside `communicate`, the
   coffee machine's 13.3 px beside `prepareMilk`.
+- [ ] **Align with the SysML v2 spec.** Pick out the subset of SysML v2 that
+  the six views need and write it down in `LANGUAGE.md`: a short version of
+  the spec, for reference in this work. It is written against
+  formal/2026-03-02 (March 2026, <https://www.omg.org/spec/SysML/2.0/>), in
+  our own words with section references and brief quotes at most, which is
+  the rule the grammar already follows. The PDF is linked, not committed.
+  - Organise it by view: for each of the six, the keywords it reads and what
+    each becomes on the diagram. Then two short lists: *parsed, not drawn*,
+    and *not supported*, naming the SysML v2 a modeller is likely to reach
+    for (`state`, `item def`, `flow`, `bind`, `allocation def`, `in`/`out`
+    parameters), so the limit is found in the doc rather than in a parse
+    error.
+  - It replaces the README's "The language subset" section, which then links
+    to it. Two copies would drift.
+  - `requirement` and `satisfy` stay, as *parsed, not drawn*. No view renders
+    them, but a non-functional requirement may be what proposes a technical
+    solution on the implementation or physical view, so models that carry
+    requirements must keep loading.
+  - Realization is settled here: a part `perform`s the functions it realizes
+    (§7.17), drawn as the standard *perform actions* compartment. See the
+    realization item below.
+  - Checks, so nothing drifts: a test that the doc's keywords are exactly the
+    grammar's; every keyword in the subset used at least once in the
+    examples, so each has a worked example; and a one-off run of both
+    examples through the OMG pilot implementation, which proves them valid
+    SysML v2 rather than merely valid ortho.
 - [ ] **Prepare for NPX** - Let us publish this cool tool in the right place such that it will be super easy to get started withou downloading the full repo. Before we do that I would like to see a proper cleaning of package.json README and other files that will be needed for that action.
 - [ ] **Dark glass renderer** - Add a new outputformat renderer. My suggestion is a .PNG with some transparency. Make it slightly glossy and cool for input in a Powerpoint with dark gray background.
-- [ ] **`ActionUsage` in the `Feature` union** — the one change that unblocks
-  realization. `allocate` resolves its ends through `Feature`, so today a
-  function cannot be allocated to whatever realizes it, and the relation
-  between the Logical view and the two realization views cannot be written at
-  all, let alone drawn. Smallest change in this list, largest consequence.
+- [ ] **Realization through `perform`.** A part that realizes a function says
+  so in its own body, `perform Functions::PerformAerialSurvey::communicate::streamVideo;`,
+  which is the SysML v2 form for a performer whose action is defined
+  elsewhere, "perhaps by an action usage in a functionally decomposed action
+  tree" (§7.17). The grammar already accepts `perform` in part bodies, but
+  only for use cases; widening its target to actions is most of the language
+  change. Each part's box on the implementation and physical views then gains
+  the spec's *perform actions* compartment, so realization is drawn on the
+  six views rather than on a seventh. `logical.sysml` still names no
+  component, and software and hardware still never name each other, but
+  implementation and physical will name functions: they render with
+  `logical.sysml` as a companion, leaving use case and logical as the only
+  self-contained views, and VIEWS.md's "drawn on no view" changes with it.
+  This replaces the earlier plan of adding `ActionUsage` to the `Feature`
+  union for `allocate`, which could only be drawn on a seventh view or from a
+  mapping file of its own.
 - [ ] **`view def` / `viewpoint` elements** — SysML v2's first-class replacement
   for UML diagram kinds. Could drive both diagram scoping and frame headings
   from the model itself, replacing the one-file-per-view convention.
