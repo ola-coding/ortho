@@ -3,6 +3,7 @@ import type { LangiumCoreServices, LangiumSharedCoreServices, Module, PartialLan
 import { NodeFileSystem } from 'langium/node';
 import { SysmlGeneratedModule, SysmlGeneratedSharedModule } from '../generated/module.js';
 import { SysmlScopeComputation, SysmlScopeProvider } from './sysml-scope.js';
+import { registerValidationChecks } from './sysml-validator.js';
 
 export type SysmlServices = LangiumCoreServices;
 
@@ -27,5 +28,6 @@ export function createSysmlServices(): {
         SysmlModule
     );
     shared.ServiceRegistry.register(Sysml);
+    registerValidationChecks(Sysml);
     return { shared, Sysml };
 }

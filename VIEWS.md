@@ -92,18 +92,17 @@ How software modules interact at runtime, for one scenario. One scenario per dia
 | --- | --- | --- |
 | **Use case** | How the system is used, and by whom | `use case def`, `use case`, `actor`, `subject`, `include` |
 | **Logical** | What the system does, as a hierarchy of functions | `action def`, `action` |
-| **Implementation** | Static structure of the software | `package`, `import`, `part def`, `part` |
+| **Implementation** | Static structure of the software | `package`, `private import`, `part def`, `part` |
 | **Physical** | Structure of the physical product, as topology | `part def`, `part`, `port def`, `port`, `connect`, `interface def` |
 | **Deployment** | Which hardware runs which software | `part`, `allocate` |
-| **Process** | How software modules interact at runtime | `action def`, `part`, `message`, `then` |
+| **Process** | How software modules interact at runtime | `action def`, `part`, `message`, `then`, `attribute def` |
 
-All six views are expressible in the grammar today: an action may contain
-nested actions, so a function tree parses as it stands. One gap remains outside
-the views themselves — `allocate` cannot name a function, because `ActionUsage`
-is absent from the `Feature` union in
-[grammar/sysml.langium](grammar/sysml.langium), so the realization relation
-from Logical to the two realization views cannot yet be written, and is drawn
-on no view.
+All six views are expressible in the grammar today, and
+[LANGUAGE.md](LANGUAGE.md) sets out the exact subset, view by view. One gap
+remains outside the views themselves: the realization relation from Logical to
+the two realization views cannot yet be written, and is drawn on no view.
+SysML v2 writes it as `perform` inside the part that realizes a function
+(§7.17.6), which is on the backlog.
 
 ## References
 

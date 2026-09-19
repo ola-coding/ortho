@@ -14,7 +14,7 @@ package DroneLogical {
         part motors : Motor [4];
         connect battery.powerOut to fc.powerIn;
         connect fc.motorCtrl to motors.ctrlIn;
-        satisfy massReq by Drone;
+        satisfy powerReq by battery;
     }
 
     part def FlightController {
@@ -34,10 +34,10 @@ package DroneLogical {
 
     part def Quadcopter :> Drone;
 
-    requirement def MassLimit {
-        attribute maxMass : Real = 249;
-        subject vehicle : Drone;
+    requirement def PowerBudget {
+        attribute minCapacity : Real = 2000;
+        subject source : Battery;
     }
 
-    requirement massReq : MassLimit;
+    requirement powerReq : PowerBudget;
 }

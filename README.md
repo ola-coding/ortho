@@ -195,26 +195,12 @@ full rule and the three conventions that keep it true.
 
 ## The language subset
 
-The grammar is a growing, spec-oriented subset of the SysML v2 textual
-notation:
-
-- packages and imports
-- part, port and interface defs and usages, with `:>` specialization and
-  multiplicities such as `[4]` or `[1..3]`
-- attributes
-- connections (`connect a.x to b.y`), optionally named and typed by an
-  interface
-- use cases with actors, subjects and `include`
-- `allocate`
-- actions, nested to any depth, and `message` / `then` for scenarios
-
-`requirement`, `satisfy` and `perform` also parse, but no view draws them. One
-relation cannot be written yet: `allocate` cannot name a function, so the
-realization of a Logical-view function by a component is not expressible.
-
-See `grammar/sysml.langium` for the exact grammar and
-[DEVELOPMENT.md](DEVELOPMENT.md) for the deliberate deviations from the spec
-(e.g. no UML `extend` — SysML v2 dropped it).
+ortho reads a subset of the SysML v2 textual notation, and a model it accepts
+is meant to be valid SysML v2 as well. [LANGUAGE.md](LANGUAGE.md) is that
+subset, view by view: what to write, what each view draws from it, what parses
+without being drawn, and what is not supported yet. It is written against the
+OMG SysML v2.0 specification (formal/2026-03-02), and both examples pass the
+OMG pilot implementation without errors or warnings.
 
 ## Programmatic API
 
@@ -232,6 +218,7 @@ const { svg } = await diagramTypes['logical'].render(model, {
 ## Further reading
 
 - [VIEWS.md](VIEWS.md) — the six views: what each one admits, and why.
+- [LANGUAGE.md](LANGUAGE.md) — the SysML v2 subset ortho reads, view by view.
 - [DEVELOPMENT.md](DEVELOPMENT.md) — architecture, design decisions and the
   deliberate spec deviations behind the tool.
 - [Pitch deck](https://ola-coding.github.io/ortho/) — the six views of both

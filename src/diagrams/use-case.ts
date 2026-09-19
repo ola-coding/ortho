@@ -2,7 +2,7 @@ import {
     isActorUsage, isIncludeUsage, isSubjectUsage, isUseCaseDef, isUseCaseUsage
 } from '../generated/ast.js';
 import type {
-    ActorUsage, IncludeUsage, Model, SubjectUsage, UseCaseDef, UseCaseElement, UseCaseMember, UseCaseUsage
+    ActorUsage, IncludeUsage, Model, SubjectUsage, UseCaseDef, UseCaseMember, UseCaseUsage
 } from '../generated/ast.js';
 import type { DiagramGraph, GraphEdge, GraphNode } from '../model/graph.js';
 import { qualifiedName } from '../model/graph.js';
@@ -142,22 +142,11 @@ export function extractUseCaseGraph(model: Model): DiagramGraph {
         }
     }
 
-    // Include edges: a target def represented by usages maps to its first usage.
-    const nodeForTarget = (target: UseCaseElement): GraphNode | undefined => {
-        const direct = ellipseByUseCase.get(target);
-        if (direct) {
-            return direct;
-        }
-        if (isUseCaseDef(target)) {
-            const usage = rendered.find(uc => isUseCaseUsage(uc) && uc.type?.ref === target);
-            return usage ? ellipseByUseCase.get(usage) : undefined;
-        }
-        return undefined;
-    };
-
+    // Include edges. The target is always a usage: SysML v2 includes a use
+    // case, not a kind of use case.
     for (const [useCase, node] of ellipseByUseCase) {
         for (const include of effectiveMembers(useCase).filter(isIncludeUsage)) {
-            const target = include.target.ref && nodeForTarget(include.target.ref);
+            const target = include.target.ref && ellipseByUseCase.get(include.target.ref);
             if (target && target !== node) {
                 edges.push({
                     id: `e${edgeCounter++}`,

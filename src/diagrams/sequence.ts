@@ -25,7 +25,9 @@ export interface SequenceModel {
 function messageLabel(message: MessageUsage): string {
     const name = message.name ?? '';
     if (message.payload) {
-        return name ? `${name} : ${message.payload}` : message.payload;
+        // The payload as written, so a qualified name stays qualified.
+        const payload = message.payload.$refText;
+        return name ? `${name} : ${payload}` : payload;
     }
     return name || 'message';
 }

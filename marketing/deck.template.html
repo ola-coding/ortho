@@ -588,7 +588,7 @@ package Software {
     // ArduPilot-style firmware. Each comment names
     // the libraries the module stands for.
     package Flight {
-        import Software::FlightPlatform;
+        private import Software::FlightPlatform;
 
         part def MissionExecutor;  // AP_Mission
         part def StateEstimator;   // AP_NavEKF3
@@ -602,7 +602,7 @@ package Software {
     }
 
     package Middleware {
-        import Software::LinuxPlatform;
+        private import Software::LinuxPlatform;
 
         part def ZenohRouter;
         part def MavlinkBridge;
@@ -675,6 +675,8 @@ part def SurveyDroneSystem {
     connection : RadioLink
         connect drone.rfLink to ground.rfLink;
 }
+
+part system : SurveyDroneSystem;
 </pre>
           </div>
           <div class="figure">
@@ -710,26 +712,26 @@ part def SurveyDroneSystem {
 // content is the mapping between the other two.
 package Deployment {
 
-    import Software::*;
-    import Hardware::*;
+    private import Software::*;
+    private import Hardware::*;
 
     // The firmware has the control computer
     // to itself, kernel included.
     allocate Software::sw.mission
-        to Hardware::SurveyDrone::fc;
+        to Hardware::system.drone.fc;
     allocate Software::sw.control
-        to Hardware::SurveyDrone::fc;
+        to Hardware::system.drone.fc;
     allocate Software::sw.rtos
-        to Hardware::SurveyDrone::fc;
+        to Hardware::system.drone.fc;
 
     // Every container shares the GPU computer.
     allocate Software::sw.planner
-        to Hardware::SurveyDrone::companion;
+        to Hardware::system.drone.companion;
     allocate Software::sw.zenoh
-        to Hardware::SurveyDrone::companion;
+        to Hardware::system.drone.companion;
 
     allocate Software::sw.app
-        to Hardware::GroundStation::tablet;
+        to Hardware::system.ground.tablet;
 }
 </pre>
           </div>

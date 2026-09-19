@@ -5,15 +5,15 @@
 // which is why it must be rendered together with both.
 package Deployment {
 
-    import Software::*;
-    import Hardware::*;
+    private import Software::*;
+    private import Hardware::*;
 
     // One dual-core board carries all four control programs.
-    allocate Software::sw.recipes to Hardware::CoffeeMachine::controller;
-    allocate Software::sw.brew to Hardware::CoffeeMachine::controller;
-    allocate Software::sw.temperature to Hardware::CoffeeMachine::controller;
-    allocate Software::sw.milk to Hardware::CoffeeMachine::controller;
+    allocate Software::sw.recipes to Hardware::machine.controller;
+    allocate Software::sw.brew to Hardware::machine.controller;
+    allocate Software::sw.temperature to Hardware::machine.controller;
+    allocate Software::sw.milk to Hardware::machine.controller;
 
     // The panel runs its own UI.
-    allocate Software::sw.uiApp to Hardware::CoffeeMachine::display;
+    allocate Software::sw.uiApp to Hardware::machine.display;
 }

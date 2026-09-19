@@ -57,6 +57,27 @@ Two custom Langium services, both load-bearing:
   declare concrete parts rather than realizing abstract blocks), so
   `tests/parser.test.ts` is what keeps it honest.
 
+### SysML v2 conformance (`src/parser/sysml-validator.ts`)
+
+A model ortho accepts should load in any other SysML v2 tool. Most of that is
+the grammar's job: an import states its visibility, `include`, `perform` and
+both ends of `satisfy` name usages, and a message payload resolves to an
+`attribute def`. Three rules the grammar cannot express are checked after
+linking, each as an error:
+
+- **A reserved word is not a name.** The spec reserves 128 words; ortho's
+  grammar reserves only the 31 it parses, so without this check `part frame`
+  would pass here and fail everywhere else. The survey drone had exactly that.
+- **A connector end starts at a usage.** `Hardware::CoffeeMachine::controller`
+  reaches into a definition, which SysML v2 rejects; the chain has to start at
+  a usage and continue with dots, `Hardware::machine.controller`.
+- **A use case declares its subject before its actors**, because the subject
+  is its first parameter. A secondary actor, added on a single use case,
+  therefore needs that use case to restate its subject.
+
+Every one of these was found by running the examples through the OMG pilot
+implementation; [LANGUAGE.md](LANGUAGE.md) records that check.
+
 ### elkjs: edge coordinates are relative to the edge's container
 
 ELK reports each edge's coordinates relative to the node that **contains**
@@ -210,23 +231,28 @@ These are choices, not bugs:
   decomposition uses `include` and `perform`.
 - **`import` parses but is not semantically enforced.** Everything is
   reachable by qualified name. The implementation view reads imports as
-  dependency edges; nothing restricts visibility.
+  dependency edges; nothing restricts visibility. The visibility itself has to
+  be written, as the spec requires, but `private`, `protected` and `public`
+  behave alike.
 - **Requirements are not on any view.** `requirement`, `satisfy` and their
   traces still parse, but no extractor consumes them: the six views cover
   usage, function, software, product, deployment and runtime, and none of them
-  is a specification view. The grammar keeps the surface rather than losing it.
-- **Realization cannot be written.** `allocate` resolves its ends through the
-  `Feature` union, which excludes `ActionUsage`, so a function cannot be
-  allocated to the component that realizes it. Deployment works because both
-  its ends are parts. See the backlog.
+  is a specification view. The grammar keeps the surface: a non-functional
+  requirement is often what proposes a technical solution on the
+  implementation or physical view, so a model that carries requirements must
+  keep loading.
+- **Realization cannot be written.** SysML v2 writes it as `perform` inside
+  the part that realizes a function (§7.17.6), and ortho's `perform` takes use
+  cases only so far. See the backlog.
 - **Attribute types are plain qualified names**, not cross-references —
-  there is no standard library to resolve `Real`/`String` against yet.
+  there is no standard library to resolve `Real`/`String` against yet. The
+  examples import `ScalarValues::*` so that tools which have one resolve them.
 - **Message ordering is document order**; `then` is accepted notation, not
   semantics.
 - **Only usage forms** exist for allocation (`allocate`), not `allocation def`.
 - The grammar is a **growing subset** of SysML v2/KerML, front-loaded to what
-  the six views need. Full spec compliance is an open-ended goal, not a
-  pending task.
+  the six views need, and [LANGUAGE.md](LANGUAGE.md) is that subset written
+  down. Full spec compliance is an open-ended goal, not a pending task.
 
 ## Working on the code
 
@@ -254,6 +280,24 @@ patch that breaks `langium generate` with a cryptic
 `Error: non exhaustive match` (a chevrotain GAST-visitor error, not a Langium
 bug). Let it resolve transitively. If that error ever appears, compare
 `node_modules/chevrotain/package.json` against Langium's declared range first.
+
+**Checking against the OMG pilot implementation.** The one-off check in
+[LANGUAGE.md](LANGUAGE.md#how-this-is-checked) can be repeated without
+installing conda or Jupyter:
+
+- Download `jupyter-sysml-kernel` from conda-forge (0.62.0 was used). The
+  `.conda` file is a zip holding a `.tar.zst`, which holds
+  `share/jupyter/kernels/sysml/jupyter-sysml-kernel-<version>-all.jar` and the
+  standard library in `sysml.library/`. It needs Java 21.
+- On Windows, `SysMLInteractive.loadLibrary` fails: the library's folder names
+  contain spaces, and they reach the file system still URL-encoded. Copy the
+  library with the spaces replaced, and read its three folders yourself from
+  `jshell` with `SysMLInteractive.readAll(folder, true, ".kerml")` for the
+  kernel libraries and `".sysml"` for the other two.
+- Give one `SysMLInteractive.process(text)` session each example's six files
+  in dependency order, use case, logical, implementation, physical,
+  deployment, process, so cross-file references resolve, and print
+  `getIssues()` after each.
 
 Test fixtures in `tests/fixtures/*.sysml` are inputs only. The real example
 models are `examples/survey-drone/` and `examples/coffee-machine/` — two
@@ -294,10 +338,15 @@ Three conventions produce that shape, and the example tests enforce all three:
   Software knows nothing of boards and hardware knows nothing of programs. The
   mapping between them exists only in `deployment.sysml`, which is why that
   file declares nothing of its own.
-- **The deployable parts are named once.** `implementation.sysml` declares a
-  single `part sw { ... }` tree, and `deployment.sysml` allocates out of it.
-  Allocation ends resolve to part *usages*, so without that tree there would be
-  nothing for an `allocate` to name.
+- **Both ends of an allocation are named once.** `implementation.sysml`
+  declares a single `part sw { ... }` tree of deployable parts, and
+  `physical.sysml` ends with one usage of the whole product,
+  `part machine : CoffeeMachine` or `part system : SurveyDroneSystem`.
+  `deployment.sysml` allocates from the one into the other,
+  `Software::sw.video` to `Hardware::system.drone.companion`, because an
+  allocation end is a feature chain that has to start at a usage. The
+  product's usage is also what heads the physical view, which is why its
+  top box reads `system : SurveyDroneSystem`.
 
 Requirements are absent from both examples. They parse, but no view consumes
 them (see the deviations above), so committing them would leave model text that
@@ -332,32 +381,17 @@ Possible next steps, in priority order:
   stem; with an even number it stays at the middle of the row. Both examples
   had the wobble: the survey drone's root sat 4.5 px beside `communicate`, the
   coffee machine's 13.3 px beside `prepareMilk`.
-- [ ] **Align with the SysML v2 spec.** Pick out the subset of SysML v2 that
-  the six views need and write it down in `LANGUAGE.md`: a short version of
-  the spec, for reference in this work. It is written against
-  formal/2026-03-02 (March 2026, <https://www.omg.org/spec/SysML/2.0/>), in
-  our own words with section references and brief quotes at most, which is
-  the rule the grammar already follows. The PDF is linked, not committed.
-  - Organise it by view: for each of the six, the keywords it reads and what
-    each becomes on the diagram. Then two short lists: *parsed, not drawn*,
-    and *not supported*, naming the SysML v2 a modeller is likely to reach
-    for (`state`, `item def`, `flow`, `bind`, `allocation def`, `in`/`out`
-    parameters), so the limit is found in the doc rather than in a parse
-    error.
-  - It replaces the README's "The language subset" section, which then links
-    to it. Two copies would drift.
-  - `requirement` and `satisfy` stay, as *parsed, not drawn*. No view renders
-    them, but a non-functional requirement may be what proposes a technical
-    solution on the implementation or physical view, so models that carry
-    requirements must keep loading.
-  - Realization is settled here: a part `perform`s the functions it realizes
-    (§7.17), drawn as the standard *perform actions* compartment. See the
-    realization item below.
-  - Checks, so nothing drifts: a test that the doc's keywords are exactly the
-    grammar's; every keyword in the subset used at least once in the
-    examples, so each has a worked example; and a one-off run of both
-    examples through the OMG pilot implementation, which proves them valid
-    SysML v2 rather than merely valid ortho.
+- [x] **Align with the SysML v2 spec.** [LANGUAGE.md](LANGUAGE.md) is the
+  subset, view by view, written against formal/2026-03-02, and replaces the
+  README's subset section. Running both examples through the OMG pilot
+  implementation found seven kinds of deviation, all fixed: a bare `import`
+  (the visibility is required), `Real` and `String` never imported, allocations
+  reaching into a definition (`Hardware::CoffeeMachine::controller`), `frame`
+  used as a name, undeclared message payloads, `perform use case` and
+  definitions as `include`, `perform` and `satisfy` targets, and an actor
+  declared before its subject. The grammar now requires what it can, a
+  validator checks the rest, and tests keep the page, the grammar and the
+  examples in step. Requirements stay, parsed but not drawn.
 - [ ] **Prepare for NPX** - Let us publish this cool tool in the right place such that it will be super easy to get started withou downloading the full repo. Before we do that I would like to see a proper cleaning of package.json README and other files that will be needed for that action.
 - [ ] **Dark glass renderer** - Add a new outputformat renderer. My suggestion is a .PNG with some transparency. Make it slightly glossy and cool for input in a Powerpoint with dark gray background.
 - [ ] **Realization through `perform`.** A part that realizes a function says

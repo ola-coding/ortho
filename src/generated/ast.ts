@@ -51,6 +51,9 @@ export type SysmlKeywordNames =
     | "part"
     | "perform"
     | "port"
+    | "private"
+    | "protected"
+    | "public"
     | "requirement"
     | "satisfy"
     | "specializes"
@@ -85,7 +88,7 @@ export function isLiteral(item: unknown): item is Literal {
     return (typeof item === 'string' && (/[0-9]+(\.[0-9]+)?/.test(item) || /"[^"]*"/.test(item) || /[_a-zA-Z][\w_]*/.test(item)));
 }
 
-export type PackageMember = ActionDef | ActionUsage | AllocationUsage | ConnectionUsage | InterfaceDef | PackageDecl | PartDef | PartUsage | PortDef | RequirementDef | RequirementUsage | SatisfyUsage | UseCaseDef | UseCaseUsage;
+export type PackageMember = ActionDef | ActionUsage | AllocationUsage | AttributeDef | ConnectionUsage | InterfaceDef | PackageDecl | PartDef | PartUsage | PortDef | RequirementDef | RequirementUsage | SatisfyUsage | UseCaseDef | UseCaseUsage;
 
 export const PackageMember = 'PackageMember';
 
@@ -99,28 +102,12 @@ export function isQualifiedName(item: unknown): item is QualifiedName {
     return typeof item === 'string';
 }
 
-export type RequirementElement = RequirementDef | RequirementUsage;
-
-export const RequirementElement = 'RequirementElement';
-
-export function isRequirementElement(item: unknown): item is RequirementElement {
-    return reflection.isInstance(item, RequirementElement);
-}
-
 export type RequirementMember = AttributeUsage | SubjectUsage;
 
 export const RequirementMember = 'RequirementMember';
 
 export function isRequirementMember(item: unknown): item is RequirementMember {
     return reflection.isInstance(item, RequirementMember);
-}
-
-export type SatisfyTarget = PartDef | PartUsage;
-
-export const SatisfyTarget = 'SatisfyTarget';
-
-export function isSatisfyTarget(item: unknown): item is SatisfyTarget {
-    return reflection.isInstance(item, SatisfyTarget);
 }
 
 export type UpperBound = '*' | string;
@@ -137,20 +124,18 @@ export function isUsageMember(item: unknown): item is UsageMember {
     return reflection.isInstance(item, UsageMember);
 }
 
-export type UseCaseElement = UseCaseDef | UseCaseUsage;
-
-export const UseCaseElement = 'UseCaseElement';
-
-export function isUseCaseElement(item: unknown): item is UseCaseElement {
-    return reflection.isInstance(item, UseCaseElement);
-}
-
 export type UseCaseMember = ActorUsage | AttributeUsage | IncludeUsage | SubjectUsage;
 
 export const UseCaseMember = 'UseCaseMember';
 
 export function isUseCaseMember(item: unknown): item is UseCaseMember {
     return reflection.isInstance(item, UseCaseMember);
+}
+
+export type Visibility = 'private' | 'protected' | 'public';
+
+export function isVisibility(item: unknown): item is Visibility {
+    return item === 'private' || item === 'protected' || item === 'public';
 }
 
 export interface ActionDef extends langium.AstNode {
@@ -207,8 +192,21 @@ export function isAllocationUsage(item: unknown): item is AllocationUsage {
     return reflection.isInstance(item, AllocationUsage);
 }
 
+export interface AttributeDef extends langium.AstNode {
+    readonly $container: PackageDecl;
+    readonly $type: 'AttributeDef';
+    members: Array<AttributeUsage>;
+    name: string;
+}
+
+export const AttributeDef = 'AttributeDef';
+
+export function isAttributeDef(item: unknown): item is AttributeDef {
+    return reflection.isInstance(item, AttributeDef);
+}
+
 export interface AttributeUsage extends langium.AstNode {
-    readonly $container: ActionDef | ActionUsage | InterfaceDef | PartDef | PartUsage | PortDef | RequirementDef | RequirementUsage | UseCaseDef | UseCaseUsage;
+    readonly $container: ActionDef | ActionUsage | AttributeDef | InterfaceDef | PartDef | PartUsage | PortDef | RequirementDef | RequirementUsage | UseCaseDef | UseCaseUsage;
     readonly $type: 'AttributeUsage';
     name: string;
     type?: QualifiedName;
@@ -252,6 +250,7 @@ export interface ImportDecl extends langium.AstNode {
     readonly $container: PackageDecl;
     readonly $type: 'ImportDecl';
     path: QualifiedName;
+    visibility: Visibility;
     wildcard: boolean;
 }
 
@@ -264,7 +263,7 @@ export function isImportDecl(item: unknown): item is ImportDecl {
 export interface IncludeUsage extends langium.AstNode {
     readonly $container: UseCaseDef | UseCaseUsage;
     readonly $type: 'IncludeUsage';
-    target: langium.Reference<UseCaseElement>;
+    target: langium.Reference<UseCaseUsage>;
 }
 
 export const IncludeUsage = 'IncludeUsage';
@@ -304,7 +303,7 @@ export interface MessageUsage extends langium.AstNode {
     readonly $container: ActionDef | ActionUsage;
     readonly $type: 'MessageUsage';
     name?: string;
-    payload?: QualifiedName;
+    payload?: langium.Reference<AttributeDef>;
     source: ConnectorEnd;
     target: ConnectorEnd;
     then: boolean;
@@ -386,7 +385,7 @@ export function isPartUsage(item: unknown): item is PartUsage {
 export interface PerformUsage extends langium.AstNode {
     readonly $container: PartDef | PartUsage;
     readonly $type: 'PerformUsage';
-    target: langium.Reference<UseCaseElement>;
+    target: langium.Reference<UseCaseUsage>;
 }
 
 export const PerformUsage = 'PerformUsage';
@@ -452,8 +451,8 @@ export function isRequirementUsage(item: unknown): item is RequirementUsage {
 export interface SatisfyUsage extends langium.AstNode {
     readonly $container: PackageDecl | PartDef | PartUsage;
     readonly $type: 'SatisfyUsage';
-    requirement: langium.Reference<RequirementElement>;
-    satisfier: langium.Reference<SatisfyTarget>;
+    requirement: langium.Reference<RequirementUsage>;
+    satisfier: langium.Reference<PartUsage>;
 }
 
 export const SatisfyUsage = 'SatisfyUsage';
@@ -508,6 +507,7 @@ export type SysmlAstType = {
     ActionUsage: ActionUsage
     ActorUsage: ActorUsage
     AllocationUsage: AllocationUsage
+    AttributeDef: AttributeDef
     AttributeUsage: AttributeUsage
     ConnectionUsage: ConnectionUsage
     ConnectorEnd: ConnectorEnd
@@ -527,15 +527,12 @@ export type SysmlAstType = {
     PortDef: PortDef
     PortUsage: PortUsage
     RequirementDef: RequirementDef
-    RequirementElement: RequirementElement
     RequirementMember: RequirementMember
     RequirementUsage: RequirementUsage
-    SatisfyTarget: SatisfyTarget
     SatisfyUsage: SatisfyUsage
     SubjectUsage: SubjectUsage
     UsageMember: UsageMember
     UseCaseDef: UseCaseDef
-    UseCaseElement: UseCaseElement
     UseCaseMember: UseCaseMember
     UseCaseUsage: UseCaseUsage
 }
@@ -543,15 +540,20 @@ export type SysmlAstType = {
 export class SysmlAstReflection extends langium.AbstractAstReflection {
 
     getAllTypes(): string[] {
-        return [ActionDef, ActionMember, ActionUsage, ActorUsage, AllocationUsage, AttributeUsage, ConnectionUsage, ConnectorEnd, Feature, ImportDecl, IncludeUsage, InterfaceDef, InterfaceEnd, MessageUsage, Model, Multiplicity, PackageDecl, PackageMember, PartDef, PartUsage, PerformUsage, PortDef, PortUsage, RequirementDef, RequirementElement, RequirementMember, RequirementUsage, SatisfyTarget, SatisfyUsage, SubjectUsage, UsageMember, UseCaseDef, UseCaseElement, UseCaseMember, UseCaseUsage];
+        return [ActionDef, ActionMember, ActionUsage, ActorUsage, AllocationUsage, AttributeDef, AttributeUsage, ConnectionUsage, ConnectorEnd, Feature, ImportDecl, IncludeUsage, InterfaceDef, InterfaceEnd, MessageUsage, Model, Multiplicity, PackageDecl, PackageMember, PartDef, PartUsage, PerformUsage, PortDef, PortUsage, RequirementDef, RequirementMember, RequirementUsage, SatisfyUsage, SubjectUsage, UsageMember, UseCaseDef, UseCaseMember, UseCaseUsage];
     }
 
     protected override computeIsSubtype(subtype: string, supertype: string): boolean {
         switch (subtype) {
             case ActionDef:
+            case AttributeDef:
             case InterfaceDef:
             case PackageDecl:
-            case PortDef: {
+            case PartDef:
+            case PortDef:
+            case RequirementDef:
+            case UseCaseDef:
+            case UseCaseUsage: {
                 return this.isSubtype(PackageMember, supertype);
             }
             case ActionUsage: {
@@ -563,6 +565,7 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
             }
             case AllocationUsage:
             case ConnectionUsage:
+            case RequirementUsage:
             case SatisfyUsage: {
                 return this.isSubtype(PackageMember, supertype) || this.isSubtype(UsageMember, supertype);
             }
@@ -575,11 +578,8 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
             case MessageUsage: {
                 return this.isSubtype(ActionMember, supertype);
             }
-            case PartDef: {
-                return this.isSubtype(PackageMember, supertype) || this.isSubtype(SatisfyTarget, supertype);
-            }
             case PartUsage: {
-                return this.isSubtype(ActionMember, supertype) || this.isSubtype(Feature, supertype) || this.isSubtype(PackageMember, supertype) || this.isSubtype(SatisfyTarget, supertype) || this.isSubtype(UsageMember, supertype);
+                return this.isSubtype(ActionMember, supertype) || this.isSubtype(Feature, supertype) || this.isSubtype(PackageMember, supertype) || this.isSubtype(UsageMember, supertype);
             }
             case PerformUsage: {
                 return this.isSubtype(UsageMember, supertype);
@@ -587,18 +587,8 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
             case PortUsage: {
                 return this.isSubtype(Feature, supertype) || this.isSubtype(UsageMember, supertype);
             }
-            case RequirementDef: {
-                return this.isSubtype(PackageMember, supertype) || this.isSubtype(RequirementElement, supertype);
-            }
-            case RequirementUsage: {
-                return this.isSubtype(PackageMember, supertype) || this.isSubtype(RequirementElement, supertype) || this.isSubtype(UsageMember, supertype);
-            }
             case SubjectUsage: {
                 return this.isSubtype(Feature, supertype) || this.isSubtype(RequirementMember, supertype) || this.isSubtype(UseCaseMember, supertype);
-            }
-            case UseCaseDef:
-            case UseCaseUsage: {
-                return this.isSubtype(PackageMember, supertype) || this.isSubtype(UseCaseElement, supertype);
             }
             default: {
                 return false;
@@ -626,21 +616,24 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
             }
             case 'IncludeUsage:target':
             case 'PerformUsage:target': {
-                return UseCaseElement;
+                return UseCaseUsage;
             }
             case 'InterfaceEnd:type':
             case 'PortDef:supertypes':
             case 'PortUsage:type': {
                 return PortDef;
             }
+            case 'MessageUsage:payload': {
+                return AttributeDef;
+            }
             case 'RequirementUsage:type': {
                 return RequirementDef;
             }
             case 'SatisfyUsage:requirement': {
-                return RequirementElement;
+                return RequirementUsage;
             }
             case 'SatisfyUsage:satisfier': {
-                return SatisfyTarget;
+                return PartUsage;
             }
             case 'UseCaseUsage:type': {
                 return UseCaseDef;
@@ -691,6 +684,15 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     ]
                 };
             }
+            case AttributeDef: {
+                return {
+                    name: AttributeDef,
+                    properties: [
+                        { name: 'members', defaultValue: [] },
+                        { name: 'name' }
+                    ]
+                };
+            }
             case AttributeUsage: {
                 return {
                     name: AttributeUsage,
@@ -725,6 +727,7 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: ImportDecl,
                     properties: [
                         { name: 'path' },
+                        { name: 'visibility' },
                         { name: 'wildcard', defaultValue: false }
                     ]
                 };

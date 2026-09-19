@@ -9,12 +9,16 @@ PackageDecl:
     '}';
 
 // Imports parse but are not yet semantically enforced: all definitions are
-// visible by qualified name across packages (see SysmlScopeComputation).
+// visible by qualified name across packages (see SysmlScopeComputation). The
+// spec requires the visibility to be written out (§7.5.3), so it is here too.
 ImportDecl:
-    'import' path=QualifiedName (wildcard?='::*')? ';';
+    visibility=Visibility 'import' path=QualifiedName (wildcard?='::*')? ';';
+
+Visibility returns string:
+    'private' | 'protected' | 'public';
 
 PackageMember:
-    PackageDecl | PartDef | PortDef | InterfaceDef | RequirementDef | UseCaseDef | ActionDef
+    PackageDecl | PartDef | PortDef | InterfaceDef | AttributeDef | RequirementDef | UseCaseDef | ActionDef
     | PartUsage | RequirementUsage | ConnectionUsage | SatisfyUsage | UseCaseUsage | AllocationUsage | ActionUsage;
 
 PartDef:
@@ -58,6 +62,11 @@ Multiplicity:
 UpperBound returns string:
     NUMBER | '*';
 
+// A definition of values without identity. Its one job here is to type a
+// message's payload, as the spec's own examples do.
+AttributeDef:
+    'attribute' 'def' name=ID (';' | '{' (members+=AttributeUsage)* '}');
+
 // Attribute types stay plain qualified names (not cross-references) until the
 // standard library types (ScalarValues::Real etc.) exist to resolve against.
 AttributeUsage:
@@ -80,8 +89,9 @@ RequirementUsage:
     'requirement' name=ID (':' type=[RequirementDef:QualifiedName])?
     (';' | '{' (members+=RequirementMember)* '}');
 
+// Both ends are usages: a requirement usage, satisfied by a part usage.
 SatisfyUsage:
-    'satisfy' requirement=[RequirementElement:QualifiedName] 'by' satisfier=[SatisfyTarget:QualifiedName] ';';
+    'satisfy' requirement=[RequirementUsage:QualifiedName] 'by' satisfier=[PartUsage:QualifiedName] ';';
 
 // SysML v2 has no UML-style `extend`; scenarios compose via include/perform.
 UseCaseDef:
@@ -98,11 +108,13 @@ UseCaseMember:
 ActorUsage:
     'actor' name=ID (':' type=[PartDef:QualifiedName])? ';';
 
+// Both name a use case usage, never a definition. `include use case x` is
+// spec notation; `perform` takes the bare name only.
 IncludeUsage:
-    'include' ('use' 'case')? target=[UseCaseElement:QualifiedName] ';';
+    'include' ('use' 'case')? target=[UseCaseUsage:QualifiedName] ';';
 
 PerformUsage:
-    'perform' ('use' 'case')? target=[UseCaseElement:QualifiedName] ';';
+    'perform' target=[UseCaseUsage:QualifiedName] ';';
 
 // Only the usage form of allocation exists; `allocation def` is not supported.
 AllocationUsage:
@@ -120,16 +132,12 @@ ActionMember:
     MessageUsage | ActionUsage | PartUsage | AttributeUsage;
 
 // Message ordering is document order; the optional leading `then` states the
-// succession explicitly, spec-style. Payload stays a plain qualified name
-// until item defs exist.
+// succession explicitly, spec-style. The payload names an attribute def.
 MessageUsage:
-    (then?='then')? 'message' (name=ID)? ('of' payload=QualifiedName)?
+    (then?='then')? 'message' (name=ID)? ('of' payload=[AttributeDef:QualifiedName])?
     'from' source=ConnectorEnd 'to' target=ConnectorEnd ';';
 
 type Feature = PartUsage | PortUsage | AttributeUsage | InterfaceEnd | SubjectUsage;
-type RequirementElement = RequirementDef | RequirementUsage;
-type SatisfyTarget = PartDef | PartUsage;
-type UseCaseElement = UseCaseDef | UseCaseUsage;
 
 QualifiedName returns string:
     ID ('::' ID)*;

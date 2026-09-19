@@ -25,7 +25,7 @@
     <g><rect x="39" y="63" width="1177.572" height="852"
           fill="#f6f6ec" stroke="#2b2b2b" stroke-width="1.25" />
       <text x="627.786" y="84" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">SurveyDroneSystem</text></g>
+          font-size="12" font-weight="600" fill="#1a1a1a">system : SurveyDroneSystem</text></g>
     <g><rect x="64" y="108" width="1127.572" height="507"
           fill="#f6f6ec" stroke="#2b2b2b" stroke-width="1.25" />
       <text x="627.786" y="129" text-anchor="middle"

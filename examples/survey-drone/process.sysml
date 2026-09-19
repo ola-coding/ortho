@@ -14,7 +14,23 @@
 // behind one arrow would hide the only place the stacks meet.
 package SurveyMissionScenario {
 
-    import Software::*;
+    private import Software::*;
+
+    // What the messages carry. Values, not things, so attribute defs; the
+    // MAVLink ones are named after the protocol's own message types.
+    attribute def AreaPolygon;
+    attribute def Waypoints;
+    attribute def MissionItems;
+    attribute def MissionCount;
+    attribute def MissionRequestInt;
+    attribute def MissionItemInt;
+    attribute def MissionAck;
+    attribute def CommandLong;
+    attribute def SetMode;
+    attribute def H265Stream;
+    attribute def MissionItemReached;
+    attribute def MissionCurrent;
+    attribute def SurveyProgress;
 
     action def SurveyMission {
         part operator;

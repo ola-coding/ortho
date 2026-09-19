@@ -52,9 +52,9 @@ describe('physical diagram extraction', () => {
     it('carries no requirements: the view is the product, not its specification', async () => {
         const graph = extractPhysicalGraph(await parseExample());
         const names = allNodes(graph.nodes).map(n => n.name);
-        // The fixture declares MassLimit, massReq and a satisfy; none of them
+        // The fixture declares PowerBudget, powerReq and a satisfy; none of them
         // belong to any of the six views, so none of them reach this graph.
-        expect(names.some(n => n.includes('MassLimit') || n.includes('massReq'))).toBe(false);
+        expect(names.some(n => n.includes('PowerBudget') || n.includes('powerReq'))).toBe(false);
         expect(graph.edges.some(e => e.kind === 'satisfy' || e.kind === 'typing')).toBe(false);
     });
 

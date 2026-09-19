@@ -54,12 +54,12 @@ describe('core grammar', () => {
         const document = await parseOk(`
             package P {
                 port def Pw;
-                part def Battery { port out : Pw; }
+                part def Battery { port outlet : Pw; }
                 part def Fc { port in_ : Pw; }
                 part def Drone {
                     part battery : Battery;
                     part fc : Fc;
-                    connect battery.out to fc.in_;
+                    connect battery.outlet to fc.in_;
                 }
             }
         `);
@@ -67,7 +67,7 @@ describe('core grammar', () => {
         const drone = pkg.members.find(m => isPartDef(m) && m.name === 'Drone') as PartDef;
         const connection = drone.members.find(isConnectionUsage) as ConnectionUsage;
         expect(connection.source.segments[0].ref?.name).toBe('battery');
-        expect(connection.source.segments[1].ref?.name).toBe('out');
+        expect(connection.source.segments[1].ref?.name).toBe('outlet');
         expect(connection.target.segments[1].ref?.name).toBe('in_');
     });
 
@@ -80,7 +80,8 @@ describe('core grammar', () => {
                     subject vehicle : Drone;
                 }
                 requirement massReq : MassLimit;
-                satisfy massReq by Drone;
+                part drone : Drone;
+                satisfy massReq by drone;
             }
         `);
         const pkg = document.parseResult.value.packages[0];
@@ -89,7 +90,7 @@ describe('core grammar', () => {
         expect(usage.type?.ref?.name).toBe('MassLimit');
         const satisfy = pkg.members.find(isSatisfyUsage) as SatisfyUsage;
         expect(satisfy.requirement.ref?.name).toBe('massReq');
-        expect(satisfy.satisfier.ref?.name).toBe('Drone');
+        expect(satisfy.satisfier.ref?.name).toBe('drone');
     });
 
     it('resolves connector chains ending in an attribute', async () => {
@@ -121,7 +122,7 @@ describe('core grammar', () => {
                 }
             }
             package User {
-                import Ifaces::*;
+                private import Ifaces::*;
                 part def X;
             }
         `);
@@ -171,5 +172,64 @@ describe('core grammar', () => {
             .find(m => isPartDef(m) && m.name === 'Design') as PartDef;
         const connection = design.members.find(isConnectionUsage) as ConnectionUsage;
         expect(connection.source.segments[0].ref?.$container).toHaveProperty('name', 'Design');
+    });
+});
+
+// A model ortho accepts should also be valid SysML v2, so the rules the OMG
+// pilot implementation enforces and ortho can check are checked here too.
+describe('SysML v2 conformance', () => {
+    const errorsOf = async (text: string): Promise<string[]> => {
+        const document = await parse(text, { validation: true });
+        return (document.diagnostics ?? []).filter(d => d.severity === 1).map(d => d.message);
+    };
+
+    it('requires an import to state its visibility', async () => {
+        expect(await errorsOf('package A { part def X; } package B { import A::*; }')).not.toHaveLength(0);
+        for (const visibility of ['private', 'protected', 'public']) {
+            expect(await errorsOf(`package A { part def X; } package B { ${visibility} import A::*; }`)).toEqual([]);
+        }
+    });
+
+    it('rejects a reserved word as a name, even one ortho does not parse', async () => {
+        const errors = await errorsOf('package P { part def Drone { part frame; } }');
+        expect(errors).toEqual(["'frame' is a reserved word in SysML v2 and cannot be a name."]);
+    });
+
+    it('rejects a qualified name into a definition, and accepts the chain from a usage', async () => {
+        const model = (target: string) => `
+            package H { part def M { part c; } part m : M; }
+            package S { part sw { part a; } }
+            package D { allocate S::sw.a to ${target}; }`;
+        expect(await errorsOf(model('H::M::c'))).toEqual(
+            ["'H::M::c' names a feature through its owner. Start at a usage and continue with dots."]
+        );
+        expect(await errorsOf(model('H::m.c'))).toEqual([]);
+    });
+
+    it('requires a use case to declare its subject before its actors', async () => {
+        const model = (body: string) => `
+            package U {
+                part def Operator;
+                use case def Operate { subject Machine; actor operator : Operator; }
+                use case service : Operate { ${body} }
+            }`;
+        expect(await errorsOf(model('actor technician : Operator;'))).toEqual([
+            "Declare the subject of 'service' before its actors: the subject is a use case's first parameter."
+        ]);
+        expect(await errorsOf(model('subject Machine; actor technician : Operator;'))).toEqual([]);
+    });
+
+    it('resolves a message payload to an attribute def', async () => {
+        const text = (payload: string) => `
+            package P {
+                attribute def Command;
+                part def Sender; part def Receiver;
+                action def Talk {
+                    part s : Sender; part r : Receiver;
+                    message go of ${payload} from s to r;
+                }
+            }`;
+        expect(await errorsOf(text('Command'))).toEqual([]);
+        expect(await errorsOf(text('Undeclared'))).not.toHaveLength(0);
     });
 });

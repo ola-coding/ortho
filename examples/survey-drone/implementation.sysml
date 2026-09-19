@@ -11,7 +11,7 @@ package Software {
 
     // Plans the survey and shows its progress.
     package Ground {
-        import Software::Middleware;
+        private import Software::Middleware;
 
         part def SurveyPlanner;
     }
@@ -19,11 +19,11 @@ package Software {
     // One Docker container per module. Modules never call each other: they
     // publish and subscribe through Zenoh.
     package Onboard {
-        import Software::Middleware;
+        private import Software::Middleware;
 
         // Plans against what perception knows of the surroundings.
         package Autonomy {
-            import Software::Onboard::Perception;
+            private import Software::Onboard::Perception;
 
             part def RoutePlanner;
             part def ObstacleAvoidance;
@@ -42,7 +42,7 @@ package Software {
     }
 
     package Middleware {
-        import Software::LinuxPlatform;
+        private import Software::LinuxPlatform;
 
         // Carries every message between the containers, and to the tablet.
         part def ZenohRouter;
@@ -66,7 +66,7 @@ package Software {
     // ArduPilot-style firmware for the control computer. Each comment names
     // the ArduPilot libraries the module stands for.
     package Flight {
-        import Software::FlightPlatform;
+        private import Software::FlightPlatform;
 
         part def MissionExecutor;   // AP_Mission, AC_WPNav
         part def StateEstimator;    // AP_AHRS, AP_NavEKF3

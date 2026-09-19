@@ -5,6 +5,9 @@
 // below are `connect` statements typed by the interface they carry.
 package Hardware {
 
+    // Real and String are the spec's own value types, from its library.
+    private import ScalarValues::*;
+
     port def WaterPort;
     port def SteamPort;
     port def CoffeePort;
@@ -122,4 +125,8 @@ package Hardware {
         connection : ControlLink connect controller.milkCtrl to wand.ctrlIn;
         connection : ControlLink connect controller.uiLink to display.ctrlOut;
     }
+
+    // The machine itself, named once so deployment.sysml can allocate to the
+    // boards inside it: a reference into a definition has to start at a usage.
+    part machine : CoffeeMachine;
 }

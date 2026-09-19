@@ -98,7 +98,7 @@ describe('coffee machine example model', () => {
 
     it('physical view: the machine as nested parts, looms named by their interface', async () => {
         const graph = extractPhysicalGraph(await parseSet('physical.sysml'));
-        expect(graph.nodes.map(n => n.name)).toEqual(['CoffeeMachine']);
+        expect(graph.nodes.map(n => n.name)).toEqual(['machine : CoffeeMachine']);
         const names = graph.nodes[0].children!.map(n => n.name);
         expect(names).toHaveLength(10);
         expect(names).toContain('heater : Thermoblock');
@@ -115,7 +115,7 @@ describe('coffee machine example model', () => {
         );
         expect(graph.edges).toHaveLength(0);
         // Both hosts are fitted in the machine, so they share its frame.
-        expect(graph.nodes.map(n => n.name)).toEqual(['CoffeeMachine']);
+        expect(graph.nodes.map(n => n.name)).toEqual(['machine : CoffeeMachine']);
         const hosts = graph.nodes[0].children!;
         expect(hosts.map(n => n.id).sort()).toEqual([
             'Hardware::CoffeeMachine::controller',

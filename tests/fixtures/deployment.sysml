@@ -7,12 +7,12 @@ package DroneSystem {
     }
 
     package Logical {
-        import Requirements::*;
+        private import Requirements::*;
         part def Airframe;
     }
 
     package Physical {
-        import Logical::*;
+        private import Logical::*;
 
         part def FlightController;
         part def CompanionComputer;
@@ -22,8 +22,8 @@ package DroneSystem {
     }
 
     package Software {
-        import Logical::*;
-        import Physical::*;
+        private import Logical::*;
+        private import Physical::*;
 
         part flightStack {
             part attitudeControl;

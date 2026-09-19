@@ -33,7 +33,7 @@ describe('action and message grammar', () => {
         expect(messages[0].then).toBeFalsy();
         expect(messages[1].then).toBe(true);
         expect(messages[0].name).toBe('cmdTakeOff');
-        expect(messages[0].payload).toBe('TakeOffCommand');
+        expect(messages[0].payload?.ref?.name).toBe('TakeOffCommand');
         expect(messages[0].source.segments[0].ref?.name).toBe('pilot');
         expect(messages[0].target.segments[0].ref?.name).toBe('fc');
     });

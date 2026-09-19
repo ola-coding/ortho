@@ -5,7 +5,13 @@
 // file is rendered alongside this one.
 package MakeCappuccinoScenario {
 
-    import Software::*;
+    private import Software::*;
+
+    // What the messages carry. Values, not things, so attribute defs.
+    attribute def BeverageRecipe;
+    attribute def TempSetpoint;
+    attribute def DoseSetting;
+    attribute def MilkSetting;
 
     action def MakeCappuccino {
         part user;

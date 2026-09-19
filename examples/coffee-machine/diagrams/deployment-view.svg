@@ -25,7 +25,7 @@
     <g><rect x="39" y="63" width="511.392" height="392"
           fill="#f6f6ec" stroke="#2b2b2b" stroke-width="1.25" />
       <text x="294.696" y="84" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">CoffeeMachine</text></g>
+          font-size="12" font-weight="600" fill="#1a1a1a">machine : CoffeeMachine</text></g>
     <g><polygon points="64,120 76,108 525.392,108 513.392,120"
           fill="#f0f0e6" stroke="#2b2b2b" stroke-width="1.25" />
       <polygon points="513.392,120 525.392,108 525.392,277 513.392,289"

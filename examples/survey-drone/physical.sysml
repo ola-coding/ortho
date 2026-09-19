@@ -9,6 +9,9 @@
 // would state a cable that does not exist.
 package Hardware {
 
+    // Real is the spec's own value type, from its library.
+    private import ScalarValues::*;
+
     port def PowerPort;
     port def DataPort;
     port def DrivePort;
@@ -112,7 +115,7 @@ package Hardware {
     part def SurveyDrone {
         port rfLink : RfPort;
 
-        part frame : Fuselage;
+        part airframe : Fuselage;
         part motors : BrushlessMotor [4];
         part props : Propeller [4];
         part esc : FourInOneEsc;
@@ -132,8 +135,8 @@ package Hardware {
         connect fc.motorOut to esc.signalIn;
         connect esc.phasesOut to motors.phases;
         connect motors.shaft to props.hub;
-        connect motors.arm to frame.motorArms;
-        connect camera.mount to frame.cameraMount;
+        connect motors.arm to airframe.motorArms;
+        connect camera.mount to airframe.cameraMount;
         connect imu.dataOut to fc.imuIn;
         connect gps.dataOut to fc.gpsIn;
         connect fc.mavlink to companion.autopilot;
@@ -158,4 +161,9 @@ package Hardware {
 
         connection : RadioLink connect drone.rfLink to ground.rfLink;
     }
+
+    // The system itself, named once so deployment.sysml can allocate to the
+    // computers inside it: a reference into a definition has to start at a
+    // usage.
+    part system : SurveyDroneSystem;
 }

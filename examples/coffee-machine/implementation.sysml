@@ -12,7 +12,7 @@ package Software {
     }
 
     package Application {
-        import Software::Control;
+        private import Software::Control;
 
         part def RecipeEngine;
         part def UiApp;

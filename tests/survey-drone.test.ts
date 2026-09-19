@@ -112,7 +112,7 @@ describe('survey drone example model', () => {
 
     it('physical view: the product as nested parts, each radio wired on its own', async () => {
         const graph = extractPhysicalGraph(await parseSet('physical.sysml'));
-        expect(graph.nodes.map(n => n.name)).toEqual(['SurveyDroneSystem']);
+        expect(graph.nodes.map(n => n.name)).toEqual(['system : SurveyDroneSystem']);
         const system = graph.nodes[0];
         expect(system.children!.map(c => c.name)).toEqual([
             'drone : SurveyDrone', 'ground : GroundStation'
@@ -124,19 +124,19 @@ describe('survey drone example model', () => {
         // The same radio type is fitted at both ends: two boxes, and the
         // camera's video reaches the companion computer, not the tablet.
         expect(graph.edges).toContainEqual(expect.objectContaining({
-            sourcePortId: 'Hardware::SurveyDroneSystem.drone.camera#videoOut',
-            targetPortId: 'Hardware::SurveyDroneSystem.drone.companion#cameraIn'
+            sourcePortId: 'Hardware::system.drone.camera#videoOut',
+            targetPortId: 'Hardware::system.drone.companion#cameraIn'
         }));
         expect(graph.edges).toContainEqual(expect.objectContaining({
-            sourcePortId: 'Hardware::SurveyDroneSystem.ground.tablet#network',
-            targetPortId: 'Hardware::SurveyDroneSystem.ground.radio#ethernet'
+            sourcePortId: 'Hardware::system.ground.tablet#network',
+            targetPortId: 'Hardware::system.ground.radio#ethernet'
         }));
 
         // The air-to-ground link is the one connection typed by an interface.
         expect(graph.edges.filter(e => e.label === 'RadioLink')).toEqual([
             expect.objectContaining({
-                sourcePortId: 'Hardware::SurveyDroneSystem.drone#rfLink',
-                targetPortId: 'Hardware::SurveyDroneSystem.ground#rfLink'
+                sourcePortId: 'Hardware::system.drone#rfLink',
+                targetPortId: 'Hardware::system.ground#rfLink'
             })
         ]);
     });
@@ -147,7 +147,7 @@ describe('survey drone example model', () => {
         );
         expect(graph.edges).toHaveLength(0);
 
-        expect(graph.nodes.map(n => n.name)).toEqual(['SurveyDroneSystem']);
+        expect(graph.nodes.map(n => n.name)).toEqual(['system : SurveyDroneSystem']);
         const system = graph.nodes[0];
         const drone = system.children!.find(c => c.name === 'drone : SurveyDrone')!;
         expect(drone.children!.map(c => c.id).sort()).toEqual([
