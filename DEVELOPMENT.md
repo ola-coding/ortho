@@ -314,24 +314,18 @@ takes the Pages deploy down with it.
 
 ## Backlog
 
-Grammar surface that parses but no diagram consumes yet: `perform`,
-`requirement` / `satisfy`, import wildcards. Kept deliberately as spec
-coverage.
+Possible next steps, in priority order:
 
-Possible next steps, roughly by value:
-
-- **`ActionUsage` in the `Feature` union** — the one change that unblocks
-  realization. `allocate` resolves its ends through `Feature`, so today a
-  function cannot be allocated to whatever realizes it, and the relation
-  between the Logical view and the two realization views cannot be written at
-  all, let alone drawn. Smallest change in this list, largest consequence.
-- **`view def` / `viewpoint` elements** — SysML v2's first-class replacement
-  for UML diagram kinds. Could drive both diagram scoping and frame headings
-  from the model itself, replacing the one-file-per-view convention.
-- State machines, constraints/calculations, item defs (typed message
-  payloads), verification cases.
-- Sequence combined fragments (loop/alt) and return-message styling.
-- **Align the stem with the middle child in the logical view.** A parent is
+- [ ] **Raise the Node floor.** `engines` declares `>=18` and CI now proves it —
+  the suite, the build and a render all pass on 18.20.8. But 18 reached
+  end-of-life in April 2025 and 20 in April 2026, so the floor sits two EOL
+  generations back, and the deck gate depends on it staying green. Moving to
+  22 (LTS into 2027) is a bump to `engines`, dropping 18 from the test matrix
+  and a line in the README's requirements: nothing under `src/` uses a
+  post-18 API, so no code has to change. Housekeeping, not capability, but it
+  goes first: once the package is on npm, `engines` is a public promise.
+- [ ] **Prepare for NPX** - Let us publish this cool tool in the right place such that it will be super easy to get started withou downloading the full repo. Before we do that I would like to see a proper cleaning of package.json README and other files that will be needed for that action.
+- [ ] **Align the stem with the middle child in the logical view.** A parent is
   centred on the midpoint between its first and last child's centres
   (`firstCentre`/`lastCentre` in `src/layout/tree-layout.ts`), which lands on
   a child's own stem only when the row happens to be symmetric. Unequal box
@@ -341,12 +335,16 @@ Possible next steps, roughly by value:
   wobble rather than a stem. The rule to implement: with an odd number of
   children the parent's stem lands on the middle child's stem; with an even
   number it stays at the middle of the row, as it does now.
-- Enforced import semantics, once the grammar is broad enough to need them.
-- **Raise the Node floor.** `engines` declares `>=18` and CI now proves it —
-  the suite, the build and a render all pass on 18.20.8. But 18 reached
-  end-of-life in April 2025 and 20 in April 2026, so the floor sits two EOL
-  generations back, and the deck gate depends on it staying green. Moving to
-  22 (LTS into 2027) is a bump to `engines`, dropping 18 from the test matrix
-  and a line in the README's requirements: nothing under `src/` uses a
-  post-18 API, so no code has to change. Housekeeping, not capability, which
-  is why it sits last.
+- [ ] **Dark glass renderer** - Add a new outputformat renderer. My suggestion is a .PNG with some transparency. Make it slightly glossy and cool for input in a Powerpoint with dark gray background.
+- [ ] **`ActionUsage` in the `Feature` union** — the one change that unblocks
+  realization. `allocate` resolves its ends through `Feature`, so today a
+  function cannot be allocated to whatever realizes it, and the relation
+  between the Logical view and the two realization views cannot be written at
+  all, let alone drawn. Smallest change in this list, largest consequence.
+- [ ] **`view def` / `viewpoint` elements** — SysML v2's first-class replacement
+  for UML diagram kinds. Could drive both diagram scoping and frame headings
+  from the model itself, replacing the one-file-per-view convention.
+- [ ] Sequence combined fragments (loop/alt) and return-message styling.
+- [ ] State machines, constraints/calculations, item defs (typed message
+  payloads), verification cases.
+- [ ] Enforced import semantics, once the grammar is broad enough to need them.
