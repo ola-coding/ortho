@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="910.744" height="424"
-     viewBox="0 0 910.744 424" font-family="Arial, Helvetica, Segoe UI, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="1131.44" height="424"
+     viewBox="0 0 1131.44 424" font-family="Arial, Helvetica, Segoe UI, sans-serif">
   <title>Logical view — Coffee Machine (generated from examples/coffee-machine/logical.sysml)</title>
   <defs>
     <marker id="triangle" markerWidth="14" markerHeight="12" refX="12" refY="5"
@@ -15,12 +15,12 @@
       <path d="M0,0 L10,5 L0,10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
     </marker>
   </defs>
-  <rect x="0" y="0" width="910.744" height="424" fill="white" />
-  <rect x="8" y="8" width="894.744" height="408" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+  <rect x="0" y="0" width="1131.44" height="424" fill="white" />
+  <rect x="8" y="8" width="1115.44" height="408" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
   <path d="M8,8 L8,30 L185.423,30 L195.423,21 L195.423,8 Z"
         fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
   <text x="16" y="23" font-size="11" font-weight="600" fill="#1a1a1a">Logical view — Coffee Machine</text>
-  <text x="896.744" y="410" text-anchor="end" font-size="9" fill="#8a8a86">examples/coffee-machine/logical.sysml</text>
+  <text x="1117.44" y="410" text-anchor="end" font-size="9" fill="#8a8a86">examples/coffee-machine/logical.sysml</text>
   
     <g><rect x="377.65" y="60" width="114.7" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
@@ -69,7 +69,7 @@
     <g><rect x="414" y="198" width="110" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
       <text x="469" y="222" text-anchor="middle"
-          font-size="12" fill="#1a1a1a">storeMilk</text></g>
+          font-size="12" fill="#1a1a1a">drawMilk</text></g>
     <g><rect x="414" y="248" width="110" height="40" rx="11" ry="11"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
       <text x="469" y="272" text-anchor="middle"
@@ -98,6 +98,18 @@
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
       <text x="798.3800000000001" y="372" text-anchor="middle"
           font-size="12" fill="#1a1a1a">interlockBrewGroup</text></g>
+    <g><rect x="930.744" y="60" width="124.696" height="40" rx="11" ry="11"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="993.092" y="84" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">MaintainMachine</text></g>
+    <g><rect x="964.744" y="114" width="130.696" height="40" rx="11" ry="11"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1030.092" y="138" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">signalDescaleDue</text></g>
+    <g><rect x="964.744" y="164" width="124.684" height="40" rx="11" ry="11"
+          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+      <text x="1027.086" y="188" text-anchor="middle"
+          font-size="12" fill="#1a1a1a">runDescaleCycle</text></g>
   
     <polyline points="54,184 54,218 70,218" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
     <polyline points="54,184 54,268 70,268" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
@@ -117,4 +129,6 @@
     <polyline points="712.7,184 712.7,318 728.7,318" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
     <polyline points="712.7,184 712.7,368 728.7,368" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
     <polyline points="435,100 435,122 752.38,122 752.38,144" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="948.744,100 948.744,134 964.744,134" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="948.744,100 948.744,184 964.744,184" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
 </svg>

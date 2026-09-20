@@ -23,8 +23,10 @@ package Functions {
             action extractShot;
         }
 
+        // The machine holds no milk: it draws what it needs from whatever
+        // carton the user stands beside it.
         action prepareMilk {
-            action storeMilk;
+            action drawMilk;
             action frothMilk;
         }
 
@@ -45,4 +47,20 @@ package Functions {
     // that realize a function point into this usage, because a `perform`
     // chain has to start at one.
     action beverage : MakeBeverage;
+
+    // Looking after the machine is the second thing its owner asks of it, and
+    // descaling is the use case that asks. Not a step in making a beverage:
+    // the machine runs this cycle instead of brewing, so it is a capability of
+    // its own rather than a branch of the tree above.
+    action def MaintainMachine {
+
+        // The machine knows when it is furred up; the owner has to be told.
+        action signalDescaleDue;
+
+        // Pumping and heating are the beverage functions over again; what is
+        // new is sequencing them with descaler instead of coffee.
+        action runDescaleCycle;
+    }
+
+    action maintenance : MaintainMachine;
 }

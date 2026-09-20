@@ -9,8 +9,7 @@ package Hardware {
     private import ScalarValues::*;
 
     // The functions this hardware realizes, said on the part that realizes
-    // each one. Storing milk is not among them: the machine has no milk tank,
-    // and the logical view keeps the function whether or not anything does it.
+    // each one.
     private import Functions::*;
 
     port def WaterPort;
@@ -83,12 +82,24 @@ package Hardware {
     }
 
     // --- milk --------------------------------------------------------------
+    // A tube the user drops into a milk carton. The carton is not part of the
+    // machine, so the pickup end connects to nothing here: it is where the
+    // product meets whatever the kitchen provides.
+    part def MilkTube {
+        perform Functions::beverage.prepareMilk.drawMilk;
+
+        port pickup : BeveragePort;
+        port milkOut : BeveragePort;
+    }
+
     part def SteamWand {
         perform Functions::beverage.prepareMilk.frothMilk;
         // And the milk, here.
         perform Functions::beverage.serveBeverage;
 
         port steamIn : SteamPort;
+        // Steam through the wand pulls milk up the tube; nothing pumps it.
+        port milkIn : BeveragePort;
         port milkOut : BeveragePort;
         port ctrlIn : DataPort;
     }
@@ -122,6 +133,7 @@ package Hardware {
         part hopper : BeanHopper;
         part grinder : Grinder;
         part brewUnit : BrewUnit;
+        part milkTube : MilkTube;
         part wand : SteamWand;
         part controller : ControlBoard;
         part display : TouchDisplay;
@@ -132,6 +144,7 @@ package Hardware {
         connect pump.waterOut to heater.waterIn;
         connect heater.hotWaterOut to brewUnit.waterIn;
         connect heater.steamOut to wand.steamIn;
+        connect milkTube.milkOut to wand.milkIn;
 
         // Beans and grounds
         connect hopper.beansOut to grinder.beansIn;

@@ -13,6 +13,8 @@ package Software {
         part def BrewController {
             perform Functions::beverage.prepareCoffee.doseGrounds;
             perform Functions::beverage.controlMachine.interlockBrewGroup;
+            // It owns the brew group, so it owns flushing it out.
+            perform Functions::maintenance.runDescaleCycle;
         }
 
         part def TemperatureController {
@@ -33,6 +35,7 @@ package Software {
 
         part def UiApp {
             perform Functions::beverage.controlMachine.selectBeverage;
+            perform Functions::maintenance.signalDescaleDue;
         }
     }
 

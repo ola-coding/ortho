@@ -70,7 +70,9 @@ describe('coffee machine example model', () => {
 
     it('logical view: a strict capability tree naming no realization', async () => {
         const graph = extractLogicalGraph(await parseSet('logical.sysml'));
-        expect(graph.edges).toHaveLength(graph.nodes.length - 1);
+        // Two roots, one per use case definition: making a drink, and looking
+        // after the machine. A forest of n trees has n fewer edges than nodes.
+        expect(graph.edges).toHaveLength(graph.nodes.length - 2);
         expect(graph.edges.every(e => e.kind === 'decomposition')).toBe(true);
 
         const names = graph.nodes.map(n => n.name);
@@ -83,7 +85,8 @@ describe('coffee machine example model', () => {
         }
 
         const parents = new Set(graph.edges.map(e => e.targetId));
-        expect(graph.nodes.filter(n => !parents.has(n.id)).map(n => n.name)).toEqual(['MakeBeverage']);
+        expect(graph.nodes.filter(n => !parents.has(n.id)).map(n => n.name))
+            .toEqual(['MakeBeverage', 'MaintainMachine']);
     });
 
     it('implementation view: the application layer depends on control, never the reverse', async () => {
@@ -106,16 +109,17 @@ describe('coffee machine example model', () => {
         const graph = extractPhysicalGraph(await parseSet('physical.sysml', 'logical.sysml'));
         expect(graph.nodes.map(n => n.name)).toEqual(['machine : CoffeeMachine']);
         const names = graph.nodes[0].children!.map(n => n.name);
-        expect(names).toHaveLength(10);
+        expect(names).toHaveLength(11);
         expect(names).toContain('heater : Thermoblock');
         expect(names).toContain('controller : ControlBoard');
+        expect(names).toContain('milkTube : MilkTube');
         // Interface defs label their connection rather than becoming a box.
         expect(names.some(n => n.includes('ControlLink'))).toBe(false);
-        expect(graph.edges).toHaveLength(13);
+        expect(graph.edges).toHaveLength(14);
         expect(graph.edges.filter(e => e.kind === 'connection' && e.label === 'ControlLink')).toHaveLength(6);
     });
 
-    it('realization: every function is performed by something, except storing milk', async () => {
+    it('realization: every function is performed by something, and some parts by nothing', async () => {
         const logical = extractLogicalGraph(await parseSet('logical.sysml'));
         const parents = new Set(logical.edges.map(e => e.sourceId));
         const leaves = logical.nodes.filter(n => !parents.has(n.id)).map(n => n.name);
@@ -127,15 +131,20 @@ describe('coffee machine example model', () => {
                 .flatMap(n => n.compartments.flatMap(c => c.lines))
         );
 
-        // The machine has no milk tank, so storing milk is a function nothing
-        // realizes — which is the kind of hole this relation exists to show.
-        expect(leaves.filter(leaf => !performed.has(leaf))).toEqual(['storeMilk']);
-        // Frothing it is realized twice over, by the wand and by the program
-        // that drives the wand: realization is many to many.
+        // Every function has something that does it; a function nothing
+        // performs would show here, as a hole in the design.
+        expect(leaves.filter(leaf => !performed.has(leaf))).toEqual([]);
+        // Frothing is realized twice over, by the wand and by the program that
+        // drives the wand: realization is many to many.
         const frothers = [...allNodes(software.nodes), ...allNodes(hardware.nodes)]
             .filter(n => n.compartments.some(c => c.lines.includes('frothMilk')))
             .map(n => n.name);
         expect(frothers.sort()).toEqual(['MilkController', 'wand : SteamWand']);
+        // The other direction is a part that realizes nothing: the panel and
+        // the supply are there for the parts that do.
+        const idle = allNodes(hardware.nodes).filter(n => n.compartments.length === 0).map(n => n.name);
+        expect(idle).toContain('display : TouchDisplay');
+        expect(idle).toContain('psu : MainsSupply');
     });
 
     it('deployment view: five programs on two hosts, inside the machine', async () => {

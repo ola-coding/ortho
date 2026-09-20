@@ -332,9 +332,11 @@ reviewed in a browser) whenever rendering changes.
 
 Both carry the **same partition**, deliberately: one model file per view, each
 named for the view it feeds. The two examples differ in subject and in scale —
-the drone has fourteen physical parts against the machine's ten, two stacks
-of software where the machine has one, and a capability tree a third again as
-large — but not in structure.
+the drone has fourteen physical parts against the machine's eleven, two stacks
+of software where the machine has one, and twenty-six functions against
+twenty-two. The machine's sit in two trees, one per use case definition:
+making a drink, and looking after the machine. The drone's sit in one — but
+neither differs in structure.
 
 ```text
 use-case.sysml   logical.sysml   implementation.sysml
@@ -433,9 +435,9 @@ Possible next steps, in priority order:
   bare use case name, and the validator checks that what is performed is an
   action or a use case. Implementation and physical render with
   `logical.sysml` alongside, leaving use case and logical the only
-  self-contained views. In the coffee machine every leaf function is realized
-  but one — nothing stores milk — and that gap is visible on the diagrams and
-  asserted by a test.
+  self-contained views. In both examples every leaf function is realized by
+  something, and a test asserts it; the other direction shows too, in the
+  parts whose box carries no compartment because they realize nothing.
 - [x] **Dark glass renderer.** `--theme dark-glass` paints the same diagram
   for a dark slide: no page, so the slide shows through; glass boxes, a gloss
   across the top, a soft shadow and rounded corners; light ink and lines, with
