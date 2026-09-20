@@ -448,6 +448,25 @@ Possible next steps, in priority order:
   holds both palettes, every coordinate is settled before a theme is
   consulted, and the committed example diagrams are byte-for-byte what they
   were.
+- [ ] **APIs on the software modules.** The implementation view says which
+  modules exist and which packages depend on which, but nothing about what a
+  module offers or needs. SysML v2 has no separate notion of an API: a port is
+  "a connection point to enable interactions between occurrences (most
+  commonly parts)" (§7.12.1), so a module takes ports exactly as a pump does,
+  and an `interface def` names the pairing. Draw them as ports on the module
+  boxes, the same symbol the physical view uses, labelled with the interface.
+  - What crosses a port is said by directed features, `in`, `out` and `inout`
+    (§7.12.1), and the consumer's end is a conjugated port, `port api : ~Api`
+    (§7.12.3). Neither is in the grammar, so without them a port says only
+    that an API exists, not what goes through it. Check both against the OMG
+    pilot implementation before building on them.
+  - No wires between modules on this view. The drone's modules never call each
+    other — they publish and subscribe through Zenoh — so lines would claim
+    couplings that do not exist. What actually flows is already drawn: the
+    process view for runtime traffic, the deployment view for what runs where.
+  - The alternative, drawing the `part sw` tree as an internal block diagram of
+    the software, is a different diagram from packages and dependencies, and
+    would crowd or replace this one.
 - [ ] **Prepare for NPX** - Let us publish this cool tool in the right place such that it will be super easy to get started without downloading the full repo. Before we do that I would like to see a proper cleaning of package.json README and other files that will be needed for that action.
 - [ ] **Imports that make names visible.** An import currently changes
   nothing: everything resolves by qualified name, and nothing else does. That
