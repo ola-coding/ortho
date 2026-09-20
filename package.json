@@ -11,10 +11,6 @@
   "bin": {
     "ortho": "./bin/ortho.js"
   },
-  "main": "./dist/index.js",
-  "exports": {
-    ".": "./dist/index.js"
-  },
   "files": [
     "bin",
     "dist",

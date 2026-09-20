@@ -16,7 +16,8 @@ Notes for changing this tool. For *using* it, see [README.md](README.md).
 
 `src/pipeline.ts` wires extractor + layout + renderer into one entry per
 diagram type and is the single place to register a new diagram.
-`src/cli.ts` is the CLI; `src/index.ts` the programmatic API.
+`src/cli.ts` is the CLI, and the only way in: ortho is a command-line tool,
+with no programmatic API to keep stable.
 
 ### Why these dependencies
 

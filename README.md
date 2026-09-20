@@ -231,31 +231,6 @@ without being drawn, and what is not supported yet. It is written against the
 OMG SysML v2.0 specification (formal/2026-03-02), and both examples pass the
 OMG pilot implementation without errors or warnings.
 
-## Programmatic API
-
-```ts
-import { createSysmlServices, parseSysmlFiles, diagramTypes } from 'ortho';
-
-const services = createSysmlServices();
-const { model } = await parseSysmlFiles(services.Sysml, ['models/logical.sysml']);
-const { svg } = await diagramTypes['logical'].render(model, {
-    heading: 'Logical view — MySystem',
-    source: 'models/logical.sysml'
-});
-```
-
-A third argument picks the theme, as `--theme` does on the command line:
-
-```ts
-import { darkGlassTheme } from 'ortho';
-
-const { svg } = await diagramTypes['logical'].render(model, title, darkGlassTheme);
-```
-
-`themes` is the set by name, `getTheme(name)` looks one up and returns
-`undefined` for a name it does not know, and `Theme` is the type if you want
-to write your own palette.
-
 ## Further reading
 
 - [VIEWS.md](VIEWS.md) — the six views: what each one admits, and why.
