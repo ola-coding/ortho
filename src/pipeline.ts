@@ -12,13 +12,15 @@ import { layoutTree } from './layout/tree-layout.js';
 import { renderSvg } from './render/svg-renderer.js';
 import type { DiagramTitle } from './render/svg-renderer.js';
 import { renderSequenceSvg } from './render/sequence-renderer.js';
+import type { Theme } from './render/theme.js';
+import { lightTheme } from './render/theme.js';
 
 export interface RenderResult {
     svg: string;
     summary: string;
 }
 
-export type DiagramRenderer = (model: Model, title: DiagramTitle) => Promise<RenderResult>;
+export type DiagramRenderer = (model: Model, title: DiagramTitle, theme?: Theme) => Promise<RenderResult>;
 
 export interface DiagramType {
     /** Architectural view this diagram serves; leads the frame heading. */
@@ -27,11 +29,11 @@ export interface DiagramType {
 }
 
 function graphDiagram(extract: (model: Model) => DiagramGraph, layout: LayoutOptions): DiagramRenderer {
-    return async (model, title) => {
+    return async (model, title, theme = lightTheme) => {
         const graph = extract(model);
         const laidOut = await layoutGraph(graph, layout);
         return {
-            svg: renderSvg(laidOut, title),
+            svg: renderSvg(laidOut, title, theme),
             summary: `${laidOut.nodes.length} node(s), ${graph.edges.length} edge(s)`
         };
     };
@@ -39,11 +41,11 @@ function graphDiagram(extract: (model: Model) => DiagramGraph, layout: LayoutOpt
 
 /** Laid out by ortho itself rather than ELK: a tree's shape is fully determined. */
 function treeDiagram(extract: (model: Model) => DiagramGraph): DiagramRenderer {
-    return async (model, title) => {
+    return async (model, title, theme = lightTheme) => {
         const graph = extract(model);
         const laidOut = layoutTree(graph);
         return {
-            svg: renderSvg(laidOut, title),
+            svg: renderSvg(laidOut, title, theme),
             summary: `${laidOut.nodes.length} node(s), ${graph.edges.length} edge(s)`
         };
     };
@@ -64,10 +66,10 @@ export const diagramTypes = {
     'deployment': { view: 'Deployment view', render: graphDiagram(extractDeploymentGraph, { algorithm: 'rectpacking' }) },
     'process': {
         view: 'Process view',
-        render: async (model, title) => {
+        render: async (model, title, theme = lightTheme) => {
             const sequence = extractSequenceModel(model);
             return {
-                svg: renderSequenceSvg(sequence, title),
+                svg: renderSequenceSvg(sequence, title, theme),
                 summary: `${sequence.lifelines.length} lifeline(s), ${sequence.messages.length} message(s)`
             };
         }

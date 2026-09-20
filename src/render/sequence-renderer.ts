@@ -2,10 +2,9 @@ import type { SequenceModel } from '../diagrams/sequence.js';
 import { escapeXml, renderFrame, FONT, PAD_X, PAD_TOP } from './svg-renderer.js';
 import type { DiagramTitle } from './svg-renderer.js';
 import { measureText } from './text-metrics.js';
+import type { Theme } from './theme.js';
+import { glossOver, liftAttr, lightTheme, radiusAttrs } from './theme.js';
 
-const FILL = '#fdfdf6';
-const STROKE = '#2b2b2b';
-const TEXT_COLOR = '#1a1a1a';
 
 const HEAD_HEIGHT = 34;
 /** A stick figure and the name beneath it. */
@@ -24,7 +23,7 @@ interface Activation {
  * Sequence layout is deterministic (lifelines across the top, messages in
  * order down the page), so this renderer does its own layout instead of ELK.
  */
-export function renderSequenceSvg(model: SequenceModel, title: DiagramTitle): string {
+export function renderSequenceSvg(model: SequenceModel, title: DiagramTitle, t: Theme = lightTheme): string {
     const heads = model.lifelines.map(l => ({
         ...l,
         width: l.actor
@@ -105,33 +104,33 @@ export function renderSequenceSvg(model: SequenceModel, title: DiagramTitle): st
             // one on both views.
             const top = headTop;
             parts.push(`
-    <g><g stroke="${STROKE}" stroke-width="1.5" fill="none">
-        <circle cx="${cx}" cy="${top + 9}" r="8" fill="${FILL}" />
+    <g><g stroke="${t.stroke}" stroke-width="1.5" fill="none">
+        <circle cx="${cx}" cy="${top + 9}" r="8" fill="${t.actorFill}" />
         <line x1="${cx}" y1="${top + 17}" x2="${cx}" y2="${top + 36}" />
         <line x1="${cx - 13}" y1="${top + 24}" x2="${cx + 13}" y2="${top + 24}" />
         <line x1="${cx}" y1="${top + 36}" x2="${cx - 11}" y2="${top + 52}" />
         <line x1="${cx}" y1="${top + 36}" x2="${cx + 11}" y2="${top + 52}" /></g>
       <text x="${cx}" y="${top + 68}" text-anchor="middle"
-          font-size="12" font-weight="600" fill="${TEXT_COLOR}">${escapeXml(head.label)}</text>
+          font-size="12" font-weight="600" fill="${t.text}">${escapeXml(head.label)}</text>
       <line x1="${cx}" y1="${headTop + headsHeight}" x2="${cx}" y2="${lifelineBottom}"
-          stroke="${STROKE}" stroke-width="1" stroke-dasharray="4 4" /></g>`);
+          stroke="${t.stroke}" stroke-width="1" stroke-dasharray="4 4" /></g>`);
             continue;
         }
         const boxTop = headTop + headsHeight - HEAD_HEIGHT;
         parts.push(`
-    <g><rect x="${cx - head.width / 2}" y="${boxTop}" width="${head.width}" height="${HEAD_HEIGHT}"
-          fill="${FILL}" stroke="${STROKE}" stroke-width="1.25" />
+    <g><rect x="${cx - head.width / 2}" y="${boxTop}" width="${head.width}" height="${HEAD_HEIGHT}"${radiusAttrs(t)}${liftAttr(t)}
+          fill="${t.fill}" stroke="${t.boxStroke}" stroke-width="1.25" />${glossOver(t, cx - head.width / 2, boxTop, head.width, HEAD_HEIGHT)}
       <text x="${cx}" y="${boxTop + HEAD_HEIGHT / 2 + 4}" text-anchor="middle"
-          font-size="12" font-weight="600" fill="${TEXT_COLOR}">${escapeXml(head.label)}</text>
+          font-size="12" font-weight="600" fill="${t.text}">${escapeXml(head.label)}</text>
       <line x1="${cx}" y1="${boxTop + HEAD_HEIGHT}" x2="${cx}" y2="${lifelineBottom}"
-          stroke="${STROKE}" stroke-width="1" stroke-dasharray="4 4" /></g>`);
+          stroke="${t.stroke}" stroke-width="1" stroke-dasharray="4 4" /></g>`);
     }
 
     for (const activation of activations) {
         const cx = centers.get(activation.lifelineId)!;
         parts.push(`
     <rect x="${cx - BAR_WIDTH / 2}" y="${activation.fromY}" width="${BAR_WIDTH}" height="${activation.toY - activation.fromY}"
-          fill="#f1f1e4" stroke="${STROKE}" stroke-width="1" />`);
+          fill="${t.activationFill}" stroke="${t.boxStroke}" stroke-width="1" />`);
     }
 
     model.messages.forEach((message, i) => {
@@ -143,8 +142,8 @@ export function renderSequenceSvg(model: SequenceModel, title: DiagramTitle): st
             const right = sourceX + BAR_WIDTH / 2 + SELF_LOOP_WIDTH - BAR_WIDTH;
             parts.push(`
     <g><polyline points="${sourceX + BAR_WIDTH / 2},${y} ${right},${y} ${right},${y + 16} ${sourceX + BAR_WIDTH / 2 + 4},${y + 16}"
-          fill="none" stroke="${STROKE}" stroke-width="1.25" marker-end="url(#msgArrow)" />
-      <text x="${right + 6}" y="${y + 12}" font-size="10" fill="${TEXT_COLOR}">${label}</text></g>`);
+          fill="none" stroke="${t.stroke}" stroke-width="1.25" marker-end="url(#msgArrow)" />
+      <text x="${right + 6}" y="${y + 12}" font-size="10" fill="${t.text}">${label}</text></g>`);
         } else {
             // Arrows meet the edge of the activation bar, not the lifeline.
             const direction = Math.sign(targetX - sourceX);
@@ -152,22 +151,22 @@ export function renderSequenceSvg(model: SequenceModel, title: DiagramTitle): st
             const x2 = targetX - direction * (BAR_WIDTH / 2);
             parts.push(`
     <g><line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}"
-          stroke="${STROKE}" stroke-width="1.25" marker-end="url(#msgArrow)" />
+          stroke="${t.stroke}" stroke-width="1.25" marker-end="url(#msgArrow)" />
       <text x="${(x1 + x2) / 2}" y="${y - 6}" text-anchor="middle" font-size="10"
-          fill="${TEXT_COLOR}" paint-order="stroke" stroke="white" stroke-width="3">${label}</text></g>`);
+          fill="${t.text}" paint-order="stroke" stroke="${t.halo}" stroke-width="3">${label}</text></g>`);
         }
     });
 
     return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"
      viewBox="0 0 ${width} ${height}" font-family="${FONT}">
   <title>${escapeXml(`${title.heading} (generated from ${title.source})`)}</title>
-  <defs>
+  <defs>${t.defs}
     <marker id="msgArrow" markerWidth="12" markerHeight="10" refX="10" refY="4" orient="auto"
             markerUnits="userSpaceOnUse">
-      <path d="M0,0 L10,4 L0,8 z" fill="${STROKE}" />
+      <path d="M0,0 L10,4 L0,8 z" fill="${t.stroke}" />
     </marker>
   </defs>
-  <rect x="0" y="0" width="${width}" height="${height}" fill="white" />${renderFrame(width, height, title)}
+  ${t.page ? `<rect x="0" y="0" width="${width}" height="${height}" fill="${t.page}" />` : ''}${renderFrame(width, height, title, t)}
   ${parts.join('')}
 </svg>
 `;

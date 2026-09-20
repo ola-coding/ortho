@@ -99,7 +99,7 @@ Open `logical-view.svg` in any browser: a tree of ten functions, headed
 ## CLI reference
 
 ```text
-ortho render <models...> -d <type> -o <file.svg> [-t <heading>]
+ortho render <models...> -d <type> -o <file.svg> [-t <heading>] [--theme <name>]
 ```
 
 - `<models...>` — one or more `.sysml` files and/or directories (a directory
@@ -114,6 +114,7 @@ ortho render <models...> -d <type> -o <file.svg> [-t <heading>]
   when the first input is a directory. Every input file is listed as small
   provenance text in the diagram corner, so a view rendered with companions
   names all of them.
+- `--theme` — `light` (the default) or `dark-glass`.
 
 `ortho --version` prints the package version; `ortho --help` and
 `ortho render --help` list the commands and options.
@@ -146,6 +147,31 @@ Pass `-t` for the four that take companions. The default heading names the
 first input's root package, so `deployment.sysml` renders as "Deployment view
 — Deployment" rather than naming your system — which is why the bundled
 examples override it and read "Deployment view — Survey Drone".
+
+## Diagrams for slides
+
+`--theme dark-glass` renders the same diagram for a dark presentation:
+
+```sh
+npx ortho render physical.sysml logical.sysml -d physical --theme dark-glass     -o physical-view.svg
+```
+
+It differs from the default only in how it is painted, never in what it
+draws or where anything sits:
+
+- **No page.** The background is transparent, so the slide shows through and
+  there is no white box around the diagram.
+- **Glass boxes**, translucent white over whatever is behind them, with a
+  gloss across the top, a soft shadow and rounded corners.
+- **Light text and lines** for a dark background, with one cyan accent on
+  «include» and on the interface names that label a wire.
+- **No frame.** The heading pentagon and the source path in the corner are
+  dropped, because a slide carries its own title. The file still names its
+  source in the SVG's `<title>`.
+
+PowerPoint, Keynote and Google Slides all insert SVG directly, so the
+diagram stays sharp at any size. In PowerPoint: Insert ▸ Pictures ▸ This
+Device, and pick the `.svg`.
 
 ## Typical project integration
 

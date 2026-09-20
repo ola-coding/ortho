@@ -186,6 +186,15 @@ the deliberate alternative to a headless browser or font-file parsing.
   there. A part usage shows what its definition performs as well as its own,
   and `paddingOf` in `src/layout/elk-layout.ts` adds the compartment's height
   to a container's top padding so nested parts start below it.
+- **Themes are colour only** (`src/render/theme.ts`). `light` is the drawing
+  on paper the examples commit; `dark-glass` is for slides — no page, glass
+  fills, light ink, one accent, and no frame, since a slide has its own
+  title. Every coordinate is computed before a theme is consulted, so the two
+  differ in paint alone; a test asserts that every position the light theme
+  draws appears in the dark one. A theme that draws no gloss and no shadow
+  must add nothing at all to the output, not an empty line: the committed
+  example diagrams are byte-for-byte what they were before themes existed,
+  and CI would fail otherwise.
 - **Label placement.** Port labels, the interface labels on physical-view
   wires, «include» on the use case view and «import» on the implementation
   view are handed to ELK as real labels, so ELK reserves room for them, puts
@@ -426,8 +435,17 @@ Possible next steps, in priority order:
   self-contained views. In the coffee machine every leaf function is realized
   but one — nothing stores milk — and that gap is visible on the diagrams and
   asserted by a test.
-- [ ] **Dark glass renderer** - Add a new outputformat renderer. My suggestion is a .PNG with some transparency. Make it slightly glossy and cool for input in a Powerpoint with dark gray background.
-- [ ] **Prepare for NPX** - Let us publish this cool tool in the right place such that it will be super easy to get started withou downloading the full repo. Before we do that I would like to see a proper cleaning of package.json README and other files that will be needed for that action.
+- [x] **Dark glass renderer.** `--theme dark-glass` paints the same diagram
+  for a dark slide: no page, so the slide shows through; glass boxes, a gloss
+  across the top, a soft shadow and rounded corners; light ink and lines, with
+  one cyan accent on «include» and the interface names on a wire; and no
+  frame, since a slide carries its own title. SVG, not PNG — PowerPoint,
+  Keynote and Slides all insert SVG, which stays sharp at any size and needs
+  no rasterizer or bundled font. Themes are colour only: `src/render/theme.ts`
+  holds both palettes, every coordinate is settled before a theme is
+  consulted, and the committed example diagrams are byte-for-byte what they
+  were.
+- [ ] **Prepare for NPX** - Let us publish this cool tool in the right place such that it will be super easy to get started without downloading the full repo. Before we do that I would like to see a proper cleaning of package.json README and other files that will be needed for that action.
 - [ ] **Imports that make names visible.** An import currently changes
   nothing: everything resolves by qualified name, and nothing else does. That
   makes ortho stricter than the spec rather than looser — a valid model that

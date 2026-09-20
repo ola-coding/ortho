@@ -5,6 +5,7 @@ import { createSysmlServices } from './parser/sysml-module.js';
 import { parseSysmlFiles } from './parser/parse.js';
 import type { DiagramTitle } from './render/svg-renderer.js';
 import { diagramTypes, getDiagramType } from './pipeline.js';
+import { getTheme, themes } from './render/theme.js';
 
 interface ExpandedInput {
     isDirectory: boolean;
@@ -43,7 +44,14 @@ program
     .requiredOption('-d, --diagram <type>', `diagram type to render (${Object.keys(diagramTypes).join(', ')})`)
     .requiredOption('-o, --out <file>', 'output SVG file path')
     .option('-t, --title <heading>', 'override the frame heading (default: "<view> — <root packages of first input>")')
-    .action(async (modelPaths: string[], options: { diagram: string; out: string; title?: string }) => {
+    .option('--theme <name>', `paint the diagram with a theme (${Object.keys(themes).join(', ')})`, 'light')
+    .action(async (modelPaths: string[], options: { diagram: string; out: string; title?: string; theme: string }) => {
+        const theme = getTheme(options.theme);
+        if (!theme) {
+            console.error(`Unknown theme "${options.theme}". Available: ${Object.keys(themes).join(', ')}.`);
+            process.exitCode = 1;
+            return;
+        }
         const diagramType = getDiagramType(options.diagram);
         if (!diagramType) {
             console.error(`Unsupported diagram type "${options.diagram}". Available: ${Object.keys(diagramTypes).join(', ')}.`);
@@ -74,7 +82,7 @@ program
             source: firstIsDir ? `${firstInput}/*.sysml` : uniqueFiles.join(', ')
         };
 
-        const result = await diagramType.render(model, title);
+        const result = await diagramType.render(model, title, theme);
         await writeFile(options.out, result.svg, 'utf-8');
         console.log(`Wrote ${options.out} (${result.summary})`);
     });
