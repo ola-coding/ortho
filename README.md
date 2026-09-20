@@ -16,10 +16,15 @@ ortho render models/logical.sysml -d logical -o diagrams/logical-view.svg
 | --- | --- | --- |
 | `use-case` | Use case view | actors, use case ellipses, system boundary, includes |
 | `logical` | Logical view | the capability tree: what the system does, as functions |
-| `implementation` | Implementation view | software packages, the modules in them, «import» dependencies |
+| `implementation` | Implementation view | software packages, the modules in them, «import» dependencies, and each module's API |
 | `physical` | Physical view | the product: parts nested in their assemblies, their ports, and the wiring between them |
 | `deployment` | Deployment view | hardware nodes, grouped by the device they sit in, with the software they host drawn inside |
 | `process` | Process view | lifelines and ordered messages of one scenario |
+
+A component also says which functions it realizes, with `perform`, and the
+implementation and physical views list them on its box. A module says what it
+offers and needs in the same way, as its ports. [VIEWS.md](VIEWS.md) has the
+rules for each view, [LANGUAGE.md](LANGUAGE.md) what to write.
 
 The set is Kruchten's 4+1 with two changes: his Physical view is split into
 Physical (the product itself) and Deployment (which hardware runs which

@@ -40,7 +40,7 @@ InterfaceDef:
     (';' | '{' (ends+=InterfaceEnd | members+=AttributeUsage)* '}');
 
 InterfaceEnd:
-    'end' name=ID ':' type=[PortDef:QualifiedName] ';';
+    'end' name=ID ':' (conjugated?='~')? type=[PortDef:QualifiedName] ';';
 
 RequirementDef:
     'requirement' 'def' name=ID
@@ -69,11 +69,16 @@ AttributeDef:
 
 // Attribute types stay plain qualified names (not cross-references) until the
 // standard library types (ScalarValues::Real etc.) exist to resolve against.
+// A direction is what makes a port's feature an API rather than a value: it
+// says which way the thing crosses (§7.12.1).
 AttributeUsage:
-    'attribute' name=ID (':' type=QualifiedName)? ('=' value=Literal)? ';';
+    (direction=Direction)? 'attribute' name=ID (':' type=QualifiedName)? ('=' value=Literal)? ';';
+
+Direction returns string:
+    'in' | 'out' | 'inout';
 
 PortUsage:
-    'port' name=ID (':' type=[PortDef:QualifiedName])? ';';
+    'port' name=ID (':' (conjugated?='~')? type=[PortDef:QualifiedName])? ';';
 
 ConnectionUsage:
     ('connection' (name=ID)? (':' type=[InterfaceDef:QualifiedName])?)?

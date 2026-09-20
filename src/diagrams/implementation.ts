@@ -1,13 +1,27 @@
-import { isPackageDecl, isPartDef, isPartUsage } from '../generated/ast.js';
+import { isPackageDecl, isPartDef, isPartUsage, isPortUsage } from '../generated/ast.js';
 import type { Model, PackageDecl, PartDef } from '../generated/ast.js';
-import type { DiagramGraph, GraphEdge, GraphNode } from '../model/graph.js';
+import type { Compartment, DiagramGraph, GraphEdge, GraphNode } from '../model/graph.js';
 import { qualifiedName } from '../model/graph.js';
 import { boxSize, performCompartments } from './connector-ends.js';
 import { collectPackages } from '../model/packages.js';
 import { measureText } from '../render/text-metrics.js';
 
+/**
+ * A module's API, as the spec's *ports* compartment (Table 10): one line per
+ * port, `name : PortDef`, and `~PortDef` where the port is conjugated — the
+ * API the module needs rather than the one it offers (§7.12.3). No squares on
+ * the border: that is how a port is drawn where a wire lands on it, and this
+ * view draws no wires between modules.
+ */
+function portsCompartment(def: PartDef): Compartment[] {
+    const lines = def.members.filter(isPortUsage).map(port => port.type
+        ? `${port.name} : ${port.conjugated ? '~' : ''}${port.type.ref?.name ?? port.type.$refText}`
+        : port.name);
+    return lines.length > 0 ? [{ title: 'ports', lines }] : [];
+}
+
 function moduleNode(def: PartDef): GraphNode {
-    const compartments = performCompartments(def.members);
+    const compartments = [...performCompartments(def.members), ...portsCompartment(def)];
     return {
         id: qualifiedName(def),
         shape: 'box',

@@ -12,6 +12,79 @@ package Software {
     // The functions this software realizes, said on the module that realizes
     // each one. Nothing here knows which computer runs it: that is deployment.
     private import Functions::*;
+    private import ScalarValues::*;
+
+    // What the modules offer each other. A module that offers an API declares
+    // a port of that type; one that needs it declares the same type
+    // conjugated, `~MissionApi`, so the two ends mirror each other.
+    //
+    // The firmware's modules call each other, as libraries do. The onboard
+    // containers never call: they publish and subscribe through Zenoh, so
+    // their APIs are topics, and a topic's two ends are a publisher and a
+    // subscriber of the same type.
+    package Apis {
+
+        // --- firmware, called directly ---------------------------------
+        port def SensorApi {
+            out attribute imu_g : Real;
+            out attribute fix : Boolean;
+        }
+
+        port def StateApi {
+            out attribute attitude_deg : Real;
+            out attribute altitude_m : Real;
+        }
+
+        port def TargetApi {
+            out attribute waypoint : String;
+            in attribute reached : Boolean;
+        }
+
+        port def MavlinkApi {
+            out attribute telemetry : String;
+            in attribute command : String;
+            // MAVLink's parameter protocol reads and writes the same values.
+            inout attribute parameter : Real;
+        }
+
+        port def HalApi {
+            inout attribute register : Real;
+        }
+
+        port def SchedulerApi {
+            in attribute period_ms : Real;
+        }
+
+        // --- Zenoh topics, published and subscribed --------------------
+        port def VideoTopic {
+            out attribute stream : String;
+        }
+
+        port def WorldTopic {
+            out attribute obstacles : String;
+        }
+
+        port def RouteTopic {
+            out attribute legs : String;
+        }
+
+        port def MissionTopic {
+            out attribute items : String;
+            in attribute progress : String;
+        }
+
+        port def HealthTopic {
+            out attribute health : String;
+        }
+
+        port def TransportApi {
+            inout attribute topic : String;
+        }
+
+        port def ContainerApi {
+            in attribute image : String;
+        }
+    }
 
     // Plans the survey and shows its progress.
     package Ground {
@@ -21,6 +94,10 @@ package Software {
             perform Functions::survey.plan.planMission;
             perform Functions::survey.interactWithOperator.presentInformation;
             perform Functions::survey.interactWithOperator.acceptOperatorInput;
+
+            port route : ~Apis::RouteTopic;
+            port mission : Apis::MissionTopic;
+            port video : ~Apis::VideoTopic;
         }
     }
 
@@ -35,30 +112,47 @@ package Software {
 
             part def RoutePlanner {
             perform Functions::survey.plan.planRoute;
+
+            port route : Apis::RouteTopic;
+            port world : ~Apis::WorldTopic;
+            port mission : ~Apis::MissionTopic;
         }
             part def ObstacleAvoidance {
             perform Functions::survey.guideNavigateAndControl.avoidObstacles;
+
+            port world : ~Apis::WorldTopic;
         }
         }
 
         package Perception {
             part def VideoStreamer {
             perform Functions::survey.communicate.streamVideo;
+
+            port video : Apis::VideoTopic;
         }
             part def SensorFusion {
             perform Functions::survey.perceive.fuseSensorData;
+
+            port world : Apis::WorldTopic;
         }
             part def WorldModel {
             perform Functions::survey.perceive.maintainWorldModel;
+
+            port world : Apis::WorldTopic;
         }
         }
 
         package Services {
             part def Diagnostics {
             perform Functions::survey.superviseSystem.monitorHealth;
+
+            port health : Apis::HealthTopic;
         }
             part def DataLogger {
             perform Functions::survey.superviseSystem.recordFlightData;
+
+            port health : ~Apis::HealthTopic;
+            port video : ~Apis::VideoTopic;
         }
         }
     }
@@ -67,23 +161,38 @@ package Software {
         private import Software::LinuxPlatform;
 
         // Carries every message between the containers, and to the tablet.
-        part def ZenohRouter;
+        part def ZenohRouter {
+            port transport : Apis::TransportApi;
+        }
         // Turns the flight firmware's MAVLink into Zenoh topics, and back.
         part def MavlinkBridge {
             perform Functions::survey.communicate.exchangeTelemetry;
+
+            port mavlink : ~Apis::MavlinkApi;
+            port mission : ~Apis::MissionTopic;
         }
         // Video capture, encoding and streaming.
-        part def GStreamer;
+        part def GStreamer {
+            port transport : ~Apis::TransportApi;
+        }
         // Encrypts everything that crosses the radio link.
-        part def WireGuardTunnel;
+        part def WireGuardTunnel {
+            port transport : ~Apis::TransportApi;
+        }
     }
 
     // The bottom of the onboard Linux stack.
     package LinuxPlatform {
-        part def ContainerRuntime;
+        part def ContainerRuntime {
+            port containers : Apis::ContainerApi;
+        }
         // A/B system images, so a failed update rolls itself back.
-        part def OtaUpdateAgent;
-        part def MinimalLinux;
+        part def OtaUpdateAgent {
+            port containers : ~Apis::ContainerApi;
+        }
+        part def MinimalLinux {
+            port containers : ~Apis::ContainerApi;
+        }
         part def SecureBoot;
     }
 
@@ -95,33 +204,54 @@ package Software {
         // AP_Mission, AC_WPNav
         part def MissionExecutor {
             perform Functions::survey.guideNavigateAndControl.guide;
+
+            port target : Apis::TargetApi;
+            port vehicleState : ~Apis::StateApi;
         }
 
         // AP_AHRS, AP_NavEKF3
         part def StateEstimator {
             perform Functions::survey.guideNavigateAndControl.navigate;
+
+            port vehicleState : Apis::StateApi;
+            port sensors : ~Apis::SensorApi;
         }
 
         // AC_AttitudeControl, AC_PosControl, AP_Motors
         part def FlightControl {
             perform Functions::survey.guideNavigateAndControl.control;
+
+            port vehicleState : ~Apis::StateApi;
+            port target : ~Apis::TargetApi;
+            port hal : ~Apis::HalApi;
         }
 
         // AP_InertialSensor, AP_GPS, AP_Compass, AP_Baro. Drivers feed the
         // functions above; they realize none of their own.
-        part def SensorDrivers;
+        part def SensorDrivers {
+            port sensors : Apis::SensorApi;
+            port hal : ~Apis::HalApi;
+        }
 
         // GCS_MAVLink
         part def MavlinkInterface {
             perform Functions::survey.communicate.exchangeTelemetry;
+
+            port mavlink : Apis::MavlinkApi;
+            port vehicleState : ~Apis::StateApi;
         }
     }
 
     // The bottom of the firmware stack — the counterpart of LinuxPlatform, and
     // the reason the flight code is portable across controller boards.
     package FlightPlatform {
-        part def HardwareAbstraction;  // AP_HAL, AP_HAL_ChibiOS
-        part def RealTimeKernel;       // ChibiOS
+        part def HardwareAbstraction {
+            port hal : Apis::HalApi;
+            port scheduler : ~Apis::SchedulerApi;
+        }  // AP_HAL, AP_HAL_ChibiOS
+        part def RealTimeKernel {
+            port scheduler : Apis::SchedulerApi;
+        }       // ChibiOS
     }
 
     // The deployable parts, named once so deployment.sysml can allocate them.

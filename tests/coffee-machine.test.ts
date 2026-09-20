@@ -105,6 +105,22 @@ describe('coffee machine example model', () => {
         expect(names).not.toContain('sw');
     });
 
+    it('implementation view: the recipe engine offers one API and needs three', async () => {
+        const graph = extractImplementationGraph(await parseSet('implementation.sysml', 'logical.sysml'));
+        const modules = new Map(allNodes(graph.nodes).map(n => [n.name, n]));
+        const ports = (name: string) =>
+            modules.get(name)!.compartments.find(c => c.title === 'ports')?.lines ?? [];
+
+        // One offered, three needed: the whole of the machine's control is
+        // this module calling those.
+        expect(ports('RecipeEngine')).toEqual([
+            'recipe : RecipeApi', 'brew : ~BrewApi', 'temperature : ~TemperatureApi', 'milk : ~MilkApi'
+        ]);
+        // The panel asks the engine; the engine drives the controllers.
+        expect(ports('UiApp')).toEqual(['recipe : ~RecipeApi']);
+        expect(ports('BrewController')).toEqual(['brew : BrewApi']);
+    });
+
     it('physical view: the machine as nested parts, looms named by their interface', async () => {
         const graph = extractPhysicalGraph(await parseSet('physical.sysml', 'logical.sysml'));
         expect(graph.nodes.map(n => n.name)).toEqual(['machine : CoffeeMachine']);

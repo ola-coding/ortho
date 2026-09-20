@@ -103,17 +103,23 @@ describe('survey drone example model', () => {
     it('implementation view: each module lists the functions it realizes', async () => {
         const graph = extractImplementationGraph(await parseSet('implementation.sysml', 'logical.sysml'));
         const modules = new Map(allNodes(graph.nodes).map(n => [n.name, n]));
+        const compartment = (name: string, title: string) =>
+            modules.get(name)!.compartments.find(c => c.title === title)?.lines ?? [];
 
-        expect(modules.get('VideoStreamer')!.compartments)
-            .toEqual([{ title: 'perform actions', lines: ['streamVideo'] }]);
-        expect(modules.get('SurveyPlanner')!.compartments[0].lines)
+        expect(compartment('VideoStreamer', 'perform actions')).toEqual(['streamVideo']);
+        expect(compartment('SurveyPlanner', 'perform actions'))
             .toEqual(['planMission', 'presentInformation', 'acceptOperatorInput']);
 
         // A platform module realizes nothing of the function tree: it is what
-        // the modules above it stand on.
+        // the modules above it stand on. It still has an API of its own.
         for (const platform of ['RealTimeKernel', 'MinimalLinux', 'ZenohRouter', 'SensorDrivers']) {
-            expect(modules.get(platform)!.compartments, platform).toEqual([]);
+            expect(compartment(platform, 'perform actions'), platform).toEqual([]);
         }
+        expect(compartment('RealTimeKernel', 'ports')).toEqual(['scheduler : SchedulerApi']);
+
+        // The containers publish and subscribe: one topic, two ends.
+        expect(compartment('VideoStreamer', 'ports')).toEqual(['video : VideoTopic']);
+        expect(compartment('DataLogger', 'ports')).toEqual(['health : ~HealthTopic', 'video : ~VideoTopic']);
 
         // The function tree is a companion file, not part of this view.
         expect(graph.nodes.map(n => n.name)).not.toContain('Functions');

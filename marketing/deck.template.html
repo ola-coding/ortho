@@ -598,6 +598,10 @@ package Software {
         // AP_Motors
         part def FlightControl {
             perform survey.guideNavigateAndControl.control;
+
+            // What it needs from the modules around it.
+            port vehicleState : ~Apis::StateApi;
+            port target : ~Apis::TargetApi;
         }
 
         // GCS_MAVLink

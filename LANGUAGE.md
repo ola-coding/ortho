@@ -195,10 +195,52 @@ package Functions {
 | `private import Pkg::*;` (or `Pkg::Element`) | an «import» dependency from the importing package to `Pkg` |
 | `part sw { part x : Module; ... }` in a package | nothing. It is the tree of deployable parts the deployment view allocates from. |
 | `perform Functions::use.branch.leaf;` in a module | a *perform actions* compartment in the module's box, listing the functions it realizes |
+| `port api : SomeApi;` in a module | a line in the module's *ports* compartment: the API it offers |
+| `port api : ~SomeApi;` in a module | the same, written `api : ~SomeApi`: the API it needs, the contract conjugated |
+| `port def SomeApi { ... }` | nothing of its own. It types the ports that name it. |
 | a package holding no part at all, such as the function tree | nothing. It is a companion file, not software. |
 
 Because the modules name functions, this view is rendered with
 `logical.sysml` alongside.
+
+**APIs.** SysML v2 has no separate notion of an API: a port is "a connection
+point to enable interactions between occurrences (most commonly parts)"
+(§7.12.1), so a module takes ports exactly as a pump does. What crosses one is
+said by its features' directions, and the module that *needs* an API declares
+the same port definition conjugated with `~`, which reverses every direction
+(§7.12.3).
+
+```sysml
+package Software {
+    private import ScalarValues::*;
+
+    port def BrewApi {
+        in attribute dose_g : Real;
+        out attribute shotPoured : Boolean;
+        inout attribute profile : String;
+    }
+
+    part def BrewController {
+        port brew : BrewApi;
+    }
+
+    part def RecipeEngine {
+        port brew : ~BrewApi;
+    }
+}
+```
+
+A module's ports are drawn as the spec's *ports* compartment (Table 10), a
+list of `name : PortDef` lines, not as squares on the border: a square is for
+a port a wire lands on, and this view draws no wires between modules. Where a
+module publishes and subscribes rather than calling, as the drone's containers
+do through Zenoh, the port definition is the topic and the two ends are a
+publisher and a subscriber of the same contract.
+
+An `interface def` and a `connect` belong with wiring — an interface is "a
+connection all of whose ends are ports" (§7.14.1), and a connection joins
+features of usages — so neither appears on this view. They are how the
+physical view wires the product.
 
 ## Physical view
 
@@ -239,7 +281,7 @@ package Hardware {
 |---|---|
 | `part name : Def [n];` | a box for that part, `name : Def [n]`, with the parts of `Def` nested inside it |
 | a `part def` nothing uses as a part type and nothing specializes, or a `part` usage directly in a package | a top-level box |
-| `port name : PortDef;` | a port on the box's edge, labelled with its name |
+| `port name : PortDef;` | a port on the box's edge, labelled with its name. `~PortDef` conjugates it, reversing the direction of every feature. |
 | `connect a.p to b.q;` | a line between the two ports (or parts) |
 | `connection : Interface connect a.p to b.q;` (optionally named) | the same line, labelled with the interface |
 | `interface def` with its `end`s, `port def` | nothing of their own: they type ports and connections |
@@ -418,7 +460,7 @@ Common SysML v2 that ortho does not parse, so a model using it fails to load:
 | `bind` | 7.13.3 | |
 | `state def`, `state`, `exhibit` | 7.18 | |
 | `allocation def` | 7.15.2 | the usage form, `allocate` or `allocation name allocate` |
-| `in`, `out`, `inout` parameters | 7.17.2 | |
+| `in`, `out`, `inout` on an action's parameters | 7.17.2 | they work on a port's features, above |
 | `enum def` | 7.8 | |
 | `calc`, `constraint` | 7.19–7.20 | |
 | `view def`, `viewpoint` | 7.26 | one model file per view (see DEVELOPMENT.md) |
@@ -448,14 +490,17 @@ and `grammar/sysml.langium` in step.
 | `end` | 7.14 | interface ends |
 | `from` | 7.16 | messages |
 | `import` | 7.5.3 | every file that uses another |
+| `in` | 7.12.1 | the direction of a port's feature |
 | `include` | 7.25.3 | use case |
+| `inout` | 7.12.1 | a port feature that goes both ways |
 | `interface` | 7.14 | physical |
 | `message` | 7.16 | process |
 | `of` | 7.16 | message payloads |
+| `out` | 7.12.1 | the direction of a port's feature |
 | `package` | 7.5 | every file |
 | `part` | 7.11 | physical, implementation, deployment, process |
 | `perform` | 7.17.6 | realization, on the implementation and physical views |
-| `port` | 7.12 | physical |
+| `port` | 7.12 | physical, and the APIs on the implementation view |
 | `private` | 7.5.3 | imports |
 | `protected` | 7.5.3 | imports |
 | `public` | 7.5.3 | imports |

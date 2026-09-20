@@ -59,7 +59,7 @@ Realization is many to many — one function can be realized by software and har
 Static structure of the software: modules and their dependencies. Runtime
 behaviour belongs to Process, hardware to Physical.
 
-**Rendering.** Packages are rectangles with a small tab in the top-left corner, nested to show containment. Modules — the part defs a package declares — are plain rectangles inside it carrying a name compartment; a package-level part usage is an instance, not a module, and is not drawn. Dependencies are drawn between packages, read from their imports: dashed lines with an open arrowhead, labelled «import», pointing at the package depended upon. A module that realizes functions carries them in a *perform actions* compartment, so the view also says what each module is for.
+**Rendering.** Packages are rectangles with a small tab in the top-left corner, nested to show containment. Modules — the part defs a package declares — are plain rectangles inside it carrying a name compartment; a package-level part usage is an instance, not a module, and is not drawn. Dependencies are drawn between packages, read from their imports: dashed lines with an open arrowhead, labelled «import», pointing at the package depended upon. A module that realizes functions carries them in a *perform actions* compartment, so the view also says what each module is for. Its API is drawn as a *ports* compartment listing what it offers and, conjugated with `~`, what it needs. No lines are drawn between modules — where they publish and subscribe rather than call, as containers on a middleware do, a line would claim a coupling that does not exist; what actually flows is the Process view's business.
 
 ### Physical view
 
@@ -92,7 +92,7 @@ How software modules interact at runtime, for one scenario. One scenario per dia
 | --- | --- | --- |
 | **Use case** | How the system is used, and by whom | `use case def`, `use case`, `actor`, `subject`, `include` |
 | **Logical** | What the system does, as a hierarchy of functions | `action def`, `action` |
-| **Implementation** | Static structure of the software | `package`, `private import`, `part def`, `part`, `perform` |
+| **Implementation** | Static structure of the software | `package`, `private import`, `part def`, `part`, `perform`, `port def`, `port` |
 | **Physical** | Structure of the physical product, as topology | `part def`, `part`, `port def`, `port`, `connect`, `interface def`, `perform` |
 | **Deployment** | Which hardware runs which software | `part`, `allocate` |
 | **Process** | How software modules interact at runtime | `action def`, `part`, `message`, `then`, `attribute def` |

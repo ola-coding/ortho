@@ -245,6 +245,23 @@ describe('SysML v2 conformance', () => {
         expect(errors).toEqual(["'data' is not an action or a use case, so it cannot be performed."]);
     });
 
+    it('gives a port directed features, and conjugates the port that needs them', async () => {
+        expect(await errorsOf(`
+            package P {
+                port def Api {
+                    in attribute command : String;
+                    out attribute status : String;
+                    inout attribute parameter : Real;
+                }
+                interface def Link {
+                    end offered : Api;
+                    end needed : ~Api;
+                }
+                part def Server { port api : Api; }
+                part def Client { port api : ~Api; }
+            }`)).toEqual([]);
+    });
+
     it('resolves a message payload to an attribute def', async () => {
         const text = (payload: string) => `
             package P {

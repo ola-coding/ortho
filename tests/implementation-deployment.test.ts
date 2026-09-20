@@ -65,6 +65,30 @@ describe('implementation diagram extraction', () => {
     });
 });
 
+describe('module APIs on the implementation view', () => {
+    it('lists them in a ports compartment, conjugating the ones a module needs', async () => {
+        const document = await parse(`
+            package S {
+                port def Api;
+                part def Server { port api : Api; }
+                part def Client { port api : ~Api; }
+            }
+        `, { validation: true });
+        const graph = extractImplementationGraph(document.parseResult.value);
+        const laidOut = await layoutGraph(graph, { direction: 'DOWN', gridLeaves: true });
+
+        const server = laidOut.nodes.find(n => n.name === 'Server')!;
+        const client = laidOut.nodes.find(n => n.name === 'Client')!;
+        expect(server.compartments).toEqual([{ title: 'ports', lines: ['api : Api'] }]);
+        expect(client.compartments).toEqual([{ title: 'ports', lines: ['api : ~Api'] }]);
+
+        // A square on the border is for a port a wire lands on; this view
+        // draws no wires between modules, and the modules stay gridded.
+        expect(server.ports).toEqual([]);
+        expect(server.y).toBe(client.y);
+    });
+});
+
 describe('deployment diagram extraction', () => {
     it('nests software inside its host instead of drawing allocation edges', async () => {
         const graph = extractDeploymentGraph(await parseExample());

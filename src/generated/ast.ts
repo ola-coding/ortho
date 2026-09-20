@@ -43,10 +43,13 @@ export type SysmlKeywordNames =
     | "end"
     | "from"
     | "import"
+    | "in"
     | "include"
+    | "inout"
     | "interface"
     | "message"
     | "of"
+    | "out"
     | "package"
     | "part"
     | "perform"
@@ -62,7 +65,8 @@ export type SysmlKeywordNames =
     | "to"
     | "use"
     | "{"
-    | "}";
+    | "}"
+    | "~";
 
 export type SysmlTokenNames = SysmlTerminalNames | SysmlKeywordNames;
 
@@ -72,6 +76,12 @@ export const ActionMember = 'ActionMember';
 
 export function isActionMember(item: unknown): item is ActionMember {
     return reflection.isInstance(item, ActionMember);
+}
+
+export type Direction = 'in' | 'inout' | 'out';
+
+export function isDirection(item: unknown): item is Direction {
+    return item === 'in' || item === 'out' || item === 'inout';
 }
 
 export type Feature = ActionUsage | AttributeUsage | InterfaceEnd | PartUsage | PortUsage | SubjectUsage | UseCaseUsage;
@@ -208,6 +218,7 @@ export function isAttributeDef(item: unknown): item is AttributeDef {
 export interface AttributeUsage extends langium.AstNode {
     readonly $container: ActionDef | ActionUsage | AttributeDef | InterfaceDef | PartDef | PartUsage | PortDef | RequirementDef | RequirementUsage | UseCaseDef | UseCaseUsage;
     readonly $type: 'AttributeUsage';
+    direction?: Direction;
     name: string;
     type?: QualifiedName;
     value?: Literal;
@@ -289,6 +300,7 @@ export function isInterfaceDef(item: unknown): item is InterfaceDef {
 export interface InterfaceEnd extends langium.AstNode {
     readonly $container: InterfaceDef;
     readonly $type: 'InterfaceEnd';
+    conjugated: boolean;
     name: string;
     type: langium.Reference<PortDef>;
 }
@@ -411,6 +423,7 @@ export function isPortDef(item: unknown): item is PortDef {
 export interface PortUsage extends langium.AstNode {
     readonly $container: PartDef | PartUsage;
     readonly $type: 'PortUsage';
+    conjugated: boolean;
     name: string;
     type?: langium.Reference<PortDef>;
 }
@@ -696,6 +709,7 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 return {
                     name: AttributeUsage,
                     properties: [
+                        { name: 'direction' },
                         { name: 'name' },
                         { name: 'type' },
                         { name: 'value' }
@@ -753,6 +767,7 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 return {
                     name: InterfaceEnd,
                     properties: [
+                        { name: 'conjugated', defaultValue: false },
                         { name: 'name' },
                         { name: 'type' }
                     ]
@@ -840,6 +855,7 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 return {
                     name: PortUsage,
                     properties: [
+                        { name: 'conjugated', defaultValue: false },
                         { name: 'name' },
                         { name: 'type' }
                     ]
