@@ -6,4 +6,6 @@ export type { ParsedModel } from './parser/parse.js';
 export { diagramTypes, getDiagramType } from './pipeline.js';
 export type { DiagramType, DiagramTypeName, DiagramRenderer, RenderResult } from './pipeline.js';
 export type { DiagramTitle } from './render/svg-renderer.js';
+export { darkGlassTheme, getTheme, lightTheme, themes } from './render/theme.js';
+export type { Theme, ThemeName } from './render/theme.js';
 export type { Model } from './generated/ast.js';

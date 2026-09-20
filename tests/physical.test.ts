@@ -6,6 +6,7 @@ import { parseHelper } from 'langium/test';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
 import type { Model } from '../src/generated/ast.js';
 import type { GraphNode } from '../src/model/graph.js';
+import { BOX_HEADER_HEIGHT, compartmentsHeight } from '../src/model/graph.js';
 import { extractPhysicalGraph } from '../src/diagrams/physical.js';
 import { layoutGraph } from '../src/layout/elk-layout.js';
 import { renderSvg } from '../src/render/svg-renderer.js';
@@ -89,5 +90,30 @@ describe('physical diagram extraction', () => {
         expect(svg).not.toContain('part def');
         expect(svg).not.toContain('url(#diamond)');
         expect(svg).not.toContain('url(#triangle)');
+    });
+
+    it('keeps the parts of an assembly below the compartment of what it performs', async () => {
+        // No example has an assembly that performs a function — the coffee
+        // machine's serving moved onto the parts that pour — so the layout
+        // that reserves room for a container's own compartment is covered here.
+        const document = await parse(`
+            package M {
+                action def Job { action serve; }
+                action job : Job;
+                part def Inner;
+                part def Housing {
+                    perform M::job.serve;
+                    part inner : Inner;
+                }
+                part housing : Housing;
+            }
+        `, { validation: true });
+        const graph = extractPhysicalGraph(document.parseResult.value);
+        const laidOut = await layoutGraph(graph, { direction: 'DOWN' });
+
+        const housing = laidOut.nodes.find(n => n.name.startsWith('housing'))!;
+        const inner = laidOut.nodes.find(n => n.name.startsWith('inner'))!;
+        expect(housing.compartments).toEqual([{ title: 'perform actions', lines: ['serve'] }]);
+        expect(inner.y).toBeGreaterThan(housing.y + BOX_HEADER_HEIGHT + compartmentsHeight(housing.compartments));
     });
 });

@@ -72,6 +72,8 @@ package Hardware {
 
     part def BrewUnit {
         perform Functions::beverage.prepareCoffee.extractShot;
+        // The coffee leaves the machine here.
+        perform Functions::beverage.serveBeverage;
 
         attribute chamberVolume_g : Real = 16;
         port waterIn : WaterPort;
@@ -83,6 +85,8 @@ package Hardware {
     // --- milk --------------------------------------------------------------
     part def SteamWand {
         perform Functions::beverage.prepareMilk.frothMilk;
+        // And the milk, here.
+        perform Functions::beverage.serveBeverage;
 
         port steamIn : SteamPort;
         port milkOut : BeveragePort;
@@ -110,9 +114,6 @@ package Hardware {
 
     // --- the machine -------------------------------------------------------
     part def CoffeeMachine {
-        // The assembly serves what its parts prepare.
-        perform Functions::beverage.serveBeverage;
-
         attribute width_mm : Real = 280;
 
         part tank : WaterTank;

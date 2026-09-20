@@ -244,6 +244,18 @@ const { svg } = await diagramTypes['logical'].render(model, {
 });
 ```
 
+A third argument picks the theme, as `--theme` does on the command line:
+
+```ts
+import { darkGlassTheme } from 'ortho';
+
+const { svg } = await diagramTypes['logical'].render(model, title, darkGlassTheme);
+```
+
+`themes` is the set by name, `getTheme(name)` looks one up and returns
+`undefined` for a name it does not know, and `Theme` is the type if you want
+to write your own palette.
+
 ## Further reading
 
 - [VIEWS.md](VIEWS.md) — the six views: what each one admits, and why.
