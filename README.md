@@ -1,4 +1,9 @@
-# ortho
+<h1>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="logo/ortho-logo-dark.svg">
+    <img src="logo/ortho-logo.svg" alt="ortho" width="320">
+  </picture>
+</h1>
 
 **Orthographic projection for architecture.** Just as a technical drawing
 shows one object through several standard views, `ortho` renders six
