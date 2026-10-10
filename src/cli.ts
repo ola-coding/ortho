@@ -1,5 +1,5 @@
-import { readFile, writeFile, readdir, stat } from 'node:fs/promises';
-import { basename, join } from 'node:path';
+import { mkdir, readFile, writeFile, readdir, stat } from 'node:fs/promises';
+import { basename, dirname, join } from 'node:path';
 import { Command } from 'commander';
 import { createSysmlServices } from './parser/sysml-module.js';
 import { parseSysmlFiles } from './parser/parse.js';
@@ -83,6 +83,7 @@ program
         };
 
         const result = await diagramType.render(model, title, theme);
+        await mkdir(dirname(options.out), { recursive: true });
         await writeFile(options.out, result.svg, 'utf-8');
         console.log(`Wrote ${options.out} (${result.summary})`);
     });

@@ -89,7 +89,7 @@ ortho render <models...> -d <view> -o <file.svg> [-t <heading>] [--theme <name>]
   A reference into another file starts at a qualified name and continues with
   dots: `Hardware::system.drone.fc`.
 - `-d, --diagram`: one of the six views above.
-- `-o, --out`: where to write the SVG.
+- `-o, --out`: where to write the SVG. Missing folders are created.
 - `-t, --title`: the diagram's heading. The default is the view name and the
   first file's package, e.g. "Deployment view — Deployment", so pass `-t` to
   name your system instead.
