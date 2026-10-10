@@ -110,6 +110,13 @@ for (const ref of new Set([...html.matchAll(/data-svg="([^"]+)"/g)].map(m => m[1
         );
 }
 
+// The logo, inlined like the diagrams so the published deck is one file. Its
+// ink and teal become the deck's logo colours, so it follows the theme.
+const logo = prepareSvg(await readFile('logo/ortho-logo.svg', 'utf-8'), 'logo')
+    .replaceAll('stroke="#2b2b2b"', 'style="stroke: var(--logo-ink)"')
+    .replaceAll('fill="#2a8fa3"', 'style="fill: var(--logo-teal)"');
+html = html.replaceAll('<div class="logo"></div>', `<div class="logo">${logo}</div>`);
+
 html = html.replaceAll('{{TESTS}}', String(countTests()));
 
 html = html.replace(
