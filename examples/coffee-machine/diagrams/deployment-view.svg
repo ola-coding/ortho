@@ -50,17 +50,17 @@
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
       <text x="420.714" y="250" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">milk : MilkController</text></g>
-    <g><polygon points="64,325 76,313 236,313 224,325"
+    <g><polygon points="64,325 76,313 246.704,313 234.704,325"
           fill="#f0f0e6" stroke="#2b2b2b" stroke-width="1.25" />
-      <polygon points="224,325 236,313 236,418 224,430"
+      <polygon points="234.704,325 246.704,313 246.704,418 234.704,430"
           fill="#f0f0e6" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="64" y="325" width="160" height="105"
+      <rect x="64" y="325" width="170.704" height="105"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="144" y="345" text-anchor="middle"
+      <text x="149.352" y="345" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">display : TouchDisplay</text></g>
-    <g><rect x="84" y="370" width="120" height="40"
+    <g><rect x="89.352" y="370" width="120" height="40"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="144" y="391" text-anchor="middle"
+      <text x="149.352" y="391" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">uiApp : UiApp</text></g>
   
 </svg>

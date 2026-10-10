@@ -8,8 +8,9 @@ import { isAllocationUsage } from '../src/generated/ast.js';
 import type { Model, PackageDecl } from '../src/generated/ast.js';
 import { extractImplementationGraph } from '../src/diagrams/implementation.js';
 import { extractDeploymentGraph } from '../src/diagrams/deployment.js';
-import { layoutGraph } from '../src/layout/elk-layout.js';
+import { layoutGraph, NODE_DEPTH } from '../src/layout/elk-layout.js';
 import { renderSvg } from '../src/render/svg-renderer.js';
+import { measureText } from '../src/render/text-metrics.js';
 
 const services = createSysmlServices();
 const parse = parseHelper<Model>(services.Sysml);
@@ -87,6 +88,24 @@ describe('module APIs on the implementation view', () => {
         expect(server.ports).toEqual([]);
         expect(server.y).toBe(client.y);
     });
+
+    it('keeps a package name wider than its grid inside the package', async () => {
+        const document = await parse(`
+            package S {
+                package FirmwareModulesForTheFlightControllerBoard {
+                    part def A;
+                }
+            }
+        `, { validation: true });
+        const graph = extractImplementationGraph(document.parseResult.value);
+        const laidOut = await layoutGraph(graph, { direction: 'DOWN', gridLeaves: true });
+
+        const pkg = laidOut.nodes.find(n => n.name === 'FirmwareModulesForTheFlightControllerBoard')!;
+        const module = laidOut.nodes.find(n => n.name === 'A')!;
+        expect(pkg.width).toBeGreaterThan(measureText(pkg.name, 12, 'bold'));
+        // The grid centres under the name.
+        expect(module.x + module.width / 2).toBeCloseTo(pkg.x + pkg.width / 2);
+    });
 });
 
 describe('deployment diagram extraction', () => {
@@ -110,6 +129,33 @@ describe('deployment diagram extraction', () => {
         const placed = graph.nodes.flatMap(n => n.children!.map(c => c.id));
         expect(new Set(placed).size).toBe(placed.length);
         expect(placed).toHaveLength(4);
+    });
+
+    it('keeps a name wider than the contents inside its box', async () => {
+        const document = await parse(`
+            package S {
+                part def ElectronicsBayWithAVeryLongName {
+                    part flightControllerComputerWithALongName : Computer;
+                }
+                part def Computer;
+                part bay : ElectronicsBayWithAVeryLongName;
+                part sw { part a; }
+                allocate sw.a to bay.flightControllerComputerWithALongName;
+            }
+        `, { validation: true });
+        const laidOut = await layoutGraph(extractDeploymentGraph(document.parseResult.value), { algorithm: 'rectpacking' });
+
+        const host = laidOut.nodes.find(n => n.shape === 'node3d')!;
+        const frame = laidOut.nodes.find(n => n.name === 'bay : ElectronicsBayWithAVeryLongName')!;
+        const software = laidOut.nodes.find(n => n.name === 'a')!;
+        for (const box of [host, frame]) {
+            expect(box.width).toBeGreaterThan(measureText(box.name, 12, 'bold'));
+        }
+        // The host sits inside its device, and the program centres under the
+        // host's name rather than hugging its left side.
+        expect(host.x + host.width).toBeLessThanOrEqual(frame.x + frame.width);
+        const hostFace = host.width - NODE_DEPTH;
+        expect(Math.abs(software.x + software.width / 2 - (host.x + hostFace / 2))).toBeLessThan(NODE_DEPTH);
     });
 
     it('renders both diagrams end-to-end', async () => {

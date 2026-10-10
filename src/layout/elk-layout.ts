@@ -120,7 +120,9 @@ function paddingOf(n: GraphNode): { top: number; left: number; bottom: number; r
 
 /**
  * A container's contents as a grid, in declaration order: one row of up to
- * three, else as square as it goes, each box centred in its cell.
+ * three, else as square as it goes, each box centred in its cell. A container
+ * whose name is wider than its grid keeps the width of its name, with the grid
+ * centred under it.
  */
 function gridOf(n: GraphNode, children: GraphNode[]): { cells: Grid; width: number; height: number } {
     const columns = children.length <= 3 ? children.length : Math.ceil(Math.sqrt(children.length));
@@ -131,17 +133,20 @@ function gridOf(n: GraphNode, children: GraphNode[]): { cells: Grid; width: numb
     const before = (sizes: number[], index: number, gap: number): number =>
         sizes.slice(0, index).reduce((sum, size) => sum + size + gap, 0);
     const pad = paddingOf(n);
+    const gridWidth = pad.left + before(widths, columns, GRID_GAP_X) - GRID_GAP_X + pad.right;
+    const width = Math.max(gridWidth, n.width);
+    const indent = (width - gridWidth) / 2;
     return {
         cells: children.map((node, i) => {
             const column = i % columns;
             const row = Math.floor(i / columns);
             return {
                 node,
-                x: pad.left + before(widths, column, GRID_GAP_X) + (widths[column] - node.width) / 2,
+                x: indent + pad.left + before(widths, column, GRID_GAP_X) + (widths[column] - node.width) / 2,
                 y: pad.top + before(heights, row, GRID_GAP_Y) + (heights[row] - node.height) / 2
             };
         }),
-        width: pad.left + before(widths, columns, GRID_GAP_X) - GRID_GAP_X + pad.right,
+        width,
         height: pad.top + before(heights, heights.length, GRID_GAP_Y) - GRID_GAP_Y + pad.bottom
     };
 }
@@ -164,6 +169,12 @@ function toElkNode(n: GraphNode, conversion: Conversion): ElkNode {
         elkNode.children = children.map(child => toElkNode(child, conversion));
         const pad = paddingOf(n);
         elkNode.layoutOptions!['elk.padding'] = `[top=${pad.top},left=${pad.left},bottom=${pad.bottom},right=${pad.right}]`;
+        // ELK sizes a container to its contents; the container's own size,
+        // worked out from its name, keeps a long name inside its box, and the
+        // contents centre under the name when they are the narrower.
+        elkNode.layoutOptions!['elk.nodeSize.constraints'] = 'MINIMUM_SIZE';
+        elkNode.layoutOptions!['elk.nodeSize.minimum'] = `(${n.width}, ${n.height})`;
+        elkNode.layoutOptions!['elk.contentAlignment'] = 'H_CENTER V_TOP';
         elkNode.layoutOptions!['elk.spacing.nodeNode'] = packing ? '24' : '40';
         if (packing) {
             // Packing lays out each level on its own, so every container
