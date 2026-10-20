@@ -468,6 +468,13 @@ Possible next steps, in priority order:
   each topic is a port definition with a publisher at one end and a
   subscriber at the other. `interface def` and `connect` stay with the
   wiring, on the physical view.
+- [ ] **Update the dependencies.** Every dependency is behind, most by a major
+  version, and Langium 3's parser pulls in a `lodash-es` that npm audit flags
+  (no fix within Langium 3). One upgrade per commit, lowest risk first:
+  in-range updates, Langium 4, Commander 15, Vitest 5, elkjs 0.12 (the only
+  step expected to move anything in the diagrams), TypeScript 7. elkjs 0.12
+  supports `edgeCoords: ROOT`, so the edge-coordinate workaround in
+  `src/layout/elk-layout.ts` can go with it.
 - [ ] **Prepare for NPX** - Let us publish this cool tool in the right place such that it will be super easy to get started without downloading the full repo. Before we do that I would like to see a proper cleaning of package.json README and other files that will be needed for that action.
 - [ ] **Imports that make names visible.** An import currently changes
   nothing: everything resolves by qualified name, and nothing else does. That
