@@ -29,11 +29,11 @@
   "dependencies": {
     "commander": "^12.1.0",
     "elkjs": "^0.9.3",
-    "langium": "^3.3.1"
+    "langium": "^4.4.0"
   },
   "devDependencies": {
     "@types/node": "^26.1.2",
-    "langium-cli": "^3.3.0",
+    "langium-cli": "^4.4.0",
     "tsx": "^4.19.2",
     "typescript": "^5.6.3",
     "vitest": "^2.1.4"

@@ -180,7 +180,8 @@ describe('core grammar', () => {
 describe('SysML v2 conformance', () => {
     const errorsOf = async (text: string): Promise<string[]> => {
         const document = await parse(text, { validation: true });
-        return (document.diagnostics ?? []).filter(d => d.severity === 1).map(d => d.message);
+        return (document.diagnostics ?? []).filter(d => d.severity === 1)
+            .map(d => typeof d.message === 'string' ? d.message : d.message.value);
     };
 
     it('requires an import to state its visibility', async () => {

@@ -27,7 +27,9 @@ export async function parseSysmlFiles(services: SysmlServices, filePaths: string
     const failures: string[] = [];
     documents.forEach((document, i) => {
         for (const error of (document.diagnostics ?? []).filter(d => d.severity === 1)) {
-            failures.push(`  ${filePaths[i]} line ${error.range.start.line + 1}: ${error.message}`);
+            // LSP 3.18 lets a message be markup; ortho's own are plain strings.
+            const message = typeof error.message === 'string' ? error.message : error.message.value;
+            failures.push(`  ${filePaths[i]} line ${error.range.start.line + 1}: ${message}`);
         }
     });
     if (failures.length > 0) {

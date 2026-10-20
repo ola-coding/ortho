@@ -1,5 +1,5 @@
 import { AstUtils, DefaultScopeComputation, DefaultScopeProvider, EMPTY_SCOPE, MultiMap } from 'langium';
-import type { AstNode, AstNodeDescription, LangiumDocument, PrecomputedScopes, ReferenceInfo, Scope } from 'langium';
+import type { AstNode, AstNodeDescription, LangiumDocument, LocalSymbols, ReferenceInfo, Scope } from 'langium';
 import {
     isActionUsage, isAttributeUsage, isConnectorEnd, isInterfaceEnd, isPartDef, isPartUsage, isPortUsage,
     isSubjectUsage, isUseCaseUsage
@@ -14,7 +14,7 @@ import { qualifiedName } from '../model/graph.js';
  * local scopes, which use simple names.
  */
 export class SysmlScopeComputation extends DefaultScopeComputation {
-    override async computeExports(document: LangiumDocument): Promise<AstNodeDescription[]> {
+    override async collectExportedSymbols(document: LangiumDocument): Promise<AstNodeDescription[]> {
         const exports: AstNodeDescription[] = [];
         for (const node of AstUtils.streamAllContents(document.parseResult.value)) {
             const name = this.nameProvider.getName(node);
@@ -30,7 +30,7 @@ export class SysmlScopeComputation extends DefaultScopeComputation {
      * element is also visible in each enclosing container under its relatively
      * qualified name, so `Physical::fc` resolves from a sibling package.
      */
-    override async computeLocalScopes(document: LangiumDocument): Promise<PrecomputedScopes> {
+    override async collectLocalSymbols(document: LangiumDocument): Promise<LocalSymbols> {
         const scopes = new MultiMap<AstNode, AstNodeDescription>();
         for (const node of AstUtils.streamAllContents(document.parseResult.value)) {
             const name = this.nameProvider.getName(node);

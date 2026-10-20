@@ -308,7 +308,7 @@ which regenerates `src/generated/`. That directory is committed so a fresh
 clone can typecheck before building.
 
 **Toolchain trap:** never add `chevrotain` as a direct dependency. Langium
-pins a specific range (`~11.0.3`); a direct `^11.0.3` lets npm hoist a newer
+pins a specific range (`~13.2.0` as of Langium 4.4); a direct `^13.2.0` lets npm hoist a newer
 patch that breaks `langium generate` with a cryptic
 `Error: non exhaustive match` (a chevrotain GAST-visitor error, not a Langium
 bug). Let it resolve transitively. If that error ever appears, compare
