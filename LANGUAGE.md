@@ -1,28 +1,20 @@
 # The SysML v2 that ortho reads
 
-ortho reads a small subset of the SysML v2 textual notation: what the six
-views need, and a little more that models commonly carry. This page is that
-subset, view by view, as a short version of the specification for anyone
-writing models for ortho or working on its grammar.
+ortho reads a subset of the SysML v2 textual notation: what the six views
+need, and a little more that models commonly carry. This page is that subset,
+view by view. Section numbers (§) point into **OMG SysML v2.0, Part 1,
+formal/2026-03-02**, <https://www.omg.org/spec/SysML/2.0/>, which is the
+authority.
 
-It is written against **OMG Systems Modeling Language (SysML) v2.0, Part 1:
-Language Specification, formal/2026-03-02** (March 2026),
-<https://www.omg.org/spec/SysML/2.0/>. Section numbers (§) point into that
-document. The wording here is ours; the specification is the authority.
-
-**A model ortho accepts is meant to be valid SysML v2.** Where ortho cannot
-check that, this page says so. Both example models, and every example on this
-page, have been checked with the OMG pilot implementation (see
-[How this is checked](#how-this-is-checked)).
-
-[VIEWS.md](VIEWS.md) says what each view is for. This page says what you write
-to get it.
+A model ortho accepts is meant to be valid SysML v2 as well
+([how this is checked](#how-this-is-checked)). What each view is for is in
+[VIEWS.md](VIEWS.md).
 
 ## Rules for every file
 
-**Packages and imports** (§7.5). Every file holds one or more `package`s.
-An `import` always states its visibility (§7.5.3): write `private import`,
-which is almost always what you mean. `public` and `protected` parse too.
+**Packages and imports** (§7.5). A file holds one or more `package`s. An
+`import` states its visibility (§7.5.3), and `private import` is almost
+always the right one.
 
 ```sysml
 package Hardware {
@@ -34,16 +26,8 @@ package Hardware {
 }
 ```
 
-- ortho does not enforce imports: every element is reachable by its qualified
-  name. Write cross-file references qualified, `Software::sw.video`, and they
-  resolve both here and in other tools.
-- Attribute types are not resolved by ortho. `Real`, `String`, `Integer` and
-  `Boolean` live in the library package `ScalarValues`, so import it, as above,
-  or other tools will not find them.
-
-`public` passes what it imports on to anyone who imports this package in turn.
-`protected` means the same as `private` in a package, and differs only inside
-a definition or usage.
+`public` passes an import on to whoever imports this package; `protected`
+acts like `private` in a package.
 
 ```sysml
 package Units {
@@ -52,9 +36,14 @@ package Units {
 }
 ```
 
+- **Imports change nothing in ortho.** Names resolve by qualified name only, so
+  write every cross-file reference in full, `Software::sw.video`.
+- **Attribute types are not resolved.** Import `ScalarValues`, where `Real`,
+  `String`, `Integer` and `Boolean` live, so that other tools find them.
+
 **Definitions and usages** (§7.6). `part def Motor` defines a kind of part;
-`part motor : Motor` is a use of one. A usage may carry a multiplicity,
-`[4]`, `[1..3]` or `[0..*]`. A definition may specialize another with `:>` or
+`part motor : Motor` uses one, optionally with a multiplicity: `[4]`,
+`[1..3]`, `[0..*]`. A definition specializes another with `:>` or
 `specializes`, and inherits its parts, ports and connections.
 
 ```sysml
@@ -69,21 +58,17 @@ package Power {
 }
 ```
 
-**Qualified names and feature chains** (§7.6.6). `::` walks through packages;
-`.` walks through features, and a chain has to start at a usage.
-`Hardware::machine.controller` is right; `Hardware::CoffeeMachine::controller`,
-which reaches into a definition, is not, and ortho rejects it. This is why the
-examples end their hardware and software files with a single usage of the
-whole, `part machine : CoffeeMachine` and `part sw { ... }`: it gives
-references from other files somewhere to start.
+**Feature chains** (§7.6.6). `::` walks through packages and `.` through
+features, and a chain starts at a usage: `Hardware::machine.controller`, not
+`Hardware::CoffeeMachine::controller`. So a software or hardware file ends
+with one usage of the whole, `part sw { ... }` or `part machine : CoffeeMachine`,
+for other files to start from.
 
-**Names** (§8.2.2.1.2). SysML v2 reserves 128 keywords, and none of them can
-be a name, even where ortho does not use the keyword itself. `frame`, `state`,
-`item`, `flow` and `out` are the ones most often reached for. ortho rejects
-them all.
+**Names** (§8.2.2.1.2). None of SysML v2's 128 reserved words can be a name,
+even those ortho does not use, such as `frame`, `state`, `item`, `flow` and
+`out`.
 
-**Comments.** `// ...` runs to the end of the line and `/* ... */` spans
-lines. Both are ignored.
+**Comments.** `// ...` to the end of the line, `/* ... */` across lines.
 
 ## Use case view
 
@@ -115,13 +100,12 @@ package UseCases {
 | You write | The view draws |
 |---|---|
 | `use case name : Def;` | an ellipse. A `use case def` is drawn itself only when no usage is typed by it. |
-| `subject Name;` in a use case (def) | the system boundary its use cases sit in, labelled with the subject's type, or its name when untyped |
-| `actor name : Type;` | a stick figure joined to the use case. An actor on a `use case def` is primary and stands left; one added on a single use case is secondary and stands right. |
-| `include use case name;` (or `include name;`) | a dashed «include» arrow. The target is always a use case usage, never a definition. |
+| `subject Name;` in a use case (def) | the system boundary, labelled with the subject's type, or its name when untyped |
+| `actor name : Type;` | a stick figure: primary on a `use case def`, secondary on a single use case |
+| `include use case name;` (or `include name;`) | a dashed «include» arrow. The target is a use case usage, never a definition. |
 
 The subject is a use case's first parameter, so a use case that declares an
-actor states its `subject` before it, as `descale` does above, even though
-`OperateMachine` already has one. ortho checks this.
+actor states its `subject` first, as `descale` does.
 
 ## Logical view
 
@@ -142,18 +126,14 @@ package Functions {
 | You write | The view draws |
 |---|---|
 | `action def Name { ... }` in a package | the root of a tree |
-| `action name;` or `action name { ... }` nested in another | a box under its parent. Nesting is the decomposition. |
-| `action name : Def;` in a package | nothing. It is one use of a tree already drawn, and what a realizing part's `perform` points into. |
+| `action name;` or `action name { ... }` nested in another | a box under its parent |
+| `action name : Def;` in a package | nothing. It is the usage a `perform` chain starts from. |
 
-Nothing else in the file is drawn. Keep components out of this file: a
-capability tree that names what realizes a function has stopped being
-medium-independent. The file ends with one usage of its tree, as the example
-above does, because a `perform` chain has to start at a usage.
+Name no component in this file, and end it with one usage of its tree.
 
 ## Implementation view
 
-The software, as packages of modules and the dependencies between packages
-(§7.5, §7.11).
+The software, as packages of modules (§7.5, §7.11).
 
 ```sysml
 package Software {
@@ -192,23 +172,19 @@ package Functions {
 |---|---|
 | `package Name { ... }` | a package box, nested inside its parent package |
 | `part def Name;` in a package | a module inside its package |
-| `private import Pkg::*;` (or `Pkg::Element`) | an «import» dependency from the importing package to `Pkg` |
-| `part sw { part x : Module; ... }` in a package | nothing. It is the tree of deployable parts the deployment view allocates from. |
-| `perform Functions::use.branch.leaf;` in a module | a *perform actions* compartment in the module's box, listing the functions it realizes |
-| `port api : SomeApi;` in a module | a line in the module's *ports* compartment: the API it offers |
-| `port api : ~SomeApi;` in a module | the same, written `api : ~SomeApi`: the API it needs, the contract conjugated |
-| `port def SomeApi { ... }` | nothing of its own. It types the ports that name it. |
-| a package holding no part at all, such as the function tree | nothing. It is a companion file, not software. |
+| `private import Pkg::*;` (or `Pkg::Element`) | an «import» dependency on `Pkg` |
+| `part sw { part x : Module; ... }` in a package | nothing. The deployment view allocates from it. |
+| `perform Functions::use.branch.leaf;` in a module | a line in its *perform actions* compartment |
+| `port api : SomeApi;` in a module | a line in its *ports* compartment: an API it offers |
+| `port api : ~SomeApi;` in a module | the same, conjugated: an API it needs |
+| `port def SomeApi { ... }` | nothing. It types ports. |
+| a package holding no part, such as the function tree | nothing |
 
-Because the modules name functions, this view is rendered with
-`logical.sysml` alongside.
-
-**APIs.** SysML v2 has no separate notion of an API: a port is "a connection
-point to enable interactions between occurrences (most commonly parts)"
-(§7.12.1), so a module takes ports exactly as a pump does. What crosses one is
-said by its features' directions, and the module that *needs* an API declares
-the same port definition conjugated with `~`, which reverses every direction
-(§7.12.3).
+**APIs** (§7.12). An API is a port, as on any part. The port definition's
+features say what crosses with `in`, `out` or `inout`, and the module that
+needs the API declares the port conjugated with `~`, which reverses every
+direction (§7.12.3). Where modules publish and subscribe, the port definition
+is the topic.
 
 ```sysml
 package Software {
@@ -230,22 +206,10 @@ package Software {
 }
 ```
 
-A module's ports are drawn as the spec's *ports* compartment (Table 10), a
-list of `name : PortDef` lines, not as squares on the border: a square is for
-a port a wire lands on, and this view draws no wires between modules. Where a
-module publishes and subscribes rather than calling, as the drone's containers
-do through Zenoh, the port definition is the topic and the two ends are a
-publisher and a subscriber of the same contract.
-
-An `interface def` and a `connect` belong with wiring — an interface is "a
-connection all of whose ends are ports" (§7.14.1), and a connection joins
-features of usages — so neither appears on this view. They are how the
-physical view wires the product.
-
 ## Physical view
 
-The product as an internal block diagram: parts nested in the parts that
-contain them, wired through their ports (§7.11–§7.14).
+The product: parts nested in the parts that contain them, wired through their
+ports (§7.11–§7.14).
 
 ```sysml
 package Hardware {
@@ -279,23 +243,22 @@ package Hardware {
 
 | You write | The view draws |
 |---|---|
-| `part name : Def [n];` | a box for that part, `name : Def [n]`, with the parts of `Def` nested inside it |
-| a `part def` nothing uses as a part type and nothing specializes, or a `part` usage directly in a package | a top-level box |
-| `port name : PortDef;` | a port on the box's edge, labelled with its name. `~PortDef` conjugates it, reversing the direction of every feature. |
+| `part name : Def [n];` | a box, `name : Def [n]`, with the parts of `Def` nested inside |
+| a `part def` nothing uses or specializes, or a `part` directly in a package | a top-level box |
+| `port name : PortDef;` | a port on the box's edge. `~PortDef` conjugates it. |
 | `connect a.p to b.q;` | a line between the two ports (or parts) |
 | `connection : Interface connect a.p to b.q;` (optionally named) | the same line, labelled with the interface |
-| `interface def` with its `end`s, `port def` | nothing of their own: they type ports and connections |
-| `attribute name : Type = value;` | nothing. Values are specification, not topology. |
-| `perform Functions::use.branch.leaf;` in a part or its definition | a *perform actions* compartment in that part's box |
+| `interface def` with its `end`s, `port def` | nothing. They type ports and connections. |
+| `attribute name : Type = value;` | nothing |
+| `perform Functions::use.branch.leaf;` in a part or its definition | a line in its *perform actions* compartment |
 
-Parts and connections inherited through `:>` are drawn as if declared, and so
-is what a part's definition performs. Because the parts name functions, this
-view is rendered with `logical.sysml` alongside.
+What a part inherits through `:>`, or performs through its definition, is
+drawn as if declared.
 
 ## Deployment view
 
 Which computer runs which software (§7.15). The file declares nothing of its
-own: it maps the software's usages onto the hardware's.
+own: it maps software usages onto hardware usages.
 
 ```sysml
 package Software {
@@ -325,12 +288,10 @@ package Deployment {
 
 | You write | The view draws |
 |---|---|
-| `allocate software to host;` | the software drawn inside the host, a three-dimensional node |
+| `allocate software to host;` | the software inside the host, a three-dimensional box |
 | `allocation name allocate ... to ...;` | the same; the name is not drawn |
-| (the host's place in the product) | each host inside a frame for the device it is fitted in |
 
-Both ends are feature chains that start at a usage. Software allocated to two
-hosts is drawn in the first only.
+Software allocated to two hosts is drawn in the first only.
 
 ## Process view
 
@@ -358,18 +319,20 @@ package Scenario {
 
 | You write | The view draws |
 |---|---|
-| `part name : Def;` in the scenario's `action def` | a lifeline, once a message names it; lifelines run in order of first appearance |
-| an untyped `part`, or one typed by an actor's type in a loaded use case | a lifeline headed by a stick figure |
-| `message name from a to b;` | an arrow from `a` to `b`, in document order; `a` to `a` is a self-loop |
+| `part name : Def;` in the scenario's `action def` | a lifeline, once a message names it, in order of first appearance |
+| an untyped `part`, or one typed as an actor in a loaded use case | a lifeline headed by a stick figure |
+| `message name from a to b;` | an arrow from `a` to `b`, in document order |
 | `message name of Payload from a to b;` | the same arrow, labelled `name : Payload` |
-| `attribute def Payload;` | nothing: it types a payload |
-| `then` before a message | nothing more. It states the order the file already gives. |
+| `attribute def Payload;` | nothing. It types a payload. |
+| `then` before a message | nothing. Document order already gives the order. |
 
 ## Realization
 
-A component says which functions it realizes, in its own body. That is
-SysML v2's `perform` (§7.17.6): the action is "defined in a different context
-than that of the performer", namely the capability tree in `logical.sysml`.
+A component names the functions it realizes, in its own body, with `perform`
+(§7.17.6): the function is "defined in a different context than that of the
+performer". ortho uses `perform`, not `allocate`, because the logical view
+holds functions rather than components; `allocate` joins components, on the
+deployment view.
 
 ```sysml
 package Functions {
@@ -386,22 +349,18 @@ package Hardware {
 }
 ```
 
-- It is written on the component, never on the function: the logical view
-  stays free of anything that realizes it.
-- Software writes it in `implementation.sysml`, hardware in `physical.sysml`,
-  and both are then rendered with `logical.sysml` alongside.
-- It is many to many. A function may be realized by a program and a device
-  together, and a part may realize several functions.
-- A function nothing performs is a gap, and a part that performs nothing is
-  worth a question. Both are visible: the compartment is simply absent.
+It is written on the component, never on the function, and it is many to
+many: a program and a device may realize one function together, and a part
+may realize several.
 
 ## Parsed, not drawn
 
-These parse, resolve and must be valid, but no view draws them.
+These parse and must be valid, but no view draws them.
 
-**Requirements** (§7.21). A non-functional requirement is often what proposes
-a technical solution on the implementation or physical view, so a model that
-carries requirements has to keep loading.
+**Requirements** (§7.21). A non-functional requirement often proposes a
+solution on the implementation or physical view, so a model carrying
+requirements has to keep loading. `satisfy` names a requirement usage and the
+part usage that satisfies it.
 
 ```sysml
 package Requirements {
@@ -421,13 +380,7 @@ package Requirements {
 }
 ```
 
-`satisfy` names a requirement usage and the part usage that satisfies it,
-never a definition.
-
-**A `perform` that names a use case** (§7.17.6). A part performing a *function*
-is realization, and the implementation and physical views draw it. A part
-performing a *use case* is the same keyword put to a different use, and no
-view draws that.
+**A `perform` of a use case** (§7.17.6), rather than a function.
 
 ```sysml
 package Operations {
@@ -446,8 +399,7 @@ package Operations {
 }
 ```
 
-**Attribute values**, and the difference between `private`, `protected` and
-`public` imports, parse but change nothing.
+**Attribute values**, such as `capacity_mAh : Real = 10000` above.
 
 ## Not supported
 
@@ -460,10 +412,10 @@ Common SysML v2 that ortho does not parse, so a model using it fails to load:
 | `bind` | 7.13.3 | |
 | `state def`, `state`, `exhibit` | 7.18 | |
 | `allocation def` | 7.15.2 | the usage form, `allocate` or `allocation name allocate` |
-| `in`, `out`, `inout` on an action's parameters | 7.17.2 | they work on a port's features, above |
+| `in`, `out`, `inout` on an action's parameters | 7.17.2 | they work on a port's features |
 | `enum def` | 7.8 | |
 | `calc`, `constraint` | 7.19–7.20 | |
-| `view def`, `viewpoint` | 7.26 | one model file per view (see DEVELOPMENT.md) |
+| `view def`, `viewpoint` | 7.26 | one model file per view |
 | `ref`, `abstract`, `redefines`/`:>>`, `subsets` | 7.6 | |
 | units on values, `100 [kg]` | 7.7 | put the unit in the name, `mass_kg` |
 | `doc`, `comment` elements | 7.4 | plain `//` and `/* */` comments |
@@ -472,8 +424,7 @@ Common SysML v2 that ortho does not parse, so a model using it fails to load:
 
 ## Keyword index
 
-Every keyword ortho's grammar knows, and nothing else. A test keeps this table
-and `grammar/sysml.langium` in step.
+Every keyword ortho's grammar knows, and nothing else.
 
 | Keyword | § | Used in |
 |---|---|---|
@@ -514,17 +465,11 @@ and `grammar/sysml.langium` in step.
 
 ## How this is checked
 
-- **The grammar and this page agree.** A test compares the keyword index above
-  with the keywords in `grammar/sysml.langium`, both ways.
-- **Every example here parses.** A test parses each `sysml` block on this page
-  on its own, and fails on any error.
-- **Every keyword has a worked example**, in the example models or on this
-  page. A test checks that each keyword appears in one of them.
-- **The examples are valid SysML v2.** Both example models and every block on
-  this page were run through the OMG pilot implementation, release 0.62.0
-  (the `jupyter-sysml-kernel` package, with its bundled standard library, on
-  Java 21), on 2026-09-19: no errors and no warnings. This is a one-off check,
-  not part of CI; repeat it when the grammar grows.
+Tests keep this page honest: the keyword index matches the grammar both ways,
+every `sysml` block above parses on its own, and every keyword has a worked
+example, here or in the example models.
 
-The places where ortho knowingly differs from the specification are listed in
-[DEVELOPMENT.md](DEVELOPMENT.md#deliberate-spec-deviations).
+Both example models and every block on this page also passed the OMG pilot
+implementation, release 0.62.0, on 2026-09-19, with no errors or warnings.
+That is a one-off check, not part of CI; [DEVELOPMENT.md](DEVELOPMENT.md)
+describes how to repeat it when the grammar grows.

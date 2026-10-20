@@ -77,7 +77,7 @@ ortho render physical.sysml logical.sysml -d physical -o physical-view.svg
 ```
 
 The process view draws every message it is given, so keep one scenario per
-file. [VIEWS.md](VIEWS.md) explains what belongs on each view and why.
+file.
 
 ## Options
 
@@ -86,8 +86,6 @@ ortho render <models...> -d <view> -o <file.svg> [-t <heading>] [--theme <name>]
 ```
 
 - `<models...>`: `.sysml` files, or directories of them, read as one model.
-  A reference into another file starts at a qualified name and continues with
-  dots: `Hardware::system.drone.fc`.
 - `-d, --diagram`: one of the six views above.
 - `-o, --out`: where to write the SVG. Missing folders are created.
 - `-t, --title`: the diagram's heading. The default is the view name and the
@@ -128,9 +126,8 @@ both, with the model source beside each diagram.
 
 ## Learn more
 
-- [LANGUAGE.md](LANGUAGE.md): the SysML v2 subset ortho reads, view by view.
-  A model ortho accepts is meant to be valid SysML v2 as well.
-- [VIEWS.md](VIEWS.md): the six views and what each one shows.
+- [VIEWS.md](VIEWS.md): what each view is for, and how it looks.
+- [LANGUAGE.md](LANGUAGE.md): what to write, view by view.
 - [DEVELOPMENT.md](DEVELOPMENT.md): for working on ortho itself.
 
 ## License
