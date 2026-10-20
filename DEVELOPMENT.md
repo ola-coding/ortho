@@ -79,19 +79,19 @@ linking, each as an error:
 Every one of these was found by running the examples through the OMG pilot
 implementation; [LANGUAGE.md](LANGUAGE.md) records that check.
 
-### elkjs: edge coordinates are relative to the edge's container
+### elkjs: edge coordinates in root space
 
-ELK reports each edge's coordinates relative to the node that **contains**
-the edge, not to the diagram root, and names that node in the edge's
-`container` field. Usually it is the least common ancestor of the two ends —
-but an edge from a box's own port to one of its children (a boundary port on
-the physical view, such as the drone's `rfLink` feeding the radio fitted
-inside it) lives *inside* that box, which no ancestor walk finds. elkjs 0.9.3
-does **not** support `org.eclipse.elk.json.edgeCoords: ROOT` (the option is
-absent from the bundle — verified, not assumed), so `src/layout/elk-layout.ts`
-translates every edge, and every label ELK placed on it, by its container's
-absolute position, keeping the ancestor walk only as a fallback. If a future
-elkjs adds the option, that code can go.
+By default ELK reports each edge's coordinates relative to the node that
+**contains** the edge, not to the diagram root. Usually that is the least
+common ancestor of the two ends — but an edge from a box's own port to one of
+its children (a boundary port on the physical view, such as the drone's
+`rfLink` feeding the radio fitted inside it) lives *inside* that box.
+`src/layout/elk-layout.ts` sets `org.eclipse.elk.json.edgeCoords: ROOT`, so
+every edge and the labels on it arrive in root coordinates and are used as
+they are. elkjs gained the option after 0.9.3; until then ortho translated
+each edge by its container's position, and dropping that code left every
+example diagram byte-for-byte the same. Rendering without the option moves
+the edges on both implementation and physical views.
 
 ### Text measurement without a browser
 

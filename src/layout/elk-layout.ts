@@ -211,13 +211,10 @@ function toElkNode(n: GraphNode, conversion: Conversion): ElkNode {
     return elkNode;
 }
 
-function indexHierarchy(nodes: GraphNode[], byId: Map<string, GraphNode>, parentOf: Map<string, string>): void {
+function indexHierarchy(nodes: GraphNode[], byId: Map<string, GraphNode>): void {
     for (const node of nodes) {
         byId.set(node.id, node);
-        for (const child of node.children ?? []) {
-            parentOf.set(child.id, node.id);
-        }
-        indexHierarchy(node.children ?? [], byId, parentOf);
+        indexHierarchy(node.children ?? [], byId);
     }
 }
 
@@ -233,6 +230,9 @@ export async function layoutGraph(graph: DiagramGraph, options: LayoutOptions = 
         layoutOptions: packing
             ? { 'elk.algorithm': 'rectpacking', 'elk.aspectRatio': PACKING_ASPECT, 'elk.spacing.nodeNode': '30' }
             : {
+                // ELK otherwise reports each edge, and the labels on it,
+                // relative to the node that contains it.
+                'org.eclipse.elk.json.edgeCoords': 'ROOT',
                 'elk.algorithm': 'layered',
                 'elk.direction': options.direction ?? 'DOWN',
                 'elk.hierarchyHandling': 'INCLUDE_CHILDREN',
@@ -267,8 +267,7 @@ export async function layoutGraph(graph: DiagramGraph, options: LayoutOptions = 
     const result = await elk.layout(elkGraph);
 
     const graphNodeById = new Map<string, GraphNode>();
-    const parentOf = new Map<string, string>();
-    indexHierarchy(graph.nodes, graphNodeById, parentOf);
+    indexHierarchy(graph.nodes, graphNodeById);
     const graphEdgeById = new Map(graph.edges.map(e => [e.id, e]));
 
     // Flatten the hierarchy to absolute coordinates, parents before children,
@@ -320,38 +319,10 @@ export async function layoutGraph(graph: DiagramGraph, options: LayoutOptions = 
     };
     flatten(result.children, 0, 0);
 
-    const absolutePosition = new Map(nodes.map(n => [n.id, { x: n.x, y: n.y }]));
-
-    // ELK reports each edge relative to the node that contains it, and names
-    // that node in `container`. Usually that is the least common ancestor of the
-    // two ends — but an edge from a box's own port to one of its children lives
-    // inside that box, which no ancestor walk finds. The container is
-    // authoritative; the ancestor walk is only a fallback.
-    const ancestors = (id: string): string[] => {
-        const chain: string[] = [];
-        let current = parentOf.get(id);
-        while (current) {
-            chain.push(current);
-            current = parentOf.get(current);
-        }
-        return chain;
-    };
-    const edgeOffset = (sourceId: string, targetId: string): { x: number; y: number } => {
-        const sourceAncestors = new Set(ancestors(sourceId));
-        const lca = ancestors(targetId).find(id => sourceAncestors.has(id));
-        return (lca && absolutePosition.get(lca)) || { x: 0, y: 0 };
-    };
-
+    // Edges arrive in root coordinates (`edgeCoords: ROOT`), labels included.
     const edges: LaidOutEdge[] = (result.edges ?? []).map((e: ElkExtendedEdge) => {
         const section = e.sections?.[0];
-        const rawPoints = section
-            ? [section.startPoint, ...(section.bendPoints ?? []), section.endPoint]
-            : [];
         const source = graphEdgeById.get(e.id);
-        const container = (e as { container?: string }).container;
-        const offset = container !== undefined
-            ? absolutePosition.get(container) ?? { x: 0, y: 0 }
-            : source ? edgeOffset(source.sourceId, source.targetId) : { x: 0, y: 0 };
         const label = e.labels?.[0];
         return {
             id: e.id,
@@ -359,9 +330,9 @@ export async function layoutGraph(graph: DiagramGraph, options: LayoutOptions = 
             sourceId: source?.sourceId ?? '',
             targetId: source?.targetId ?? '',
             label: source?.label,
-            points: rawPoints.map(p => ({ x: p.x + offset.x, y: p.y + offset.y })),
+            points: section ? [section.startPoint, ...(section.bendPoints ?? []), section.endPoint] : [],
             labelBox: label?.x !== undefined && label.y !== undefined
-                ? { x: label.x + offset.x, y: label.y + offset.y, width: label.width ?? 0, height: label.height ?? 0 }
+                ? { x: label.x, y: label.y, width: label.width ?? 0, height: label.height ?? 0 }
                 : undefined
         };
     });
