@@ -193,6 +193,11 @@ In priority order:
 - [x] **APIs on the software modules**, drawn as *ports* compartments.
 - [x] **Update the dependencies:** Langium 4.4, Commander 15, Vitest 5,
   elkjs 0.12 and TypeScript 7; npm audit is clean.
+- [ ] **Declare each view with the spec's view definitions.** The standard
+  library defines `GeneralView`, `InterconnectionView`, `SequenceView` and
+  more (§9.2.20). A model file could declare which one it feeds, and the CLI
+  take the view from the model rather than from `-d`. One model file per view
+  stays.
 - [ ] **Prepare for NPX.** Publish ortho on npm, so it runs without the repo.
   First clean up `package.json`, the README and whatever else publishing
   needs. The name `ortho` is taken on npm.
@@ -200,8 +205,3 @@ In priority order:
   valid model that writes `private import Software::*;` and then `sw.video`
   fails to load. Once people write ordinary SysML v2 against ortho, that is
   the first thing they will hit.
-- [ ] **Declare each view with the spec's view definitions.** The standard
-  library defines `GeneralView`, `InterconnectionView`, `SequenceView` and
-  more (§9.2.20). A model file could declare which one it feeds, and the CLI
-  take the view from the model rather than from `-d`. One model file per view
-  stays.
