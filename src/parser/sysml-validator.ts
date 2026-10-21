@@ -66,8 +66,8 @@ function checkEndStartsAtAccessibleFeature(end: ConnectorEnd, accept: Validation
             `'${first.$refText}' names a feature through its owner. Start at a usage and continue with dots.`,
             { node: end, property: 'segments', index: 0 });
     }
-}
-
+}
+
 /**
  * The subject is a use case's first parameter and its actors follow, so a use
  * case that declares an actor has to declare its subject before it, even when
@@ -81,8 +81,8 @@ function checkSubjectBeforeActors(useCase: UseCaseDef | UseCaseUsage, accept: Va
             `Declare the subject of '${useCase.name}' before its actors: the subject is a use case's first parameter.`,
             { node: first });
     }
-}
-
+}
+
 /**
  * `perform` names something its owner can carry out: an action of the
  * function tree, or a use case. A port or an attribute is neither, and the
