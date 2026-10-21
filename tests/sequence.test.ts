@@ -5,9 +5,12 @@ import { describe, expect, it } from 'vitest';
 import { parseHelper } from 'langium/test';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
 import { isActionDef, isMessageUsage } from '../src/generated/ast.js';
-import type { Model } from '../src/generated/ast.js';
+import type { Exposable, Model } from '../src/generated/ast.js';
 import { extractSequenceModel } from '../src/diagrams/sequence.js';
 import { renderSequenceSvg } from '../src/render/sequence-renderer.js';
+
+/** Exposes the whole test model, as a view of all of it would. */
+const everything = (model: Model): [Exposable[], Model] => [model.packages, model];
 
 const services = createSysmlServices();
 const parse = parseHelper<Model>(services.Sysml);
@@ -58,7 +61,7 @@ describe('action and message grammar', () => {
 
 describe('sequence extraction and rendering', () => {
     it('orders lifelines by first appearance and keeps message order', async () => {
-        const sequence = extractSequenceModel(await parseExample());
+        const sequence = extractSequenceModel(...everything(await parseExample()));
         expect(sequence.lifelines.map(l => l.label)).toEqual([
             'pilot : Pilot', 'fc : FlightControllerSw', 'nav : NavigationSw', 'motors : MotorControl'
         ]);
@@ -70,7 +73,7 @@ describe('sequence extraction and rendering', () => {
     });
 
     it('renders lifelines, messages and a self-loop to SVG', async () => {
-        const sequence = extractSequenceModel(await parseExample());
+        const sequence = extractSequenceModel(...everything(await parseExample()));
         const svg = renderSequenceSvg(sequence, { heading: 'Process View — DroneProcess', source: 'examples/phase4-sequence.sysml' });
         expect(svg).toContain('stroke-dasharray="4 4"'); // lifelines
         expect(svg).toContain('marker-end="url(#msgArrow)"');
@@ -91,7 +94,7 @@ describe('sequence extraction and rendering', () => {
                 }
             }
         `);
-        const sequence = extractSequenceModel(document.parseResult.value);
+        const sequence = extractSequenceModel(...everything(document.parseResult.value));
         expect(sequence.lifelines.map(l => [l.label, l.actor])).toEqual([
             ['client', true],
             ['server : Server', false]

@@ -4,7 +4,8 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { parseHelper } from 'langium/test';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
-import type { Model } from '../src/generated/ast.js';
+import type { Exposable, Model } from '../src/generated/ast.js';
+import { declaredViews, exposedElements } from '../src/model/views.js';
 import type { GraphNode } from '../src/model/graph.js';
 import { BOX_HEADER_HEIGHT, compartmentsHeight } from '../src/model/graph.js';
 import { extractPhysicalGraph } from '../src/diagrams/physical.js';
@@ -13,6 +14,11 @@ import { renderSvg } from '../src/render/svg-renderer.js';
 
 const services = createSysmlServices();
 const parse = parseHelper<Model>(services.Sysml);
+
+/** What a model's one view exposes. */
+function exposedByView(model: Model): Exposable[] {
+    return exposedElements(declaredViews(model)[0]);
+}
 
 async function parseExample(): Promise<Model> {
     const text = await readFile(resolve(dirname(fileURLToPath(import.meta.url)), 'fixtures/physical.sysml'), 'utf-8');
@@ -28,10 +34,10 @@ function allNodes(nodes: GraphNode[]): GraphNode[] {
 
 describe('physical diagram extraction', () => {
     it('draws the product, not its types: one box per part, nested in its owner', async () => {
-        const graph = extractPhysicalGraph(await parseExample());
-        // Drone is only a supertype and nothing uses Quadcopter as a part type,
-        // so the quadcopter is the one top-level box, carrying what it inherits.
-        expect(graph.nodes.map(n => n.name)).toEqual(['Quadcopter']);
+        const graph = extractPhysicalGraph(exposedByView(await parseExample()));
+        // The exposed quadcopter is the one top-level box, carrying what its
+        // type inherits from Drone.
+        expect(graph.nodes.map(n => n.name)).toEqual(['quadcopter : Quadcopter']);
         const quadcopter = graph.nodes[0];
         expect(quadcopter.children!.map(c => c.name)).toEqual([
             'fc : FlightController', 'battery : Battery', 'motors : Motor [4]'
@@ -42,7 +48,7 @@ describe('physical diagram extraction', () => {
     });
 
     it('shows no attributes, stereotypes or type-level edges', async () => {
-        const graph = extractPhysicalGraph(await parseExample());
+        const graph = extractPhysicalGraph(exposedByView(await parseExample()));
         for (const node of allNodes(graph.nodes)) {
             expect(node.compartments, node.name).toEqual([]);
             expect(node.stereotype, node.name).toBe('');
@@ -51,7 +57,7 @@ describe('physical diagram extraction', () => {
     });
 
     it('carries no requirements: the view is the product, not its specification', async () => {
-        const graph = extractPhysicalGraph(await parseExample());
+        const graph = extractPhysicalGraph(exposedByView(await parseExample()));
         const names = allNodes(graph.nodes).map(n => n.name);
         // The fixture declares PowerBudget, powerReq and a satisfy; none of them
         // belong to any of the six views, so none of them reach this graph.
@@ -60,18 +66,18 @@ describe('physical diagram extraction', () => {
     });
 
     it('wires each connection between the ports of the parts it names', async () => {
-        const graph = extractPhysicalGraph(await parseExample());
+        const graph = extractPhysicalGraph(exposedByView(await parseExample()));
         expect(graph.edges.map(e => [e.sourcePortId, e.targetPortId])).toEqual([
-            ['DroneLogical::Quadcopter.battery#powerOut', 'DroneLogical::Quadcopter.fc#powerIn'],
-            ['DroneLogical::Quadcopter.fc#motorCtrl', 'DroneLogical::Quadcopter.motors#ctrlIn']
+            ['DroneLogical::quadcopter.battery#powerOut', 'DroneLogical::quadcopter.fc#powerIn'],
+            ['DroneLogical::quadcopter.fc#motorCtrl', 'DroneLogical::quadcopter.motors#ctrlIn']
         ]);
     });
 
     it('lays each part out inside its owner and renders without class-diagram markers', async () => {
-        const graph = extractPhysicalGraph(await parseExample());
+        const graph = extractPhysicalGraph(exposedByView(await parseExample()));
         const laidOut = await layoutGraph(graph);
         const byId = new Map(laidOut.nodes.map(n => [n.id, n]));
-        const owner = byId.get('DroneLogical::Quadcopter')!;
+        const owner = byId.get('DroneLogical::quadcopter')!;
         for (const child of graph.nodes[0].children!) {
             const box = byId.get(child.id)!;
             expect(box.x).toBeGreaterThanOrEqual(owner.x);
@@ -106,9 +112,10 @@ describe('physical diagram extraction', () => {
                     part inner : Inner;
                 }
                 part housing : Housing;
+                view v : InterconnectionView { expose housing; }
             }
         `, { validation: true });
-        const graph = extractPhysicalGraph(document.parseResult.value);
+        const graph = extractPhysicalGraph(exposedByView(document.parseResult.value));
         const laidOut = await layoutGraph(graph, { direction: 'DOWN' });
 
         const housing = laidOut.nodes.find(n => n.name.startsWith('housing'))!;

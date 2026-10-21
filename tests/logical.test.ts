@@ -23,7 +23,7 @@ async function parseExample(): Promise<Model> {
 
 describe('logical diagram extraction', () => {
     it('produces one rounded node per function', async () => {
-        const graph = extractLogicalGraph(await parseExample());
+        const graph = extractLogicalGraph((await parseExample()).packages);
         expect(graph.nodes.every(n => n.shape === 'rounded')).toBe(true);
         expect(graph.nodes.map(n => n.name)).toContain('OperateDrone');
         expect(graph.nodes.map(n => n.name)).toContain('generateThrust');
@@ -31,7 +31,7 @@ describe('logical diagram extraction', () => {
     });
 
     it('is a strict tree: one root, one parent per function', async () => {
-        const graph = extractLogicalGraph(await parseExample());
+        const graph = extractLogicalGraph((await parseExample()).packages);
         // A tree of n nodes has exactly n-1 branches.
         expect(graph.edges).toHaveLength(graph.nodes.length - 1);
 
@@ -46,13 +46,13 @@ describe('logical diagram extraction', () => {
     });
 
     it('draws branches as plain decomposition lines, never arrows', async () => {
-        const graph = extractLogicalGraph(await parseExample());
+        const graph = extractLogicalGraph((await parseExample()).packages);
         expect(graph.edges.every(e => e.kind === 'decomposition')).toBe(true);
         expect(graph.edges.every(e => e.label === undefined)).toBe(true);
     });
 
     it('renders to SVG with no arrowheads on any branch', async () => {
-        const graph = extractLogicalGraph(await parseExample());
+        const graph = extractLogicalGraph((await parseExample()).packages);
         const svg = renderSvg(
             layoutTree(graph),
             { heading: 'Logical view — DroneFunctions', source: 'fixtures/logical.sysml' }
@@ -64,7 +64,7 @@ describe('logical diagram extraction', () => {
     });
 
     it('lays the tree out as a work-breakdown chart', async () => {
-        const graph = extractLogicalGraph(await parseExample());
+        const graph = extractLogicalGraph((await parseExample()).packages);
         const laidOut = layoutTree(graph);
         expect(laidOut.nodes).toHaveLength(graph.nodes.length);
 

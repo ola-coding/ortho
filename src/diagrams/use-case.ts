@@ -2,11 +2,11 @@ import {
     isActorUsage, isIncludeUsage, isSubjectUsage, isUseCaseDef, isUseCaseUsage
 } from '../generated/ast.js';
 import type {
-    ActorUsage, IncludeUsage, Model, SubjectUsage, UseCaseDef, UseCaseMember, UseCaseUsage
+    ActorUsage, Exposable, IncludeUsage, SubjectUsage, UseCaseDef, UseCaseMember, UseCaseUsage
 } from '../generated/ast.js';
 import type { DiagramGraph, GraphEdge, GraphNode } from '../model/graph.js';
 import { qualifiedName } from '../model/graph.js';
-import { collectPackages } from '../model/packages.js';
+import { exposedMembers } from '../model/packages.js';
 import { measureText } from '../render/text-metrics.js';
 
 type UseCase = UseCaseDef | UseCaseUsage;
@@ -47,15 +47,8 @@ function actorNode(id: string, label: string): GraphNode {
     };
 }
 
-export function extractUseCaseGraph(model: Model): DiagramGraph {
-    const useCases: UseCase[] = [];
-    for (const pkg of collectPackages(model)) {
-        for (const member of pkg.members) {
-            if (isUseCaseDef(member) || isUseCaseUsage(member)) {
-                useCases.push(member);
-            }
-        }
-    }
+export function extractUseCaseGraph(exposed: Exposable[]): DiagramGraph {
+    const useCases = exposedMembers(exposed).filter((m): m is UseCase => isUseCaseDef(m) || isUseCaseUsage(m));
 
     // A def represented by usages is not shown itself.
     const typedDefs = new Set(

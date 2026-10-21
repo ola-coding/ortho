@@ -1,8 +1,8 @@
 import { isActionDef, isActionUsage } from '../generated/ast.js';
-import type { ActionDef, ActionUsage, Model } from '../generated/ast.js';
+import type { ActionDef, ActionUsage, Exposable } from '../generated/ast.js';
 import type { DiagramGraph, GraphEdge, GraphNode } from '../model/graph.js';
 import { qualifiedName } from '../model/graph.js';
-import { collectPackages } from '../model/packages.js';
+import { exposedMembers } from '../model/packages.js';
 import { measureText } from '../render/text-metrics.js';
 
 type Function_ = ActionDef | ActionUsage;
@@ -31,16 +31,12 @@ function childFunctions(fn: Function_): ActionUsage[] {
  * comes from nesting in the source — an `action` declared inside another is its
  * child — so a function appears exactly once no matter how many things use it.
  *
- * Messages are deliberately ignored. A scenario file also nests actions, but
- * its content belongs to the Process view; keeping one file per view is what
- * separates the two.
- *
  * A typed action usage in a package is one use of a tree, not a tree of its
  * own: `action survey : PerformAerialSurvey` is what a realizing part's
  * `perform` chain starts from, and the tree it names is already drawn from
  * its definition. Drawing it too would double the diagram.
  */
-export function extractLogicalGraph(model: Model): DiagramGraph {
+export function extractLogicalGraph(exposed: Exposable[]): DiagramGraph {
     const nodes: GraphNode[] = [];
     const edges: GraphEdge[] = [];
     const seen = new Set<string>();
@@ -65,11 +61,9 @@ export function extractLogicalGraph(model: Model): DiagramGraph {
         }
     };
 
-    for (const pkg of collectPackages(model)) {
-        for (const member of pkg.members) {
-            if (isActionDef(member) || (isActionUsage(member) && !member.type)) {
-                visit(member);
-            }
+    for (const member of exposedMembers(exposed)) {
+        if (isActionDef(member) || (isActionUsage(member) && !member.type)) {
+            visit(member);
         }
     }
 

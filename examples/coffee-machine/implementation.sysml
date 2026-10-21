@@ -9,6 +9,7 @@ package Software {
     // each one. Which board runs it is deployment's business.
     private import Functions::*;
     private import ScalarValues::*;
+    private import StandardViewDefinitions::*;
 
     // The APIs the modules offer each other. A module that offers one declares
     // a port of that type; a module that needs it declares the same type
@@ -85,5 +86,9 @@ package Software {
         part brew : Control::BrewController;
         part temperature : Control::TemperatureController;
         part milk : Control::MilkController;
+    }
+
+    view 'Implementation view — Coffee Machine' : GeneralView {
+        expose Software;
     }
 }

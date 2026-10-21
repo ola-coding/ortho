@@ -1,5 +1,5 @@
 import { isPackageDecl, isPartDef, isPartUsage, isPortUsage } from '../generated/ast.js';
-import type { Model, PackageDecl, PartDef } from '../generated/ast.js';
+import type { Exposable, PackageDecl, PartDef } from '../generated/ast.js';
 import type { Compartment, DiagramGraph, GraphEdge, GraphNode } from '../model/graph.js';
 import { qualifiedName } from '../model/graph.js';
 import { boxSize, performCompartments } from './connector-ends.js';
@@ -100,14 +100,14 @@ function resolveImportTarget(importer: PackageDecl, path: string, packageIds: Se
     return undefined;
 }
 
-export function extractImplementationGraph(model: Model): DiagramGraph {
-    const drawn = model.packages.filter(holdsParts);
+export function extractImplementationGraph(exposed: Exposable[]): DiagramGraph {
+    const drawn = exposed.filter(isPackageDecl).filter(holdsParts);
     const nodes = drawn.map(packageNode);
 
     // Imports are drawn between the packages on this view; one reaching
     // outside it, such as a module's import of the function tree, or a
     // package of requirements, is not.
-    const allPackages = collectPackages(model).filter(holdsParts);
+    const allPackages = collectPackages(drawn).filter(holdsParts);
     const packageIds = new Set(allPackages.map(qualifiedName));
 
     const edges: GraphEdge[] = [];

@@ -1,11 +1,9 @@
-import { AstUtils } from 'langium';
-import { isConnectionUsage, isPartDef, isPartUsage, isPerformUsage, isPortUsage } from '../generated/ast.js';
+import { isConnectionUsage, isPartUsage, isPerformUsage, isPortUsage } from '../generated/ast.js';
 import type {
-    ConnectionUsage, ConnectorEnd, Model, Multiplicity, PartDef, PartUsage, PortUsage, UsageMember
+    ConnectionUsage, ConnectorEnd, Exposable, Multiplicity, PartDef, PartUsage, PortUsage, UsageMember
 } from '../generated/ast.js';
 import type { Compartment, DiagramGraph, GraphEdge, GraphNode } from '../model/graph.js';
 import { qualifiedName } from '../model/graph.js';
-import { collectPackages } from '../model/packages.js';
 import { boxSize, partLabel, performCompartments } from './connector-ends.js';
 import { measureText } from '../render/text-metrics.js';
 
@@ -152,57 +150,25 @@ function resolveEnd(end: ConnectorEnd, context: Instance): { nodeId: string; por
  * same IP radio in the drone and in the ground station) becomes two boxes, and
  * each connection lands on the part it actually names.
  *
- * The top-level boxes are the definitions nothing else uses as a part type and
- * that no other definition specializes, plus any package-level part usages.
+ * The top-level boxes are the exposed parts.
  */
-export function extractPhysicalGraph(model: Model): DiagramGraph {
-    const packages = collectPackages(model);
-    const defs = packages.flatMap(pkg => pkg.members.filter(isPartDef));
-
-    const usedAsType = new Set<PartDef>();
-    for (const node of AstUtils.streamAllContents(model)) {
-        if (isPartUsage(node) && node.type?.ref) {
-            usedAsType.add(node.type.ref);
-        }
-    }
-    const supertypes = new Set(defs.flatMap(d => d.supertypes.map(s => s.ref)).filter((d): d is PartDef => !!d));
-
+export function extractPhysicalGraph(exposed: Exposable[]): DiagramGraph {
     const nodes: GraphNode[] = [];
     const pending: Pending[] = [];
-
-    for (const def of defs) {
-        if (usedAsType.has(def) || supertypes.has(def)) {
-            continue;
-        }
+    for (const usage of exposed.filter(isPartUsage)) {
+        const type = usage.type?.ref;
         const root: Instance = {
-            node: partBox(qualifiedName(def), def.name, portsOf(def, []), performsOf(def, [])),
+            node: partBox(
+                qualifiedName(usage),
+                `${partLabel(usage)}${multiplicityText(usage.multiplicity)}`,
+                portsOf(type, usage.members),
+                performsOf(type, usage.members)
+            ),
+            usage,
             children: new Map()
         };
-        expand(root, def, [], new Set([def]), pending);
+        expand(root, type, usage.members, type ? new Set([type]) : new Set(), pending);
         nodes.push(root.node!);
-    }
-
-    for (const pkg of packages) {
-        const scope: Instance = { children: new Map() };
-        for (const usage of pkg.members.filter(isPartUsage)) {
-            const type = usage.type?.ref;
-            const root: Instance = {
-                node: partBox(
-                    qualifiedName(usage),
-                    `${partLabel(usage)}${multiplicityText(usage.multiplicity)}`,
-                    portsOf(type, usage.members),
-                    performsOf(type, usage.members)
-                ),
-                usage,
-                children: new Map()
-            };
-            expand(root, type, usage.members, type ? new Set([type]) : new Set(), pending);
-            scope.children.set(usage.name, root);
-            nodes.push(root.node!);
-        }
-        for (const connection of pkg.members.filter(isConnectionUsage)) {
-            pending.push({ connection, context: scope });
-        }
     }
 
     const edges: GraphEdge[] = [];

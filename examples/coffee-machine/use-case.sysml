@@ -3,6 +3,7 @@
 // Nothing here says how the machine works. The subject is untyped on purpose —
 // naming a hardware part would be realization detail, and this view has none.
 package UseCases {
+    private import StandardViewDefinitions::*;
 
     part def User;
 
@@ -27,4 +28,8 @@ package UseCases {
     }
 
     use case descale : ServiceMachine;
+
+    view 'Use case view — Coffee Machine' : GeneralView {
+        expose UseCases;
+    }
 }

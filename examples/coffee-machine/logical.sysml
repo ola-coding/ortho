@@ -5,6 +5,7 @@
 // here names a thermoblock, a pump or a controller — those are realizations,
 // and they live in physical.sysml and implementation.sysml.
 package Functions {
+    private import StandardViewDefinitions::*;
 
     action def MakeBeverage {
 
@@ -63,4 +64,9 @@ package Functions {
     }
 
     action maintenance : MaintainMachine;
+
+    view 'Logical view — Coffee Machine' : GeneralView {
+        expose MakeBeverage;
+        expose MaintainMachine;
+    }
 }

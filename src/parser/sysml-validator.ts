@@ -2,7 +2,8 @@ import type { AstNode, ValidationAcceptor, ValidationChecks } from 'langium';
 import {
     isActionUsage, isActorUsage, isPackageDecl, isSubjectUsage, isUseCaseUsage
 } from '../generated/ast.js';
-import type { ConnectorEnd, PerformUsage, SysmlAstType, UseCaseDef, UseCaseUsage } from '../generated/ast.js';
+import type { ConnectorEnd, PerformUsage, SysmlAstType, UseCaseDef, UseCaseUsage, ViewUsage } from '../generated/ast.js';
+import { STANDARD_VIEWS, standardView } from '../model/views.js';
 import type { SysmlServices } from './sysml-module.js';
 
 /**
@@ -32,7 +33,8 @@ export const RESERVED_WORDS: ReadonlySet<string> = new Set([
  * Checks that keep a model ortho accepts a valid SysML v2 model, where the
  * grammar alone cannot: a name must not be a reserved word, a connector end
  * may not name a feature through its owner by qualified name, and a use case
- * that declares actors declares its subject first.
+ * that declares actors declares its subject first. A view, besides, has to be
+ * one ortho can draw.
  */
 export function registerValidationChecks(services: SysmlServices): void {
     const checks: ValidationChecks<SysmlAstType> = {
@@ -40,7 +42,8 @@ export function registerValidationChecks(services: SysmlServices): void {
         ConnectorEnd: checkEndStartsAtAccessibleFeature,
         PerformUsage: checkPerformTarget,
         UseCaseDef: checkSubjectBeforeActors,
-        UseCaseUsage: checkSubjectBeforeActors
+        UseCaseUsage: checkSubjectBeforeActors,
+        ViewUsage: checkView
     };
     services.validation.ValidationRegistry.register(checks);
 }
@@ -98,4 +101,26 @@ function checkPerformTarget(perform: PerformUsage, accept: ValidationAcceptor): 
 
 function performText(perform: PerformUsage): string {
     return perform.target.segments.map(s => s.$refText).join('.');
+}
+
+const EXPOSES: Record<keyof typeof STANDARD_VIEWS, string> = {
+    GeneralView: 'packages or action definitions',
+    InterconnectionView: 'parts',
+    SequenceView: 'an action definition'
+};
+
+function checkView(view: ViewUsage, accept: ValidationAcceptor): void {
+    const definition = standardView(view);
+    if (!definition) {
+        accept('error', `ortho draws a GeneralView, an InterconnectionView or a SequenceView, not '${view.definition}'.`,
+            { node: view, property: 'definition' });
+        return;
+    }
+    for (const expose of view.exposes) {
+        const element = expose.element.ref;
+        if (element && !STANDARD_VIEWS[definition](element)) {
+            const article = definition.startsWith('I') ? 'An' : 'A';
+            accept('error', `${article} ${definition} exposes ${EXPOSES[definition]}.`, { node: expose, property: 'element' });
+        }
+    }
 }

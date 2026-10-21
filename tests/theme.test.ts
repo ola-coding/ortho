@@ -19,7 +19,7 @@ async function render(theme = lightTheme): Promise<string> {
     const text = await readFile(resolve(dirname(fileURLToPath(import.meta.url)), 'fixtures/use-case.sysml'), 'utf-8');
     const document = await parse(text, { validation: true });
     const laidOut = await layoutGraph(
-        extractUseCaseGraph(document.parseResult.value), { direction: 'RIGHT', edgeRouting: 'STRAIGHT' }
+        extractUseCaseGraph(document.parseResult.value.packages), { direction: 'RIGHT', edgeRouting: 'STRAIGHT' }
     );
     return renderSvg(laidOut, title, theme);
 }

@@ -11,6 +11,7 @@ export const SysmlTerminals = {
     ID: /[_a-zA-Z][\w_]*/,
     NUMBER: /[0-9]+(\.[0-9]+)?/,
     STRING: /"[^"]*"/,
+    UNRESTRICTED_NAME: /'[^'\r\n]*'/,
     ML_COMMENT: /\/\*[\s\S]*?\*\//,
     SL_COMMENT: /\/\/[^\n\r]*/,
 };
@@ -41,6 +42,7 @@ export type SysmlKeywordNames =
     | "connection"
     | "def"
     | "end"
+    | "expose"
     | "from"
     | "import"
     | "in"
@@ -64,6 +66,7 @@ export type SysmlKeywordNames =
     | "then"
     | "to"
     | "use"
+    | "view"
     | "{"
     | "}"
     | "~";
@@ -232,6 +235,31 @@ export function isDirection(item: unknown): item is Direction {
     return item === 'in' || item === 'out' || item === 'inout';
 }
 
+export type Exposable = ActionDef | PackageDecl | PartUsage;
+
+export const Exposable = {
+    $type: 'Exposable'
+} as const;
+
+export function isExposable(item: unknown): item is Exposable {
+    return reflection.isInstance(item, Exposable.$type);
+}
+
+export interface Expose extends langium.AstNode {
+    readonly $container: ViewUsage;
+    readonly $type: 'Expose';
+    element: langium.Reference<Exposable>;
+}
+
+export const Expose = {
+    $type: 'Expose',
+    element: 'element'
+} as const;
+
+export function isExpose(item: unknown): item is Expose {
+    return reflection.isInstance(item, Expose.$type);
+}
+
 export type Feature = ActionUsage | AttributeUsage | InterfaceEnd | PartUsage | PortUsage | SubjectUsage | UseCaseUsage;
 
 export const Feature = {
@@ -393,7 +421,7 @@ export function isPackageDecl(item: unknown): item is PackageDecl {
     return reflection.isInstance(item, PackageDecl.$type);
 }
 
-export type PackageMember = ActionDef | ActionUsage | AllocationUsage | AttributeDef | ConnectionUsage | InterfaceDef | PackageDecl | PartDef | PartUsage | PortDef | RequirementDef | RequirementUsage | SatisfyUsage | UseCaseDef | UseCaseUsage;
+export type PackageMember = ActionDef | ActionUsage | AllocationUsage | AttributeDef | ConnectionUsage | InterfaceDef | PackageDecl | PartDef | PartUsage | PortDef | RequirementDef | RequirementUsage | SatisfyUsage | UseCaseDef | UseCaseUsage | ViewUsage;
 
 export const PackageMember = {
     $type: 'PackageMember'
@@ -644,6 +672,31 @@ export function isUseCaseUsage(item: unknown): item is UseCaseUsage {
     return reflection.isInstance(item, UseCaseUsage.$type);
 }
 
+export type ViewName = string;
+
+export function isViewName(item: unknown): item is ViewName {
+    return (typeof item === 'string' && (/[_a-zA-Z][\w_]*/.test(item) || /'[^'\r\n]*'/.test(item)));
+}
+
+export interface ViewUsage extends langium.AstNode {
+    readonly $container: PackageDecl;
+    readonly $type: 'ViewUsage';
+    definition: QualifiedName;
+    exposes: Array<Expose>;
+    name: ViewName;
+}
+
+export const ViewUsage = {
+    $type: 'ViewUsage',
+    definition: 'definition',
+    exposes: 'exposes',
+    name: 'name'
+} as const;
+
+export function isViewUsage(item: unknown): item is ViewUsage {
+    return reflection.isInstance(item, ViewUsage.$type);
+}
+
 export type Visibility = 'private' | 'protected' | 'public';
 
 export function isVisibility(item: unknown): item is Visibility {
@@ -660,6 +713,8 @@ export type SysmlAstType = {
     AttributeUsage: AttributeUsage
     ConnectionUsage: ConnectionUsage
     ConnectorEnd: ConnectorEnd
+    Exposable: Exposable
+    Expose: Expose
     Feature: Feature
     ImportDecl: ImportDecl
     IncludeUsage: IncludeUsage
@@ -684,6 +739,7 @@ export type SysmlAstType = {
     UseCaseDef: UseCaseDef
     UseCaseMember: UseCaseMember
     UseCaseUsage: UseCaseUsage
+    ViewUsage: ViewUsage
 }
 
 export class SysmlAstReflection extends langium.AbstractAstReflection {
@@ -700,7 +756,7 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: ActionDef.name
                 }
             },
-            superTypes: [PackageMember.$type]
+            superTypes: [Exposable.$type, PackageMember.$type]
         },
         ActionMember: {
             name: ActionMember.$type,
@@ -820,6 +876,22 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: ConnectorEnd.segments,
                     defaultValue: [],
                     referenceType: Feature.$type
+                }
+            },
+            superTypes: []
+        },
+        Exposable: {
+            name: Exposable.$type,
+            properties: {
+            },
+            superTypes: []
+        },
+        Expose: {
+            name: Expose.$type,
+            properties: {
+                element: {
+                    name: Expose.element,
+                    referenceType: Exposable.$type
                 }
             },
             superTypes: []
@@ -961,7 +1033,7 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: PackageDecl.name
                 }
             },
-            superTypes: [PackageMember.$type]
+            superTypes: [Exposable.$type, PackageMember.$type]
         },
         PackageMember: {
             name: PackageMember.$type,
@@ -1010,7 +1082,7 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     optional: true
                 }
             },
-            superTypes: [ActionMember.$type, Feature.$type, PackageMember.$type, UsageMember.$type]
+            superTypes: [ActionMember.$type, Exposable.$type, Feature.$type, PackageMember.$type, UsageMember.$type]
         },
         PerformUsage: {
             name: PerformUsage.$type,
@@ -1171,6 +1243,22 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 }
             },
             superTypes: [Feature.$type, PackageMember.$type]
+        },
+        ViewUsage: {
+            name: ViewUsage.$type,
+            properties: {
+                definition: {
+                    name: ViewUsage.definition
+                },
+                exposes: {
+                    name: ViewUsage.exposes,
+                    defaultValue: []
+                },
+                name: {
+                    name: ViewUsage.name
+                }
+            },
+            superTypes: [PackageMember.$type]
         }
     } as const satisfies langium.AstMetaData
 }

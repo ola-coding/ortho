@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
 import { parseSysmlFiles } from '../src/parser/parse.js';
-import type { Model } from '../src/generated/ast.js';
+import type { Exposable, Model } from '../src/generated/ast.js';
 import type { GraphNode } from '../src/model/graph.js';
 import { extractUseCaseGraph } from '../src/diagrams/use-case.js';
 import { extractLogicalGraph } from '../src/diagrams/logical.js';
@@ -11,7 +11,9 @@ import { extractImplementationGraph } from '../src/diagrams/implementation.js';
 import { extractPhysicalGraph } from '../src/diagrams/physical.js';
 import { extractDeploymentGraph } from '../src/diagrams/deployment.js';
 import { extractSequenceModel } from '../src/diagrams/sequence.js';
-import { diagramTypes } from '../src/pipeline.js';
+import { declaredViews, diagramKind, exposedElements, viewHeading } from '../src/model/views.js';
+import type { DiagramKind } from '../src/model/views.js';
+import { renderView } from '../src/pipeline.js';
 
 const BASE = resolve(dirname(fileURLToPath(import.meta.url)), '../examples/survey-drone');
 
@@ -35,6 +37,12 @@ async function parseSet(...files: string[]): Promise<Model> {
     return model;
 }
 
+/** What the first file's view exposes, and the workspace it was parsed in. */
+async function viewSet(...files: string[]): Promise<[Exposable[], Model]> {
+    const model = await parseSet(...files);
+    return [exposedElements(declaredViews(model.packages[0])[0]), model];
+}
+
 describe('survey drone example model', () => {
     it('parses and links all six files as one workspace', async () => {
         const model = await parseSet(...ALL);
@@ -50,7 +58,7 @@ describe('survey drone example model', () => {
     });
 
     it('use case view: one operator, three use cases, surveying includes both', async () => {
-        const graph = extractUseCaseGraph(await parseSet('use-case.sysml'));
+        const graph = extractUseCaseGraph((await viewSet('use-case.sysml'))[0]);
         const boundaries = graph.nodes.filter(n => n.shape === 'boundary');
         expect(boundaries.map(b => b.name)).toEqual(['SurveyDroneSystem']);
         expect(boundaries[0].children!.map(c => c.name).sort()).toEqual([
@@ -71,7 +79,7 @@ describe('survey drone example model', () => {
     });
 
     it('logical view: a strict capability tree naming nothing that realizes a function', async () => {
-        const graph = extractLogicalGraph(await parseSet('logical.sysml'));
+        const graph = extractLogicalGraph((await viewSet('logical.sysml'))[0]);
         expect(graph.edges).toHaveLength(graph.nodes.length - 1);
         expect(graph.nodes.length).toBeGreaterThan(20);
 
@@ -101,7 +109,7 @@ describe('survey drone example model', () => {
     });
 
     it('implementation view: each module lists the functions it realizes', async () => {
-        const graph = extractImplementationGraph(await parseSet('implementation.sysml', 'logical.sysml'));
+        const graph = extractImplementationGraph((await viewSet('implementation.sysml', 'logical.sysml'))[0]);
         const modules = new Map(allNodes(graph.nodes).map(n => [n.name, n]));
         const compartment = (name: string, title: string) =>
             modules.get(name)!.compartments.find(c => c.title === title)?.lines ?? [];
@@ -126,7 +134,7 @@ describe('survey drone example model', () => {
     });
 
     it('implementation view: the firmware stack and the Linux stack never import each other', async () => {
-        const graph = extractImplementationGraph(await parseSet('implementation.sysml', 'logical.sysml'));
+        const graph = extractImplementationGraph((await viewSet('implementation.sysml', 'logical.sysml'))[0]);
         const imports = graph.edges.map(e => `${e.sourceId} -> ${e.targetId}`).sort();
         expect(imports).toEqual([
             'Software::Flight -> Software::FlightPlatform',
@@ -146,7 +154,7 @@ describe('survey drone example model', () => {
     });
 
     it('physical view: the product as nested parts, each radio wired on its own', async () => {
-        const graph = extractPhysicalGraph(await parseSet('physical.sysml', 'logical.sysml'));
+        const graph = extractPhysicalGraph((await viewSet('physical.sysml', 'logical.sysml'))[0]);
         expect(graph.nodes.map(n => n.name)).toEqual(['system : SurveyDroneSystem']);
         const system = graph.nodes[0];
         expect(system.children!.map(c => c.name)).toEqual([
@@ -177,7 +185,7 @@ describe('survey drone example model', () => {
     });
 
     it('physical view: a part inherits what its definition performs', async () => {
-        const graph = extractPhysicalGraph(await parseSet('physical.sysml', 'logical.sysml'));
+        const graph = extractPhysicalGraph((await viewSet('physical.sysml', 'logical.sysml'))[0]);
         const boxes = new Map(allNodes(graph.nodes).map(n => [n.name, n]));
 
         // The perform sits on BrushlessMotor; the box is the usage.
@@ -191,9 +199,7 @@ describe('survey drone example model', () => {
     });
 
     it('deployment view: every module hosted, on three computers in two devices', async () => {
-        const graph = extractDeploymentGraph(
-            await parseSet('deployment.sysml', 'implementation.sysml', 'physical.sysml', 'logical.sysml')
-        );
+        const graph = extractDeploymentGraph(...await viewSet('deployment.sysml', 'implementation.sysml', 'physical.sysml', 'logical.sysml'));
         expect(graph.edges).toHaveLength(0);
 
         expect(graph.nodes.map(n => n.name)).toEqual(['system : SurveyDroneSystem']);
@@ -237,7 +243,7 @@ describe('survey drone example model', () => {
     });
 
     it('process view: a survey mission, uploaded over the MAVLink mission protocol', async () => {
-        const sequence = extractSequenceModel(await parseSet('process.sysml', 'implementation.sysml', 'logical.sysml'));
+        const sequence = extractSequenceModel(...await viewSet('process.sysml', 'implementation.sysml', 'logical.sysml'));
         expect(sequence.lifelines).toHaveLength(7);
         // The operator is untyped in the model: a person, drawn as a stick figure.
         expect(sequence.lifelines.filter(l => l.actor).map(l => l.label)).toEqual(['operator']);
@@ -259,8 +265,8 @@ describe('survey drone example model', () => {
             .toEqual(['computeSurveyLegs', 'flySurveyLegs', 'returnToLaunch']);
     });
 
-    it('renders all six views end-to-end', async () => {
-        const jobs: Array<[keyof typeof diagramTypes, string[]]> = [
+    it('renders all six views end-to-end, each from the view its first file declares', async () => {
+        const jobs: Array<[DiagramKind, string[]]> = [
             ['use-case', ['use-case.sysml']],
             ['logical', ['logical.sysml']],
             ['implementation', ['implementation.sysml', 'logical.sysml']],
@@ -268,14 +274,13 @@ describe('survey drone example model', () => {
             ['deployment', ['deployment.sysml', 'implementation.sysml', 'physical.sysml', 'logical.sysml']],
             ['process', ['process.sysml', 'implementation.sysml', 'logical.sysml']]
         ];
-        for (const [diagram, files] of jobs) {
-            const type = diagramTypes[diagram];
-            const { svg } = await type.render(await parseSet(...files), {
-                heading: `${type.view} — Survey Drone`,
-                source: files[0]
-            });
-            expect(svg.startsWith('<svg'), diagram).toBe(true);
-            expect(svg, diagram).toContain(type.view);
+        for (const [kind, files] of jobs) {
+            const model = await parseSet(...files);
+            const [view] = declaredViews(model.packages[0]);
+            expect(diagramKind(view), files[0]).toBe(kind);
+            const { svg } = await renderView(view, model, { heading: viewHeading(view), source: files[0] });
+            expect(svg.startsWith('<svg'), kind).toBe(true);
+            expect(svg, kind).toContain(viewHeading(view));
         }
     });
 });

@@ -4,6 +4,7 @@
 // parent. No airframe, computer or program is named here — realization lives
 // in physical.sysml and implementation.sysml.
 package Functions {
+    private import StandardViewDefinitions::*;
 
     action def PerformAerialSurvey {
 
@@ -58,4 +59,8 @@ package Functions {
     // performance of it, so the parts that realize a function can point into
     // the tree — a `perform` chain has to start at a usage.
     action survey : PerformAerialSurvey;
+
+    view 'Logical view — Survey Drone' : GeneralView {
+        expose PerformAerialSurvey;
+    }
 }

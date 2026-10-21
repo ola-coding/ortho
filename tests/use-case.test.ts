@@ -57,7 +57,7 @@ describe('use case grammar', () => {
 
 describe('use-case diagram extraction', () => {
     it('builds boundary, ellipses, deduplicated actors and edges', async () => {
-        const graph = extractUseCaseGraph(await parseExample());
+        const graph = extractUseCaseGraph((await parseExample()).packages);
 
         const boundary = graph.nodes.find(n => n.shape === 'boundary')!;
         expect(boundary.name).toBe('Drone');
@@ -83,7 +83,7 @@ describe('use-case diagram extraction', () => {
     });
 
     it('lays out hierarchically and renders actors, ellipses and «include»', async () => {
-        const graph = extractUseCaseGraph(await parseExample());
+        const graph = extractUseCaseGraph((await parseExample()).packages);
         const laidOut = await layoutGraph(graph, { direction: 'RIGHT' });
 
         const boundary = laidOut.nodes.find(n => n.shape === 'boundary')!;
@@ -122,7 +122,7 @@ describe('use-case diagram extraction', () => {
             }
         `);
         const laidOut = await layoutGraph(
-            extractUseCaseGraph(document.parseResult.value), { direction: 'RIGHT', edgeRouting: 'STRAIGHT' }
+            extractUseCaseGraph(document.parseResult.value.packages), { direction: 'RIGHT', edgeRouting: 'STRAIGHT' }
         );
         const byName = (name: string) => laidOut.nodes.find(n => n.name === name)!;
         const boundary = laidOut.nodes.find(n => n.shape === 'boundary')!;
@@ -149,7 +149,7 @@ describe('use-case diagram extraction', () => {
             const { model } = await parseSysmlFiles(
                 createSysmlServices().Sysml, [resolve(examples, example, 'use-case.sysml')]
             );
-            const laidOut = await layoutGraph(extractUseCaseGraph(model), { direction: 'RIGHT', edgeRouting: 'STRAIGHT' });
+            const laidOut = await layoutGraph(extractUseCaseGraph(model.packages), { direction: 'RIGHT', edgeRouting: 'STRAIGHT' });
             const ellipses = laidOut.nodes.filter(n => n.shape === 'ellipse');
             for (const edge of laidOut.edges) {
                 const line = `${example}: ${edge.sourceId} -> ${edge.targetId}`;

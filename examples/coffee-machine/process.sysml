@@ -6,6 +6,7 @@
 package MakeCappuccinoScenario {
 
     private import Software::*;
+    private import StandardViewDefinitions::*;
 
     // What the messages carry. Values, not things, so attribute defs.
     attribute def BeverageRecipe;
@@ -30,5 +31,9 @@ package MakeCappuccinoScenario {
         then message shotComplete from brew to recipes;
         then message frothMilk of MilkSetting from recipes to milk;
         then message beverageReady from recipes to ui;
+    }
+
+    view 'Process view — Coffee Machine' : SequenceView {
+        expose MakeCappuccino;
     }
 }

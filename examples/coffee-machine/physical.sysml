@@ -11,6 +11,7 @@ package Hardware {
     // The functions this hardware realizes, said on the part that realizes
     // each one.
     private import Functions::*;
+    private import StandardViewDefinitions::*;
 
     port def WaterPort;
     port def SteamPort;
@@ -165,4 +166,8 @@ package Hardware {
     // The machine itself, named once so deployment.sysml can allocate to the
     // boards inside it: a reference into a definition has to start at a usage.
     part machine : CoffeeMachine;
+
+    view 'Physical view — Coffee Machine' : InterconnectionView {
+        expose machine;
+    }
 }

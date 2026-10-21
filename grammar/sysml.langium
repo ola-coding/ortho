@@ -19,7 +19,8 @@ Visibility returns string:
 
 PackageMember:
     PackageDecl | PartDef | PortDef | InterfaceDef | AttributeDef | RequirementDef | UseCaseDef | ActionDef
-    | PartUsage | RequirementUsage | ConnectionUsage | SatisfyUsage | UseCaseUsage | AllocationUsage | ActionUsage;
+    | PartUsage | RequirementUsage | ConnectionUsage | SatisfyUsage | UseCaseUsage | AllocationUsage | ActionUsage
+    | ViewUsage;
 
 PartDef:
     'part' 'def' name=ID
@@ -146,6 +147,20 @@ MessageUsage:
     (then?='then')? 'message' (name=ID)? ('of' payload=[AttributeDef:QualifiedName])?
     'from' source=ConnectorEnd 'to' target=ConnectorEnd ';';
 
+// A view is the diagram (§7.26.5): its name is the heading, its definition one
+// of the standard views, matched by name since the standard library is not
+// loaded, and what it exposes is the content.
+ViewUsage:
+    'view' name=ViewName ':' definition=QualifiedName '{' (exposes+=Expose)+ '}';
+
+ViewName returns string:
+    ID | UNRESTRICTED_NAME;
+
+Expose:
+    'expose' element=[Exposable:QualifiedName] ';';
+
+type Exposable = PackageDecl | ActionDef | PartUsage;
+
 type Feature = PartUsage | PortUsage | AttributeUsage | InterfaceEnd | SubjectUsage | ActionUsage | UseCaseUsage;
 
 QualifiedName returns string:
@@ -158,5 +173,6 @@ hidden terminal WS: /\s+/;
 terminal ID: /[_a-zA-Z][\w_]*/;
 terminal NUMBER: /[0-9]+(\.[0-9]+)?/;
 terminal STRING: /"[^"]*"/;
+terminal UNRESTRICTED_NAME: /'[^'\r\n]*'/;
 hidden terminal ML_COMMENT: /\/\*[\s\S]*?\*\//;
 hidden terminal SL_COMMENT: /\/\/[^\n\r]*/;

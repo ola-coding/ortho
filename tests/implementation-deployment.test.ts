@@ -5,12 +5,15 @@ import { describe, expect, it } from 'vitest';
 import { parseHelper } from 'langium/test';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
 import { isAllocationUsage } from '../src/generated/ast.js';
-import type { Model, PackageDecl } from '../src/generated/ast.js';
+import type { Exposable, Model, PackageDecl } from '../src/generated/ast.js';
 import { extractImplementationGraph } from '../src/diagrams/implementation.js';
 import { extractDeploymentGraph } from '../src/diagrams/deployment.js';
 import { layoutGraph, NODE_DEPTH } from '../src/layout/elk-layout.js';
 import { renderSvg } from '../src/render/svg-renderer.js';
 import { measureText } from '../src/render/text-metrics.js';
+
+/** Exposes the whole test model, as a view of all of it would. */
+const everything = (model: Model): [Exposable[], Model] => [model.packages, model];
 
 const services = createSysmlServices();
 const parse = parseHelper<Model>(services.Sysml);
@@ -38,7 +41,7 @@ describe('allocation grammar', () => {
 
 describe('implementation diagram extraction', () => {
     it('nests packages and resolves import edges', async () => {
-        const graph = extractImplementationGraph(await parseExample());
+        const graph = extractImplementationGraph((await parseExample()).packages);
         expect(graph.nodes).toHaveLength(1);
         const root = graph.nodes[0];
         expect(root.shape).toBe('package');
@@ -57,7 +60,7 @@ describe('implementation diagram extraction', () => {
     });
 
     it('draws the modules a package declares inside it, and no instances', async () => {
-        const graph = extractImplementationGraph(await parseExample());
+        const graph = extractImplementationGraph((await parseExample()).packages);
         const physical = graph.nodes[0].children!.find(c => c.name === 'Physical')!;
         // `fc` and `cc` are package-level part usages — instances, not modules.
         expect(physical.children!.map(c => c.name).sort()).toEqual(['CompanionComputer', 'FlightController']);
@@ -75,7 +78,7 @@ describe('module APIs on the implementation view', () => {
                 part def Client { port api : ~Api; }
             }
         `, { validation: true });
-        const graph = extractImplementationGraph(document.parseResult.value);
+        const graph = extractImplementationGraph(document.parseResult.value.packages);
         const laidOut = await layoutGraph(graph, { direction: 'DOWN', gridLeaves: true });
 
         const server = laidOut.nodes.find(n => n.name === 'Server')!;
@@ -97,7 +100,7 @@ describe('module APIs on the implementation view', () => {
                 }
             }
         `, { validation: true });
-        const graph = extractImplementationGraph(document.parseResult.value);
+        const graph = extractImplementationGraph(document.parseResult.value.packages);
         const laidOut = await layoutGraph(graph, { direction: 'DOWN', gridLeaves: true });
 
         const pkg = laidOut.nodes.find(n => n.name === 'FirmwareModulesForTheFlightControllerBoard')!;
@@ -110,7 +113,7 @@ describe('module APIs on the implementation view', () => {
 
 describe('deployment diagram extraction', () => {
     it('nests software inside its host instead of drawing allocation edges', async () => {
-        const graph = extractDeploymentGraph(await parseExample());
+        const graph = extractDeploymentGraph(...everything(await parseExample()));
         expect(graph.edges).toHaveLength(0);
 
         const hosts = graph.nodes.map(n => n.name).sort();
@@ -125,7 +128,7 @@ describe('deployment diagram extraction', () => {
     });
 
     it('places every allocated software part exactly once', async () => {
-        const graph = extractDeploymentGraph(await parseExample());
+        const graph = extractDeploymentGraph(...everything(await parseExample()));
         const placed = graph.nodes.flatMap(n => n.children!.map(c => c.id));
         expect(new Set(placed).size).toBe(placed.length);
         expect(placed).toHaveLength(4);
@@ -143,7 +146,7 @@ describe('deployment diagram extraction', () => {
                 allocate sw.a to bay.flightControllerComputerWithALongName;
             }
         `, { validation: true });
-        const laidOut = await layoutGraph(extractDeploymentGraph(document.parseResult.value), { algorithm: 'rectpacking' });
+        const laidOut = await layoutGraph(extractDeploymentGraph(...everything(document.parseResult.value)), { algorithm: 'rectpacking' });
 
         const host = laidOut.nodes.find(n => n.shape === 'node3d')!;
         const frame = laidOut.nodes.find(n => n.name === 'bay : ElectronicsBayWithAVeryLongName')!;
@@ -162,11 +165,11 @@ describe('deployment diagram extraction', () => {
         const model = await parseExample();
 
         const title = { heading: 'Implementation view — DroneSystem', source: 'fixtures/deployment.sysml' };
-        const implementationSvg = renderSvg(await layoutGraph(extractImplementationGraph(model)), title);
+        const implementationSvg = renderSvg(await layoutGraph(extractImplementationGraph(model.packages)), title);
         expect(implementationSvg).toContain('&#171;import&#187;');
 
         const deploymentSvg = renderSvg(
-            await layoutGraph(extractDeploymentGraph(model)),
+            await layoutGraph(extractDeploymentGraph(...everything(model))),
             { ...title, heading: 'Deployment view — DroneSystem' }
         );
         // Hosts are solids, and nothing on this view is an arrow.

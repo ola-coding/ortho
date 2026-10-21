@@ -14,8 +14,10 @@ How ortho works inside, and why. For using it, see [README.md](README.md).
   → .svg file
 ```
 
-`src/pipeline.ts` registers each diagram type: extractor, layout and
-renderer. `src/cli.ts` is the only way in; there is no programmatic API.
+`src/cli.ts` renders the view the first file declares, and is the only way
+in; there is no programmatic API. `src/model/views.ts` says which of the six
+diagrams a view is, and `src/pipeline.ts` runs that diagram's extractor,
+layout and renderer on what the view exposes.
 
 - **Langium** does cross-reference resolution and scoping, the bulk of a SysML
   parser. The grammar is written from the OMG specification, not copied from
@@ -39,10 +41,11 @@ inherited ports. The examples no longer rely on that; `tests/parser.test.ts`
 does.
 
 **Conformance** (`src/parser/sysml-validator.ts`). The grammar enforces what
-it can. After linking, the validator checks the three rules it cannot, all
-listed in [LANGUAGE.md](LANGUAGE.md): no reserved word as a name, chains that
-start at a usage, and a use case's subject before its actors. Each was found
-by running the examples through the OMG pilot implementation.
+it can. After linking, the validator checks the rules it cannot, all listed
+in [LANGUAGE.md](LANGUAGE.md): no reserved word as a name, chains that start
+at a usage, and a use case's subject before its actors — each found by running
+the examples through the OMG pilot implementation — and a view that is one
+ortho draws, exposing what that view can show.
 
 ## Layout and rendering
 
@@ -65,7 +68,7 @@ by running the examples through the OMG pilot implementation.
   `rectpacking`, one level at a time, since packing cannot lay out a
   hierarchy in one pass.
 - **The physical view draws instances, not types.** It walks down from the
-  top-level definitions, inherited parts and connections included, and
+  exposed part, inherited parts and connections included, and
   resolves each connection from the part that declares it, so a type fitted
   twice is two boxes, each wired on its own. Drawing definitions merged the
   drone's two radios into one.
@@ -121,9 +124,9 @@ process                   →  implementation
 ```
 
 Every dependency points towards what the system does: a component names its
-functions, never the other way round. It also keeps the extractors apart: a
-scenario nests actions just as a function tree does, and would otherwise draw
-as one. The example tests enforce three conventions:
+functions, never the other way round. A view draws only what it exposes, so
+the files it refers to supply names, never boxes. The example tests enforce
+three conventions:
 
 - `logical.sysml` names no component.
 - `implementation.sysml` and `physical.sysml` never name each other;
@@ -193,11 +196,9 @@ In priority order:
 - [x] **APIs on the software modules**, drawn as *ports* compartments.
 - [x] **Update the dependencies:** Langium 4.4, Commander 15, Vitest 5,
   elkjs 0.12 and TypeScript 7; npm audit is clean.
-- [ ] **Declare each view with the spec's view definitions.** The standard
-  library defines `GeneralView`, `InterconnectionView`, `SequenceView` and
-  more (§9.2.20). A model file could declare which one it feeds, and the CLI
-  take the view from the model rather than from `-d`. One model file per view
-  stays.
+- [x] **Declare each view with the spec's view definitions**: each file
+  declares a `GeneralView`, `InterconnectionView` or `SequenceView`, which
+  names the heading and exposes the content; `-d` is gone.
 - [ ] **Prepare for NPX.** Publish ortho on npm, so it runs without the repo.
   First clean up `package.json`, the README and whatever else publishing
   needs. The name `ortho` is taken on npm.

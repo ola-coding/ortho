@@ -15,6 +15,7 @@
 package SurveyMissionScenario {
 
     private import Software::*;
+    private import StandardViewDefinitions::*;
 
     // What the messages carry. Values, not things, so attribute defs; the
     // MAVLink ones are named after the protocol's own message types.
@@ -73,5 +74,9 @@ package SurveyMissionScenario {
         then message missionFinished from mission to mavlink;
         then message missionComplete from mavlink to bridge;
         then message surveyComplete from bridge to app;
+    }
+
+    view 'Process view — Survey Drone' : SequenceView {
+        expose SurveyMission;
     }
 }

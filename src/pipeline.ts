@@ -1,5 +1,7 @@
-import type { Model } from './generated/ast.js';
+import type { Exposable, Model, ViewUsage } from './generated/ast.js';
 import type { DiagramGraph } from './model/graph.js';
+import { diagramKind, exposedElements } from './model/views.js';
+import type { DiagramKind } from './model/views.js';
 import { extractUseCaseGraph } from './diagrams/use-case.js';
 import { extractLogicalGraph } from './diagrams/logical.js';
 import { extractImplementationGraph } from './diagrams/implementation.js';
@@ -20,17 +22,12 @@ export interface RenderResult {
     summary: string;
 }
 
-export type DiagramRenderer = (model: Model, title: DiagramTitle, theme?: Theme) => Promise<RenderResult>;
+type Extractor = (exposed: Exposable[], model: Model) => DiagramGraph;
+type Renderer = (exposed: Exposable[], model: Model, title: DiagramTitle, theme: Theme) => Promise<RenderResult>;
 
-export interface DiagramType {
-    /** Architectural view this diagram serves; leads the frame heading. */
-    view: string;
-    render: DiagramRenderer;
-}
-
-function graphDiagram(extract: (model: Model) => DiagramGraph, layout: LayoutOptions): DiagramRenderer {
-    return async (model, title, theme = lightTheme) => {
-        const graph = extract(model);
+function graphDiagram(extract: Extractor, layout: LayoutOptions): Renderer {
+    return async (exposed, model, title, theme) => {
+        const graph = extract(exposed, model);
         const laidOut = await layoutGraph(graph, layout);
         return {
             svg: renderSvg(laidOut, title, theme),
@@ -40,9 +37,9 @@ function graphDiagram(extract: (model: Model) => DiagramGraph, layout: LayoutOpt
 }
 
 /** Laid out by ortho itself rather than ELK: a tree's shape is fully determined. */
-function treeDiagram(extract: (model: Model) => DiagramGraph): DiagramRenderer {
-    return async (model, title, theme = lightTheme) => {
-        const graph = extract(model);
+function treeDiagram(extract: Extractor): Renderer {
+    return async (exposed, model, title, theme) => {
+        const graph = extract(exposed, model);
         const laidOut = layoutTree(graph);
         return {
             svg: renderSvg(laidOut, title, theme),
@@ -51,33 +48,23 @@ function treeDiagram(extract: (model: Model) => DiagramGraph): DiagramRenderer {
     };
 }
 
-/** The six views, in the order VIEWS.md introduces them. */
-export const diagramTypes = {
-    'use-case': {
-        view: 'Use case view',
-        render: graphDiagram(extractUseCaseGraph, { direction: 'RIGHT', edgeRouting: 'STRAIGHT' })
-    },
-    'logical': { view: 'Logical view', render: treeDiagram(extractLogicalGraph) },
-    'implementation': {
-        view: 'Implementation view',
-        render: graphDiagram(extractImplementationGraph, { direction: 'DOWN', gridLeaves: true })
-    },
-    'physical': { view: 'Physical view', render: graphDiagram(extractPhysicalGraph, { direction: 'DOWN' }) },
-    'deployment': { view: 'Deployment view', render: graphDiagram(extractDeploymentGraph, { algorithm: 'rectpacking' }) },
-    'process': {
-        view: 'Process view',
-        render: async (model, title, theme = lightTheme) => {
-            const sequence = extractSequenceModel(model);
-            return {
-                svg: renderSequenceSvg(sequence, title, theme),
-                summary: `${sequence.lifelines.length} lifeline(s), ${sequence.messages.length} message(s)`
-            };
-        }
+/** The six diagrams, in the order VIEWS.md introduces them. */
+const renderers: Record<DiagramKind, Renderer> = {
+    'use-case': graphDiagram(extractUseCaseGraph, { direction: 'RIGHT', edgeRouting: 'STRAIGHT' }),
+    'logical': treeDiagram(extractLogicalGraph),
+    'implementation': graphDiagram(extractImplementationGraph, { direction: 'DOWN', gridLeaves: true }),
+    'physical': graphDiagram(extractPhysicalGraph, { direction: 'DOWN' }),
+    'deployment': graphDiagram(extractDeploymentGraph, { algorithm: 'rectpacking' }),
+    'process': async (exposed, model, title, theme) => {
+        const sequence = extractSequenceModel(exposed, model);
+        return {
+            svg: renderSequenceSvg(sequence, title, theme),
+            summary: `${sequence.lifelines.length} lifeline(s), ${sequence.messages.length} message(s)`
+        };
     }
-} satisfies Record<string, DiagramType>;
+};
 
-export type DiagramTypeName = keyof typeof diagramTypes;
-
-export function getDiagramType(name: string): DiagramType | undefined {
-    return name in diagramTypes ? diagramTypes[name as DiagramTypeName] : undefined;
+/** Renders a view as the diagram its kind calls for, of what it exposes. */
+export function renderView(view: ViewUsage, model: Model, title: DiagramTitle, theme: Theme = lightTheme): Promise<RenderResult> {
+    return renderers[diagramKind(view)](exposedElements(view), model, title, theme);
 }

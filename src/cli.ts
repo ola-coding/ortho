@@ -1,10 +1,11 @@
 import { mkdir, readFile, writeFile, readdir, stat } from 'node:fs/promises';
-import { basename, dirname, join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { Command } from 'commander';
 import { createSysmlServices } from './parser/sysml-module.js';
 import { parseSysmlFiles } from './parser/parse.js';
 import type { DiagramTitle } from './render/svg-renderer.js';
-import { diagramTypes, getDiagramType } from './pipeline.js';
+import { renderView } from './pipeline.js';
+import { declaredViews, viewHeading } from './model/views.js';
 import { getTheme, themes } from './render/theme.js';
 
 interface ExpandedInput {
@@ -39,26 +40,18 @@ program
 
 program
     .command('render')
-    .description('Render one diagram from a set of model files')
+    .description('Render the view the first model file declares')
     .argument('<models...>', 'one or more .sysml files or directories (linked as one workspace)')
-    .requiredOption('-d, --diagram <type>', `diagram type to render (${Object.keys(diagramTypes).join(', ')})`)
     .requiredOption('-o, --out <file>', 'output SVG file path')
-    .option('-t, --title <heading>', 'override the frame heading (default: "<view> — <root packages of first input>")')
+    .option('-t, --title <heading>', "override the heading (default: the view's name)")
     .option('--theme <name>', `paint the diagram with a theme (${Object.keys(themes).join(', ')})`, 'light')
-    .action(async (modelPaths: string[], options: { diagram: string; out: string; title?: string; theme: string }) => {
+    .action(async (modelPaths: string[], options: { out: string; title?: string; theme: string }) => {
         const theme = getTheme(options.theme);
         if (!theme) {
             console.error(`Unknown theme "${options.theme}". Available: ${Object.keys(themes).join(', ')}.`);
             process.exitCode = 1;
             return;
         }
-        const diagramType = getDiagramType(options.diagram);
-        if (!diagramType) {
-            console.error(`Unsupported diagram type "${options.diagram}". Available: ${Object.keys(diagramTypes).join(', ')}.`);
-            process.exitCode = 1;
-            return;
-        }
-
         const inputs = await Promise.all(modelPaths.map(expandInput));
         const uniqueFiles = [...new Set(inputs.flatMap(i => i.files).map(f => f.replace(/\\/g, '/')))];
         if (uniqueFiles.length === 0) {
@@ -70,19 +63,21 @@ program
         const services = createSysmlServices();
         const { model, documents } = await parseSysmlFiles(services.Sysml, uniqueFiles);
 
-        // Heading identity comes from the first input: its root packages, or
-        // the directory name when a directory was given.
+        const views = declaredViews(documents[0].parseResult.value);
+        if (views.length !== 1) {
+            console.error(`${uniqueFiles[0]} declares ${views.length === 0 ? 'no view' : `${views.length} views`}; `
+                + 'ortho renders the one view its first file declares.');
+            process.exitCode = 1;
+            return;
+        }
+
         const firstInput = modelPaths[0].replace(/\\/g, '/');
-        const firstIsDir = inputs[0].isDirectory;
-        const hint = firstIsDir
-            ? basename(firstInput)
-            : documents[0].parseResult.value.packages.map(p => p.name).join(', ');
         const title: DiagramTitle = {
-            heading: options.title ?? (hint ? `${diagramType.view} — ${hint}` : diagramType.view),
-            source: firstIsDir ? `${firstInput}/*.sysml` : uniqueFiles.join(', ')
+            heading: options.title ?? viewHeading(views[0]),
+            source: inputs[0].isDirectory ? `${firstInput}/*.sysml` : uniqueFiles.join(', ')
         };
 
-        const result = await diagramType.render(model, title, theme);
+        const result = await renderView(views[0], model, title, theme);
         await mkdir(dirname(options.out), { recursive: true });
         await writeFile(options.out, result.svg, 'utf-8');
         console.log(`Wrote ${options.out} (${result.summary})`);

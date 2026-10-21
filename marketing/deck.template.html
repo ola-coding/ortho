@@ -357,7 +357,7 @@
           No drawing tool, no cloud service, no model repository — a model file,
           one command, and an SVG you commit next to the code.
         </p>
-        <div class="command">ortho render models/logical.sysml <span class="flag">-d</span> logical <span class="flag">-o</span> diagrams/logical-view.svg</div>
+        <div class="command">ortho render models/logical.sysml <span class="flag">-o</span> diagrams/logical-view.svg</div>
       </div>
       <div class="titleblock">
         <span>Project · ortho</span><span>Reference models · survey drone + coffee machine</span>
@@ -463,19 +463,19 @@ git diff --exit-code diagrams/</div>
         <div class="table-wrap">
           <table>
             <thead>
-              <tr><th>View</th><th>Answers</th><th>Rendered as</th><th>CLI</th></tr>
+              <tr><th>View</th><th>Answers</th><th>Rendered as</th><th>Standard view</th></tr>
             </thead>
             <tbody>
-              <tr><td class="view">Use case</td><td>What does someone actually do with the system?</td><td>Use case diagram</td><td class="cmd">use-case</td></tr>
-              <tr><td class="view">Logical</td><td>What does the system do, whatever performs it?</td><td>Capability tree</td><td class="cmd">logical</td></tr>
-              <tr><td class="view">Implementation</td><td>How is the software structured?</td><td>Package diagram</td><td class="cmd">implementation</td></tr>
-              <tr><td class="view">Physical</td><td>What is the product made of, and what connects to what?</td><td>Part diagram</td><td class="cmd">physical</td></tr>
-              <tr><td class="view">Deployment</td><td>Which hardware runs which software?</td><td>Nested node diagram</td><td class="cmd">deployment</td></tr>
-              <tr><td class="view">Process</td><td>What talks to what, in which order, at run time?</td><td>Sequence diagram</td><td class="cmd">process</td></tr>
+              <tr><td class="view">Use case</td><td>What does someone actually do with the system?</td><td>Use case diagram</td><td class="cmd">GeneralView</td></tr>
+              <tr><td class="view">Logical</td><td>What does the system do, whatever performs it?</td><td>Capability tree</td><td class="cmd">GeneralView</td></tr>
+              <tr><td class="view">Implementation</td><td>How is the software structured?</td><td>Package diagram</td><td class="cmd">GeneralView</td></tr>
+              <tr><td class="view">Physical</td><td>What is the product made of, and what connects to what?</td><td>Part diagram</td><td class="cmd">InterconnectionView</td></tr>
+              <tr><td class="view">Deployment</td><td>Which hardware runs which software?</td><td>Nested node diagram</td><td class="cmd">GeneralView</td></tr>
+              <tr><td class="view">Process</td><td>What talks to what, in which order, at run time?</td><td>Sequence diagram</td><td class="cmd">SequenceView</td></tr>
             </tbody>
           </table>
         </div>
-        <p style="color:var(--ink-soft)">Kruchten's 4+1, with his Physical view split in two: a mechatronic product needs that name for the product itself, so the software-onto-nodes mapping takes the name it is usually given anyway. Every diagram is headed by its view name and the package it came from, and signed in the corner with the file that generated it.</p>
+        <p style="color:var(--ink-soft)">Kruchten's 4+1, with his Physical view split in two: a mechatronic product needs that name for the product itself, so the software-onto-nodes mapping takes the name it is usually given anyway. Each model file declares its diagram as a SysML v2 view: the view's name is the heading, and the corner names the file that generated it.</p>
       </div>
       <div class="titleblock">
         <span>Project · ortho</span><span>Kruchten 4+1, Physical split in two</span>
@@ -925,7 +925,6 @@ action def SurveyMission {
             <div class="stack-tight">
               <h3>Render</h3>
               <div class="command">./node_modules/.bin/ortho render models/logical.sysml \
-  <span class="flag">-d</span> logical \
   <span class="flag">-o</span> diagrams/logical-view.svg</div>
             </div>
             <div class="stack-tight">

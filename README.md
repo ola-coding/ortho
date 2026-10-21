@@ -29,6 +29,8 @@ Create `logical.sysml`:
 
 ```sysml
 package Functions {
+    private import StandardViewDefinitions::*;
+
     action def MakeBeverage {
         action prepareWater {
             action storeWater;
@@ -43,37 +45,42 @@ package Functions {
             action sequenceRecipe;
         }
     }
+
+    view 'Logical view — Coffee Machine' : GeneralView {
+        expose MakeBeverage;
+    }
 }
 ```
 
-Render it:
+The `view` at the end is the diagram: its name is the heading, and it shows
+what it exposes. Render it:
 
 ```sh
-./node_modules/.bin/ortho render logical.sysml -d logical -o logical-view.svg
+./node_modules/.bin/ortho render logical.sysml -o logical-view.svg
 ```
 
 Open `logical-view.svg` in a browser: a tree of ten functions, headed
-"Logical view — Functions".
+"Logical view — Coffee Machine".
 
 ## The six views
 
-Keep one model file per view. Use case and logical stand alone; the others
-are rendered together with the files they refer to. List the view's own file
-first.
+Keep one model file per view, each declaring its view with one of SysML's
+standard view definitions. Use case and logical stand alone; the others are
+rendered together with the files they refer to, the view's own file first.
 
-| `-d` | Shows | Model files |
+| View | Standard view | Model files |
 | --- | --- | --- |
-| `use-case` | actors, use cases, system boundary | `use-case.sysml` |
-| `logical` | what the system does, as a tree of functions | `logical.sysml` |
-| `implementation` | software packages, their modules and APIs | `implementation.sysml logical.sysml` |
-| `physical` | the product's parts, ports and wiring | `physical.sysml logical.sysml` |
-| `deployment` | which hardware runs which software | `deployment.sysml implementation.sysml physical.sysml logical.sysml` |
-| `process` | the messages of one runtime scenario | `process.sysml implementation.sysml logical.sysml` |
+| Use case | `GeneralView` | `use-case.sysml` |
+| Logical | `GeneralView` | `logical.sysml` |
+| Implementation | `GeneralView` | `implementation.sysml logical.sysml` |
+| Physical | `InterconnectionView` | `physical.sysml logical.sysml` |
+| Deployment | `GeneralView` | `deployment.sysml implementation.sysml physical.sysml logical.sysml` |
+| Process | `SequenceView` | `process.sysml implementation.sysml logical.sysml` |
 
 For example:
 
 ```sh
-ortho render physical.sysml logical.sysml -d physical -o physical-view.svg
+ortho render physical.sysml logical.sysml -o physical-view.svg
 ```
 
 The process view draws every message it is given, so keep one scenario per
@@ -82,15 +89,13 @@ file.
 ## Options
 
 ```text
-ortho render <models...> -d <view> -o <file.svg> [-t <heading>] [--theme <name>]
+ortho render <models...> -o <file.svg> [-t <heading>] [--theme <name>]
 ```
 
 - `<models...>`: `.sysml` files, or directories of them, read as one model.
-- `-d, --diagram`: one of the six views above.
+  The first file declares the view to render.
 - `-o, --out`: where to write the SVG. Missing folders are created.
-- `-t, --title`: the diagram's heading. The default is the view name and the
-  first file's package, e.g. "Deployment view — Deployment", so pass `-t` to
-  name your system instead.
+- `-t, --title`: a heading other than the view's name.
 - `--theme`: `light` (default) or `dark-glass`, a transparent version for dark
   slides. PowerPoint, Keynote and Google Slides all insert SVG directly.
 
@@ -102,8 +107,8 @@ Commit your models and the generated SVGs, and render them with npm scripts:
 {
   "scripts": {
     "diagrams": "npm run diagrams:logical && npm run diagrams:physical",
-    "diagrams:logical": "ortho render models/logical.sysml -d logical -o diagrams/logical-view.svg",
-    "diagrams:physical": "ortho render models/physical.sysml models/logical.sysml -d physical -o diagrams/physical-view.svg"
+    "diagrams:logical": "ortho render models/logical.sysml -o diagrams/logical-view.svg",
+    "diagrams:physical": "ortho render models/physical.sysml models/logical.sysml -o diagrams/physical-view.svg"
   }
 }
 ```

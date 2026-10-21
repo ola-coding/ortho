@@ -16,6 +16,7 @@ package Hardware {
     // each one. Sensors and the radio carry data for functions the software
     // performs, so they realize none of their own.
     private import Functions::*;
+    private import StandardViewDefinitions::*;
 
     port def PowerPort;
     port def DataPort;
@@ -185,4 +186,8 @@ package Hardware {
     // computers inside it: a reference into a definition has to start at a
     // usage.
     part system : SurveyDroneSystem;
+
+    view 'Physical view — Survey Drone' : InterconnectionView {
+        expose system;
+    }
 }

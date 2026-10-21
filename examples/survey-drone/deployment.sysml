@@ -9,6 +9,7 @@ package Deployment {
 
     private import Software::*;
     private import Hardware::*;
+    private import StandardViewDefinitions::*;
 
     // The flight firmware has the control computer to itself: the control
     // libraries, the drivers that feed them, and the kernel underneath.
@@ -41,4 +42,8 @@ package Deployment {
     // The operator's app runs on the tablet, behind its own end of the tunnel.
     allocate Software::sw.app to Hardware::system.ground.tablet;
     allocate Software::sw.groundTunnel to Hardware::system.ground.tablet;
+
+    view 'Deployment view — Survey Drone' : GeneralView {
+        expose Deployment;
+    }
 }

@@ -5,6 +5,7 @@
 // the drone, the tablet or the radio would be realization detail, and this
 // view carries none.
 package UseCases {
+    private import StandardViewDefinitions::*;
 
     part def Operator;
 
@@ -24,4 +25,8 @@ package UseCases {
     use case planSurvey : SurveyTask;
 
     use case followProgress : SurveyTask;
+
+    view 'Use case view — Survey Drone' : GeneralView {
+        expose UseCases;
+    }
 }

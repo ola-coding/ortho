@@ -1,6 +1,6 @@
 import { AstUtils } from 'langium';
 import { isActorUsage, isMessageUsage } from '../generated/ast.js';
-import type { MessageUsage, Model, PartDef, PartUsage } from '../generated/ast.js';
+import type { Exposable, MessageUsage, Model, PartDef, PartUsage } from '../generated/ast.js';
 import { qualifiedName } from '../model/graph.js';
 import { endPart, partLabel } from './connector-ends.js';
 
@@ -46,15 +46,15 @@ function isPerson(part: PartUsage, actorTypes: Set<PartDef>): boolean {
  * appearance; messages keep document order (`then` is explicit notation for
  * the same ordering).
  */
-export function extractSequenceModel(model: Model): SequenceModel {
+export function extractSequenceModel(exposed: Exposable[], model: Model): SequenceModel {
     const lifelines = new Map<string, SequenceLifeline>();
     const messages: SequenceMessage[] = [];
-    const contents = [...AstUtils.streamAllContents(model)];
+    // A part typed by a use case's actor, in any loaded file, is a person.
     const actorTypes = new Set(
-        contents.filter(isActorUsage).map(a => a.type?.ref).filter((d): d is PartDef => !!d)
+        AstUtils.streamAllContents(model).filter(isActorUsage).map(a => a.type?.ref).filter((d): d is PartDef => !!d)
     );
 
-    for (const node of contents) {
+    for (const node of exposed.flatMap(e => [...AstUtils.streamAllContents(e)])) {
         if (!isMessageUsage(node)) {
             continue;
         }

@@ -3,12 +3,12 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
 import { parseSysmlFiles } from '../src/parser/parse.js';
-import { diagramTypes } from '../src/pipeline.js';
+import { declaredViews, viewHeading } from '../src/model/views.js';
+import { renderView } from '../src/pipeline.js';
 
 interface Job {
     out: string;
-    diagram: keyof typeof diagramTypes;
-    /** First file is the view's own model; the rest supply types it references. */
+    /** First file declares the view; the rest supply what it refers to. */
     files: string[];
 }
 
@@ -19,41 +19,22 @@ interface Job {
  * perform, deployment is nothing but the mapping between those two, and the
  * process view's lifelines are typed by the software modules.
  */
-function standardJobs(): Job[] {
-    return [
-        { out: 'use-case-view.svg', diagram: 'use-case', files: ['use-case.sysml'] },
-        { out: 'logical-view.svg', diagram: 'logical', files: ['logical.sysml'] },
-        {
-            out: 'implementation-view.svg', diagram: 'implementation',
-            files: ['implementation.sysml', 'logical.sysml']
-        },
-        { out: 'physical-view.svg', diagram: 'physical', files: ['physical.sysml', 'logical.sysml'] },
-        {
-            out: 'deployment-view.svg', diagram: 'deployment',
-            files: ['deployment.sysml', 'implementation.sysml', 'physical.sysml', 'logical.sysml']
-        },
-        {
-            out: 'process-view.svg', diagram: 'process',
-            files: ['process.sysml', 'implementation.sysml', 'logical.sysml']
-        }
-    ];
-}
-
-const examples = [
-    { base: 'examples/survey-drone', system: 'Survey Drone' },
-    { base: 'examples/coffee-machine', system: 'Coffee Machine' }
+const jobs: Job[] = [
+    { out: 'use-case-view.svg', files: ['use-case.sysml'] },
+    { out: 'logical-view.svg', files: ['logical.sysml'] },
+    { out: 'implementation-view.svg', files: ['implementation.sysml', 'logical.sysml'] },
+    { out: 'physical-view.svg', files: ['physical.sysml', 'logical.sysml'] },
+    { out: 'deployment-view.svg', files: ['deployment.sysml', 'implementation.sysml', 'physical.sysml', 'logical.sysml'] },
+    { out: 'process-view.svg', files: ['process.sysml', 'implementation.sysml', 'logical.sysml'] }
 ];
 
-for (const example of examples) {
-    const out = `${example.base}/diagrams`;
+for (const base of ['examples/survey-drone', 'examples/coffee-machine']) {
+    const out = `${base}/diagrams`;
     await mkdir(out, { recursive: true });
-    for (const job of standardJobs()) {
-        const services = createSysmlServices();
-        const { model } = await parseSysmlFiles(services.Sysml, job.files.map(f => `${example.base}/${f}`));
-        const result = await diagramTypes[job.diagram].render(model, {
-            heading: `${diagramTypes[job.diagram].view} — ${example.system}`,
-            source: `${example.base}/${job.files[0]}`
-        });
+    for (const job of jobs) {
+        const { model, documents } = await parseSysmlFiles(createSysmlServices().Sysml, job.files.map(f => `${base}/${f}`));
+        const [view] = declaredViews(documents[0].parseResult.value);
+        const result = await renderView(view, model, { heading: viewHeading(view), source: `${base}/${job.files[0]}` });
         await writeFile(`${out}/${job.out}`, result.svg, 'utf-8');
         console.log(`Wrote ${out}/${job.out} (${result.summary})`);
     }

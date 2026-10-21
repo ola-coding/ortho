@@ -70,6 +70,40 @@ even those ortho does not use, such as `frame`, `state`, `item`, `flow` and
 
 **Comments.** `// ...` to the end of the line, `/* ... */` across lines.
 
+## Views
+
+Each file declares the view it feeds (§7.26): a `view` typed by one of the
+standard view definitions, exposing what the diagram shows. Its name is the
+diagram's heading (§7.26.5), in single quotes unless it is a plain name.
+ortho matches the definition by name rather than loading the standard library, so
+import `StandardViewDefinitions` for other tools.
+
+```sysml
+package Functions {
+    private import StandardViewDefinitions::*;
+
+    action def MakeBeverage {
+        action heatWater;
+    }
+
+    view 'Logical view — Coffee Machine' : GeneralView {
+        expose MakeBeverage;
+    }
+}
+```
+
+| View | Definition | Exposes |
+|---|---|---|
+| use case | `GeneralView` | the package of use cases |
+| logical | `GeneralView` | the `action def` of each function tree |
+| implementation | `GeneralView` | the package of software |
+| physical | `InterconnectionView` | the product's `part` usage |
+| deployment | `GeneralView` | the package of allocations |
+| process | `SequenceView` | the scenario's `action def` |
+
+A view draws only what it exposes. A `GeneralView` draws whatever that is: a
+function tree, use cases, allocations, or packages of software.
+
 ## Use case view
 
 What people ask the system for, and who asks (§7.25).
@@ -244,7 +278,7 @@ package Hardware {
 | You write | The view draws |
 |---|---|
 | `part name : Def [n];` | a box, `name : Def [n]`, with the parts of `Def` nested inside |
-| a `part def` nothing uses or specializes, or a `part` directly in a package | a top-level box |
+| the `part` the view exposes | the top-level box |
 | `port name : PortDef;` | a port on the box's edge. `~PortDef` conjugates it. |
 | `connect a.p to b.q;` | a line between the two ports (or parts) |
 | `connection : Interface connect a.p to b.q;` (optionally named) | the same line, labelled with the interface |
@@ -415,7 +449,7 @@ Common SysML v2 that ortho does not parse, so a model using it fails to load:
 | `in`, `out`, `inout` on an action's parameters | 7.17.2 | they work on a port's features |
 | `enum def` | 7.8 | |
 | `calc`, `constraint` | 7.19–7.20 | |
-| `view def`, `viewpoint` | 7.26 | one model file per view |
+| `view def`, `viewpoint`, `filter`, `render` | 7.26 | a `view` of a standard view definition |
 | `ref`, `abstract`, `redefines`/`:>>`, `subsets` | 7.6 | |
 | units on values, `100 [kg]` | 7.7 | put the unit in the name, `mass_kg` |
 | `doc`, `comment` elements | 7.4 | plain `//` and `/* */` comments |
@@ -439,6 +473,7 @@ Every keyword ortho's grammar knows, and nothing else.
 | `connection` | 7.13 | physical, to type or name a connection |
 | `def` | 7.6 | every definition |
 | `end` | 7.14 | interface ends |
+| `expose` | 7.26.2 | what a view shows |
 | `from` | 7.16 | messages |
 | `import` | 7.5.3 | every file that uses another |
 | `in` | 7.12.1 | the direction of a port's feature |
@@ -462,6 +497,7 @@ Every keyword ortho's grammar knows, and nothing else.
 | `then` | 7.17.4 | message order |
 | `to` | 7.13, 7.15, 7.16 | `connect`, `allocate`, `message` |
 | `use` | 7.25 | `use case` |
+| `view` | 7.26 | every file |
 
 ## How this is checked
 
@@ -470,6 +506,6 @@ every `sysml` block above parses on its own, and every keyword has a worked
 example, here or in the example models.
 
 Both example models and every block on this page also passed the OMG pilot
-implementation, release 0.62.0, on 2026-09-19, with no errors or warnings.
+implementation, release 0.62.0, on 2026-10-20, with no errors or warnings.
 That is a one-off check, not part of CI; [DEVELOPMENT.md](DEVELOPMENT.md)
 describes how to repeat it when the grammar grows.

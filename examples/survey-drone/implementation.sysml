@@ -13,6 +13,7 @@ package Software {
     // each one. Nothing here knows which computer runs it: that is deployment.
     private import Functions::*;
     private import ScalarValues::*;
+    private import StandardViewDefinitions::*;
 
     // What the modules offer each other. A module that offers an API declares
     // a port of that type; one that needs it declares the same type
@@ -284,5 +285,9 @@ package Software {
         part secureBoot : LinuxPlatform::SecureBoot;
         part app : Ground::SurveyPlanner;
         part groundTunnel : Middleware::WireGuardTunnel;
+    }
+
+    view 'Implementation view — Survey Drone' : GeneralView {
+        expose Software;
     }
 }

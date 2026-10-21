@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
 import { parseSysmlFiles } from '../src/parser/parse.js';
-import type { Model } from '../src/generated/ast.js';
+import type { Exposable, Model } from '../src/generated/ast.js';
 import type { GraphNode } from '../src/model/graph.js';
 import { extractUseCaseGraph } from '../src/diagrams/use-case.js';
 import { extractLogicalGraph } from '../src/diagrams/logical.js';
@@ -11,7 +11,9 @@ import { extractImplementationGraph } from '../src/diagrams/implementation.js';
 import { extractPhysicalGraph } from '../src/diagrams/physical.js';
 import { extractDeploymentGraph } from '../src/diagrams/deployment.js';
 import { extractSequenceModel } from '../src/diagrams/sequence.js';
-import { diagramTypes } from '../src/pipeline.js';
+import { declaredViews, diagramKind, exposedElements, viewHeading } from '../src/model/views.js';
+import type { DiagramKind } from '../src/model/views.js';
+import { renderView } from '../src/pipeline.js';
 
 const BASE = resolve(dirname(fileURLToPath(import.meta.url)), '../examples/coffee-machine');
 
@@ -35,6 +37,12 @@ async function parseSet(...files: string[]): Promise<Model> {
     return model;
 }
 
+/** What the first file's view exposes, and the workspace it was parsed in. */
+async function viewSet(...files: string[]): Promise<[Exposable[], Model]> {
+    const model = await parseSet(...files);
+    return [exposedElements(declaredViews(model.packages[0])[0]), model];
+}
+
 describe('coffee machine example model', () => {
     it('parses and links all six files as one workspace', async () => {
         const model = await parseSet(...ALL);
@@ -51,7 +59,7 @@ describe('coffee machine example model', () => {
     });
 
     it('use case view: three beverages and a service task under one boundary', async () => {
-        const graph = extractUseCaseGraph(await parseSet('use-case.sysml'));
+        const graph = extractUseCaseGraph((await viewSet('use-case.sysml'))[0]);
         const boundaries = graph.nodes.filter(n => n.shape === 'boundary');
         expect(boundaries.map(b => b.name)).toEqual(['CoffeeMachine']);
         expect(boundaries[0].children!.map(c => c.name).sort())
@@ -69,7 +77,7 @@ describe('coffee machine example model', () => {
     });
 
     it('logical view: a strict capability tree naming no realization', async () => {
-        const graph = extractLogicalGraph(await parseSet('logical.sysml'));
+        const graph = extractLogicalGraph((await viewSet('logical.sysml'))[0]);
         // Two roots, one per use case definition: making a drink, and looking
         // after the machine. A forest of n trees has n fewer edges than nodes.
         expect(graph.edges).toHaveLength(graph.nodes.length - 2);
@@ -90,7 +98,7 @@ describe('coffee machine example model', () => {
     });
 
     it('implementation view: the application layer depends on control, never the reverse', async () => {
-        const graph = extractImplementationGraph(await parseSet('implementation.sysml', 'logical.sysml'));
+        const graph = extractImplementationGraph((await viewSet('implementation.sysml', 'logical.sysml'))[0]);
         const imports = graph.edges.map(e => `${e.sourceId} -> ${e.targetId}`);
         expect(imports).toEqual(['Software::Application -> Software::Control']);
 
@@ -106,7 +114,7 @@ describe('coffee machine example model', () => {
     });
 
     it('implementation view: the recipe engine offers one API and needs three', async () => {
-        const graph = extractImplementationGraph(await parseSet('implementation.sysml', 'logical.sysml'));
+        const graph = extractImplementationGraph((await viewSet('implementation.sysml', 'logical.sysml'))[0]);
         const modules = new Map(allNodes(graph.nodes).map(n => [n.name, n]));
         const ports = (name: string) =>
             modules.get(name)!.compartments.find(c => c.title === 'ports')?.lines ?? [];
@@ -122,7 +130,7 @@ describe('coffee machine example model', () => {
     });
 
     it('physical view: the machine as nested parts, looms named by their interface', async () => {
-        const graph = extractPhysicalGraph(await parseSet('physical.sysml', 'logical.sysml'));
+        const graph = extractPhysicalGraph((await viewSet('physical.sysml', 'logical.sysml'))[0]);
         expect(graph.nodes.map(n => n.name)).toEqual(['machine : CoffeeMachine']);
         const names = graph.nodes[0].children!.map(n => n.name);
         expect(names).toHaveLength(11);
@@ -136,12 +144,12 @@ describe('coffee machine example model', () => {
     });
 
     it('realization: every function is performed by something, and some parts by nothing', async () => {
-        const logical = extractLogicalGraph(await parseSet('logical.sysml'));
+        const logical = extractLogicalGraph((await viewSet('logical.sysml'))[0]);
         const parents = new Set(logical.edges.map(e => e.sourceId));
         const leaves = logical.nodes.filter(n => !parents.has(n.id)).map(n => n.name);
 
-        const software = extractImplementationGraph(await parseSet('implementation.sysml', 'logical.sysml'));
-        const hardware = extractPhysicalGraph(await parseSet('physical.sysml', 'logical.sysml'));
+        const software = extractImplementationGraph((await viewSet('implementation.sysml', 'logical.sysml'))[0]);
+        const hardware = extractPhysicalGraph((await viewSet('physical.sysml', 'logical.sysml'))[0]);
         const performed = new Set(
             [...allNodes(software.nodes), ...allNodes(hardware.nodes)]
                 .flatMap(n => n.compartments.flatMap(c => c.lines))
@@ -164,9 +172,7 @@ describe('coffee machine example model', () => {
     });
 
     it('deployment view: five programs on two hosts, inside the machine', async () => {
-        const graph = extractDeploymentGraph(
-            await parseSet('deployment.sysml', 'implementation.sysml', 'physical.sysml', 'logical.sysml')
-        );
+        const graph = extractDeploymentGraph(...await viewSet('deployment.sysml', 'implementation.sysml', 'physical.sysml', 'logical.sysml'));
         expect(graph.edges).toHaveLength(0);
         // Both hosts are fitted in the machine, so they share its frame.
         expect(graph.nodes.map(n => n.name)).toEqual(['machine : CoffeeMachine']);
@@ -182,7 +188,7 @@ describe('coffee machine example model', () => {
     });
 
     it('process view: one press produces a cappuccino', async () => {
-        const sequence = extractSequenceModel(await parseSet('process.sysml', 'implementation.sysml', 'logical.sysml'));
+        const sequence = extractSequenceModel(...await viewSet('process.sysml', 'implementation.sysml', 'logical.sysml'));
         expect(sequence.lifelines.map(l => l.label)).toEqual([
             'user',
             'ui : UiApp',
@@ -197,8 +203,8 @@ describe('coffee machine example model', () => {
         expect(sequence.messages.at(-1)!.label).toBe('beverageReady');
     });
 
-    it('renders all six views end-to-end', async () => {
-        const jobs: Array<[keyof typeof diagramTypes, string[]]> = [
+    it('renders all six views end-to-end, each from the view its first file declares', async () => {
+        const jobs: Array<[DiagramKind, string[]]> = [
             ['use-case', ['use-case.sysml']],
             ['logical', ['logical.sysml']],
             ['implementation', ['implementation.sysml', 'logical.sysml']],
@@ -206,14 +212,13 @@ describe('coffee machine example model', () => {
             ['deployment', ['deployment.sysml', 'implementation.sysml', 'physical.sysml', 'logical.sysml']],
             ['process', ['process.sysml', 'implementation.sysml', 'logical.sysml']]
         ];
-        for (const [diagram, files] of jobs) {
-            const type = diagramTypes[diagram];
-            const { svg } = await type.render(await parseSet(...files), {
-                heading: `${type.view} — Coffee Machine`,
-                source: files[0]
-            });
-            expect(svg.startsWith('<svg'), diagram).toBe(true);
-            expect(svg, diagram).toContain(type.view);
+        for (const [kind, files] of jobs) {
+            const model = await parseSet(...files);
+            const [view] = declaredViews(model.packages[0]);
+            expect(diagramKind(view), files[0]).toBe(kind);
+            const { svg } = await renderView(view, model, { heading: viewHeading(view), source: files[0] });
+            expect(svg.startsWith('<svg'), kind).toBe(true);
+            expect(svg, kind).toContain(viewHeading(view));
         }
     });
 });
