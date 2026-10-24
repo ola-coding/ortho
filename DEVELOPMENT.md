@@ -199,10 +199,10 @@ In priority order:
 - [x] **Declare each view with the spec's view definitions**: each file
   declares a `GeneralView`, `InterconnectionView` or `SequenceView`, which
   names the heading and exposes the content; `-d` is gone.
-- [ ] **Prepare for NPX.** Publish ortho on npm, so it runs without the repo.
-  First clean up `package.json`, the README and whatever else publishing
-  needs. The name `ortho` is taken on npm.
 - [ ] **Imports that make names visible.** Imports change nothing today, so a
   valid model that writes `private import Software::*;` and then `sw.video`
   fails to load. Once people write ordinary SysML v2 against ortho, that is
   the first thing they will hit.
+- [ ] **Prepare for NPX.** Publish ortho on npm, so it runs without the repo.
+  First clean up `package.json`, the README and whatever else publishing
+  needs. The name `ortho` is taken on npm.
