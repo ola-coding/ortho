@@ -39,7 +39,7 @@ package Hardware {
     }
 
     part def BrushlessMotor {
-        perform Functions::survey.operateVehicle.produceThrust;
+        perform survey.operateVehicle.produceThrust;
 
         port arm : MountPort;
         port phases : DrivePort;
@@ -47,7 +47,7 @@ package Hardware {
     }
 
     part def Propeller {
-        perform Functions::survey.operateVehicle.produceThrust;
+        perform survey.operateVehicle.produceThrust;
 
         port hub : MountPort;
     }
@@ -61,7 +61,7 @@ package Hardware {
 
     // --- power -------------------------------------------------------------
     part def LiPoBattery {
-        perform Functions::survey.operateVehicle.supplyPower;
+        perform survey.operateVehicle.supplyPower;
 
         attribute cells : Real = 6;
         attribute capacity_mAh : Real = 10000;
@@ -71,7 +71,7 @@ package Hardware {
     // Measures battery voltage and current for the control computer, and
     // gives each consumer its own supply.
     part def PowerModule {
-        perform Functions::survey.operateVehicle.supplyPower;
+        perform survey.operateVehicle.supplyPower;
 
         port batteryIn : PowerPort;
         port escOut : PowerPort;
@@ -83,7 +83,7 @@ package Hardware {
     // ArduPilot-style flight controller: reads the sensors, drives the motors
     // and talks MAVLink to the computer beside it.
     part def ControlComputer {
-        perform Functions::survey.operateVehicle.provideComputing;
+        perform survey.operateVehicle.provideComputing;
 
         port powerIn : PowerPort;
         port imuIn : DataPort;
@@ -94,7 +94,7 @@ package Hardware {
 
     // Jetson-style computer with a GPU, for everything above flying.
     part def GpuComputer {
-        perform Functions::survey.operateVehicle.provideComputing;
+        perform survey.operateVehicle.provideComputing;
 
         attribute aiPerformance_TOPS : Real = 100;
         port powerIn : PowerPort;
@@ -105,7 +105,7 @@ package Hardware {
 
     // --- sensors -----------------------------------------------------------
     part def Camera {
-        perform Functions::survey.perceive.captureVideo;
+        perform survey.perceive.captureVideo;
 
         port mount : MountPort;
         port videoOut : DataPort;

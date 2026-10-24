@@ -16,11 +16,11 @@ package MakeCappuccinoScenario {
 
     action def MakeCappuccino {
         part user;
-        part ui : Software::Application::UiApp;
-        part recipes : Software::Application::RecipeEngine;
-        part temperature : Software::Control::TemperatureController;
-        part brew : Software::Control::BrewController;
-        part milk : Software::Control::MilkController;
+        part ui : Application::UiApp;
+        part recipes : Application::RecipeEngine;
+        part temperature : Control::TemperatureController;
+        part brew : Control::BrewController;
+        part milk : Control::MilkController;
 
         message selectCappuccino from user to ui;
         then message startBeverage of BeverageRecipe from ui to recipes;

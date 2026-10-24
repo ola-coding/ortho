@@ -3,7 +3,7 @@ import type { Exposable, PackageDecl, PartDef } from '../generated/ast.js';
 import type { Compartment, DiagramGraph, GraphEdge, GraphNode } from '../model/graph.js';
 import { qualifiedName } from '../model/graph.js';
 import { boxSize, performCompartments } from './connector-ends.js';
-import { collectPackages } from '../model/packages.js';
+import { collectPackages, importCandidates } from '../model/packages.js';
 import { measureText } from '../render/text-metrics.js';
 
 /**
@@ -73,28 +73,17 @@ function packageNode(pkg: PackageDecl): GraphNode {
 }
 
 /**
- * Resolves an import path the way references resolve: relative to the
- * importing package's ancestors first, then as an absolute qualified name.
- * `Pkg::Element` imports resolve to the containing package `Pkg`.
+ * The package an import points at, found the way names are. `Pkg::Element`
+ * imports resolve to the containing package `Pkg`.
  */
 function resolveImportTarget(importer: PackageDecl, path: string, packageIds: Set<string>): string | undefined {
-    const prefixes: string[] = [];
-    let scope: PackageDecl | undefined = importer;
-    while (scope) {
-        prefixes.push(qualifiedName(scope));
-        scope = isPackageDecl(scope.$container) ? scope.$container : undefined;
-    }
-    prefixes.push('');
-
     for (const candidate of [path, path.split('::').slice(0, -1).join('::')]) {
         if (!candidate) {
             continue;
         }
-        for (const prefix of prefixes) {
-            const fqn = prefix ? `${prefix}::${candidate}` : candidate;
-            if (packageIds.has(fqn)) {
-                return fqn;
-            }
+        const found = importCandidates(importer, candidate).find(fqn => packageIds.has(fqn));
+        if (found) {
+            return found;
         }
     }
     return undefined;

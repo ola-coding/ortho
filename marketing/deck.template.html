@@ -596,18 +596,20 @@ action def PerformAerialSurvey {
 <pre class="code">
 package Software {
 
+    private import Functions::*;
+
     // Each module says which function it realizes.
     package Flight {
         private import Software::FlightPlatform;
 
         // AP_Mission
         part def MissionExecutor {
-            perform Functions::survey.guideNavigateAndControl.guide;
+            perform survey.guideNavigateAndControl.guide;
         }
 
         // AP_Motors
         part def FlightControl {
-            perform Functions::survey.guideNavigateAndControl.control;
+            perform survey.guideNavigateAndControl.control;
 
             // What it needs from the modules around it.
             port vehicleState : ~Apis::StateApi;
@@ -616,7 +618,7 @@ package Software {
 
         // GCS_MAVLink
         part def MavlinkInterface {
-            perform Functions::survey.communicate.exchangeTelemetry;
+            perform survey.communicate.exchangeTelemetry;
         }
     }
 
@@ -664,7 +666,7 @@ package Software {
             <div class="filename">examples/survey-drone/physical.sysml</div>
 <pre class="code">
 part def BrushlessMotor {
-    perform Functions::survey.operateVehicle.produceThrust;
+    perform survey.operateVehicle.produceThrust;
     ...
 }
 
@@ -745,21 +747,15 @@ package Deployment {
 
     // The firmware has the control computer
     // to itself, kernel included.
-    allocate Software::sw.mission
-        to Hardware::system.drone.fc;
-    allocate Software::sw.control
-        to Hardware::system.drone.fc;
-    allocate Software::sw.rtos
-        to Hardware::system.drone.fc;
+    allocate sw.mission to system.drone.fc;
+    allocate sw.control to system.drone.fc;
+    allocate sw.rtos to system.drone.fc;
 
     // Every container shares the GPU computer.
-    allocate Software::sw.planner
-        to Hardware::system.drone.companion;
-    allocate Software::sw.zenoh
-        to Hardware::system.drone.companion;
+    allocate sw.planner to system.drone.companion;
+    allocate sw.zenoh to system.drone.companion;
 
-    allocate Software::sw.app
-        to Hardware::system.ground.tablet;
+    allocate sw.app to system.ground.tablet;
 }
 </pre>
           </div>
@@ -793,10 +789,10 @@ package Deployment {
 <pre class="code">
 action def SurveyMission {
     part operator;
-    part app : Software::Ground::SurveyPlanner;
-    part bridge : Software::Middleware::MavlinkBridge;
-    part mavlink : Software::Flight::MavlinkInterface;
-    part mission : Software::Flight::MissionExecutor;
+    part app : Ground::SurveyPlanner;
+    part bridge : Middleware::MavlinkBridge;
+    part mavlink : Flight::MavlinkInterface;
+    part mission : Flight::MissionExecutor;
 
     message markArea from operator to app;
     then message approve from operator to app;

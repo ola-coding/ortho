@@ -10,13 +10,13 @@ package Deployment {
     private import StandardViewDefinitions::*;
 
     // One dual-core board carries all four control programs.
-    allocate Software::sw.recipes to Hardware::machine.controller;
-    allocate Software::sw.brew to Hardware::machine.controller;
-    allocate Software::sw.temperature to Hardware::machine.controller;
-    allocate Software::sw.milk to Hardware::machine.controller;
+    allocate sw.recipes to machine.controller;
+    allocate sw.brew to machine.controller;
+    allocate sw.temperature to machine.controller;
+    allocate sw.milk to machine.controller;
 
     // The panel runs its own UI.
-    allocate Software::sw.uiApp to Hardware::machine.display;
+    allocate sw.uiApp to machine.display;
 
     view 'Deployment view — Coffee Machine' : GeneralView {
         expose Deployment;

@@ -13,8 +13,8 @@ export interface ParsedModel {
 
 /**
  * Parses and links one or more .sysml files as a single workspace, so
- * cross-file references resolve via qualified names. The returned model
- * merges all root packages in file order.
+ * names resolve across files. The returned model merges all root packages in
+ * file order.
  */
 export async function parseSysmlFiles(services: SysmlServices, filePaths: string[]): Promise<ParsedModel> {
     const documents: Array<LangiumDocument<Model>> = [];

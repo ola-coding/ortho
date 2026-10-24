@@ -1,6 +1,7 @@
 import type { AstNode } from 'langium';
 import { isPackageDecl } from '../generated/ast.js';
 import type { Exposable, PackageDecl } from '../generated/ast.js';
+import { qualifiedName } from './graph.js';
 
 /** The given packages and every package nested in them. */
 export function collectPackages(roots: PackageDecl[]): PackageDecl[] {
@@ -26,4 +27,19 @@ export function exposedMembers(exposed: Exposable[]): AstNode[] {
         ...exposed.filter(e => !isPackageDecl(e)),
         ...collectPackages(exposed.filter(isPackageDecl)).flatMap(pkg => pkg.members)
     ];
+}
+
+/**
+ * The qualified names an import's path may stand for, nearest first: within
+ * the importing package, within each package around it, then from the top.
+ */
+export function importCandidates(importer: PackageDecl, path: string): string[] {
+    const candidates: string[] = [];
+    let scope: PackageDecl | undefined = importer;
+    while (scope) {
+        candidates.push(`${qualifiedName(scope)}::${path}`);
+        scope = isPackageDecl(scope.$container) ? scope.$container : undefined;
+    }
+    candidates.push(path);
+    return candidates;
 }

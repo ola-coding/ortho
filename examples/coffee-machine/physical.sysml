@@ -28,14 +28,14 @@ package Hardware {
 
     // --- water path --------------------------------------------------------
     part def WaterTank {
-        perform Functions::beverage.prepareWater.storeWater;
+        perform beverage.prepareWater.storeWater;
 
         attribute capacity_l : Real = 1.9;
         port waterOut : WaterPort;
     }
 
     part def WaterPump {
-        perform Functions::beverage.prepareWater.pumpWater;
+        perform beverage.prepareWater.pumpWater;
 
         attribute maxPressure_bar : Real = 15;
         port waterIn : WaterPort;
@@ -44,7 +44,7 @@ package Hardware {
     }
 
     part def Thermoblock {
-        perform Functions::beverage.prepareWater.heatWater;
+        perform beverage.prepareWater.heatWater;
 
         attribute targetTemp_C : Real = 92;
         port waterIn : WaterPort;
@@ -55,14 +55,14 @@ package Hardware {
 
     // --- coffee path -------------------------------------------------------
     part def BeanHopper {
-        perform Functions::beverage.prepareCoffee.storeBeans;
+        perform beverage.prepareCoffee.storeBeans;
 
         attribute capacity_g : Real = 280;
         port beansOut : CoffeePort;
     }
 
     part def Grinder {
-        perform Functions::beverage.prepareCoffee.grindBeans;
+        perform beverage.prepareCoffee.grindBeans;
 
         attribute burrs : String = "conical_ceramic";
         port beansIn : CoffeePort;
@@ -71,9 +71,9 @@ package Hardware {
     }
 
     part def BrewUnit {
-        perform Functions::beverage.prepareCoffee.extractShot;
+        perform beverage.prepareCoffee.extractShot;
         // The coffee leaves the machine here.
-        perform Functions::beverage.serveBeverage;
+        perform beverage.serveBeverage;
 
         attribute chamberVolume_g : Real = 16;
         port waterIn : WaterPort;
@@ -87,16 +87,16 @@ package Hardware {
     // machine, so the pickup end connects to nothing here: it is where the
     // product meets whatever the kitchen provides.
     part def MilkTube {
-        perform Functions::beverage.prepareMilk.drawMilk;
+        perform beverage.prepareMilk.drawMilk;
 
         port pickup : BeveragePort;
         port milkOut : BeveragePort;
     }
 
     part def SteamWand {
-        perform Functions::beverage.prepareMilk.frothMilk;
+        perform beverage.prepareMilk.frothMilk;
         // And the milk, here.
-        perform Functions::beverage.serveBeverage;
+        perform beverage.serveBeverage;
 
         port steamIn : SteamPort;
         // Steam through the wand pulls milk up the tube; nothing pumps it.

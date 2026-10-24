@@ -3,7 +3,7 @@ import { parseHelper } from 'langium/test';
 import type { LangiumDocument } from 'langium';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
 import {
-    isAttributeUsage, isConnectionUsage, isPartDef, isPartUsage, isPortDef, isPortUsage,
+    isAllocationUsage, isAttributeUsage, isConnectionUsage, isPackageDecl, isPartDef, isPartUsage, isPortDef, isPortUsage,
     isRequirementDef, isRequirementUsage, isSatisfyUsage
 } from '../src/generated/ast.js';
 import type { ConnectionUsage, Model, PartDef, SatisfyUsage } from '../src/generated/ast.js';
@@ -172,6 +172,102 @@ describe('core grammar', () => {
             .find(m => isPartDef(m) && m.name === 'Design') as PartDef;
         const connection = design.members.find(isConnectionUsage) as ConnectionUsage;
         expect(connection.source.segments[0].ref?.$container).toHaveProperty('name', 'Design');
+    });
+});
+
+// Every test's document stays in the workspace, so these packages have names
+// no other test uses.
+describe('imports', () => {
+    const errorsOf = async (text: string): Promise<string[]> => {
+        const document = await parse(text, { validation: true });
+        return (document.diagnostics ?? []).filter(d => d.severity === 1)
+            .map(d => typeof d.message === 'string' ? d.message : d.message.value);
+    };
+    const unresolved = (type: string, name: string) => `Could not resolve reference to ${type} named '${name}'.`;
+    const LIBRARY = `
+        package ImpSoftware {
+            package Control { part def BrewController; part def MilkController; }
+            part sw { part video; part other; }
+        }
+        package ImpHardware {
+            part hw { part cpu; }
+        }
+    `;
+
+    it('makes a package\'s members visible by their own names', async () => {
+        const document = await parseOk(`${LIBRARY}
+            package ImpDeployment {
+                private import ImpSoftware::*;
+                private import ImpHardware::*;
+                private import ScalarValues::*;
+                allocate sw.video to hw.cpu;
+                part brew : Control::BrewController;
+            }
+        `);
+        const deployment = document.parseResult.value.packages[2];
+        const allocation = deployment.members.find(isAllocationUsage)!;
+        expect(allocation.source.segments.map(s => s.ref?.name)).toEqual(['sw', 'video']);
+        expect(allocation.target.segments.map(s => s.ref?.name)).toEqual(['hw', 'cpu']);
+    });
+
+    it('imports one element; a package\'s own members outrank imports, which reach nested packages', async () => {
+        expect(await errorsOf(`${LIBRARY}
+            package ImpOne {
+                private import ImpSoftware::sw;
+                allocate sw.video to ImpHardware::hw.cpu;
+            }
+        `)).toEqual([]);
+        expect(await errorsOf(`${LIBRARY}
+            package ImpOnly {
+                private import ImpSoftware::Control::BrewController;
+                part def P { part b : BrewController; part m : MilkController; }
+            }
+        `)).toEqual([unresolved('PartDef', 'MilkController')]);
+        const document = await parseOk(`${LIBRARY}
+            package ImpOwn {
+                private import ImpSoftware::*;
+                part sw { part video; }
+                package Inner {
+                    allocate sw.video to ImpHardware::hw.cpu;
+                    part def Brew { part brew : Control::BrewController; }
+                }
+            }
+        `);
+        const own = document.parseResult.value.packages[2];
+        const inner = own.members.find(isPackageDecl)!;
+        const allocation = inner.members.find(isAllocationUsage)!;
+        expect(allocation.source.segments[0].ref?.$container).toBe(own);
+    });
+
+    it('passes on public imports only', async () => {
+        const units = `
+            package ImpParts { part def Engine; part def Motor; }
+            package ImpUnits {
+                private import ImpParts::Engine;
+                public import ImpParts::Motor;
+            }
+        `;
+        expect(await errorsOf(`${units}
+            package ImpUser {
+                private import ImpUnits::*;
+                part def M { part m : Motor; }
+                part def Q { part q : ImpUnits::Motor; }
+            }
+        `)).toEqual([]);
+        expect(await errorsOf(`${units}
+            package ImpPrivate {
+                private import ImpUnits::*;
+                part def E { part e : Engine; }
+            }
+        `)).toEqual([unresolved('PartDef', 'Engine')]);
+    });
+
+    it('resolves nothing through a package that is not imported', async () => {
+        expect(await errorsOf(`${LIBRARY}
+            package ImpNone {
+                allocate sw.video to ImpHardware::hw.cpu;
+            }
+        `)).toEqual([unresolved('Feature', 'sw'), unresolved('Feature', 'video')]);
     });
 });
 

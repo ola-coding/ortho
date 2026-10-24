@@ -92,9 +92,9 @@ package Software {
         private import Software::Middleware;
 
         part def SurveyPlanner {
-            perform Functions::survey.plan.planMission;
-            perform Functions::survey.interactWithOperator.presentInformation;
-            perform Functions::survey.interactWithOperator.acceptOperatorInput;
+            perform survey.plan.planMission;
+            perform survey.interactWithOperator.presentInformation;
+            perform survey.interactWithOperator.acceptOperatorInput;
 
             port route : ~Apis::RouteTopic;
             port mission : Apis::MissionTopic;
@@ -112,14 +112,14 @@ package Software {
             private import Software::Onboard::Perception;
 
             part def RoutePlanner {
-            perform Functions::survey.plan.planRoute;
+            perform survey.plan.planRoute;
 
             port route : Apis::RouteTopic;
             port world : ~Apis::WorldTopic;
             port mission : ~Apis::MissionTopic;
         }
             part def ObstacleAvoidance {
-            perform Functions::survey.guideNavigateAndControl.avoidObstacles;
+            perform survey.guideNavigateAndControl.avoidObstacles;
 
             port world : ~Apis::WorldTopic;
         }
@@ -127,17 +127,17 @@ package Software {
 
         package Perception {
             part def VideoStreamer {
-            perform Functions::survey.communicate.streamVideo;
+            perform survey.communicate.streamVideo;
 
             port video : Apis::VideoTopic;
         }
             part def SensorFusion {
-            perform Functions::survey.perceive.fuseSensorData;
+            perform survey.perceive.fuseSensorData;
 
             port world : Apis::WorldTopic;
         }
             part def WorldModel {
-            perform Functions::survey.perceive.maintainWorldModel;
+            perform survey.perceive.maintainWorldModel;
 
             port world : Apis::WorldTopic;
         }
@@ -145,12 +145,12 @@ package Software {
 
         package Services {
             part def Diagnostics {
-            perform Functions::survey.superviseSystem.monitorHealth;
+            perform survey.superviseSystem.monitorHealth;
 
             port health : Apis::HealthTopic;
         }
             part def DataLogger {
-            perform Functions::survey.superviseSystem.recordFlightData;
+            perform survey.superviseSystem.recordFlightData;
 
             port health : ~Apis::HealthTopic;
             port video : ~Apis::VideoTopic;
@@ -167,7 +167,7 @@ package Software {
         }
         // Turns the flight firmware's MAVLink into Zenoh topics, and back.
         part def MavlinkBridge {
-            perform Functions::survey.communicate.exchangeTelemetry;
+            perform survey.communicate.exchangeTelemetry;
 
             port mavlink : ~Apis::MavlinkApi;
             port mission : ~Apis::MissionTopic;
@@ -204,7 +204,7 @@ package Software {
 
         // AP_Mission, AC_WPNav
         part def MissionExecutor {
-            perform Functions::survey.guideNavigateAndControl.guide;
+            perform survey.guideNavigateAndControl.guide;
 
             port target : Apis::TargetApi;
             port vehicleState : ~Apis::StateApi;
@@ -212,7 +212,7 @@ package Software {
 
         // AP_AHRS, AP_NavEKF3
         part def StateEstimator {
-            perform Functions::survey.guideNavigateAndControl.navigate;
+            perform survey.guideNavigateAndControl.navigate;
 
             port vehicleState : Apis::StateApi;
             port sensors : ~Apis::SensorApi;
@@ -220,7 +220,7 @@ package Software {
 
         // AC_AttitudeControl, AC_PosControl, AP_Motors
         part def FlightControl {
-            perform Functions::survey.guideNavigateAndControl.control;
+            perform survey.guideNavigateAndControl.control;
 
             port vehicleState : ~Apis::StateApi;
             port target : ~Apis::TargetApi;
@@ -236,7 +236,7 @@ package Software {
 
         // GCS_MAVLink
         part def MavlinkInterface {
-            perform Functions::survey.communicate.exchangeTelemetry;
+            perform survey.communicate.exchangeTelemetry;
 
             port mavlink : Apis::MavlinkApi;
             port vehicleState : ~Apis::StateApi;

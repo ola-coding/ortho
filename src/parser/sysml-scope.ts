@@ -1,17 +1,17 @@
-import { AstUtils, DefaultScopeComputation, DefaultScopeProvider, EMPTY_SCOPE, MultiMap } from 'langium';
-import type { AstNode, AstNodeDescription, LangiumDocument, LocalSymbols, ReferenceInfo, Scope } from 'langium';
+import { AstUtils, DefaultScopeComputation, DefaultScopeProvider, DocumentState, EMPTY_SCOPE, EMPTY_STREAM, stream, WorkspaceCache } from 'langium';
+import type { AstNode, AstNodeDescription, LangiumCoreServices, LangiumDocument, ReferenceInfo, Scope, Stream } from 'langium';
 import {
-    isActionUsage, isAttributeUsage, isConnectorEnd, isInterfaceEnd, isPartDef, isPartUsage, isPortUsage,
-    isSubjectUsage, isUseCaseUsage
+    isActionUsage, isAttributeUsage, isConnectorEnd, isInterfaceEnd, isPackageDecl, isPartDef, isPartUsage,
+    isPortUsage, isSubjectUsage, isUseCaseUsage
 } from '../generated/ast.js';
-import type { Feature, PartDef, PortDef } from '../generated/ast.js';
+import type { Feature, PackageDecl, PartDef, PortDef } from '../generated/ast.js';
 import { qualifiedName } from '../model/graph.js';
+import { importCandidates } from '../model/packages.js';
 
 /**
  * Exports every named element under its fully qualified name
- * (e.g. `Drone::FlightController`), so cross-package references work without
- * import resolution. Same-package references keep working through the default
- * local scopes, which use simple names.
+ * (e.g. `Drone::FlightController`): the top-level packages are where a name
+ * lookup ends, and imports find what they import here.
  */
 export class SysmlScopeComputation extends DefaultScopeComputation {
     override async collectExportedSymbols(document: LangiumDocument): Promise<AstNodeDescription[]> {
@@ -24,85 +24,137 @@ export class SysmlScopeComputation extends DefaultScopeComputation {
         }
         return exports;
     }
-
-    /**
-     * Besides the default simple-name-in-direct-container scopes, every named
-     * element is also visible in each enclosing container under its relatively
-     * qualified name, so `Physical::fc` resolves from a sibling package.
-     */
-    override async collectLocalSymbols(document: LangiumDocument): Promise<LocalSymbols> {
-        const scopes = new MultiMap<AstNode, AstNodeDescription>();
-        for (const node of AstUtils.streamAllContents(document.parseResult.value)) {
-            const name = this.nameProvider.getName(node);
-            if (!name || !node.$container) {
-                continue;
-            }
-            scopes.add(node.$container, this.descriptions.createDescription(node, name, document));
-            let relativeName = name;
-            let container: AstNode = node.$container;
-            while (container.$container) {
-                const containerName = (container as { name?: string }).name;
-                if (!containerName) {
-                    break;
-                }
-                relativeName = `${containerName}::${relativeName}`;
-                scopes.add(container.$container, this.descriptions.createDescription(node, relativeName, document));
-                container = container.$container;
-            }
-        }
-        return scopes;
-    }
 }
 
 /**
- * Resolves connector-end feature chains:
+ * Resolves names as SysML v2 does. A name's first segment is looked up in the
+ * namespace it is written in, among its own members, what a definition
+ * inherits through `:>` and what a package imports, then in each namespace
+ * around it, and last among the top-level packages. Each further `::` segment
+ * is a member of the one before, or something it imports publicly.
  *
- * - segments after the first (`battery.powerOut`) against the members of the
- *   previous segment's type;
- * - the first segment against the features the enclosing definition inherits
- *   through `:>`, so a realization can connect to a port declared on the
- *   definition it specializes.
+ * Connector-end chains continue with dots: each segment after the first is a
+ * feature of the previous segment's type, inherited members included.
  */
 export class SysmlScopeProvider extends DefaultScopeProvider {
+    private readonly byQualifiedName: WorkspaceCache<string, Map<string, AstNode>>;
+
+    constructor(services: LangiumCoreServices) {
+        super(services);
+        this.byQualifiedName = new WorkspaceCache(services.shared, DocumentState.IndexedContent);
+    }
+
     override getScope(context: ReferenceInfo): Scope {
         const container = context.container;
-        if (isConnectorEnd(container) && context.property === 'segments') {
-            const index = context.index ?? 0;
-            if (index > 0) {
-                const previous = container.segments[index - 1]?.ref;
-                const members = featureMembers(previous);
-                if (members.length === 0) {
-                    return EMPTY_SCOPE;
-                }
-                return this.createScopeForNodes(members.values());
-            }
-            const inherited = inheritedFeatures(container);
-            if (inherited.length > 0) {
-                return this.createScopeForNodes(inherited.values(), super.getScope(context));
+        const index = context.index ?? 0;
+        if (isConnectorEnd(container) && context.property === 'segments' && index > 0) {
+            const members = featureMembers(container.segments[index - 1]?.ref);
+            return members.length > 0 ? this.createScopeForNodes(members.values()) : EMPTY_SCOPE;
+        }
+        const type = this.reflection.getReferenceType(context);
+        return new ResolvingScope(name => {
+            const found = this.resolve(container, name.split('::'), type);
+            return found ? this.descriptions.createDescription(found, name) : undefined;
+        });
+    }
+
+    private resolve(from: AstNode, segments: string[], type: string): AstNode | undefined {
+        const fits = (i: number) => i === segments.length - 1 ? type : undefined;
+        let found = this.lookUp(from, segments[0], fits(0));
+        for (let i = 1; found && i < segments.length; i++) {
+            found = this.visibleMember(found, segments[i], fits(i), new Set());
+        }
+        return found;
+    }
+
+    private lookUp(from: AstNode, name: string, type: string | undefined): AstNode | undefined {
+        for (let namespace: AstNode | undefined = from; namespace; namespace = namespace.$container) {
+            // A definition's own supertypes are not looked up among what it inherits.
+            const found = this.ownedMember(namespace, name, type, namespace !== from)
+                ?? (isPackageDecl(namespace) ? this.imported(namespace, name, type, false, new Set()) : undefined);
+            if (found) {
+                return found;
             }
         }
-        return super.getScope(context);
+        const topLevel = this.qualifiedNames().get(name);
+        return topLevel && this.fits(topLevel, type) ? topLevel : undefined;
+    }
+
+    /** What a namespace shows outside: its own members and its public imports. */
+    private visibleMember(namespace: AstNode, name: string, type: string | undefined, seen: Set<PackageDecl>): AstNode | undefined {
+        return this.ownedMember(namespace, name, type)
+            ?? (isPackageDecl(namespace) ? this.imported(namespace, name, type, true, seen) : undefined);
+    }
+
+    private ownedMember(namespace: AstNode, name: string, type: string | undefined, inherited = true): AstNode | undefined {
+        const members = [
+            ...AstUtils.streamContents(namespace),
+            ...(inherited && isPartDef(namespace) ? inheritedFeatures(namespace) : [])
+        ];
+        return members.find(member => this.nameProvider.getName(member) === name && this.fits(member, type));
+    }
+
+    private imported(
+        pkg: PackageDecl, name: string, type: string | undefined, publicOnly: boolean, seen: Set<PackageDecl>
+    ): AstNode | undefined {
+        if (seen.has(pkg)) {
+            return undefined;
+        }
+        seen.add(pkg);
+        for (const imp of pkg.imports) {
+            if (publicOnly && imp.visibility !== 'public') {
+                continue;
+            }
+            // A package ortho does not have, such as the standard library's, imports nothing.
+            const target = importCandidates(pkg, imp.path).map(fqn => this.qualifiedNames().get(fqn)).find(Boolean);
+            const found = !target ? undefined
+                : imp.wildcard ? this.visibleMember(target, name, type, seen)
+                : this.nameProvider.getName(target) === name && this.fits(target, type) ? target : undefined;
+            if (found) {
+                return found;
+            }
+        }
+        return undefined;
+    }
+
+    private fits(node: AstNode, type: string | undefined): boolean {
+        return !type || this.reflection.isInstance(node, type);
+    }
+
+    private qualifiedNames(): Map<string, AstNode> {
+        return this.byQualifiedName.get('all', () => new Map(
+            this.indexManager.allElements().filter(d => d.node !== undefined).map(d => [d.name, d.node!] as const)
+        ));
+    }
+}
+
+/** A scope that resolves each name as it is asked for. */
+class ResolvingScope implements Scope {
+    constructor(private readonly resolveName: (name: string) => AstNodeDescription | undefined) {}
+
+    getElement(name: string): AstNodeDescription | undefined {
+        return this.resolveName(name);
+    }
+
+    getElements(name: string): Stream<AstNodeDescription> {
+        const found = this.resolveName(name);
+        return found ? stream([found]) : EMPTY_STREAM;
+    }
+
+    getAllElements(): Stream<AstNodeDescription> {
+        return EMPTY_STREAM;
     }
 }
 
 /**
- * Features the enclosing definition inherits through `:>` but does not declare
- * itself. Locally declared members shadow inherited ones and already resolve
- * through the default scope, so only genuinely inherited names are added.
+ * Features a definition inherits through `:>` but does not declare itself.
+ * Locally declared members shadow inherited ones, so only genuinely inherited
+ * names are added.
  */
-function inheritedFeatures(node: AstNode): AstNode[] {
-    let container: AstNode | undefined = node.$container;
-    while (container && !isPartDef(container)) {
-        container = container.$container;
-    }
-    if (!container) {
-        return [];
-    }
-    const taken = new Set(
-        container.members.filter(isNamedFeature).map(member => (member as { name?: string }).name)
-    );
+function inheritedFeatures(def: PartDef): AstNode[] {
+    const taken = new Set(def.members.filter(isNamedFeature).map(member => (member as { name?: string }).name));
     const inherited: AstNode[] = [];
-    for (const supertype of container.supertypes) {
+    for (const supertype of def.supertypes) {
         if (!supertype.ref) {
             continue;
         }

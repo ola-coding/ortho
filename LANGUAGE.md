@@ -36,8 +36,10 @@ package Units {
 }
 ```
 
-- **Imports change nothing in ortho.** Names resolve by qualified name only, so
-  write every cross-file reference in full, `Software::sw.video`.
+- **Imports make names visible.** After `private import Software::*;`,
+  `sw.video` is `Software::sw.video`. A package's own members come before
+  what it imports, and importing a package ortho does not have, such as
+  `ScalarValues`, imports nothing.
 - **Attribute types are not resolved.** Import `ScalarValues`, where `Real`,
   `String`, `Integer` and `Boolean` live, so that other tools find them.
 
@@ -171,9 +173,11 @@ The software, as packages of modules (§7.5, §7.11).
 
 ```sysml
 package Software {
+    private import Functions::*;
+
     package Control {
         part def BrewController {
-            perform Functions::beverage.controlMachine.interlockBrewGroup;
+            perform beverage.controlMachine.interlockBrewGroup;
         }
     }
 
@@ -181,7 +185,7 @@ package Software {
         private import Software::Control::*;
 
         part def RecipeEngine {
-            perform Functions::beverage.controlMachine.sequenceRecipe;
+            perform beverage.controlMachine.sequenceRecipe;
         }
     }
 
@@ -315,8 +319,11 @@ package Hardware {
 }
 
 package Deployment {
-    allocate Software::sw.recipes to Hardware::machine.controller;
-    allocation uiOnPanel allocate Software::sw.ui to Hardware::machine.display;
+    private import Software::*;
+    private import Hardware::*;
+
+    allocate sw.recipes to machine.controller;
+    allocation uiOnPanel allocate sw.ui to machine.display;
 }
 ```
 
@@ -377,8 +384,10 @@ package Functions {
 }
 
 package Hardware {
+    private import Functions::*;
+
     part def Thermoblock {
-        perform Functions::beverage.prepareWater.heatWater;
+        perform beverage.prepareWater.heatWater;
     }
 }
 ```
@@ -506,6 +515,6 @@ every `sysml` block above parses on its own, and every keyword has a worked
 example, here or in the example models.
 
 Both example models and every block on this page also passed the OMG pilot
-implementation, release 0.62.0, on 2026-10-20, with no errors or warnings.
+implementation, release 0.62.0, on 2026-10-24, with no errors or warnings.
 That is a one-off check, not part of CI; [DEVELOPMENT.md](DEVELOPMENT.md)
 describes how to repeat it when the grammar grows.

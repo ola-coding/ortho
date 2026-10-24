@@ -35,12 +35,12 @@ package SurveyMissionScenario {
 
     action def SurveyMission {
         part operator;
-        part app : Software::Ground::SurveyPlanner;
-        part planner : Software::Onboard::Autonomy::RoutePlanner;
-        part bridge : Software::Middleware::MavlinkBridge;
-        part mavlink : Software::Flight::MavlinkInterface;
-        part mission : Software::Flight::MissionExecutor;
-        part video : Software::Onboard::Perception::VideoStreamer;
+        part app : Ground::SurveyPlanner;
+        part planner : Onboard::Autonomy::RoutePlanner;
+        part bridge : Middleware::MavlinkBridge;
+        part mavlink : Flight::MavlinkInterface;
+        part mission : Flight::MissionExecutor;
+        part video : Onboard::Perception::VideoStreamer;
 
         // Planning, on the ground and in the air.
         message markArea from operator to app;

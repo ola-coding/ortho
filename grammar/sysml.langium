@@ -8,9 +8,8 @@ PackageDecl:
         (imports+=ImportDecl | members+=PackageMember)*
     '}';
 
-// Imports parse but are not yet semantically enforced: all definitions are
-// visible by qualified name across packages (see SysmlScopeComputation). The
-// spec requires the visibility to be written out (§7.5.3), so it is here too.
+// What an import makes visible is resolved in SysmlScopeProvider. The spec
+// requires the visibility to be written out (§7.5.3), so it is here too.
 ImportDecl:
     visibility=Visibility 'import' path=QualifiedName (wildcard?='::*')? ';';
 

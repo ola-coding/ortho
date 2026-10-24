@@ -29,16 +29,14 @@ layout and renderer on what the view exposes.
 
 ## Parsing
 
-**Name resolution** (`src/parser/sysml-scope.ts`).
-`SysmlScopeComputation` exports every element under its qualified name and
-also publishes it in each enclosing container under its relative name, so
-`fc`, `Physical::fc` and the full name all resolve, as SysML v2 walks
-enclosing namespaces. `SysmlScopeProvider` resolves feature chains: each
-segment after the first against the previous segment's type, inherited
-members included, and the first segment also against what its enclosing
-definition inherits through `:>`, so a specialization need not redeclare
-inherited ports. The examples no longer rely on that; `tests/parser.test.ts`
-does.
+**Name resolution** (`src/parser/sysml-scope.ts`) follows SysML v2. A name
+is looked up where it is written, among the namespace's own members, what a
+definition inherits through `:>` and what a package imports, then in each
+namespace around it, and last among the top-level packages; each `::`
+segment after that is a member of the one before, or a public import of it.
+An import's path is found the same way, and the implementation view uses
+that lookup for its «import» lines. A feature chain continues with dots, each
+segment a feature of the previous one's type, inherited members included.
 
 **Conformance** (`src/parser/sysml-validator.ts`). The grammar enforces what
 it can. After linking, the validator checks the rules it cannot, all listed
@@ -199,10 +197,8 @@ In priority order:
 - [x] **Declare each view with the spec's view definitions**: each file
   declares a `GeneralView`, `InterconnectionView` or `SequenceView`, which
   names the heading and exposes the content; `-d` is gone.
-- [ ] **Imports that make names visible.** Imports change nothing today, so a
-  valid model that writes `private import Software::*;` and then `sw.video`
-  fails to load. Once people write ordinary SysML v2 against ortho, that is
-  the first thing they will hit.
+- [x] **Imports that make names visible:** `Pkg::*` and `Pkg::Element`, public
+  ones passed on; the examples rely on them.
 - [ ] **Prepare for NPX.** Publish ortho on npm, so it runs without the repo.
   First clean up `package.json`, the README and whatever else publishing
   needs. The name `ortho` is taken on npm.

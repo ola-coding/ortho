@@ -13,35 +13,35 @@ package Deployment {
 
     // The flight firmware has the control computer to itself: the control
     // libraries, the drivers that feed them, and the kernel underneath.
-    allocate Software::sw.mission to Hardware::system.drone.fc;
-    allocate Software::sw.estimator to Hardware::system.drone.fc;
-    allocate Software::sw.control to Hardware::system.drone.fc;
-    allocate Software::sw.sensors to Hardware::system.drone.fc;
-    allocate Software::sw.mavlink to Hardware::system.drone.fc;
-    allocate Software::sw.hal to Hardware::system.drone.fc;
-    allocate Software::sw.rtos to Hardware::system.drone.fc;
+    allocate sw.mission to system.drone.fc;
+    allocate sw.estimator to system.drone.fc;
+    allocate sw.control to system.drone.fc;
+    allocate sw.sensors to system.drone.fc;
+    allocate sw.mavlink to system.drone.fc;
+    allocate sw.hal to system.drone.fc;
+    allocate sw.rtos to system.drone.fc;
 
     // Every onboard container shares the GPU computer, with the middleware
     // and the Linux platform they stand on.
-    allocate Software::sw.planner to Hardware::system.drone.companion;
-    allocate Software::sw.avoidance to Hardware::system.drone.companion;
-    allocate Software::sw.video to Hardware::system.drone.companion;
-    allocate Software::sw.fusion to Hardware::system.drone.companion;
-    allocate Software::sw.world to Hardware::system.drone.companion;
-    allocate Software::sw.diagnostics to Hardware::system.drone.companion;
-    allocate Software::sw.logger to Hardware::system.drone.companion;
-    allocate Software::sw.zenoh to Hardware::system.drone.companion;
-    allocate Software::sw.bridge to Hardware::system.drone.companion;
-    allocate Software::sw.gstreamer to Hardware::system.drone.companion;
-    allocate Software::sw.airTunnel to Hardware::system.drone.companion;
-    allocate Software::sw.runtime to Hardware::system.drone.companion;
-    allocate Software::sw.ota to Hardware::system.drone.companion;
-    allocate Software::sw.linux to Hardware::system.drone.companion;
-    allocate Software::sw.secureBoot to Hardware::system.drone.companion;
+    allocate sw.planner to system.drone.companion;
+    allocate sw.avoidance to system.drone.companion;
+    allocate sw.video to system.drone.companion;
+    allocate sw.fusion to system.drone.companion;
+    allocate sw.world to system.drone.companion;
+    allocate sw.diagnostics to system.drone.companion;
+    allocate sw.logger to system.drone.companion;
+    allocate sw.zenoh to system.drone.companion;
+    allocate sw.bridge to system.drone.companion;
+    allocate sw.gstreamer to system.drone.companion;
+    allocate sw.airTunnel to system.drone.companion;
+    allocate sw.runtime to system.drone.companion;
+    allocate sw.ota to system.drone.companion;
+    allocate sw.linux to system.drone.companion;
+    allocate sw.secureBoot to system.drone.companion;
 
     // The operator's app runs on the tablet, behind its own end of the tunnel.
-    allocate Software::sw.app to Hardware::system.ground.tablet;
-    allocate Software::sw.groundTunnel to Hardware::system.ground.tablet;
+    allocate sw.app to system.ground.tablet;
+    allocate sw.groundTunnel to system.ground.tablet;
 
     view 'Deployment view — Survey Drone' : GeneralView {
         expose Deployment;

@@ -36,22 +36,22 @@ package Software {
 
     package Control {
         part def BrewController {
-            perform Functions::beverage.prepareCoffee.doseGrounds;
-            perform Functions::beverage.controlMachine.interlockBrewGroup;
+            perform beverage.prepareCoffee.doseGrounds;
+            perform beverage.controlMachine.interlockBrewGroup;
             // It owns the brew group, so it owns flushing it out.
-            perform Functions::maintenance.runDescaleCycle;
+            perform maintenance.runDescaleCycle;
 
             port brew : BrewApi;
         }
 
         part def TemperatureController {
-            perform Functions::beverage.controlMachine.regulateTemperature;
+            perform beverage.controlMachine.regulateTemperature;
 
             port temperature : TemperatureApi;
         }
 
         part def MilkController {
-            perform Functions::beverage.prepareMilk.frothMilk;
+            perform beverage.prepareMilk.frothMilk;
 
             port milk : MilkApi;
         }
@@ -63,7 +63,7 @@ package Software {
         // It offers one API and drives three: the whole of the machine's
         // control is this module calling those.
         part def RecipeEngine {
-            perform Functions::beverage.controlMachine.sequenceRecipe;
+            perform beverage.controlMachine.sequenceRecipe;
 
             port recipe : RecipeApi;
             port brew : ~BrewApi;
@@ -72,8 +72,8 @@ package Software {
         }
 
         part def UiApp {
-            perform Functions::beverage.controlMachine.selectBeverage;
-            perform Functions::maintenance.signalDescaleDue;
+            perform beverage.controlMachine.selectBeverage;
+            perform maintenance.signalDescaleDue;
 
             port recipe : ~RecipeApi;
         }
