@@ -1,7 +1,8 @@
 import { GrammarUtils } from 'langium';
 import type { AstNode, ValidationAcceptor, ValidationChecks } from 'langium';
 import {
-    isActionUsage, isActorUsage, isPackageDecl, isSubjectUsage, isUseCaseUsage
+    isActorUsage, isAttributeUsage, isConnectionUsage, isOtherUsage, isPackageDecl, isPartUsage, isPortUsage,
+    isSubjectUsage
 } from '../generated/ast.js';
 import type { ConnectorEnd, PerformUsage, SysmlAstType, UseCaseDef, UseCaseUsage } from '../generated/ast.js';
 import type { SysmlServices } from './sysml-module.js';
@@ -90,16 +91,23 @@ function checkSubjectBeforeActors(useCase: UseCaseDef | UseCaseUsage, accept: Va
 
 /**
  * `perform` names something its owner can carry out: an action of the
- * function tree, or a use case. A port or an attribute is neither, and the
- * chain is otherwise the same as any connector end, so it is checked there.
+ * function tree, a use case, or other behaviour such as a calculation or a
+ * verification case. A part, a port or an attribute is structure, not
+ * behaviour. The chain is otherwise the same as any connector end, so it is
+ * checked there.
  */
 function checkPerformTarget(perform: PerformUsage, accept: ValidationAcceptor): void {
     // A syntax error can leave the target out.
     const target = perform.target?.segments.at(-1)?.ref;
-    if (target && !isActionUsage(target) && !isUseCaseUsage(target)) {
+    if (target && isStructure(target)) {
         accept('error', `'${performText(perform)}' is not an action or a use case, so it cannot be performed.`,
             { node: perform, property: 'target' });
     }
+}
+
+function isStructure(node: AstNode): boolean {
+    return isPartUsage(node) || isPortUsage(node) || isAttributeUsage(node) || isActorUsage(node) || isSubjectUsage(node)
+        || isConnectionUsage(node) || (isOtherUsage(node) && ['item', 'occurrence', 'enum'].includes(node.kind));
 }
 
 function performText(perform: PerformUsage): string {

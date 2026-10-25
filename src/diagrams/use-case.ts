@@ -139,7 +139,11 @@ export function extractUseCaseGraph(exposed: Member[]): DiagramGraph {
     // case, not a kind of use case.
     for (const [useCase, node] of ellipseByUseCase) {
         for (const include of effectiveMembers(useCase).filter(isIncludeUsage)) {
-            const target = include.target?.ref && ellipseByUseCase.get(include.target.ref);
+            // `include x` names the use case; `include use case x` declares one,
+            // drawn as the use case of that name.
+            const included = include.target?.segments.at(-1)?.ref
+                ?? [...ellipseByUseCase.keys()].find(u => isUseCaseUsage(u) && include.useCase && u.name === include.name);
+            const target = isUseCaseUsage(included) ? ellipseByUseCase.get(included) : undefined;
             if (target && target !== node) {
                 edges.push({
                     id: `e${edgeCounter++}`,

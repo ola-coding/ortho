@@ -455,12 +455,10 @@ constraint's condition. No view evaluates them.
 
 ## Not supported
 
-SysML v2 that ortho does not parse yet, so a model using it fails to load:
-
-| Construct | § | Instead |
-|---|---|---|
-| successions, `first a then b`, and control nodes, `accept`, `send`, `assign`, `if`, `while` and `for` in actions | 7.16–7.17 | `then message` in a scenario |
-| state bodies: `entry`, `do`, `exit` and transitions | 7.18 | |
+ortho reads the whole textual notation, but it does not load the standard
+library. A name from the library where a view draws it, such as a part typed
+`SpatialItems::SpatialItem`, is not found, so the model fails to load.
+Elsewhere library names may be used freely: what no view draws is not checked.
 
 ## How this is checked
 

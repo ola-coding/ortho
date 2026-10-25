@@ -88,7 +88,7 @@ Element:
     | {infer UseCaseDef} 'use' 'case' 'def' Identification WrittenSupertypes? Body
     // Every other definition, from `item def` to `metadata def`, and an
     // `individual def`.
-    | {infer OtherDefinition} (kind=DefinitionKind)? 'def' Identification WrittenSupertypes? Body
+    | {infer OtherDefinition} (kind=DefinitionKind)? 'def' Identification WrittenSupertypes? (isParallel?='parallel')? Body
 
     | {infer PartUsage} 'part' Identification
         FeatureRelation* ((':' | 'defined' 'by') type=[Definition:QualifiedName] MoreTypes FeatureRelation*)?
@@ -115,11 +115,14 @@ Element:
     | {infer SubjectUsage} 'subject' Identification
         FeatureRelation* ((':' | 'defined' 'by') type=[Definition:QualifiedName] MoreTypes FeatureRelation*)?
         ValuePart? Body
-    // `include x` names a use case usage, never a definition. `include use
-    // case x` declares one in the spec, and names an existing x here; a new
-    // one, `include use case x : X`, is read but not drawn.
-    | {infer IncludeUsage} 'include' (useCase?='use' 'case')? target=[UseCaseUsage:QualifiedName]
-        (WrittenTyping | FeatureRelation)* ValuePart? Body
+    // `include x` names a use case usage, never a definition; `include use
+    // case x` declares one, which the use case view draws as the use case of
+    // that name.
+    | {infer IncludeUsage} 'include'
+        ( useCase?='use' 'case' Identification
+          FeatureRelation* ((':' | 'defined' 'by') type=[UseCaseDef:QualifiedName] MoreTypes FeatureRelation*)?
+        | target=ConnectorEnd (WrittenTyping | FeatureRelation)* )
+        ValuePart? Body
     // What the owning part carries out: an action of the function tree, or a
     // use case. The target is a feature chain like any other, so it starts at
     // a usage — `perform Functions::survey.communicate.streamVideo` — which is
@@ -185,9 +188,29 @@ Element:
         | kind='frame' 'concern'?
         | kind='verify' 'requirement'?
         | kind=('require' | 'assume') (prefixMetadata+=PrefixMetadata)* 'constraint'?
-        | kind=('objective' | 'stakeholder') )
+        | kind=('objective' | 'stakeholder')
+        | kind=('merge' | 'decide' | 'join' | 'fork') )
         // A chain names a feature that already exists: `event driver.started`.
-        (Identification | reference=ChainedName) (WrittenTyping | FeatureRelation)* ValuePart? Body
+        (Identification | reference=ChainedName) (WrittenTyping | FeatureRelation)* ValuePart?
+        (isParallel?='parallel')? Body
+    // Behaviour (§8.2.2.17-18). No view draws it, so what it names is kept as
+    // written. A succession, `first a then b;`, or after an action, `if g then b;`.
+    | {infer SuccessionUsage} ('succession' Identification (WrittenTyping | FeatureRelation)*)?
+        'first' first=SuccessionEnd (('if' guard=Expression)? 'then' next=SuccessionEnd)? Body
+    | {infer SuccessionUsage} ('if' guard=Expression 'then' | isElse?='else') next=SuccessionEnd Body
+    | {infer TransitionUsage} 'transition' (Identification 'first')? first=SuccessionEnd
+        ('accept' AcceptPart)? ('if' guard=Expression)? ('do' effect=Effect)? 'then' next=SuccessionEnd Body
+    | {infer StateAction} kind=('entry' | 'do' | 'exit') (';' | action=Element)
+    | {infer AcceptAction} ('action' Identification)? 'accept' AcceptPart
+        (('if' guard=Expression)? ('do' effect=Effect)? 'then' next=SuccessionEnd)? Body
+    | {infer SendAction} ('action' Identification)? SendPart Body
+    | {infer AssignAction} ('action' Identification)? AssignPart Body
+    | {infer TerminateAction} ('action' Identification)? 'terminate' (target=Expression)? Body
+    | {infer IfAction} ('action' Identification)? IfPart
+    | {infer LoopAction} ('action' Identification)? ('while' condition=Expression | 'loop') loopBody=ActionBlock
+        ('until' until=Expression ';')?
+    | {infer ForAction} ('action' Identification)? 'for' variable=Name WrittenTyping? 'in' collection=Expression
+        loopBody=ActionBlock
     // A usage without a keyword: a parameter, `in x : T;`, a redefinition,
     // `:>> mass = 1500;`, an enumerated value, `red;`, or a reference, `ref x;`.
     | {infer DefaultUsage}
@@ -202,6 +225,37 @@ Expose:
     (visibility=Visibility)? 'expose' element=[Member:QualifiedName] (wildcard?='::*')? (recursive?='::**')?
     ('[' filters+=Expression ']')* RelationshipBody;
 
+SuccessionEnd:
+    (multiplicity=Multiplicity)? chain=FeatureChain;
+
+// What an `accept` receives: a payload, a time or a condition, through a port.
+fragment AcceptPart:
+    (payloadName=Name)? (WrittenTyping | FeatureRelation)* (trigger=('at' | 'after' | 'when') triggerValue=Expression)?
+    ('via' via=Expression)?;
+
+fragment SendPart:
+    'send' (payload=Expression)? ('via' via=Expression)? ('to' to=Expression)?;
+
+fragment AssignPart:
+    'assign' target=Expression ':=' assigned=Expression;
+
+fragment IfPart:
+    'if' condition=Expression thenBlock=ActionBlock ('else' (elseBlock=ActionBlock | elseIf=ElseIf))?;
+
+ElseIf:
+    IfPart;
+
+ActionBlock:
+    ('action' Identification (WrittenTyping | FeatureRelation)*)? Body;
+
+// A transition's effect, `do send new Sig() to p` or `do action a`.
+Effect:
+    ('action' Identification (WrittenTyping | FeatureRelation)* EffectPart? | EffectPart)
+    ('{' (members+=Member | annotations+=AnnotatingElement)* '}')?;
+
+fragment EffectPart:
+    SendPart | AssignPart | 'accept' AcceptPart | 'perform' performed=FeatureChain;
+
 fragment ConnectorPart:
     source=ConnectorEnd 'to' target=ConnectorEnd
     | '(' ends+=ConnectorEnd ',' ends+=ConnectorEnd (',' ends+=ConnectorEnd)* ')';
@@ -210,7 +264,7 @@ fragment ConnectorPart:
 // first segment resolves lexically (qualified names allowed), later segments
 // against the type of the previous segment (SysmlScopeProvider).
 ConnectorEnd:
-    (multiplicity=Multiplicity)? (endName=Name ('::>' | 'references'))?
+    (multiplicity=Multiplicity)? (name=Name ('::>' | 'references'))?
     segments+=[Feature:QualifiedName] ('.' segments+=[Feature:Name])*;
 
 DefinitionKind returns string:
@@ -232,7 +286,7 @@ fragment Identification:
 // A usage after `then` follows the one before it (§8.2.2.9.3).
 fragment Prefix:
     (visibility=Visibility)? (isVariant?='variant')? (then?='then')? (isReturn?='return')?
-    (isEnd?='end' (endMultiplicity=Multiplicity)?)? (direction=Direction)?
+    (isEnd?='end' (crossName=Name? endMultiplicity=Multiplicity ('ordered' | 'nonunique')*)?)? (direction=Direction)?
     (isDerived?='derived')? (isAbstract?='abstract' | isVariation?='variation')? (isConstant?='constant')?
     (isReference?='ref')? (isIndividual?='individual')? (portionKind=PortionKind)? (prefixMetadata+=PrefixMetadata)*;
 
@@ -284,7 +338,10 @@ MultiplicityBound returns string:
 // ---------------------------------------------------------------- Names
 
 type Feature = PartUsage | PortUsage | AttributeUsage | SubjectUsage | ActorUsage | ActionUsage | UseCaseUsage
-    | PerformUsage | OtherUsage | DefaultUsage;
+    | PerformUsage | OtherUsage | DefaultUsage | ConnectionUsage | AllocationUsage | MessageUsage | FlowUsage
+    | BindingUsage | SatisfyUsage | IncludeUsage | MetadataUsage | ViewUsage | SuccessionUsage | TransitionUsage
+    | ConnectorEnd
+    | AcceptAction | SendAction | AssignAction | TerminateAction | IfAction | LoopAction | ForAction;
 
 type Definition = PartDef | PortDef | InterfaceDef | AttributeDef | ActionDef | UseCaseDef | OtherDefinition;
 
@@ -340,7 +397,7 @@ UnaryExpression:
 
 PrimaryExpression:
     BaseExpression
-    ( {infer FeatureChainExpression.source=current} '.' member=Name
+    ( {infer FeatureChainExpression.source=current} '.' member=Name (invocation?='(' Arguments? ')')?
     | {infer MetadataAccessExpression.source=current} '.' 'metadata'
     | {infer CollectExpression.source=current} '.' body=BodyExpression
     | {infer SelectExpression.source=current} '.?' body=BodyExpression
@@ -351,14 +408,17 @@ PrimaryExpression:
     )*;
 
 BaseExpression:
-    {infer LiteralExpression} value=('true' | 'false' | 'null' | STRING | NUMBER | '*')
+    {infer LiteralExpression} value=('true' | 'false' | 'null' | STRING | NUMBER | Fraction | '*')
     | {infer ConstructorExpression} 'new' type=QualifiedName ArgumentList
     | {infer FeatureReferenceExpression} name=QualifiedName (invocation?='(' Arguments? ')')?
-    | BodyExpression
     | {infer SequenceExpression} '(' (items+=Expression (',' items+=Expression)* ','?)? ')';
 
 BodyExpression:
     '{' (members+=Member)* (result=Expression)? '}';
+
+// A real number without its leading zero, `.6`.
+Fraction returns string:
+    '.' NUMBER;
 
 fragment ArgumentList:
     '(' Arguments? ')';

@@ -38,7 +38,9 @@ describe('use case grammar', () => {
                 }
                 use case doThing : DoThing {
                     include use case helpTask;
+                    include otherTask;
                 }
+                use case otherTask;
                 use case helpTask;
                 part def Station {
                     perform doThing;
@@ -50,8 +52,10 @@ describe('use case grammar', () => {
         expect(def.members.some(isActorUsage)).toBe(true);
         const usage = pkg.members.find(m => isUseCaseUsage(m) && m.name === 'doThing') as UseCaseUsage;
         expect(usage.type?.ref?.name).toBe('DoThing');
-        const include = usage.members.find(isIncludeUsage)!;
-        expect(include.target.ref?.name).toBe('helpTask');
+        // `include use case x` declares an included use case; `include x` names one.
+        const [declared, named] = usage.members.filter(isIncludeUsage);
+        expect([declared.useCase, declared.name]).toEqual([true, 'helpTask']);
+        expect(named.target?.segments.at(-1)?.ref?.name).toBe('otherTask');
     });
 });
 

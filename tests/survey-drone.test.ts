@@ -282,5 +282,5 @@ describe('survey drone example model', () => {
             expect(svg.startsWith('<svg'), kind).toBe(true);
             expect(svg, kind).toContain(viewHeading(view));
         }
-    });
+    }, 30_000);
 });

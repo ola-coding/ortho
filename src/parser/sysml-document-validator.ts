@@ -1,14 +1,13 @@
 import { DefaultDocumentValidator } from 'langium';
 import type { AstNode } from 'langium';
-import { isImportDecl, isIncludeUsage } from '../generated/ast.js';
+import { isImportDecl } from '../generated/ast.js';
 
 type LinkingErrorArgs = Parameters<DefaultDocumentValidator['processLinkingErrors']>;
 
 /**
- * Two references may name nothing ortho has. An import of a package it does
- * not have, such as the standard library's `ScalarValues`, imports nothing: a
- * name it would have supplied fails where it is used instead. And `include use
- * case x : X` declares a new use case, which needs no x to exist.
+ * An import of a package ortho does not have, such as the standard library's
+ * `ScalarValues`, imports nothing rather than failing: a name it would have
+ * supplied fails where it is used instead.
  */
 export class SysmlDocumentValidator extends DefaultDocumentValidator {
     protected override processLinkingErrors(...[document, diagnostics, options]: LinkingErrorArgs): void {
@@ -22,5 +21,5 @@ export class SysmlDocumentValidator extends DefaultDocumentValidator {
 }
 
 function mayNameNothing(container: AstNode): boolean {
-    return isImportDecl(container) || (isIncludeUsage(container) && container.useCase);
+    return isImportDecl(container);
 }

@@ -98,7 +98,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@21"
+                "$ref": "#/rules@30"
               },
               "arguments": []
             },
@@ -136,7 +136,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@20"
+                "$ref": "#/rules@29"
               },
               "arguments": []
             },
@@ -149,7 +149,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@18"
+              "$ref": "#/rules@27"
             },
             "arguments": []
           },
@@ -179,7 +179,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@21"
+                "$ref": "#/rules@30"
               },
               "arguments": []
             }
@@ -210,7 +210,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
               "terminal": {
                 "$type": "RuleCall",
                 "rule": {
-                  "$ref": "#/rules@32"
+                  "$ref": "#/rules@41"
                 },
                 "arguments": []
               },
@@ -252,7 +252,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@36"
+                    "$ref": "#/rules@45"
                   },
                   "arguments": []
                 }
@@ -290,7 +290,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@21"
+                "$ref": "#/rules@30"
               },
               "arguments": []
             },
@@ -314,7 +314,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@31"
+                    "$ref": "#/rules@40"
                   },
                   "arguments": []
                 }
@@ -333,7 +333,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@31"
+                "$ref": "#/rules@40"
               },
               "arguments": []
             },
@@ -350,7 +350,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@32"
+                "$ref": "#/rules@41"
               },
               "arguments": []
             }
@@ -513,7 +513,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@36"
+                    "$ref": "#/rules@45"
                   },
                   "arguments": []
                 },
@@ -543,7 +543,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@21"
+                "$ref": "#/rules@30"
               },
               "arguments": []
             },
@@ -560,7 +560,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@36"
+                "$ref": "#/rules@45"
               },
               "arguments": []
             }
@@ -650,7 +650,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
               {
                 "$type": "RuleCall",
                 "rule": {
-                  "$ref": "#/rules@18"
+                  "$ref": "#/rules@27"
                 },
                 "arguments": []
               },
@@ -668,7 +668,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
-                        "$ref": "#/rules@32"
+                        "$ref": "#/rules@41"
                       },
                       "arguments": []
                     }
@@ -687,7 +687,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                         "terminal": {
                           "$type": "RuleCall",
                           "rule": {
-                            "$ref": "#/rules@32"
+                            "$ref": "#/rules@41"
                           },
                           "arguments": []
                         }
@@ -715,7 +715,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@51"
+                    "$ref": "#/rules@61"
                   },
                   "arguments": []
                 }
@@ -730,7 +730,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@48"
+                "$ref": "#/rules@58"
               },
               "arguments": []
             }
@@ -754,7 +754,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@18"
+              "$ref": "#/rules@27"
             },
             "arguments": []
           },
@@ -772,7 +772,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@51"
+                    "$ref": "#/rules@61"
                   },
                   "arguments": []
                 }
@@ -787,7 +787,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@48"
+                "$ref": "#/rules@58"
               },
               "arguments": []
             }
@@ -814,7 +814,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
               {
                 "$type": "RuleCall",
                 "rule": {
-                  "$ref": "#/rules@18"
+                  "$ref": "#/rules@27"
                 },
                 "arguments": []
               }
@@ -832,7 +832,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@51"
+                "$ref": "#/rules@61"
               },
               "arguments": []
             }
@@ -844,7 +844,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@48"
+                "$ref": "#/rules@58"
               },
               "arguments": []
             }
@@ -864,7 +864,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@19"
+              "$ref": "#/rules@28"
             },
             "arguments": []
           },
@@ -892,7 +892,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@18"
+                      "$ref": "#/rules@27"
                     },
                     "arguments": []
                   },
@@ -924,7 +924,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                           "terminal": {
                             "$type": "RuleCall",
                             "rule": {
-                              "$ref": "#/rules@32"
+                              "$ref": "#/rules@41"
                             },
                             "arguments": []
                           },
@@ -951,7 +951,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                               "terminal": {
                                 "$type": "RuleCall",
                                 "rule": {
-                                  "$ref": "#/rules@32"
+                                  "$ref": "#/rules@41"
                                 },
                                 "arguments": []
                               },
@@ -995,7 +995,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@18"
+                      "$ref": "#/rules@27"
                     },
                     "arguments": []
                   },
@@ -1027,7 +1027,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                           "terminal": {
                             "$type": "RuleCall",
                             "rule": {
-                              "$ref": "#/rules@32"
+                              "$ref": "#/rules@41"
                             },
                             "arguments": []
                           },
@@ -1054,7 +1054,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                               "terminal": {
                                 "$type": "RuleCall",
                                 "rule": {
-                                  "$ref": "#/rules@32"
+                                  "$ref": "#/rules@41"
                                 },
                                 "arguments": []
                               },
@@ -1098,14 +1098,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@18"
+                      "$ref": "#/rules@27"
                     },
                     "arguments": []
                   },
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@27"
+                      "$ref": "#/rules@36"
                     },
                     "arguments": [],
                     "cardinality": "?"
@@ -1140,14 +1140,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@18"
+                      "$ref": "#/rules@27"
                     },
                     "arguments": []
                   },
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@27"
+                      "$ref": "#/rules@36"
                     },
                     "arguments": [],
                     "cardinality": "?"
@@ -1182,14 +1182,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@18"
+                      "$ref": "#/rules@27"
                     },
                     "arguments": []
                   },
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@27"
+                      "$ref": "#/rules@36"
                     },
                     "arguments": [],
                     "cardinality": "?"
@@ -1228,14 +1228,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@18"
+                      "$ref": "#/rules@27"
                     },
                     "arguments": []
                   },
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@27"
+                      "$ref": "#/rules@36"
                     },
                     "arguments": [],
                     "cardinality": "?"
@@ -1266,7 +1266,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
-                        "$ref": "#/rules@16"
+                        "$ref": "#/rules@25"
                       },
                       "arguments": []
                     },
@@ -1279,16 +1279,26 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@18"
+                      "$ref": "#/rules@27"
                     },
                     "arguments": []
                   },
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@27"
+                      "$ref": "#/rules@36"
                     },
                     "arguments": [],
+                    "cardinality": "?"
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "isParallel",
+                    "operator": "?=",
+                    "terminal": {
+                      "$type": "Keyword",
+                      "value": "parallel"
+                    },
                     "cardinality": "?"
                   },
                   {
@@ -1317,14 +1327,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@18"
+                      "$ref": "#/rules@27"
                     },
                     "arguments": []
                   },
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@24"
+                      "$ref": "#/rules@33"
                     },
                     "arguments": [],
                     "cardinality": "*"
@@ -1366,7 +1376,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                           "terminal": {
                             "$type": "RuleCall",
                             "rule": {
-                              "$ref": "#/rules@32"
+                              "$ref": "#/rules@41"
                             },
                             "arguments": []
                           },
@@ -1377,14 +1387,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                       {
                         "$type": "RuleCall",
                         "rule": {
-                          "$ref": "#/rules@25"
+                          "$ref": "#/rules@34"
                         },
                         "arguments": []
                       },
                       {
                         "$type": "RuleCall",
                         "rule": {
-                          "$ref": "#/rules@24"
+                          "$ref": "#/rules@33"
                         },
                         "arguments": [],
                         "cardinality": "*"
@@ -1395,7 +1405,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@28"
+                      "$ref": "#/rules@37"
                     },
                     "arguments": [],
                     "cardinality": "?"
@@ -1426,14 +1436,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@18"
+                      "$ref": "#/rules@27"
                     },
                     "arguments": []
                   },
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@24"
+                      "$ref": "#/rules@33"
                     },
                     "arguments": [],
                     "cardinality": "*"
@@ -1470,7 +1480,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                         "terminal": {
                           "$type": "RuleCall",
                           "rule": {
-                            "$ref": "#/rules@32"
+                            "$ref": "#/rules@41"
                           },
                           "arguments": []
                         }
@@ -1478,14 +1488,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                       {
                         "$type": "RuleCall",
                         "rule": {
-                          "$ref": "#/rules@25"
+                          "$ref": "#/rules@34"
                         },
                         "arguments": []
                       },
                       {
                         "$type": "RuleCall",
                         "rule": {
-                          "$ref": "#/rules@24"
+                          "$ref": "#/rules@33"
                         },
                         "arguments": [],
                         "cardinality": "*"
@@ -1496,7 +1506,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@28"
+                      "$ref": "#/rules@37"
                     },
                     "arguments": [],
                     "cardinality": "?"
@@ -1527,14 +1537,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@18"
+                      "$ref": "#/rules@27"
                     },
                     "arguments": []
                   },
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@24"
+                      "$ref": "#/rules@33"
                     },
                     "arguments": [],
                     "cardinality": "*"
@@ -1586,7 +1596,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                           "terminal": {
                             "$type": "RuleCall",
                             "rule": {
-                              "$ref": "#/rules@32"
+                              "$ref": "#/rules@41"
                             },
                             "arguments": []
                           },
@@ -1597,14 +1607,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                       {
                         "$type": "RuleCall",
                         "rule": {
-                          "$ref": "#/rules@25"
+                          "$ref": "#/rules@34"
                         },
                         "arguments": []
                       },
                       {
                         "$type": "RuleCall",
                         "rule": {
-                          "$ref": "#/rules@24"
+                          "$ref": "#/rules@33"
                         },
                         "arguments": [],
                         "cardinality": "*"
@@ -1615,7 +1625,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@28"
+                      "$ref": "#/rules@37"
                     },
                     "arguments": [],
                     "cardinality": "?"
@@ -1646,14 +1656,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@18"
+                      "$ref": "#/rules@27"
                     },
                     "arguments": []
                   },
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@24"
+                      "$ref": "#/rules@33"
                     },
                     "arguments": [],
                     "cardinality": "*"
@@ -1695,7 +1705,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                           "terminal": {
                             "$type": "RuleCall",
                             "rule": {
-                              "$ref": "#/rules@32"
+                              "$ref": "#/rules@41"
                             },
                             "arguments": []
                           },
@@ -1706,14 +1716,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                       {
                         "$type": "RuleCall",
                         "rule": {
-                          "$ref": "#/rules@25"
+                          "$ref": "#/rules@34"
                         },
                         "arguments": []
                       },
                       {
                         "$type": "RuleCall",
                         "rule": {
-                          "$ref": "#/rules@24"
+                          "$ref": "#/rules@33"
                         },
                         "arguments": [],
                         "cardinality": "*"
@@ -1724,7 +1734,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@28"
+                      "$ref": "#/rules@37"
                     },
                     "arguments": [],
                     "cardinality": "?"
@@ -1759,14 +1769,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@18"
+                      "$ref": "#/rules@27"
                     },
                     "arguments": []
                   },
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@24"
+                      "$ref": "#/rules@33"
                     },
                     "arguments": [],
                     "cardinality": "*"
@@ -1808,7 +1818,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                           "terminal": {
                             "$type": "RuleCall",
                             "rule": {
-                              "$ref": "#/rules@32"
+                              "$ref": "#/rules@41"
                             },
                             "arguments": []
                           },
@@ -1819,14 +1829,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                       {
                         "$type": "RuleCall",
                         "rule": {
-                          "$ref": "#/rules@25"
+                          "$ref": "#/rules@34"
                         },
                         "arguments": []
                       },
                       {
                         "$type": "RuleCall",
                         "rule": {
-                          "$ref": "#/rules@24"
+                          "$ref": "#/rules@33"
                         },
                         "arguments": [],
                         "cardinality": "*"
@@ -1837,7 +1847,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@28"
+                      "$ref": "#/rules@37"
                     },
                     "arguments": [],
                     "cardinality": "?"
@@ -1868,14 +1878,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@18"
+                      "$ref": "#/rules@27"
                     },
                     "arguments": []
                   },
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@24"
+                      "$ref": "#/rules@33"
                     },
                     "arguments": [],
                     "cardinality": "*"
@@ -1917,7 +1927,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                           "terminal": {
                             "$type": "RuleCall",
                             "rule": {
-                              "$ref": "#/rules@32"
+                              "$ref": "#/rules@41"
                             },
                             "arguments": []
                           },
@@ -1928,14 +1938,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                       {
                         "$type": "RuleCall",
                         "rule": {
-                          "$ref": "#/rules@25"
+                          "$ref": "#/rules@34"
                         },
                         "arguments": []
                       },
                       {
                         "$type": "RuleCall",
                         "rule": {
-                          "$ref": "#/rules@24"
+                          "$ref": "#/rules@33"
                         },
                         "arguments": [],
                         "cardinality": "*"
@@ -1946,7 +1956,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@28"
+                      "$ref": "#/rules@37"
                     },
                     "arguments": [],
                     "cardinality": "?"
@@ -1977,14 +1987,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@18"
+                      "$ref": "#/rules@27"
                     },
                     "arguments": []
                   },
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@24"
+                      "$ref": "#/rules@33"
                     },
                     "arguments": [],
                     "cardinality": "*"
@@ -2026,7 +2036,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                           "terminal": {
                             "$type": "RuleCall",
                             "rule": {
-                              "$ref": "#/rules@32"
+                              "$ref": "#/rules@41"
                             },
                             "arguments": []
                           },
@@ -2037,14 +2047,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                       {
                         "$type": "RuleCall",
                         "rule": {
-                          "$ref": "#/rules@25"
+                          "$ref": "#/rules@34"
                         },
                         "arguments": []
                       },
                       {
                         "$type": "RuleCall",
                         "rule": {
-                          "$ref": "#/rules@24"
+                          "$ref": "#/rules@33"
                         },
                         "arguments": [],
                         "cardinality": "*"
@@ -2055,7 +2065,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@28"
+                      "$ref": "#/rules@37"
                     },
                     "arguments": [],
                     "cardinality": "?"
@@ -2084,68 +2094,147 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                     "value": "include"
                   },
                   {
-                    "$type": "Group",
-                    "elements": [
-                      {
-                        "$type": "Assignment",
-                        "feature": "useCase",
-                        "operator": "?=",
-                        "terminal": {
-                          "$type": "Keyword",
-                          "value": "use"
-                        }
-                      },
-                      {
-                        "$type": "Keyword",
-                        "value": "case"
-                      }
-                    ],
-                    "cardinality": "?"
-                  },
-                  {
-                    "$type": "Assignment",
-                    "feature": "target",
-                    "operator": "=",
-                    "terminal": {
-                      "$type": "CrossReference",
-                      "type": {
-                        "$ref": "#/rules@12/definition/elements@1/elements@11/elements@0/inferredType"
-                      },
-                      "terminal": {
-                        "$type": "RuleCall",
-                        "rule": {
-                          "$ref": "#/rules@32"
-                        },
-                        "arguments": []
-                      },
-                      "deprecatedSyntax": false,
-                      "isMulti": false
-                    }
-                  },
-                  {
                     "$type": "Alternatives",
                     "elements": [
                       {
-                        "$type": "RuleCall",
-                        "rule": {
-                          "$ref": "#/rules@26"
-                        },
-                        "arguments": []
+                        "$type": "Group",
+                        "elements": [
+                          {
+                            "$type": "Assignment",
+                            "feature": "useCase",
+                            "operator": "?=",
+                            "terminal": {
+                              "$type": "Keyword",
+                              "value": "use"
+                            }
+                          },
+                          {
+                            "$type": "Keyword",
+                            "value": "case"
+                          },
+                          {
+                            "$type": "RuleCall",
+                            "rule": {
+                              "$ref": "#/rules@27"
+                            },
+                            "arguments": []
+                          },
+                          {
+                            "$type": "RuleCall",
+                            "rule": {
+                              "$ref": "#/rules@33"
+                            },
+                            "arguments": [],
+                            "cardinality": "*"
+                          },
+                          {
+                            "$type": "Group",
+                            "elements": [
+                              {
+                                "$type": "Alternatives",
+                                "elements": [
+                                  {
+                                    "$type": "Keyword",
+                                    "value": ":"
+                                  },
+                                  {
+                                    "$type": "Group",
+                                    "elements": [
+                                      {
+                                        "$type": "Keyword",
+                                        "value": "defined"
+                                      },
+                                      {
+                                        "$type": "Keyword",
+                                        "value": "by"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "$type": "Assignment",
+                                "feature": "type",
+                                "operator": "=",
+                                "terminal": {
+                                  "$type": "CrossReference",
+                                  "type": {
+                                    "$ref": "#/rules@12/definition/elements@1/elements@5/elements@0/inferredType"
+                                  },
+                                  "terminal": {
+                                    "$type": "RuleCall",
+                                    "rule": {
+                                      "$ref": "#/rules@41"
+                                    },
+                                    "arguments": []
+                                  },
+                                  "deprecatedSyntax": false,
+                                  "isMulti": false
+                                }
+                              },
+                              {
+                                "$type": "RuleCall",
+                                "rule": {
+                                  "$ref": "#/rules@34"
+                                },
+                                "arguments": []
+                              },
+                              {
+                                "$type": "RuleCall",
+                                "rule": {
+                                  "$ref": "#/rules@33"
+                                },
+                                "arguments": [],
+                                "cardinality": "*"
+                              }
+                            ],
+                            "cardinality": "?"
+                          }
+                        ]
                       },
                       {
-                        "$type": "RuleCall",
-                        "rule": {
-                          "$ref": "#/rules@24"
-                        },
-                        "arguments": []
+                        "$type": "Group",
+                        "elements": [
+                          {
+                            "$type": "Assignment",
+                            "feature": "target",
+                            "operator": "=",
+                            "terminal": {
+                              "$type": "RuleCall",
+                              "rule": {
+                                "$ref": "#/rules@24"
+                              },
+                              "arguments": []
+                            }
+                          },
+                          {
+                            "$type": "Alternatives",
+                            "elements": [
+                              {
+                                "$type": "RuleCall",
+                                "rule": {
+                                  "$ref": "#/rules@35"
+                                },
+                                "arguments": []
+                              },
+                              {
+                                "$type": "RuleCall",
+                                "rule": {
+                                  "$ref": "#/rules@33"
+                                },
+                                "arguments": []
+                              }
+                            ],
+                            "cardinality": "*"
+                          }
+                        ]
                       }
-                    ],
-                    "cardinality": "*"
+                    ]
                   },
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@28"
+                      "$ref": "#/rules@37"
                     },
                     "arguments": [],
                     "cardinality": "?"
@@ -2186,7 +2275,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                           {
                             "$type": "RuleCall",
                             "rule": {
-                              "$ref": "#/rules@18"
+                              "$ref": "#/rules@27"
                             },
                             "arguments": []
                           },
@@ -2196,14 +2285,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                               {
                                 "$type": "RuleCall",
                                 "rule": {
-                                  "$ref": "#/rules@26"
+                                  "$ref": "#/rules@35"
                                 },
                                 "arguments": []
                               },
                               {
                                 "$type": "RuleCall",
                                 "rule": {
-                                  "$ref": "#/rules@24"
+                                  "$ref": "#/rules@33"
                                 },
                                 "arguments": []
                               }
@@ -2222,7 +2311,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                             "terminal": {
                               "$type": "RuleCall",
                               "rule": {
-                                "$ref": "#/rules@15"
+                                "$ref": "#/rules@24"
                               },
                               "arguments": []
                             }
@@ -2230,7 +2319,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                           {
                             "$type": "RuleCall",
                             "rule": {
-                              "$ref": "#/rules@24"
+                              "$ref": "#/rules@33"
                             },
                             "arguments": [],
                             "cardinality": "*"
@@ -2242,7 +2331,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@28"
+                      "$ref": "#/rules@37"
                     },
                     "arguments": [],
                     "cardinality": "?"
@@ -2293,14 +2382,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                           {
                             "$type": "RuleCall",
                             "rule": {
-                              "$ref": "#/rules@18"
+                              "$ref": "#/rules@27"
                             },
                             "arguments": []
                           },
                           {
                             "$type": "RuleCall",
                             "rule": {
-                              "$ref": "#/rules@24"
+                              "$ref": "#/rules@33"
                             },
                             "arguments": [],
                             "cardinality": "*"
@@ -2342,7 +2431,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                                   "terminal": {
                                     "$type": "RuleCall",
                                     "rule": {
-                                      "$ref": "#/rules@32"
+                                      "$ref": "#/rules@41"
                                     },
                                     "arguments": []
                                   },
@@ -2353,14 +2442,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                               {
                                 "$type": "RuleCall",
                                 "rule": {
-                                  "$ref": "#/rules@25"
+                                  "$ref": "#/rules@34"
                                 },
                                 "arguments": []
                               },
                               {
                                 "$type": "RuleCall",
                                 "rule": {
-                                  "$ref": "#/rules@24"
+                                  "$ref": "#/rules@33"
                                 },
                                 "arguments": [],
                                 "cardinality": "*"
@@ -2371,7 +2460,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                           {
                             "$type": "RuleCall",
                             "rule": {
-                              "$ref": "#/rules@28"
+                              "$ref": "#/rules@37"
                             },
                             "arguments": [],
                             "cardinality": "?"
@@ -2386,7 +2475,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                               {
                                 "$type": "RuleCall",
                                 "rule": {
-                                  "$ref": "#/rules@14"
+                                  "$ref": "#/rules@23"
                                 },
                                 "arguments": []
                               }
@@ -2410,7 +2499,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                           {
                             "$type": "RuleCall",
                             "rule": {
-                              "$ref": "#/rules@14"
+                              "$ref": "#/rules@23"
                             },
                             "arguments": []
                           }
@@ -2426,7 +2515,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                           {
                             "$type": "RuleCall",
                             "rule": {
-                              "$ref": "#/rules@14"
+                              "$ref": "#/rules@23"
                             },
                             "arguments": []
                           }
@@ -2466,7 +2555,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                           {
                             "$type": "RuleCall",
                             "rule": {
-                              "$ref": "#/rules@18"
+                              "$ref": "#/rules@27"
                             },
                             "arguments": []
                           },
@@ -2476,14 +2565,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                               {
                                 "$type": "RuleCall",
                                 "rule": {
-                                  "$ref": "#/rules@26"
+                                  "$ref": "#/rules@35"
                                 },
                                 "arguments": []
                               },
                               {
                                 "$type": "RuleCall",
                                 "rule": {
-                                  "$ref": "#/rules@24"
+                                  "$ref": "#/rules@33"
                                 },
                                 "arguments": []
                               }
@@ -2500,7 +2589,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                               {
                                 "$type": "RuleCall",
                                 "rule": {
-                                  "$ref": "#/rules@14"
+                                  "$ref": "#/rules@23"
                                 },
                                 "arguments": []
                               }
@@ -2519,7 +2608,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                           {
                             "$type": "RuleCall",
                             "rule": {
-                              "$ref": "#/rules@14"
+                              "$ref": "#/rules@23"
                             },
                             "arguments": []
                           }
@@ -2559,7 +2648,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                           {
                             "$type": "RuleCall",
                             "rule": {
-                              "$ref": "#/rules@18"
+                              "$ref": "#/rules@27"
                             },
                             "arguments": []
                           },
@@ -2569,14 +2658,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                               {
                                 "$type": "RuleCall",
                                 "rule": {
-                                  "$ref": "#/rules@26"
+                                  "$ref": "#/rules@35"
                                 },
                                 "arguments": []
                               },
                               {
                                 "$type": "RuleCall",
                                 "rule": {
-                                  "$ref": "#/rules@24"
+                                  "$ref": "#/rules@33"
                                 },
                                 "arguments": []
                               }
@@ -2586,7 +2675,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                           {
                             "$type": "RuleCall",
                             "rule": {
-                              "$ref": "#/rules@28"
+                              "$ref": "#/rules@37"
                             },
                             "arguments": [],
                             "cardinality": "?"
@@ -2608,7 +2697,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                                     "terminal": {
                                       "$type": "RuleCall",
                                       "rule": {
-                                        "$ref": "#/rules@31"
+                                        "$ref": "#/rules@40"
                                       },
                                       "arguments": []
                                     }
@@ -2632,7 +2721,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                                   "terminal": {
                                     "$type": "RuleCall",
                                     "rule": {
-                                      "$ref": "#/rules@32"
+                                      "$ref": "#/rules@41"
                                     },
                                     "arguments": []
                                   },
@@ -2647,7 +2736,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                                 "terminal": {
                                   "$type": "RuleCall",
                                   "rule": {
-                                    "$ref": "#/rules@29"
+                                    "$ref": "#/rules@38"
                                   },
                                   "arguments": []
                                 },
@@ -2667,7 +2756,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                                     "terminal": {
                                       "$type": "RuleCall",
                                       "rule": {
-                                        "$ref": "#/rules@36"
+                                        "$ref": "#/rules@45"
                                       },
                                       "arguments": []
                                     }
@@ -2692,7 +2781,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                                 "terminal": {
                                   "$type": "RuleCall",
                                   "rule": {
-                                    "$ref": "#/rules@15"
+                                    "$ref": "#/rules@24"
                                   },
                                   "arguments": []
                                 }
@@ -2708,7 +2797,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                                 "terminal": {
                                   "$type": "RuleCall",
                                   "rule": {
-                                    "$ref": "#/rules@15"
+                                    "$ref": "#/rules@24"
                                   },
                                   "arguments": []
                                 }
@@ -2728,7 +2817,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                             "terminal": {
                               "$type": "RuleCall",
                               "rule": {
-                                "$ref": "#/rules@15"
+                                "$ref": "#/rules@24"
                               },
                               "arguments": []
                             }
@@ -2744,7 +2833,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                             "terminal": {
                               "$type": "RuleCall",
                               "rule": {
-                                "$ref": "#/rules@15"
+                                "$ref": "#/rules@24"
                               },
                               "arguments": []
                             }
@@ -2779,14 +2868,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@18"
+                      "$ref": "#/rules@27"
                     },
                     "arguments": []
                   },
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@24"
+                      "$ref": "#/rules@33"
                     },
                     "arguments": [],
                     "cardinality": "*"
@@ -2823,7 +2912,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                         "terminal": {
                           "$type": "RuleCall",
                           "rule": {
-                            "$ref": "#/rules@32"
+                            "$ref": "#/rules@41"
                           },
                           "arguments": []
                         }
@@ -2831,14 +2920,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                       {
                         "$type": "RuleCall",
                         "rule": {
-                          "$ref": "#/rules@25"
+                          "$ref": "#/rules@34"
                         },
                         "arguments": []
                       },
                       {
                         "$type": "RuleCall",
                         "rule": {
-                          "$ref": "#/rules@24"
+                          "$ref": "#/rules@33"
                         },
                         "arguments": [],
                         "cardinality": "*"
@@ -2849,7 +2938,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@28"
+                      "$ref": "#/rules@37"
                     },
                     "arguments": [],
                     "cardinality": "?"
@@ -2905,7 +2994,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                           {
                             "$type": "RuleCall",
                             "rule": {
-                              "$ref": "#/rules@18"
+                              "$ref": "#/rules@27"
                             },
                             "arguments": []
                           },
@@ -2915,14 +3004,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                               {
                                 "$type": "RuleCall",
                                 "rule": {
-                                  "$ref": "#/rules@26"
+                                  "$ref": "#/rules@35"
                                 },
                                 "arguments": []
                               },
                               {
                                 "$type": "RuleCall",
                                 "rule": {
-                                  "$ref": "#/rules@24"
+                                  "$ref": "#/rules@33"
                                 },
                                 "arguments": []
                               }
@@ -2941,7 +3030,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                             "terminal": {
                               "$type": "RuleCall",
                               "rule": {
-                                "$ref": "#/rules@33"
+                                "$ref": "#/rules@42"
                               },
                               "arguments": []
                             }
@@ -2949,7 +3038,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                           {
                             "$type": "RuleCall",
                             "rule": {
-                              "$ref": "#/rules@24"
+                              "$ref": "#/rules@33"
                             },
                             "arguments": [],
                             "cardinality": "*"
@@ -2961,7 +3050,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@28"
+                      "$ref": "#/rules@37"
                     },
                     "arguments": [],
                     "cardinality": "?"
@@ -2980,7 +3069,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                         "terminal": {
                           "$type": "RuleCall",
                           "rule": {
-                            "$ref": "#/rules@33"
+                            "$ref": "#/rules@42"
                           },
                           "arguments": []
                         }
@@ -3017,7 +3106,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                       {
                         "$type": "RuleCall",
                         "rule": {
-                          "$ref": "#/rules@18"
+                          "$ref": "#/rules@27"
                         },
                         "arguments": []
                       },
@@ -3027,14 +3116,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                           {
                             "$type": "RuleCall",
                             "rule": {
-                              "$ref": "#/rules@26"
+                              "$ref": "#/rules@35"
                             },
                             "arguments": []
                           },
                           {
                             "$type": "RuleCall",
                             "rule": {
-                              "$ref": "#/rules@24"
+                              "$ref": "#/rules@33"
                             },
                             "arguments": []
                           }
@@ -3055,7 +3144,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
-                        "$ref": "#/rules@33"
+                        "$ref": "#/rules@42"
                       },
                       "arguments": []
                     }
@@ -3071,7 +3160,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
-                        "$ref": "#/rules@33"
+                        "$ref": "#/rules@42"
                       },
                       "arguments": []
                     }
@@ -3118,7 +3207,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                           {
                             "$type": "RuleCall",
                             "rule": {
-                              "$ref": "#/rules@18"
+                              "$ref": "#/rules@27"
                             },
                             "arguments": []
                           },
@@ -3128,14 +3217,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                               {
                                 "$type": "RuleCall",
                                 "rule": {
-                                  "$ref": "#/rules@26"
+                                  "$ref": "#/rules@35"
                                 },
                                 "arguments": []
                               },
                               {
                                 "$type": "RuleCall",
                                 "rule": {
-                                  "$ref": "#/rules@24"
+                                  "$ref": "#/rules@33"
                                 },
                                 "arguments": []
                               }
@@ -3145,7 +3234,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                           {
                             "$type": "RuleCall",
                             "rule": {
-                              "$ref": "#/rules@28"
+                              "$ref": "#/rules@37"
                             },
                             "arguments": [],
                             "cardinality": "?"
@@ -3167,7 +3256,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                                     "terminal": {
                                       "$type": "RuleCall",
                                       "rule": {
-                                        "$ref": "#/rules@31"
+                                        "$ref": "#/rules@40"
                                       },
                                       "arguments": []
                                     }
@@ -3186,7 +3275,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                                 "terminal": {
                                   "$type": "RuleCall",
                                   "rule": {
-                                    "$ref": "#/rules@35"
+                                    "$ref": "#/rules@44"
                                   },
                                   "arguments": []
                                 }
@@ -3198,7 +3287,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                                 "terminal": {
                                   "$type": "RuleCall",
                                   "rule": {
-                                    "$ref": "#/rules@29"
+                                    "$ref": "#/rules@38"
                                   },
                                   "arguments": []
                                 },
@@ -3218,7 +3307,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                                     "terminal": {
                                       "$type": "RuleCall",
                                       "rule": {
-                                        "$ref": "#/rules@36"
+                                        "$ref": "#/rules@45"
                                       },
                                       "arguments": []
                                     }
@@ -3243,7 +3332,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                                 "terminal": {
                                   "$type": "RuleCall",
                                   "rule": {
-                                    "$ref": "#/rules@33"
+                                    "$ref": "#/rules@42"
                                   },
                                   "arguments": []
                                 }
@@ -3259,7 +3348,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                                 "terminal": {
                                   "$type": "RuleCall",
                                   "rule": {
-                                    "$ref": "#/rules@33"
+                                    "$ref": "#/rules@42"
                                   },
                                   "arguments": []
                                 }
@@ -3279,7 +3368,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                             "terminal": {
                               "$type": "RuleCall",
                               "rule": {
-                                "$ref": "#/rules@33"
+                                "$ref": "#/rules@42"
                               },
                               "arguments": []
                             }
@@ -3295,7 +3384,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                             "terminal": {
                               "$type": "RuleCall",
                               "rule": {
-                                "$ref": "#/rules@33"
+                                "$ref": "#/rules@42"
                               },
                               "arguments": []
                             }
@@ -3342,7 +3431,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                       {
                         "$type": "RuleCall",
                         "rule": {
-                          "$ref": "#/rules@18"
+                          "$ref": "#/rules@27"
                         },
                         "arguments": []
                       },
@@ -3378,7 +3467,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
-                        "$ref": "#/rules@32"
+                        "$ref": "#/rules@41"
                       },
                       "arguments": []
                     }
@@ -3397,7 +3486,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                         "terminal": {
                           "$type": "RuleCall",
                           "rule": {
-                            "$ref": "#/rules@32"
+                            "$ref": "#/rules@41"
                           },
                           "arguments": []
                         }
@@ -3416,7 +3505,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                             "terminal": {
                               "$type": "RuleCall",
                               "rule": {
-                                "$ref": "#/rules@32"
+                                "$ref": "#/rules@41"
                               },
                               "arguments": []
                             }
@@ -3456,7 +3545,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                       {
                         "$type": "RuleCall",
                         "rule": {
-                          "$ref": "#/rules@18"
+                          "$ref": "#/rules@27"
                         },
                         "arguments": []
                       },
@@ -3474,7 +3563,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
-                        "$ref": "#/rules@32"
+                        "$ref": "#/rules@41"
                       },
                       "arguments": []
                     }
@@ -3493,7 +3582,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                         "terminal": {
                           "$type": "RuleCall",
                           "rule": {
-                            "$ref": "#/rules@32"
+                            "$ref": "#/rules@41"
                           },
                           "arguments": []
                         }
@@ -3512,7 +3601,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
-                        "$ref": "#/rules@32"
+                        "$ref": "#/rules@41"
                       },
                       "arguments": []
                     }
@@ -3531,7 +3620,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                         "terminal": {
                           "$type": "RuleCall",
                           "rule": {
-                            "$ref": "#/rules@32"
+                            "$ref": "#/rules@41"
                           },
                           "arguments": []
                         }
@@ -3568,7 +3657,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                         "terminal": {
                           "$type": "RuleCall",
                           "rule": {
-                            "$ref": "#/rules@17"
+                            "$ref": "#/rules@26"
                           },
                           "arguments": []
                         }
@@ -3720,7 +3809,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                             "terminal": {
                               "$type": "RuleCall",
                               "rule": {
-                                "$ref": "#/rules@20"
+                                "$ref": "#/rules@29"
                               },
                               "arguments": []
                             },
@@ -3750,6 +3839,32 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                             }
                           ]
                         }
+                      },
+                      {
+                        "$type": "Assignment",
+                        "feature": "kind",
+                        "operator": "=",
+                        "terminal": {
+                          "$type": "Alternatives",
+                          "elements": [
+                            {
+                              "$type": "Keyword",
+                              "value": "merge"
+                            },
+                            {
+                              "$type": "Keyword",
+                              "value": "decide"
+                            },
+                            {
+                              "$type": "Keyword",
+                              "value": "join"
+                            },
+                            {
+                              "$type": "Keyword",
+                              "value": "fork"
+                            }
+                          ]
+                        }
                       }
                     ]
                   },
@@ -3759,7 +3874,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                       {
                         "$type": "RuleCall",
                         "rule": {
-                          "$ref": "#/rules@18"
+                          "$ref": "#/rules@27"
                         },
                         "arguments": []
                       },
@@ -3770,7 +3885,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                         "terminal": {
                           "$type": "RuleCall",
                           "rule": {
-                            "$ref": "#/rules@34"
+                            "$ref": "#/rules@43"
                           },
                           "arguments": []
                         }
@@ -3783,14 +3898,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                       {
                         "$type": "RuleCall",
                         "rule": {
-                          "$ref": "#/rules@26"
+                          "$ref": "#/rules@35"
                         },
                         "arguments": []
                       },
                       {
                         "$type": "RuleCall",
                         "rule": {
-                          "$ref": "#/rules@24"
+                          "$ref": "#/rules@33"
                         },
                         "arguments": []
                       }
@@ -3800,9 +3915,19 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@28"
+                      "$ref": "#/rules@37"
                     },
                     "arguments": [],
+                    "cardinality": "?"
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "isParallel",
+                    "operator": "?=",
+                    "terminal": {
+                      "$type": "Keyword",
+                      "value": "parallel"
+                    },
                     "cardinality": "?"
                   },
                   {
@@ -3811,6 +3936,842 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                       "$ref": "#/rules@5"
                     },
                     "arguments": []
+                  }
+                ]
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Action",
+                    "inferredType": {
+                      "$type": "InferredType",
+                      "name": "SuccessionUsage"
+                    }
+                  },
+                  {
+                    "$type": "Group",
+                    "elements": [
+                      {
+                        "$type": "Keyword",
+                        "value": "succession"
+                      },
+                      {
+                        "$type": "RuleCall",
+                        "rule": {
+                          "$ref": "#/rules@27"
+                        },
+                        "arguments": []
+                      },
+                      {
+                        "$type": "Alternatives",
+                        "elements": [
+                          {
+                            "$type": "RuleCall",
+                            "rule": {
+                              "$ref": "#/rules@35"
+                            },
+                            "arguments": []
+                          },
+                          {
+                            "$type": "RuleCall",
+                            "rule": {
+                              "$ref": "#/rules@33"
+                            },
+                            "arguments": []
+                          }
+                        ],
+                        "cardinality": "*"
+                      }
+                    ],
+                    "cardinality": "?"
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": "first"
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "first",
+                    "operator": "=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$ref": "#/rules@14"
+                      },
+                      "arguments": []
+                    }
+                  },
+                  {
+                    "$type": "Group",
+                    "elements": [
+                      {
+                        "$type": "Group",
+                        "elements": [
+                          {
+                            "$type": "Keyword",
+                            "value": "if"
+                          },
+                          {
+                            "$type": "Assignment",
+                            "feature": "guard",
+                            "operator": "=",
+                            "terminal": {
+                              "$type": "RuleCall",
+                              "rule": {
+                                "$ref": "#/rules@45"
+                              },
+                              "arguments": []
+                            }
+                          }
+                        ],
+                        "cardinality": "?"
+                      },
+                      {
+                        "$type": "Keyword",
+                        "value": "then"
+                      },
+                      {
+                        "$type": "Assignment",
+                        "feature": "next",
+                        "operator": "=",
+                        "terminal": {
+                          "$type": "RuleCall",
+                          "rule": {
+                            "$ref": "#/rules@14"
+                          },
+                          "arguments": []
+                        }
+                      }
+                    ],
+                    "cardinality": "?"
+                  },
+                  {
+                    "$type": "RuleCall",
+                    "rule": {
+                      "$ref": "#/rules@5"
+                    },
+                    "arguments": []
+                  }
+                ]
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Action",
+                    "inferredType": {
+                      "$type": "InferredType",
+                      "name": "SuccessionUsage"
+                    }
+                  },
+                  {
+                    "$type": "Alternatives",
+                    "elements": [
+                      {
+                        "$type": "Group",
+                        "elements": [
+                          {
+                            "$type": "Keyword",
+                            "value": "if"
+                          },
+                          {
+                            "$type": "Assignment",
+                            "feature": "guard",
+                            "operator": "=",
+                            "terminal": {
+                              "$type": "RuleCall",
+                              "rule": {
+                                "$ref": "#/rules@45"
+                              },
+                              "arguments": []
+                            }
+                          },
+                          {
+                            "$type": "Keyword",
+                            "value": "then"
+                          }
+                        ]
+                      },
+                      {
+                        "$type": "Assignment",
+                        "feature": "isElse",
+                        "operator": "?=",
+                        "terminal": {
+                          "$type": "Keyword",
+                          "value": "else"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "next",
+                    "operator": "=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$ref": "#/rules@14"
+                      },
+                      "arguments": []
+                    }
+                  },
+                  {
+                    "$type": "RuleCall",
+                    "rule": {
+                      "$ref": "#/rules@5"
+                    },
+                    "arguments": []
+                  }
+                ]
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Action",
+                    "inferredType": {
+                      "$type": "InferredType",
+                      "name": "TransitionUsage"
+                    }
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": "transition"
+                  },
+                  {
+                    "$type": "Group",
+                    "elements": [
+                      {
+                        "$type": "RuleCall",
+                        "rule": {
+                          "$ref": "#/rules@27"
+                        },
+                        "arguments": []
+                      },
+                      {
+                        "$type": "Keyword",
+                        "value": "first"
+                      }
+                    ],
+                    "cardinality": "?"
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "first",
+                    "operator": "=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$ref": "#/rules@14"
+                      },
+                      "arguments": []
+                    }
+                  },
+                  {
+                    "$type": "Group",
+                    "elements": [
+                      {
+                        "$type": "Keyword",
+                        "value": "accept"
+                      },
+                      {
+                        "$type": "RuleCall",
+                        "rule": {
+                          "$ref": "#/rules@15"
+                        },
+                        "arguments": []
+                      }
+                    ],
+                    "cardinality": "?"
+                  },
+                  {
+                    "$type": "Group",
+                    "elements": [
+                      {
+                        "$type": "Keyword",
+                        "value": "if"
+                      },
+                      {
+                        "$type": "Assignment",
+                        "feature": "guard",
+                        "operator": "=",
+                        "terminal": {
+                          "$type": "RuleCall",
+                          "rule": {
+                            "$ref": "#/rules@45"
+                          },
+                          "arguments": []
+                        }
+                      }
+                    ],
+                    "cardinality": "?"
+                  },
+                  {
+                    "$type": "Group",
+                    "elements": [
+                      {
+                        "$type": "Keyword",
+                        "value": "do"
+                      },
+                      {
+                        "$type": "Assignment",
+                        "feature": "effect",
+                        "operator": "=",
+                        "terminal": {
+                          "$type": "RuleCall",
+                          "rule": {
+                            "$ref": "#/rules@21"
+                          },
+                          "arguments": []
+                        }
+                      }
+                    ],
+                    "cardinality": "?"
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": "then"
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "next",
+                    "operator": "=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$ref": "#/rules@14"
+                      },
+                      "arguments": []
+                    }
+                  },
+                  {
+                    "$type": "RuleCall",
+                    "rule": {
+                      "$ref": "#/rules@5"
+                    },
+                    "arguments": []
+                  }
+                ]
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Action",
+                    "inferredType": {
+                      "$type": "InferredType",
+                      "name": "StateAction"
+                    }
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "kind",
+                    "operator": "=",
+                    "terminal": {
+                      "$type": "Alternatives",
+                      "elements": [
+                        {
+                          "$type": "Keyword",
+                          "value": "entry"
+                        },
+                        {
+                          "$type": "Keyword",
+                          "value": "do"
+                        },
+                        {
+                          "$type": "Keyword",
+                          "value": "exit"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "$type": "Alternatives",
+                    "elements": [
+                      {
+                        "$type": "Keyword",
+                        "value": ";"
+                      },
+                      {
+                        "$type": "Assignment",
+                        "feature": "action",
+                        "operator": "=",
+                        "terminal": {
+                          "$type": "RuleCall",
+                          "rule": {
+                            "$ref": "#/rules@12"
+                          },
+                          "arguments": []
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Action",
+                    "inferredType": {
+                      "$type": "InferredType",
+                      "name": "AcceptAction"
+                    }
+                  },
+                  {
+                    "$type": "Group",
+                    "elements": [
+                      {
+                        "$type": "Keyword",
+                        "value": "action"
+                      },
+                      {
+                        "$type": "RuleCall",
+                        "rule": {
+                          "$ref": "#/rules@27"
+                        },
+                        "arguments": []
+                      }
+                    ],
+                    "cardinality": "?"
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": "accept"
+                  },
+                  {
+                    "$type": "RuleCall",
+                    "rule": {
+                      "$ref": "#/rules@15"
+                    },
+                    "arguments": []
+                  },
+                  {
+                    "$type": "Group",
+                    "elements": [
+                      {
+                        "$type": "Group",
+                        "elements": [
+                          {
+                            "$type": "Keyword",
+                            "value": "if"
+                          },
+                          {
+                            "$type": "Assignment",
+                            "feature": "guard",
+                            "operator": "=",
+                            "terminal": {
+                              "$type": "RuleCall",
+                              "rule": {
+                                "$ref": "#/rules@45"
+                              },
+                              "arguments": []
+                            }
+                          }
+                        ],
+                        "cardinality": "?"
+                      },
+                      {
+                        "$type": "Group",
+                        "elements": [
+                          {
+                            "$type": "Keyword",
+                            "value": "do"
+                          },
+                          {
+                            "$type": "Assignment",
+                            "feature": "effect",
+                            "operator": "=",
+                            "terminal": {
+                              "$type": "RuleCall",
+                              "rule": {
+                                "$ref": "#/rules@21"
+                              },
+                              "arguments": []
+                            }
+                          }
+                        ],
+                        "cardinality": "?"
+                      },
+                      {
+                        "$type": "Keyword",
+                        "value": "then"
+                      },
+                      {
+                        "$type": "Assignment",
+                        "feature": "next",
+                        "operator": "=",
+                        "terminal": {
+                          "$type": "RuleCall",
+                          "rule": {
+                            "$ref": "#/rules@14"
+                          },
+                          "arguments": []
+                        }
+                      }
+                    ],
+                    "cardinality": "?"
+                  },
+                  {
+                    "$type": "RuleCall",
+                    "rule": {
+                      "$ref": "#/rules@5"
+                    },
+                    "arguments": []
+                  }
+                ]
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Action",
+                    "inferredType": {
+                      "$type": "InferredType",
+                      "name": "SendAction"
+                    }
+                  },
+                  {
+                    "$type": "Group",
+                    "elements": [
+                      {
+                        "$type": "Keyword",
+                        "value": "action"
+                      },
+                      {
+                        "$type": "RuleCall",
+                        "rule": {
+                          "$ref": "#/rules@27"
+                        },
+                        "arguments": []
+                      }
+                    ],
+                    "cardinality": "?"
+                  },
+                  {
+                    "$type": "RuleCall",
+                    "rule": {
+                      "$ref": "#/rules@16"
+                    },
+                    "arguments": []
+                  },
+                  {
+                    "$type": "RuleCall",
+                    "rule": {
+                      "$ref": "#/rules@5"
+                    },
+                    "arguments": []
+                  }
+                ]
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Action",
+                    "inferredType": {
+                      "$type": "InferredType",
+                      "name": "AssignAction"
+                    }
+                  },
+                  {
+                    "$type": "Group",
+                    "elements": [
+                      {
+                        "$type": "Keyword",
+                        "value": "action"
+                      },
+                      {
+                        "$type": "RuleCall",
+                        "rule": {
+                          "$ref": "#/rules@27"
+                        },
+                        "arguments": []
+                      }
+                    ],
+                    "cardinality": "?"
+                  },
+                  {
+                    "$type": "RuleCall",
+                    "rule": {
+                      "$ref": "#/rules@17"
+                    },
+                    "arguments": []
+                  },
+                  {
+                    "$type": "RuleCall",
+                    "rule": {
+                      "$ref": "#/rules@5"
+                    },
+                    "arguments": []
+                  }
+                ]
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Action",
+                    "inferredType": {
+                      "$type": "InferredType",
+                      "name": "TerminateAction"
+                    }
+                  },
+                  {
+                    "$type": "Group",
+                    "elements": [
+                      {
+                        "$type": "Keyword",
+                        "value": "action"
+                      },
+                      {
+                        "$type": "RuleCall",
+                        "rule": {
+                          "$ref": "#/rules@27"
+                        },
+                        "arguments": []
+                      }
+                    ],
+                    "cardinality": "?"
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": "terminate"
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "target",
+                    "operator": "=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$ref": "#/rules@45"
+                      },
+                      "arguments": []
+                    },
+                    "cardinality": "?"
+                  },
+                  {
+                    "$type": "RuleCall",
+                    "rule": {
+                      "$ref": "#/rules@5"
+                    },
+                    "arguments": []
+                  }
+                ]
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Action",
+                    "inferredType": {
+                      "$type": "InferredType",
+                      "name": "IfAction"
+                    }
+                  },
+                  {
+                    "$type": "Group",
+                    "elements": [
+                      {
+                        "$type": "Keyword",
+                        "value": "action"
+                      },
+                      {
+                        "$type": "RuleCall",
+                        "rule": {
+                          "$ref": "#/rules@27"
+                        },
+                        "arguments": []
+                      }
+                    ],
+                    "cardinality": "?"
+                  },
+                  {
+                    "$type": "RuleCall",
+                    "rule": {
+                      "$ref": "#/rules@18"
+                    },
+                    "arguments": []
+                  }
+                ]
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Action",
+                    "inferredType": {
+                      "$type": "InferredType",
+                      "name": "LoopAction"
+                    }
+                  },
+                  {
+                    "$type": "Group",
+                    "elements": [
+                      {
+                        "$type": "Keyword",
+                        "value": "action"
+                      },
+                      {
+                        "$type": "RuleCall",
+                        "rule": {
+                          "$ref": "#/rules@27"
+                        },
+                        "arguments": []
+                      }
+                    ],
+                    "cardinality": "?"
+                  },
+                  {
+                    "$type": "Alternatives",
+                    "elements": [
+                      {
+                        "$type": "Group",
+                        "elements": [
+                          {
+                            "$type": "Keyword",
+                            "value": "while"
+                          },
+                          {
+                            "$type": "Assignment",
+                            "feature": "condition",
+                            "operator": "=",
+                            "terminal": {
+                              "$type": "RuleCall",
+                              "rule": {
+                                "$ref": "#/rules@45"
+                              },
+                              "arguments": []
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "$type": "Keyword",
+                        "value": "loop"
+                      }
+                    ]
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "loopBody",
+                    "operator": "=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$ref": "#/rules@20"
+                      },
+                      "arguments": []
+                    }
+                  },
+                  {
+                    "$type": "Group",
+                    "elements": [
+                      {
+                        "$type": "Keyword",
+                        "value": "until"
+                      },
+                      {
+                        "$type": "Assignment",
+                        "feature": "until",
+                        "operator": "=",
+                        "terminal": {
+                          "$type": "RuleCall",
+                          "rule": {
+                            "$ref": "#/rules@45"
+                          },
+                          "arguments": []
+                        }
+                      },
+                      {
+                        "$type": "Keyword",
+                        "value": ";"
+                      }
+                    ],
+                    "cardinality": "?"
+                  }
+                ]
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Action",
+                    "inferredType": {
+                      "$type": "InferredType",
+                      "name": "ForAction"
+                    }
+                  },
+                  {
+                    "$type": "Group",
+                    "elements": [
+                      {
+                        "$type": "Keyword",
+                        "value": "action"
+                      },
+                      {
+                        "$type": "RuleCall",
+                        "rule": {
+                          "$ref": "#/rules@27"
+                        },
+                        "arguments": []
+                      }
+                    ],
+                    "cardinality": "?"
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": "for"
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "variable",
+                    "operator": "=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$ref": "#/rules@40"
+                      },
+                      "arguments": []
+                    }
+                  },
+                  {
+                    "$type": "RuleCall",
+                    "rule": {
+                      "$ref": "#/rules@35"
+                    },
+                    "arguments": [],
+                    "cardinality": "?"
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": "in"
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "collection",
+                    "operator": "=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$ref": "#/rules@45"
+                      },
+                      "arguments": []
+                    }
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "loopBody",
+                    "operator": "=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$ref": "#/rules@20"
+                      },
+                      "arguments": []
+                    }
                   }
                 ]
               },
@@ -3844,7 +4805,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                                 "terminal": {
                                   "$type": "RuleCall",
                                   "rule": {
-                                    "$ref": "#/rules@31"
+                                    "$ref": "#/rules@40"
                                   },
                                   "arguments": []
                                 }
@@ -3863,7 +4824,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                             "terminal": {
                               "$type": "RuleCall",
                               "rule": {
-                                "$ref": "#/rules@31"
+                                "$ref": "#/rules@40"
                               },
                               "arguments": []
                             }
@@ -3874,14 +4835,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                               {
                                 "$type": "RuleCall",
                                 "rule": {
-                                  "$ref": "#/rules@26"
+                                  "$ref": "#/rules@35"
                                 },
                                 "arguments": []
                               },
                               {
                                 "$type": "RuleCall",
                                 "rule": {
-                                  "$ref": "#/rules@24"
+                                  "$ref": "#/rules@33"
                                 },
                                 "arguments": []
                               }
@@ -3891,7 +4852,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                           {
                             "$type": "RuleCall",
                             "rule": {
-                              "$ref": "#/rules@28"
+                              "$ref": "#/rules@37"
                             },
                             "arguments": [],
                             "cardinality": "?"
@@ -3907,14 +4868,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                               {
                                 "$type": "RuleCall",
                                 "rule": {
-                                  "$ref": "#/rules@26"
+                                  "$ref": "#/rules@35"
                                 },
                                 "arguments": []
                               },
                               {
                                 "$type": "RuleCall",
                                 "rule": {
-                                  "$ref": "#/rules@24"
+                                  "$ref": "#/rules@33"
                                 },
                                 "arguments": []
                               }
@@ -3924,7 +4885,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                           {
                             "$type": "RuleCall",
                             "rule": {
-                              "$ref": "#/rules@28"
+                              "$ref": "#/rules@37"
                             },
                             "arguments": [],
                             "cardinality": "?"
@@ -3934,7 +4895,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                       {
                         "$type": "RuleCall",
                         "rule": {
-                          "$ref": "#/rules@28"
+                          "$ref": "#/rules@37"
                         },
                         "arguments": []
                       }
@@ -3970,7 +4931,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@21"
+                "$ref": "#/rules@30"
               },
               "arguments": []
             },
@@ -3992,7 +4953,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
               "terminal": {
                 "$type": "RuleCall",
                 "rule": {
-                  "$ref": "#/rules@32"
+                  "$ref": "#/rules@41"
                 },
                 "arguments": []
               },
@@ -4034,7 +4995,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@36"
+                    "$ref": "#/rules@45"
                   },
                   "arguments": []
                 }
@@ -4061,6 +5022,591 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
     },
     {
       "$type": "ParserRule",
+      "name": "SuccessionEnd",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "multiplicity",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@38"
+              },
+              "arguments": []
+            },
+            "cardinality": "?"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "chain",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@42"
+              },
+              "arguments": []
+            }
+          }
+        ]
+      },
+      "entry": false,
+      "fragment": false,
+      "parameters": []
+    },
+    {
+      "$type": "ParserRule",
+      "fragment": true,
+      "name": "AcceptPart",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "payloadName",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@40"
+              },
+              "arguments": []
+            },
+            "cardinality": "?"
+          },
+          {
+            "$type": "Alternatives",
+            "elements": [
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$ref": "#/rules@35"
+                },
+                "arguments": []
+              },
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$ref": "#/rules@33"
+                },
+                "arguments": []
+              }
+            ],
+            "cardinality": "*"
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "trigger",
+                "operator": "=",
+                "terminal": {
+                  "$type": "Alternatives",
+                  "elements": [
+                    {
+                      "$type": "Keyword",
+                      "value": "at"
+                    },
+                    {
+                      "$type": "Keyword",
+                      "value": "after"
+                    },
+                    {
+                      "$type": "Keyword",
+                      "value": "when"
+                    }
+                  ]
+                }
+              },
+              {
+                "$type": "Assignment",
+                "feature": "triggerValue",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@45"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "?"
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "via"
+              },
+              {
+                "$type": "Assignment",
+                "feature": "via",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@45"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "?"
+          }
+        ]
+      },
+      "entry": false,
+      "parameters": []
+    },
+    {
+      "$type": "ParserRule",
+      "fragment": true,
+      "name": "SendPart",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "send"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "payload",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@45"
+              },
+              "arguments": []
+            },
+            "cardinality": "?"
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "via"
+              },
+              {
+                "$type": "Assignment",
+                "feature": "via",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@45"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "?"
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "to"
+              },
+              {
+                "$type": "Assignment",
+                "feature": "to",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@45"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "?"
+          }
+        ]
+      },
+      "entry": false,
+      "parameters": []
+    },
+    {
+      "$type": "ParserRule",
+      "fragment": true,
+      "name": "AssignPart",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "assign"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "target",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@45"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": ":="
+          },
+          {
+            "$type": "Assignment",
+            "feature": "assigned",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@45"
+              },
+              "arguments": []
+            }
+          }
+        ]
+      },
+      "entry": false,
+      "parameters": []
+    },
+    {
+      "$type": "ParserRule",
+      "fragment": true,
+      "name": "IfPart",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "if"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "condition",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@45"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Assignment",
+            "feature": "thenBlock",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@20"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "else"
+              },
+              {
+                "$type": "Alternatives",
+                "elements": [
+                  {
+                    "$type": "Assignment",
+                    "feature": "elseBlock",
+                    "operator": "=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$ref": "#/rules@20"
+                      },
+                      "arguments": []
+                    }
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "elseIf",
+                    "operator": "=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$ref": "#/rules@19"
+                      },
+                      "arguments": []
+                    }
+                  }
+                ]
+              }
+            ],
+            "cardinality": "?"
+          }
+        ]
+      },
+      "entry": false,
+      "parameters": []
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ElseIf",
+      "definition": {
+        "$type": "RuleCall",
+        "rule": {
+          "$ref": "#/rules@18"
+        },
+        "arguments": []
+      },
+      "entry": false,
+      "fragment": false,
+      "parameters": []
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ActionBlock",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "action"
+              },
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$ref": "#/rules@27"
+                },
+                "arguments": []
+              },
+              {
+                "$type": "Alternatives",
+                "elements": [
+                  {
+                    "$type": "RuleCall",
+                    "rule": {
+                      "$ref": "#/rules@35"
+                    },
+                    "arguments": []
+                  },
+                  {
+                    "$type": "RuleCall",
+                    "rule": {
+                      "$ref": "#/rules@33"
+                    },
+                    "arguments": []
+                  }
+                ],
+                "cardinality": "*"
+              }
+            ],
+            "cardinality": "?"
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@5"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "entry": false,
+      "fragment": false,
+      "parameters": []
+    },
+    {
+      "$type": "ParserRule",
+      "name": "Effect",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Alternatives",
+            "elements": [
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Keyword",
+                    "value": "action"
+                  },
+                  {
+                    "$type": "RuleCall",
+                    "rule": {
+                      "$ref": "#/rules@27"
+                    },
+                    "arguments": []
+                  },
+                  {
+                    "$type": "Alternatives",
+                    "elements": [
+                      {
+                        "$type": "RuleCall",
+                        "rule": {
+                          "$ref": "#/rules@35"
+                        },
+                        "arguments": []
+                      },
+                      {
+                        "$type": "RuleCall",
+                        "rule": {
+                          "$ref": "#/rules@33"
+                        },
+                        "arguments": []
+                      }
+                    ],
+                    "cardinality": "*"
+                  },
+                  {
+                    "$type": "RuleCall",
+                    "rule": {
+                      "$ref": "#/rules@22"
+                    },
+                    "arguments": [],
+                    "cardinality": "?"
+                  }
+                ]
+              },
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$ref": "#/rules@22"
+                },
+                "arguments": []
+              }
+            ]
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "{"
+              },
+              {
+                "$type": "Alternatives",
+                "elements": [
+                  {
+                    "$type": "Assignment",
+                    "feature": "members",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$ref": "#/rules@7"
+                      },
+                      "arguments": []
+                    }
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "annotations",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$ref": "#/rules@8"
+                      },
+                      "arguments": []
+                    }
+                  }
+                ],
+                "cardinality": "*"
+              },
+              {
+                "$type": "Keyword",
+                "value": "}"
+              }
+            ],
+            "cardinality": "?"
+          }
+        ]
+      },
+      "entry": false,
+      "fragment": false,
+      "parameters": []
+    },
+    {
+      "$type": "ParserRule",
+      "fragment": true,
+      "name": "EffectPart",
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@16"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@17"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "accept"
+              },
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$ref": "#/rules@15"
+                },
+                "arguments": []
+              }
+            ]
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "perform"
+              },
+              {
+                "$type": "Assignment",
+                "feature": "performed",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@42"
+                  },
+                  "arguments": []
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "entry": false,
+      "parameters": []
+    },
+    {
+      "$type": "ParserRule",
       "fragment": true,
       "name": "ConnectorPart",
       "definition": {
@@ -4076,7 +5622,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@15"
+                    "$ref": "#/rules@24"
                   },
                   "arguments": []
                 }
@@ -4092,7 +5638,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@15"
+                    "$ref": "#/rules@24"
                   },
                   "arguments": []
                 }
@@ -4113,7 +5659,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@15"
+                    "$ref": "#/rules@24"
                   },
                   "arguments": []
                 }
@@ -4129,7 +5675,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@15"
+                    "$ref": "#/rules@24"
                   },
                   "arguments": []
                 }
@@ -4148,7 +5694,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
-                        "$ref": "#/rules@15"
+                        "$ref": "#/rules@24"
                       },
                       "arguments": []
                     }
@@ -4180,7 +5726,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@29"
+                "$ref": "#/rules@38"
               },
               "arguments": []
             },
@@ -4191,12 +5737,12 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
             "elements": [
               {
                 "$type": "Assignment",
-                "feature": "endName",
+                "feature": "name",
                 "operator": "=",
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@31"
+                    "$ref": "#/rules@40"
                   },
                   "arguments": []
                 }
@@ -4229,7 +5775,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
               "terminal": {
                 "$type": "RuleCall",
                 "rule": {
-                  "$ref": "#/rules@32"
+                  "$ref": "#/rules@41"
                 },
                 "arguments": []
               },
@@ -4256,7 +5802,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                   "terminal": {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@31"
+                      "$ref": "#/rules@40"
                     },
                     "arguments": []
                   },
@@ -4444,7 +5990,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@31"
+                    "$ref": "#/rules@40"
                   },
                   "arguments": []
                 }
@@ -4463,7 +6009,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@31"
+                "$ref": "#/rules@40"
               },
               "arguments": []
             },
@@ -4488,7 +6034,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@21"
+                "$ref": "#/rules@30"
               },
               "arguments": []
             },
@@ -4537,16 +6083,48 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                 }
               },
               {
-                "$type": "Assignment",
-                "feature": "endMultiplicity",
-                "operator": "=",
-                "terminal": {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$ref": "#/rules@29"
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Assignment",
+                    "feature": "crossName",
+                    "operator": "=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$ref": "#/rules@40"
+                      },
+                      "arguments": []
+                    },
+                    "cardinality": "?"
                   },
-                  "arguments": []
-                },
+                  {
+                    "$type": "Assignment",
+                    "feature": "endMultiplicity",
+                    "operator": "=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$ref": "#/rules@38"
+                      },
+                      "arguments": []
+                    }
+                  },
+                  {
+                    "$type": "Alternatives",
+                    "elements": [
+                      {
+                        "$type": "Keyword",
+                        "value": "ordered"
+                      },
+                      {
+                        "$type": "Keyword",
+                        "value": "nonunique"
+                      }
+                    ],
+                    "cardinality": "*"
+                  }
+                ],
                 "cardinality": "?"
               }
             ],
@@ -4559,7 +6137,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@22"
+                "$ref": "#/rules@31"
               },
               "arguments": []
             },
@@ -4636,7 +6214,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@23"
+                "$ref": "#/rules@32"
               },
               "arguments": []
             },
@@ -4649,7 +6227,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@20"
+                "$ref": "#/rules@29"
               },
               "arguments": []
             },
@@ -4674,7 +6252,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@32"
+              "$ref": "#/rules@41"
             },
             "arguments": []
           }
@@ -4785,7 +6363,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@33"
+                    "$ref": "#/rules@42"
                   },
                   "arguments": []
                 }
@@ -4804,7 +6382,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
-                        "$ref": "#/rules@33"
+                        "$ref": "#/rules@42"
                       },
                       "arguments": []
                     }
@@ -4837,7 +6415,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@33"
+                    "$ref": "#/rules@42"
                   },
                   "arguments": []
                 }
@@ -4856,7 +6434,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
-                        "$ref": "#/rules@33"
+                        "$ref": "#/rules@42"
                       },
                       "arguments": []
                     }
@@ -4889,7 +6467,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@33"
+                    "$ref": "#/rules@42"
                   },
                   "arguments": []
                 }
@@ -4919,7 +6497,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@33"
+                    "$ref": "#/rules@42"
                   },
                   "arguments": []
                 }
@@ -4933,7 +6511,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@29"
+                "$ref": "#/rules@38"
               },
               "arguments": []
             }
@@ -4969,7 +6547,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@35"
+                "$ref": "#/rules@44"
               },
               "arguments": []
             }
@@ -5016,7 +6594,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@35"
+                "$ref": "#/rules@44"
               },
               "arguments": []
             }
@@ -5024,7 +6602,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@25"
+              "$ref": "#/rules@34"
             },
             "arguments": []
           }
@@ -5060,7 +6638,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@32"
+                "$ref": "#/rules@41"
               },
               "arguments": []
             }
@@ -5079,7 +6657,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@32"
+                    "$ref": "#/rules@41"
                   },
                   "arguments": []
                 }
@@ -5157,7 +6735,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@36"
+                "$ref": "#/rules@45"
               },
               "arguments": []
             }
@@ -5184,7 +6762,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@30"
+                "$ref": "#/rules@39"
               },
               "arguments": []
             }
@@ -5203,7 +6781,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@30"
+                    "$ref": "#/rules@39"
                   },
                   "arguments": []
                 }
@@ -5231,7 +6809,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@50"
+              "$ref": "#/rules@60"
             },
             "arguments": []
           },
@@ -5242,7 +6820,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@32"
+              "$ref": "#/rules@41"
             },
             "arguments": []
           }
@@ -5262,14 +6840,14 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@49"
+              "$ref": "#/rules@59"
             },
             "arguments": []
           },
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@52"
+              "$ref": "#/rules@62"
             },
             "arguments": []
           }
@@ -5289,7 +6867,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@31"
+              "$ref": "#/rules@40"
             },
             "arguments": []
           },
@@ -5303,7 +6881,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
               {
                 "$type": "RuleCall",
                 "rule": {
-                  "$ref": "#/rules@31"
+                  "$ref": "#/rules@40"
                 },
                 "arguments": []
               }
@@ -5326,7 +6904,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@32"
+              "$ref": "#/rules@41"
             },
             "arguments": []
           },
@@ -5340,7 +6918,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
               {
                 "$type": "RuleCall",
                 "rule": {
-                  "$ref": "#/rules@31"
+                  "$ref": "#/rules@40"
                 },
                 "arguments": []
               }
@@ -5363,7 +6941,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@31"
+              "$ref": "#/rules@40"
             },
             "arguments": []
           },
@@ -5386,7 +6964,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
               {
                 "$type": "RuleCall",
                 "rule": {
-                  "$ref": "#/rules@31"
+                  "$ref": "#/rules@40"
                 },
                 "arguments": []
               }
@@ -5414,7 +6992,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@32"
+              "$ref": "#/rules@41"
             },
             "arguments": []
           }
@@ -5451,7 +7029,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@36"
+                    "$ref": "#/rules@45"
                   },
                   "arguments": []
                 }
@@ -5467,7 +7045,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@36"
+                    "$ref": "#/rules@45"
                   },
                   "arguments": []
                 }
@@ -5483,7 +7061,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@36"
+                    "$ref": "#/rules@45"
                   },
                   "arguments": []
                 }
@@ -5493,7 +7071,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@37"
+              "$ref": "#/rules@46"
             },
             "arguments": []
           }
@@ -5509,7 +7087,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
       "call": {
         "$type": "RuleCall",
         "rule": {
-          "$ref": "#/rules@38"
+          "$ref": "#/rules@47"
         },
         "arguments": []
       },
@@ -5756,7 +7334,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@38"
+                    "$ref": "#/rules@47"
                   },
                   "arguments": []
                 }
@@ -5814,7 +7392,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@32"
+                    "$ref": "#/rules@41"
                   },
                   "arguments": []
                 }
@@ -5842,7 +7420,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@32"
+                    "$ref": "#/rules@41"
                   },
                   "arguments": []
                 }
@@ -5852,7 +7430,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@39"
+              "$ref": "#/rules@48"
             },
             "arguments": []
           }
@@ -5871,7 +7449,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@40"
+              "$ref": "#/rules@49"
             },
             "arguments": []
           },
@@ -5901,10 +7479,37 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
-                        "$ref": "#/rules@31"
+                        "$ref": "#/rules@40"
                       },
                       "arguments": []
                     }
+                  },
+                  {
+                    "$type": "Group",
+                    "elements": [
+                      {
+                        "$type": "Assignment",
+                        "feature": "invocation",
+                        "operator": "?=",
+                        "terminal": {
+                          "$type": "Keyword",
+                          "value": "("
+                        }
+                      },
+                      {
+                        "$type": "RuleCall",
+                        "rule": {
+                          "$ref": "#/rules@53"
+                        },
+                        "arguments": [],
+                        "cardinality": "?"
+                      },
+                      {
+                        "$type": "Keyword",
+                        "value": ")"
+                      }
+                    ],
+                    "cardinality": "?"
                   }
                 ]
               },
@@ -5953,7 +7558,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
-                        "$ref": "#/rules@41"
+                        "$ref": "#/rules@50"
                       },
                       "arguments": []
                     }
@@ -5983,7 +7588,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
-                        "$ref": "#/rules@41"
+                        "$ref": "#/rules@50"
                       },
                       "arguments": []
                     }
@@ -6013,7 +7618,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
-                        "$ref": "#/rules@32"
+                        "$ref": "#/rules@41"
                       },
                       "arguments": []
                     }
@@ -6028,7 +7633,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                         "terminal": {
                           "$type": "RuleCall",
                           "rule": {
-                            "$ref": "#/rules@41"
+                            "$ref": "#/rules@50"
                           },
                           "arguments": []
                         }
@@ -6040,7 +7645,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                         "terminal": {
                           "$type": "RuleCall",
                           "rule": {
-                            "$ref": "#/rules@32"
+                            "$ref": "#/rules@41"
                           },
                           "arguments": []
                         }
@@ -6048,7 +7653,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                       {
                         "$type": "RuleCall",
                         "rule": {
-                          "$ref": "#/rules@42"
+                          "$ref": "#/rules@52"
                         },
                         "arguments": []
                       }
@@ -6082,7 +7687,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                         "terminal": {
                           "$type": "RuleCall",
                           "rule": {
-                            "$ref": "#/rules@36"
+                            "$ref": "#/rules@45"
                           },
                           "arguments": []
                         }
@@ -6101,7 +7706,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                             "terminal": {
                               "$type": "RuleCall",
                               "rule": {
-                                "$ref": "#/rules@36"
+                                "$ref": "#/rules@45"
                               },
                               "arguments": []
                             }
@@ -6145,7 +7750,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
-                        "$ref": "#/rules@36"
+                        "$ref": "#/rules@45"
                       },
                       "arguments": []
                     }
@@ -6164,7 +7769,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                         "terminal": {
                           "$type": "RuleCall",
                           "rule": {
-                            "$ref": "#/rules@36"
+                            "$ref": "#/rules@45"
                           },
                           "arguments": []
                         }
@@ -6225,14 +7830,21 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                     {
                       "$type": "RuleCall",
                       "rule": {
-                        "$ref": "#/rules@51"
+                        "$ref": "#/rules@61"
                       },
                       "arguments": []
                     },
                     {
                       "$type": "RuleCall",
                       "rule": {
-                        "$ref": "#/rules@50"
+                        "$ref": "#/rules@60"
+                      },
+                      "arguments": []
+                    },
+                    {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$ref": "#/rules@51"
                       },
                       "arguments": []
                     },
@@ -6266,7 +7878,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@32"
+                    "$ref": "#/rules@41"
                   },
                   "arguments": []
                 }
@@ -6274,7 +7886,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
               {
                 "$type": "RuleCall",
                 "rule": {
-                  "$ref": "#/rules@42"
+                  "$ref": "#/rules@52"
                 },
                 "arguments": []
               }
@@ -6297,7 +7909,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@32"
+                    "$ref": "#/rules@41"
                   },
                   "arguments": []
                 }
@@ -6317,7 +7929,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@43"
+                      "$ref": "#/rules@53"
                     },
                     "arguments": [],
                     "cardinality": "?"
@@ -6330,13 +7942,6 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                 "cardinality": "?"
               }
             ]
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@41"
-            },
-            "arguments": []
           },
           {
             "$type": "Group",
@@ -6362,7 +7967,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
-                        "$ref": "#/rules@36"
+                        "$ref": "#/rules@45"
                       },
                       "arguments": []
                     }
@@ -6381,7 +7986,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                         "terminal": {
                           "$type": "RuleCall",
                           "rule": {
-                            "$ref": "#/rules@36"
+                            "$ref": "#/rules@45"
                           },
                           "arguments": []
                         }
@@ -6439,7 +8044,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@36"
+                "$ref": "#/rules@45"
               },
               "arguments": []
             },
@@ -6448,6 +8053,30 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
           {
             "$type": "Keyword",
             "value": "}"
+          }
+        ]
+      },
+      "entry": false,
+      "fragment": false,
+      "parameters": []
+    },
+    {
+      "$type": "ParserRule",
+      "name": "Fraction",
+      "dataType": "string",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "."
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@60"
+            },
+            "arguments": []
           }
         ]
       },
@@ -6469,7 +8098,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@43"
+              "$ref": "#/rules@53"
             },
             "arguments": [],
             "cardinality": "?"
@@ -6497,7 +8126,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@44"
+                "$ref": "#/rules@54"
               },
               "arguments": []
             }
@@ -6516,7 +8145,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@44"
+                    "$ref": "#/rules@54"
                   },
                   "arguments": []
                 }
@@ -6545,7 +8174,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@31"
+                    "$ref": "#/rules@40"
                   },
                   "arguments": []
                 }
@@ -6564,7 +8193,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@36"
+                "$ref": "#/rules@45"
               },
               "arguments": []
             }
@@ -6728,7 +8357,121 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
           {
             "$type": "SimpleType",
             "typeRef": {
+              "$ref": "#/rules@12/definition/elements@1/elements@37/elements@0/inferredType"
+            }
+          },
+          {
+            "$type": "SimpleType",
+            "typeRef": {
+              "$ref": "#/rules@12/definition/elements@1/elements@16/elements@0/inferredType"
+            }
+          },
+          {
+            "$type": "SimpleType",
+            "typeRef": {
+              "$ref": "#/rules@12/definition/elements@1/elements@17/elements@0/inferredType"
+            }
+          },
+          {
+            "$type": "SimpleType",
+            "typeRef": {
+              "$ref": "#/rules@12/definition/elements@1/elements@18/elements@0/inferredType"
+            }
+          },
+          {
+            "$type": "SimpleType",
+            "typeRef": {
+              "$ref": "#/rules@12/definition/elements@1/elements@22/elements@0/inferredType"
+            }
+          },
+          {
+            "$type": "SimpleType",
+            "typeRef": {
+              "$ref": "#/rules@12/definition/elements@1/elements@21/elements@0/inferredType"
+            }
+          },
+          {
+            "$type": "SimpleType",
+            "typeRef": {
+              "$ref": "#/rules@12/definition/elements@1/elements@20/elements@0/inferredType"
+            }
+          },
+          {
+            "$type": "SimpleType",
+            "typeRef": {
+              "$ref": "#/rules@12/definition/elements@1/elements@14/elements@0/inferredType"
+            }
+          },
+          {
+            "$type": "SimpleType",
+            "typeRef": {
+              "$ref": "#/rules@12/definition/elements@1/elements@23/elements@0/inferredType"
+            }
+          },
+          {
+            "$type": "SimpleType",
+            "typeRef": {
+              "$ref": "#/rules@12/definition/elements@1/elements@19/elements@0/inferredType"
+            }
+          },
+          {
+            "$type": "SimpleType",
+            "typeRef": {
               "$ref": "#/rules@12/definition/elements@1/elements@26/elements@0/inferredType"
+            }
+          },
+          {
+            "$type": "SimpleType",
+            "typeRef": {
+              "$ref": "#/rules@12/definition/elements@1/elements@28/elements@0/inferredType"
+            }
+          },
+          {
+            "$type": "SimpleType",
+            "typeRef": {
+              "$ref": "#/rules@24"
+            }
+          },
+          {
+            "$type": "SimpleType",
+            "typeRef": {
+              "$ref": "#/rules@12/definition/elements@1/elements@30/elements@0/inferredType"
+            }
+          },
+          {
+            "$type": "SimpleType",
+            "typeRef": {
+              "$ref": "#/rules@12/definition/elements@1/elements@31/elements@0/inferredType"
+            }
+          },
+          {
+            "$type": "SimpleType",
+            "typeRef": {
+              "$ref": "#/rules@12/definition/elements@1/elements@32/elements@0/inferredType"
+            }
+          },
+          {
+            "$type": "SimpleType",
+            "typeRef": {
+              "$ref": "#/rules@12/definition/elements@1/elements@33/elements@0/inferredType"
+            }
+          },
+          {
+            "$type": "SimpleType",
+            "typeRef": {
+              "$ref": "#/rules@12/definition/elements@1/elements@34/elements@0/inferredType"
+            }
+          },
+          {
+            "$type": "SimpleType",
+            "typeRef": {
+              "$ref": "#/rules@12/definition/elements@1/elements@35/elements@0/inferredType"
+            }
+          },
+          {
+            "$type": "SimpleType",
+            "typeRef": {
+              "$ref": "#/rules@12/definition/elements@1/elements@36/elements@0/inferredType"
             }
           }
         ]

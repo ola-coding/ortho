@@ -2,11 +2,8 @@ import {
     AstUtils, DefaultScopeComputation, DefaultScopeProvider, DocumentState, EMPTY_STREAM, isReference, stream, WorkspaceCache
 } from 'langium';
 import type { AstNode, AstNodeDescription, LangiumCoreServices, LangiumDocument, ReferenceInfo, Scope, Stream } from 'langium';
-import {
-    isActionUsage, isActorUsage, isAliasMember, isAttributeUsage, isConnectorEnd, isDefaultUsage, isImportDecl, isModel,
-    isOtherUsage, isPartDef, isPartUsage, isPerformUsage, isPortUsage, isSubjectUsage, isUseCaseUsage
-} from '../generated/ast.js';
-import type { AliasMember, ImportDecl, PartDef } from '../generated/ast.js';
+import { isAliasMember, isConnectorEnd, isFeature, isImportDecl, isModel, isPartDef, isPerformUsage } from '../generated/ast.js';
+import type { AliasMember, ConnectorEnd, ImportDecl, PartDef } from '../generated/ast.js';
 import { effectiveName, qualifiedName } from '../model/graph.js';
 
 /**
@@ -51,6 +48,12 @@ export class SysmlScopeProvider extends DefaultScopeProvider {
     private readonly followingAliases = new Set<AliasMember>();
     /** Features whose features are being gathered, so one subsetting itself ends. */
     private readonly gathering = new Set<AstNode>();
+    /**
+     * References being resolved. A lookup does not follow one, which would be
+     * resolving it by itself: a usage's type is not looked for among the
+     * features that type gives it.
+     */
+    private readonly linking = new Set<unknown>();
 
     constructor(services: LangiumCoreServices) {
         super(services);
@@ -63,7 +66,7 @@ export class SysmlScopeProvider extends DefaultScopeProvider {
         if (isConnectorEnd(container) && context.property === 'segments' && index > 0) {
             const previous = container.segments[index - 1]?.ref;
             return new ResolvingScope(name => {
-                const found = this.featureNamed(previous, name);
+                const found = this.whileLinking(context.reference, () => this.featureNamed(previous, name));
                 return found ? this.descriptions.createDescription(found, name) : undefined;
             });
         }
@@ -71,9 +74,24 @@ export class SysmlScopeProvider extends DefaultScopeProvider {
         const importer = isImportDecl(container) ? container.$container : undefined;
         // A reference's text is its names, unquoted, joined by `::`.
         return new ResolvingScope(name => {
-            const found = this.withoutImportsOf(importer, () => this.resolve(container, name.split('::'), type));
+            const found = this.whileLinking(context.reference, () =>
+                this.withoutImportsOf(importer, () => this.resolve(container, name.split('::'), type)));
             return found ? this.descriptions.createDescription(found, name) : undefined;
         });
+    }
+
+    private whileLinking<T>(reference: unknown, lookUp: () => T): T {
+        this.linking.add(reference);
+        try {
+            return lookUp();
+        } finally {
+            this.linking.delete(reference);
+        }
+    }
+
+    /** What a reference names, unless it is being resolved. */
+    private follow(reference: unknown): AstNode | undefined {
+        return isReference(reference) && !this.linking.has(reference) ? reference.ref : undefined;
     }
 
     private withoutImportsOf<T>(namespace: AstNode | undefined, lookUp: () => T): T {
@@ -88,22 +106,24 @@ export class SysmlScopeProvider extends DefaultScopeProvider {
         }
     }
 
-    private resolve(from: AstNode, segments: string[], type: string | undefined): AstNode | undefined {
+    private resolve(from: AstNode, segments: string[], type: string | undefined, exclude?: AstNode): AstNode | undefined {
         if (segments.length === 0) {
             return undefined;
         }
         const fits = (i: number) => i === segments.length - 1 ? type : undefined;
-        let found = this.lookUp(from, segments[0], fits(0));
+        let found = this.lookUp(from, segments[0], fits(0), exclude);
         for (let i = 1; found && i < segments.length; i++) {
             found = this.visibleMember(found, segments[i], fits(i), new Set());
         }
         return found;
     }
 
-    private lookUp(from: AstNode, name: string, type: string | undefined): AstNode | undefined {
+    private lookUp(from: AstNode, name: string, type: string | undefined, exclude?: AstNode): AstNode | undefined {
+        // What an element inherits is visible in its body, not in its own
+        // declaration: a part def's supertypes, a connection's ends.
+        const declaring = isConnectorEnd(from) ? from.$container : from;
         for (let namespace: AstNode | undefined = from; namespace; namespace = namespace.$container) {
-            // A definition's own supertypes are not looked up among what it inherits.
-            const found = this.ownedMember(namespace, name, type, namespace !== from, from)
+            const found = this.ownedMember(namespace, name, type, namespace !== from && namespace !== declaring, from, exclude)
                 ?? this.imported(namespace, name, type, false, new Set());
             if (found) {
                 return found;
@@ -124,12 +144,14 @@ export class SysmlScopeProvider extends DefaultScopeProvider {
     }
 
     private ownedMember(
-        namespace: AstNode, name: string, type: string | undefined, inherited = true, from?: AstNode
+        namespace: AstNode, name: string, type: string | undefined, inherited = true, from?: AstNode, exclude?: AstNode
     ): AstNode | undefined {
+        // An unnamed element takes its name from what it refers to, so it does
+        // not answer that reference itself: `perform fly` names fly.
+        const eligible = (member: AstNode) => member !== exclude
+            && !(from && (member as { name?: string }).name === undefined && AstUtils.hasContainerOfType(from, n => n === member));
         for (const member of AstUtils.streamContents(namespace)) {
-            // An unnamed element takes its name from what it refers to, so it
-            // does not answer that reference itself: `perform fly` names fly.
-            if (from && (member as { name?: string }).name === undefined && AstUtils.hasContainerOfType(from, n => n === member)) {
+            if (!eligible(member)) {
                 continue;
             }
             if (isAliasMember(member)) {
@@ -141,10 +163,11 @@ export class SysmlScopeProvider extends DefaultScopeProvider {
                 return member;
             }
         }
-        if (inherited && isPartDef(namespace)) {
-            return inheritedFeatures(namespace).find(feature => answersTo(feature, name) && this.fits(feature, type));
-        }
-        return undefined;
+        // A definition's body sees what it inherits, a usage's what its type has.
+        // A perform's target is not followed: the name may be part of it.
+        const reachable = !inherited ? [] : isPartDef(namespace) ? this.inheritedFeatures(namespace)
+            : isFeature(namespace) ? this.featuresOf(namespace, false) : [];
+        return reachable.find(feature => eligible(feature) && answersTo(feature, name) && this.fits(feature, type));
     }
 
     private aliased(alias: AliasMember): AstNode | undefined {
@@ -177,7 +200,7 @@ export class SysmlScopeProvider extends DefaultScopeProvider {
             if (publicOnly && imp.visibility !== 'public') {
                 continue;
             }
-            const target = imp.target?.ref;
+            const target = this.follow(imp.target);
             if (!target) {
                 continue;
             }
@@ -194,11 +217,16 @@ export class SysmlScopeProvider extends DefaultScopeProvider {
         return undefined;
     }
 
+    /** A member of a namespace or of any namespace nested in it, for `::**`. */
     private nestedMember(namespace: AstNode, name: string, type: string | undefined, seen: Set<AstNode>): AstNode | undefined {
+        const found = this.visibleMember(namespace, name, type, seen);
+        if (found) {
+            return found;
+        }
         for (const member of AstUtils.streamContents(namespace)) {
-            const found = this.visibleMember(member, name, type, seen) ?? this.nestedMember(member, name, type, seen);
-            if (found) {
-                return found;
+            const nested = this.nestedMember(member, name, type, seen);
+            if (nested) {
+                return nested;
             }
         }
         return undefined;
@@ -211,44 +239,97 @@ export class SysmlScopeProvider extends DefaultScopeProvider {
         if (found) {
             return found;
         }
-        const type = feature && typeOf(feature);
+        const type = feature && this.typeOf(feature);
         const alias = [...aliasesOf(feature), ...aliasesOf(type)].find(a => answersTo(a, name));
         return alias ? this.aliased(alias) : undefined;
     }
 
     /**
      * A feature's features: its own, those of its type and the type's
-     * supertypes, and those of what it subsets or references — a perform
-     * `perform action takePhoto references takePicture` has takePicture's.
+     * supertypes, and those of what it subsets, references or redefines — a
+     * perform `perform action takePhoto references takePicture` has
+     * takePicture's.
      */
-    private featuresOf(feature: AstNode | undefined): AstNode[] {
+    private featuresOf(feature: AstNode | undefined, throughTarget = true): AstNode[] {
         if (!feature || this.gathering.has(feature)) {
             return [];
         }
         this.gathering.add(feature);
         try {
-            const type = typeOf(feature);
-            const related = feature as { subsets?: string[]; references?: string[] };
+            const type = this.typeOf(feature);
+            const related = feature as { subsets?: string[]; references?: string[]; redefines?: string[] };
             return [
                 ...ownFeatures(feature),
-                ...(type ? definitionFeatures(type, new Set()) : []),
-                ...[...related.subsets ?? [], ...related.references ?? []]
+                ...(type ? this.definitionFeatures(type, new Set()) : []),
+                ...writtenTypes(feature).flatMap(name => {
+                    const def = this.resolve(feature.$container ?? feature, name.split('::'), undefined);
+                    return def ? this.definitionFeatures(def, new Set()) : [];
+                }),
+                ...[...related.subsets ?? [], ...related.references ?? [], ...related.redefines ?? []]
                     .flatMap(chain => this.featuresOf(this.resolveChain(feature, chain))),
-                ...(isPerformUsage(feature) ? this.featuresOf(feature.target?.segments.at(-1)?.ref) : [])
+                ...(throughTarget && isPerformUsage(feature) ? this.featuresOf(this.follow(feature.target?.segments.at(-1))) : []),
+                // A connector's named end has the features of what it references.
+                ...(isConnectorEnd(feature) ? this.featuresOf(this.follow(feature.segments.at(-1))) : [])
             ];
         } finally {
             this.gathering.delete(feature);
         }
     }
 
-    /** A chain written as text, `a.b.c`, resolved from where its feature stands. */
+    /**
+     * A chain written as text, `a.b.c`, resolved from where its feature
+     * stands. It never names the feature itself: `part :>> engine` redefines
+     * another engine.
+     */
     private resolveChain(feature: AstNode, chain: string): AstNode | undefined {
         const [first, ...rest] = chain.split('.');
-        let found = this.resolve(feature.$container ?? feature, first.split('::'), undefined);
+        let found = this.resolve(feature, first.split('::'), undefined, feature);
         for (const name of rest) {
             found = found && found !== feature ? this.featureNamed(found, name) : undefined;
         }
         return found === feature ? undefined : found;
+    }
+
+    /** What a usage is typed by, where that is a reference ortho resolves. */
+    private typeOf(feature: AstNode): AstNode | undefined {
+        return this.follow((feature as { type?: unknown }).type);
+    }
+
+    /** A definition's features, and those of the definitions it specializes. */
+    private definitionFeatures(def: AstNode, seen: Set<AstNode>): AstNode[] {
+        if (seen.has(def)) {
+            return [];
+        }
+        seen.add(def);
+        const features = ownFeatures(def);
+        for (const supertype of (def as { supertypes?: unknown[] }).supertypes ?? []) {
+            const resolved = this.follow(supertype);
+            if (resolved) {
+                features.push(...this.definitionFeatures(resolved, seen));
+            }
+        }
+        return features;
+    }
+
+    /**
+     * Features a definition inherits through `:>` but does not declare itself.
+     * Locally declared members shadow inherited ones, so only genuinely
+     * inherited names are added.
+     */
+    private inheritedFeatures(def: PartDef): AstNode[] {
+        const taken = new Set(ownFeatures(def).map(effectiveName));
+        const inherited: AstNode[] = [];
+        for (const supertype of def.supertypes) {
+            const resolved = this.follow(supertype);
+            for (const feature of resolved ? this.definitionFeatures(resolved, new Set()) : []) {
+                const name = effectiveName(feature);
+                if (name && !taken.has(name)) {
+                    taken.add(name);
+                    inherited.push(feature);
+                }
+            }
+        }
+        return inherited;
     }
 
     private fits(node: AstNode, type: string | undefined): boolean {
@@ -295,56 +376,26 @@ class ResolvingScope implements Scope {
     }
 }
 
-/** What a usage is typed by, where that is a reference ortho resolves. */
-function typeOf(feature: AstNode): AstNode | undefined {
-    const type = (feature as { type?: unknown }).type;
-    return isReference(type) ? type.ref : undefined;
+/** What a usage is typed by where ortho keeps the type as written, `in c : Counter`. */
+function writtenTypes(feature: AstNode): string[] {
+    const { type, types } = feature as { type?: unknown; types?: string[] };
+    return [...(typeof type === 'string' ? [type] : []), ...types ?? []].map(name => name.replace(/^~/, ''));
 }
 
+/** A usage's own features: its members, and a connection's named ends. */
 function ownFeatures(node: AstNode): AstNode[] {
-    return ((node as { members?: AstNode[] }).members ?? []).filter(isNamedFeature);
+    const { members, source, target, ends } = node as {
+        members?: AstNode[]; source?: ConnectorEnd; target?: ConnectorEnd; ends?: ConnectorEnd[]
+    };
+    // A connector's end may be named: `connect wheel ::> axle.wheel to ...`.
+    const namedEnds = [source, target, ...ends ?? []].filter((end): end is ConnectorEnd => isConnectorEnd(end) && !!end.name);
+    return [...(members ?? []).filter(isNamedFeature), ...namedEnds];
 }
 
 function aliasesOf(node: AstNode | undefined): AliasMember[] {
     return (node as { aliases?: AliasMember[] } | undefined)?.aliases ?? [];
 }
 
-/** A definition's features, and those of the definitions it specializes. */
-function definitionFeatures(def: AstNode, seen: Set<AstNode>): AstNode[] {
-    if (seen.has(def)) {
-        return [];
-    }
-    seen.add(def);
-    const features = ownFeatures(def);
-    for (const supertype of (def as { supertypes?: unknown[] }).supertypes ?? []) {
-        if (isReference(supertype) && supertype.ref) {
-            features.push(...definitionFeatures(supertype.ref, seen));
-        }
-    }
-    return features;
-}
-
-/**
- * Features a definition inherits through `:>` but does not declare itself.
- * Locally declared members shadow inherited ones, so only genuinely inherited
- * names are added.
- */
-function inheritedFeatures(def: PartDef): AstNode[] {
-    const taken = new Set(ownFeatures(def).map(effectiveName));
-    const inherited: AstNode[] = [];
-    for (const supertype of def.supertypes) {
-        for (const feature of supertype.ref ? definitionFeatures(supertype.ref, new Set()) : []) {
-            const name = effectiveName(feature);
-            if (name && !taken.has(name)) {
-                taken.add(name);
-                inherited.push(feature);
-            }
-        }
-    }
-    return inherited;
-}
-
 function isNamedFeature(node: AstNode): boolean {
-    return isPartUsage(node) || isPortUsage(node) || isAttributeUsage(node) || isActionUsage(node) || isUseCaseUsage(node)
-        || isActorUsage(node) || isSubjectUsage(node) || isPerformUsage(node) || isOtherUsage(node) || isDefaultUsage(node);
+    return isFeature(node);
 }
