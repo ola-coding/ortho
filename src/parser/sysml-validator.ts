@@ -92,7 +92,8 @@ function checkSubjectBeforeActors(useCase: UseCaseDef | UseCaseUsage, accept: Va
  * chain is otherwise the same as any connector end, so it is checked there.
  */
 function checkPerformTarget(perform: PerformUsage, accept: ValidationAcceptor): void {
-    const target = perform.target.segments[perform.target.segments.length - 1]?.ref;
+    // A syntax error can leave the target out.
+    const target = perform.target?.segments.at(-1)?.ref;
     if (target && !isActionUsage(target) && !isUseCaseUsage(target)) {
         accept('error', `'${performText(perform)}' is not an action or a use case, so it cannot be performed.`,
             { node: perform, property: 'target' });

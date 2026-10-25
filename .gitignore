@@ -8,3 +8,6 @@ marketing/ortho-deck.artifact.html
 
 # Ad hoc diagram screenshots and the browser profile used to take them
 .review/
+
+# OMG's SysML v2 models, fetched by npm run omg-models (EPL-2.0, not committed)
+.omg-models/

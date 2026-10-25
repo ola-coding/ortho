@@ -142,6 +142,7 @@ npm run typecheck        # src, tests and scripts
 npm test                 # vitest
 npm run render:examples  # regenerate every example's diagrams/
 npm run deck             # build the pitch deck into marketing/
+npm run omg-models       # fetch OMG's models, which npm test counts
 ```
 
 CI typechecks and tests on Node 24 and 26, fails if a fresh render differs
@@ -157,6 +158,9 @@ Pages.
   only suits one shows up. Regenerate their SVGs and look at them in a browser
   whenever rendering changes. They carry no requirements, since no view would
   show them.
+- **OMG's models** are the example, training and validation models of OMG's
+  release, EPL-2.0 and so fetched, not committed. `tests/omg-models.test.ts`
+  counts how many load, so the count in it changes only on purpose.
 - **The deck** inlines the committed example diagrams, so render before
   `npm run deck`; a missing diagram fails the build. The test count is filled
   in from `vitest list`, but the table comparing the two examples' sizes is
