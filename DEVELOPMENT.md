@@ -221,6 +221,3 @@ In priority order:
   *perform actions* rather than a seventh view.
 - [ ] **Item flows on the physical view** (`flow`): what passes between ports,
   not only that they connect.
-
-Not planned: graphical editing, simulation, collaboration servers and AI
-generation. That is where the commercial tools compete.
