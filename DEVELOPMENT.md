@@ -158,6 +158,7 @@ npm test                 # vitest
 npm run render:examples  # regenerate every example's diagrams/
 npm run deck             # build the pitch deck into marketing/
 npm run omg-models       # fetch OMG's models, which npm test counts
+npm run library-names    # list the standard library's names
 ```
 
 CI typechecks and tests on Node 24 and 26, fails if a fresh render differs
@@ -176,6 +177,10 @@ Pages.
 - **OMG's models** are the example, training and validation models of OMG's
   release, EPL-2.0 and so fetched, not committed. `tests/omg-models.test.ts`
   counts how many load, so the count in it changes only on purpose.
+- **The standard library's names** are listed in `src/model/library.ts`,
+  generated from the library `npm run omg-models` fetches. A view may name a
+  library element without ortho loading the library, and a typo still fails
+  (`sysml-document-validator.ts`).
 - **The deck** inlines the committed example diagrams, so render before
   `npm run deck`; a missing diagram fails the build. The test count is filled
   in from `vitest list`, but the table comparing the two examples' sizes is
@@ -216,13 +221,11 @@ In priority order:
   names the heading and exposes the content; `-d` is gone.
 - [x] **Imports that make names visible:** `Pkg::*` and `Pkg::Element`, public
   ones passed on; the examples rely on them.
-- [ ] **Read standard SysML v2.** Load any valid model, draw what the six
-  views need and ignore the rest: all 252 example, training and validation
-  models in OMG's release should load, as `tests/omg-models.test.ts` counts.
-  Existing parsers were tried first: `sysml-v2-lsp` offers no parser API, and
-  OpenSysML's does not expose what the views draw. So ortho's grammar grows
-  from the spec's, and now reads the whole textual notation; names from the
-  standard library, where a view draws them, remain.
+- [x] **Read standard SysML v2:** all 252 of OMG's example, training and
+  validation models load. What no view draws is read and kept as written, and
+  the standard library's names are known without loading it. Existing parsers
+  were tried first: `sysml-v2-lsp` offers no parser API, and OpenSysML's does
+  not expose what the views draw.
 - [ ] **Render every view a model declares**, one SVG per `view`:
   `ortho render model/ -o diagrams/`. The first-file rule and the README's
   file lists go.

@@ -1,14 +1,13 @@
 # The SysML v2 that ortho reads
 
-ortho reads a subset of the SysML v2 textual notation: what the six views
-need, and a little more that models commonly carry. This page is that subset,
-view by view. Section numbers (§) point into **OMG SysML v2.0, Part 1,
-formal/2026-03-02**, <https://www.omg.org/spec/SysML/2.0/>, which is the
-authority.
+ortho reads the whole SysML v2 textual notation and draws six views from it.
+This page says, view by view, what each view draws from a model. Section
+numbers (§) point into **OMG SysML v2.0, Part 1, formal/2026-03-02**,
+<https://www.omg.org/spec/SysML/2.0/>, which is the authority.
 
-A model ortho accepts is meant to be valid SysML v2 as well
-([how this is checked](#how-this-is-checked)). What each view is for is in
-[VIEWS.md](VIEWS.md).
+Where a view draws, ortho checks a model as SysML v2 does; elsewhere, only
+its syntax ([how this is checked](#how-this-is-checked)). What each view is
+for is in [VIEWS.md](VIEWS.md).
 
 ## Rules for every file
 
@@ -453,18 +452,17 @@ package Operations {
 above, a quantity with its unit, `mass = 1500 [kg]`, a calculation, or a
 constraint's condition. No view evaluates them.
 
-## Not supported
+## The standard library
 
-ortho reads the whole textual notation, but it does not load the standard
-library. A name from the library where a view draws it, such as a part typed
-`SpatialItems::SpatialItem`, is not found, so the model fails to load.
-Elsewhere library names may be used freely: what no view draws is not checked.
+ortho does not load the standard library, but it knows the library's names: a
+view may name a library element, such as a part typed
+`SpatialItems::SpatialItem`, and shows it as written. A name the library does
+not have is an error, as anywhere else.
 
 ## How this is checked
 
 Tests keep this page honest: every `sysml` block above parses on its own.
-Another counts how many of OMG's own example, training and validation models
-load.
+Another loads all 252 of OMG's own example, training and validation models.
 
 Both example models and every block on this page also passed the OMG pilot
 implementation, release 0.62.0, on 2026-10-24, with no errors or warnings.

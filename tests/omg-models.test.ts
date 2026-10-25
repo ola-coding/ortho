@@ -8,7 +8,7 @@ import { createSysmlServices } from '../src/parser/sysml-module.js';
 // every one of them; this counts how many it does, so the count only moves on
 // purpose. Without the models, the test is skipped.
 const ROOT = '.omg-models/sysml/src';
-const LOADED = 242;
+const LOADED = 252;
 
 function sysmlFiles(dir: string): string[] {
     return readdirSync(dir, { withFileTypes: true }).flatMap(entry => {

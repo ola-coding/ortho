@@ -77,7 +77,7 @@ Element:
         ((':>' | 'specializes') supertypes+=[Definition:QualifiedName] (',' supertypes+=[Definition:QualifiedName])*)?
         Body
     | {infer PortDef} 'port' 'def' Identification
-        ((':>' | 'specializes') supertypes+=[PortDef:QualifiedName] (',' supertypes+=[PortDef:QualifiedName])*)?
+        ((':>' | 'specializes') supertypes+=[Definition:QualifiedName] (',' supertypes+=[Definition:QualifiedName])*)?
         Body
     | {infer InterfaceDef} 'interface' 'def' Identification WrittenSupertypes? Body
     // A definition of values without identity. Its one job here is to type a

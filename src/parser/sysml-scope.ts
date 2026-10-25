@@ -46,8 +46,12 @@ export class SysmlScopeProvider extends DefaultScopeProvider {
     private readonly resolvingImports = new Set<AstNode>();
     /** Aliases being followed, so one naming itself ends rather than loops. */
     private readonly followingAliases = new Set<AliasMember>();
-    /** Features whose features are being gathered, so one subsetting itself ends. */
-    private readonly gathering = new Set<AstNode>();
+    /**
+     * Features whose features are being gathered, so one subsetting itself
+     * ends: one set for each reference being resolved, since resolving one can
+     * set off resolving another, which needs the same features afresh.
+     */
+    private readonly gatherings: Array<Set<AstNode>> = [new Set()];
     /**
      * References being resolved. A lookup does not follow one, which would be
      * resolving it by itself: a usage's type is not looked for among the
@@ -62,7 +66,10 @@ export class SysmlScopeProvider extends DefaultScopeProvider {
 
     override getScope(context: ReferenceInfo): Scope {
         const container = context.container;
-        const index = context.index ?? 0;
+        // A reference resolved on demand, rather than in Langium's own pass,
+        // comes without its index, so a chain's segment finds its own.
+        const index = context.index ?? (isConnectorEnd(container)
+            ? container.segments.findIndex(segment => segment === context.reference) : 0);
         if (isConnectorEnd(container) && context.property === 'segments' && index > 0) {
             const previous = container.segments[index - 1]?.ref;
             return new ResolvingScope(name => {
@@ -82,9 +89,11 @@ export class SysmlScopeProvider extends DefaultScopeProvider {
 
     private whileLinking<T>(reference: unknown, lookUp: () => T): T {
         this.linking.add(reference);
+        this.gatherings.push(new Set());
         try {
             return lookUp();
         } finally {
+            this.gatherings.pop();
             this.linking.delete(reference);
         }
     }
@@ -251,10 +260,11 @@ export class SysmlScopeProvider extends DefaultScopeProvider {
      * takePicture's.
      */
     private featuresOf(feature: AstNode | undefined, throughTarget = true): AstNode[] {
-        if (!feature || this.gathering.has(feature)) {
+        const gathering = this.gatherings[this.gatherings.length - 1];
+        if (!feature || gathering.has(feature)) {
             return [];
         }
-        this.gathering.add(feature);
+        gathering.add(feature);
         try {
             const type = this.typeOf(feature);
             const related = feature as { subsets?: string[]; references?: string[]; redefines?: string[] };
@@ -272,7 +282,7 @@ export class SysmlScopeProvider extends DefaultScopeProvider {
                 ...(isConnectorEnd(feature) ? this.featuresOf(this.follow(feature.segments.at(-1))) : [])
             ];
         } finally {
-            this.gathering.delete(feature);
+            gathering.delete(feature);
         }
     }
 

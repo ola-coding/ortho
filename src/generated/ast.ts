@@ -2429,7 +2429,7 @@ export interface PortDef extends Element {
     name?: Name;
     result?: Expression;
     shortName?: Name;
-    supertypes: Array<langium.Reference<PortDef>>;
+    supertypes: Array<langium.Reference<Definition>>;
 }
 
 export const PortDef = {
@@ -8054,7 +8054,7 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 supertypes: {
                     name: PortDef.supertypes,
                     defaultValue: [],
-                    referenceType: PortDef.$type,
+                    referenceType: Definition.$type,
                     optional: true
                 },
                 then: {

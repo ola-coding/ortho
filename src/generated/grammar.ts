@@ -1022,7 +1022,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                         "terminal": {
                           "$type": "CrossReference",
                           "type": {
-                            "$ref": "#/rules@12/definition/elements@1/elements@1/elements@0/inferredType"
+                            "$ref": "#/types@1"
                           },
                           "terminal": {
                             "$type": "RuleCall",
@@ -1049,7 +1049,7 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                             "terminal": {
                               "$type": "CrossReference",
                               "type": {
-                                "$ref": "#/rules@12/definition/elements@1/elements@1/elements@0/inferredType"
+                                "$ref": "#/types@1"
                               },
                               "terminal": {
                                 "$type": "RuleCall",

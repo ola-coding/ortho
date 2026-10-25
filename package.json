@@ -25,6 +25,7 @@
     "render:examples": "tsx scripts/render-examples.ts",
     "deck": "tsx scripts/build-deck.ts",
     "omg-models": "tsx scripts/fetch-omg-models.ts",
+    "library-names": "tsx scripts/library-names.ts",
     "test": "vitest run"
   },
   "dependencies": {

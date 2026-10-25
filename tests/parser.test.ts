@@ -267,7 +267,7 @@ describe('imports', () => {
             package ImpNone {
                 allocate sw.video to ImpHardware::hw.cpu;
             }
-        `)).toEqual([unresolved('Feature', 'sw'), unresolved('Feature', 'video')]);
+        `)).toEqual([unresolved('Feature', 'sw')]);
     });
 });
 
@@ -433,6 +433,33 @@ describe('definitions and usages', () => {
         `);
         const allocation = document.parseResult.value.packages[0].members.find(isAllocationUsage)!;
         expect(allocation.target!.segments.map(s => s.ref?.$type)).toEqual(['PartUsage', 'PerformUsage']);
+    });
+});
+
+describe('the standard library', () => {
+    const errorsOf = async (text: string): Promise<string[]> => {
+        const document = await parse(text, { validation: true });
+        return (document.diagnostics ?? []).filter(d => d.severity === 1)
+            .map(d => typeof d.message === 'string' ? d.message : d.message.value);
+    };
+
+    it('lets a view name a library element without loading the library, and still catches a typo', async () => {
+        // SpatialItem is declared in SpatialItems; MassValue in ISQBase, which ISQ imports publicly.
+        expect(await errorsOf(`
+            package LibraryNames {
+                private import SpatialItems::*;
+                private import ISQ::*;
+                part def Car :> SpatialItem;
+                part car : SpatialItems::SpatialItem;
+                action def Weigh {
+                    part scale : Car;
+                    part car : Car;
+                    message weight of MassValue from scale to car;
+                }
+            }
+        `)).toEqual([]);
+        expect(await errorsOf('package LibraryTypo { private import SpatialItems::*; part car : SpatialIten; }'))
+            .toEqual(["Could not resolve reference to Definition named 'SpatialIten'."]);
     });
 });
 
