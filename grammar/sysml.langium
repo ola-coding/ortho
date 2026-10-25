@@ -26,7 +26,8 @@ PackageDecl:
 // (§7.5.3), so it is here too.
 ImportDecl:
     visibility=Visibility 'import' (all?='all')?
-    target=[Member:QualifiedName] (wildcard?='::*')? (recursive?='::**')? RelationshipBody;
+    target=[Member:QualifiedName] (wildcard?='::*')? (recursive?='::**')? ('[' filters+=Expression ']')*
+    RelationshipBody;
 
 // Another name for an element (§8.2.2.5.1).
 AliasMember:
@@ -35,11 +36,15 @@ AliasMember:
 fragment RelationshipBody:
     ';' | '{' (annotations+=AnnotatingElement)* '}';
 
-// The body of every namespace: its members, imports, aliases and comments, and
-// in a view what it exposes.
+// The body of every namespace: its members, imports, aliases, filters and
+// comments, in a view what it exposes, and in a calculation or constraint the
+// expression that is its result.
 fragment Body:
     ';' | '{' (imports+=ImportDecl | aliases+=AliasMember | annotations+=AnnotatingElement | exposes+=Expose
-        | members+=Member)* '}';
+        | filters+=ElementFilter | members+=Member)* (result=Expression)? '}';
+
+ElementFilter:
+    (visibility=Visibility)? 'filter' condition=Expression ';';
 
 Member:
     PackageDecl | Element;
@@ -110,9 +115,11 @@ Element:
     | {infer SubjectUsage} 'subject' Identification
         FeatureRelation* ((':' | 'defined' 'by') type=[Definition:QualifiedName] MoreTypes FeatureRelation*)?
         ValuePart? Body
-    // `include use case x` is spec notation and names a use case usage, never
-    // a definition.
-    | {infer IncludeUsage} 'include' ('use' 'case')? target=[UseCaseUsage:QualifiedName] FeatureRelation* Body
+    // `include x` names a use case usage, never a definition. `include use
+    // case x` declares one in the spec, and names an existing x here; a new
+    // one, `include use case x : X`, is read but not drawn.
+    | {infer IncludeUsage} 'include' (useCase?='use' 'case')? target=[UseCaseUsage:QualifiedName]
+        (WrittenTyping | FeatureRelation)* ValuePart? Body
     // What the owning part carries out: an action of the function tree, or a
     // use case. The target is a feature chain like any other, so it starts at
     // a usage — `perform Functions::survey.communicate.streamVideo` — which is
@@ -138,7 +145,8 @@ Element:
     // the succession explicitly, spec-style. The payload names a definition.
     | {infer MessageUsage} 'message'
         ( Identification (WrittenTyping | FeatureRelation)* ValuePart?
-          ('of' (payloadName=Name ':')? payload=[Definition:QualifiedName] (payloadMultiplicity=Multiplicity)?)?
+          ('of' (payloadName=Name ':')? payload=[Definition:QualifiedName] (payloadMultiplicity=Multiplicity)?
+            ('=' payloadValue=Expression)?)?
           ('from' source=ConnectorEnd 'to' target=ConnectorEnd)?
         | source=ConnectorEnd 'to' target=ConnectorEnd )
         Body
@@ -156,7 +164,8 @@ Element:
         'bind' left=FeatureChain '=' right=FeatureChain Body
     | {infer FlowUsage} (succession?='succession')? 'flow'
         ( Identification (WrittenTyping | FeatureRelation)* ValuePart?
-          ('of' (payloadName=Name ':')? payload=TypeName (payloadMultiplicity=Multiplicity)?)?
+          ('of' (payloadName=Name ':')? payload=TypeName (payloadMultiplicity=Multiplicity)?
+            ('=' payloadValue=Expression)?)?
           ('from' source=FeatureChain 'to' target=FeatureChain)?
         | source=FeatureChain 'to' target=FeatureChain )
         Body
@@ -175,19 +184,23 @@ Element:
         | kind='render' 'rendering'?
         | kind='frame' 'concern'?
         | kind='verify' 'requirement'?
+        | kind=('require' | 'assume') (prefixMetadata+=PrefixMetadata)* 'constraint'?
         | kind=('objective' | 'stakeholder') )
-        Identification (WrittenTyping | FeatureRelation)* ValuePart? Body
+        // A chain names a feature that already exists: `event driver.started`.
+        (Identification | reference=ChainedName) (WrittenTyping | FeatureRelation)* ValuePart? Body
     // A usage without a keyword: a parameter, `in x : T;`, a redefinition,
     // `:>> mass = 1500;`, an enumerated value, `red;`, or a reference, `ref x;`.
     | {infer DefaultUsage}
-        ( ('<' shortName=Name '>')? name=Name (WrittenTyping | FeatureRelation)*
-        | (WrittenTyping | FeatureRelation)+ )
-        ValuePart? Body
+        ( ('<' shortName=Name '>')? name=Name (WrittenTyping | FeatureRelation)* ValuePart?
+        | (WrittenTyping | FeatureRelation)+ ValuePart?
+        // An enumerated value may be its value alone, `= 60.0;`.
+        | ValuePart )
+        Body
     );
 
 Expose:
     (visibility=Visibility)? 'expose' element=[Member:QualifiedName] (wildcard?='::*')? (recursive?='::**')?
-    RelationshipBody;
+    ('[' filters+=Expression ']')* RelationshipBody;
 
 fragment ConnectorPart:
     source=ConnectorEnd 'to' target=ConnectorEnd
@@ -218,7 +231,8 @@ fragment Identification:
 // The prefixes of definitions and usages (§8.2.2.6), read in any combination.
 // A usage after `then` follows the one before it (§8.2.2.9.3).
 fragment Prefix:
-    (visibility=Visibility)? (isVariant?='variant')? (then?='then')? (isEnd?='end')? (direction=Direction)?
+    (visibility=Visibility)? (isVariant?='variant')? (then?='then')? (isReturn?='return')?
+    (isEnd?='end' (endMultiplicity=Multiplicity)?)? (direction=Direction)?
     (isDerived?='derived')? (isAbstract?='abstract' | isVariation?='variation')? (isConstant?='constant')?
     (isReference?='ref')? (isIndividual?='individual')? (portionKind=PortionKind)? (prefixMetadata+=PrefixMetadata)*;
 
@@ -259,7 +273,7 @@ fragment WrittenSupertypes:
     (':>' | 'specializes') supertypes+=QualifiedName (',' supertypes+=QualifiedName)*;
 
 fragment ValuePart:
-    ('=' | isInitial?=':=' | isDefault?='default' ('=' | isInitial?=':=')?) value=Literal;
+    ('=' | isInitial?=':=' | isDefault?='default' ('=' | isInitial?=':=')?) value=Expression;
 
 Multiplicity:
     '[' lower=MultiplicityBound ('..' upper=MultiplicityBound)? ']';
@@ -285,11 +299,75 @@ QualifiedName returns string:
 FeatureChain returns string:
     QualifiedName ('.' Name)*;
 
+// A qualified name or feature chain of at least two names.
+ChainedName returns string:
+    Name (('::' | '.') Name)+;
+
 TypeName returns string:
     '~'? QualifiedName;
 
-Literal returns string:
-    NUMBER | STRING | ID;
+// ---------------------------------------------------------------- Expressions
+
+// Expressions (KerML §8.2.5.8), read so that a model using them loads: values
+// with units, `1500 [kg]`, constraints, filters. No view evaluates them.
+Expression:
+    {infer IfExpression} 'if' condition=Expression '?' then=Expression 'else' else=Expression
+    | OperatorExpression;
+
+// The operators by precedence, tightest first (KerML Table 6).
+infix OperatorExpression on UnaryExpression:
+    right assoc '^' | '**'
+    > '*' | '/' | '%'
+    > '+' | '-'
+    > '..'
+    > '<' | '>' | '<=' | '>='
+    > 'istype' | 'hastype' | '@' | '@@' | 'as' | 'meta'
+    > '==' | '!=' | '===' | '!=='
+    > '&'
+    > 'xor'
+    > '|'
+    > 'and'
+    > 'or'
+    > 'implies'
+    > '??';
+
+UnaryExpression:
+    {infer PrefixExpression} operator=('+' | '-' | '~' | 'not') operand=UnaryExpression
+    // `@Safety` in a filter tests the element the filter is applied to.
+    | {infer ClassificationExpression} operator=('istype' | 'hastype' | '@' | '@@' | 'as' | 'meta') type=QualifiedName
+    | {infer ExtentExpression} 'all' type=QualifiedName
+    | PrimaryExpression;
+
+PrimaryExpression:
+    BaseExpression
+    ( {infer FeatureChainExpression.source=current} '.' member=Name
+    | {infer MetadataAccessExpression.source=current} '.' 'metadata'
+    | {infer CollectExpression.source=current} '.' body=BodyExpression
+    | {infer SelectExpression.source=current} '.?' body=BodyExpression
+    | {infer InvocationOperation.source=current} '->' function=QualifiedName
+        (body=BodyExpression | reference=QualifiedName | ArgumentList)
+    | {infer BracketExpression.source=current} '[' (index+=Expression (',' index+=Expression)*)? ']'
+    | {infer IndexExpression.source=current} '#' '(' index+=Expression (',' index+=Expression)* ')'
+    )*;
+
+BaseExpression:
+    {infer LiteralExpression} value=('true' | 'false' | 'null' | STRING | NUMBER | '*')
+    | {infer ConstructorExpression} 'new' type=QualifiedName ArgumentList
+    | {infer FeatureReferenceExpression} name=QualifiedName (invocation?='(' Arguments? ')')?
+    | BodyExpression
+    | {infer SequenceExpression} '(' (items+=Expression (',' items+=Expression)* ','?)? ')';
+
+BodyExpression:
+    '{' (members+=Member)* (result=Expression)? '}';
+
+fragment ArgumentList:
+    '(' Arguments? ')';
+
+fragment Arguments:
+    arguments+=Argument (',' arguments+=Argument)*;
+
+Argument:
+    (name=Name '=')? value=Expression;
 
 // `/* ... */` is a comment element; notes, `// ...` and `//* ... */`, are not
 // part of the model (§8.2.2.1.2).
@@ -298,6 +376,6 @@ hidden terminal ML_NOTE: /\/\/\*[\s\S]*?\*\//;
 hidden terminal SL_NOTE: /\/\/[^\n\r]*/;
 terminal REGULAR_COMMENT: /\/\*[\s\S]*?\*\//;
 terminal ID: /[_a-zA-Z][\w_]*/;
-terminal NUMBER: /[0-9]+(\.[0-9]+)?/;
+terminal NUMBER: /[0-9]+(\.[0-9]+)?([eE][+-]?[0-9]+)?/;
 terminal STRING: /"(\\.|[^"\\\r\n])*"/;
 terminal UNRESTRICTED_NAME: /'(\\.|[^'\\\r\n])*'/;

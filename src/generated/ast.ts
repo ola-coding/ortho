@@ -12,7 +12,7 @@ export const SysmlTerminals = {
     SL_NOTE: /\/\/[^\n\r]*/,
     REGULAR_COMMENT: /\/\*[\s\S]*?\*\//,
     ID: /[_a-zA-Z][\w_]*/,
-    NUMBER: /[0-9]+(\.[0-9]+)?/,
+    NUMBER: /[0-9]+(\.[0-9]+)?([eE][+-]?[0-9]+)?/,
     STRING: /"(\\.|[^"\\\r\n])*"/,
     UNRESTRICTED_NAME: /'(\\.|[^'\\\r\n])*'/,
 };
@@ -20,13 +20,23 @@ export const SysmlTerminals = {
 export type SysmlTerminalNames = keyof typeof SysmlTerminals;
 
 export type SysmlKeywordNames =
+    | "!="
+    | "!=="
     | "#"
+    | "%"
+    | "&"
     | "("
     | ")"
     | "*"
+    | "**"
+    | "+"
     | ","
+    | "-"
+    | "->"
     | "."
     | ".."
+    | ".?"
+    | "/"
     | ":"
     | "::"
     | "::*"
@@ -37,12 +47,20 @@ export type SysmlKeywordNames =
     | ":>>"
     | ";"
     | "<"
+    | "<="
     | "="
+    | "=="
+    | "==="
     | "=>"
     | ">"
+    | ">="
+    | "?"
+    | "??"
     | "@"
+    | "@@"
     | "["
     | "]"
+    | "^"
     | "about"
     | "abstract"
     | "action"
@@ -52,7 +70,10 @@ export type SysmlKeywordNames =
     | "allocate"
     | "allocation"
     | "analysis"
+    | "and"
+    | "as"
     | "assert"
+    | "assume"
     | "attribute"
     | "bind"
     | "binding"
@@ -72,32 +93,43 @@ export type SysmlKeywordNames =
     | "dependency"
     | "derived"
     | "doc"
+    | "else"
     | "end"
     | "enum"
     | "event"
     | "exhibit"
     | "expose"
+    | "false"
+    | "filter"
     | "flow"
     | "for"
     | "frame"
     | "from"
+    | "hastype"
+    | "if"
+    | "implies"
     | "import"
     | "in"
     | "include"
     | "individual"
     | "inout"
     | "interface"
+    | "istype"
     | "item"
     | "language"
     | "library"
     | "locale"
     | "message"
+    | "meta"
     | "metadata"
+    | "new"
     | "nonunique"
     | "not"
+    | "null"
     | "objective"
     | "occurrence"
     | "of"
+    | "or"
     | "ordered"
     | "out"
     | "package"
@@ -113,7 +145,9 @@ export type SysmlKeywordNames =
     | "render"
     | "rendering"
     | "rep"
+    | "require"
     | "requirement"
+    | "return"
     | "satisfy"
     | "snapshot"
     | "specializes"
@@ -126,6 +160,7 @@ export type SysmlKeywordNames =
     | "then"
     | "timeslice"
     | "to"
+    | "true"
     | "typed"
     | "use"
     | "variant"
@@ -134,7 +169,9 @@ export type SysmlKeywordNames =
     | "verify"
     | "view"
     | "viewpoint"
+    | "xor"
     | "{"
+    | "|"
     | "}"
     | "~";
 
@@ -145,9 +182,11 @@ export interface ActionDef extends Element {
     aliases: Array<AliasMember>;
     annotations: Array<AnnotatingElement>;
     exposes: Array<Expose>;
+    filters: Array<ElementFilter>;
     imports: Array<ImportDecl>;
     members: Array<Member>;
     name?: Name;
+    result?: Expression;
     shortName?: Name;
     supertypes: Array<QualifiedName>;
 }
@@ -157,7 +196,9 @@ export const ActionDef = {
     aliases: 'aliases',
     annotations: 'annotations',
     direction: 'direction',
+    endMultiplicity: 'endMultiplicity',
     exposes: 'exposes',
+    filters: 'filters',
     imports: 'imports',
     isAbstract: 'isAbstract',
     isConstant: 'isConstant',
@@ -165,12 +206,14 @@ export const ActionDef = {
     isEnd: 'isEnd',
     isIndividual: 'isIndividual',
     isReference: 'isReference',
+    isReturn: 'isReturn',
     isVariant: 'isVariant',
     isVariation: 'isVariation',
     members: 'members',
     name: 'name',
     portionKind: 'portionKind',
     prefixMetadata: 'prefixMetadata',
+    result: 'result',
     shortName: 'shortName',
     supertypes: 'supertypes',
     then: 'then',
@@ -187,6 +230,7 @@ export interface ActionUsage extends Element {
     annotations: Array<AnnotatingElement>;
     crosses: Array<FeatureChain>;
     exposes: Array<Expose>;
+    filters: Array<ElementFilter>;
     imports: Array<ImportDecl>;
     isDefault: boolean;
     isInitial: boolean;
@@ -195,11 +239,12 @@ export interface ActionUsage extends Element {
     name?: Name;
     redefines: Array<FeatureChain>;
     references: Array<FeatureChain>;
+    result?: Expression;
     shortName?: Name;
     subsets: Array<FeatureChain>;
     type?: langium.Reference<ActionDef>;
     types: Array<TypeName>;
-    value?: Literal;
+    value?: Expression;
 }
 
 export const ActionUsage = {
@@ -208,7 +253,9 @@ export const ActionUsage = {
     annotations: 'annotations',
     crosses: 'crosses',
     direction: 'direction',
+    endMultiplicity: 'endMultiplicity',
     exposes: 'exposes',
+    filters: 'filters',
     imports: 'imports',
     isAbstract: 'isAbstract',
     isConstant: 'isConstant',
@@ -218,6 +265,7 @@ export const ActionUsage = {
     isIndividual: 'isIndividual',
     isInitial: 'isInitial',
     isReference: 'isReference',
+    isReturn: 'isReturn',
     isVariant: 'isVariant',
     isVariation: 'isVariation',
     members: 'members',
@@ -227,6 +275,7 @@ export const ActionUsage = {
     prefixMetadata: 'prefixMetadata',
     redefines: 'redefines',
     references: 'references',
+    result: 'result',
     shortName: 'shortName',
     subsets: 'subsets',
     then: 'then',
@@ -246,6 +295,7 @@ export interface ActorUsage extends Element {
     annotations: Array<AnnotatingElement>;
     crosses: Array<FeatureChain>;
     exposes: Array<Expose>;
+    filters: Array<ElementFilter>;
     imports: Array<ImportDecl>;
     isDefault: boolean;
     isInitial: boolean;
@@ -254,11 +304,12 @@ export interface ActorUsage extends Element {
     name?: Name;
     redefines: Array<FeatureChain>;
     references: Array<FeatureChain>;
+    result?: Expression;
     shortName?: Name;
     subsets: Array<FeatureChain>;
     type?: langium.Reference<Definition>;
     types: Array<TypeName>;
-    value?: Literal;
+    value?: Expression;
 }
 
 export const ActorUsage = {
@@ -267,7 +318,9 @@ export const ActorUsage = {
     annotations: 'annotations',
     crosses: 'crosses',
     direction: 'direction',
+    endMultiplicity: 'endMultiplicity',
     exposes: 'exposes',
+    filters: 'filters',
     imports: 'imports',
     isAbstract: 'isAbstract',
     isConstant: 'isConstant',
@@ -277,6 +330,7 @@ export const ActorUsage = {
     isIndividual: 'isIndividual',
     isInitial: 'isInitial',
     isReference: 'isReference',
+    isReturn: 'isReturn',
     isVariant: 'isVariant',
     isVariation: 'isVariation',
     members: 'members',
@@ -286,6 +340,7 @@ export const ActorUsage = {
     prefixMetadata: 'prefixMetadata',
     redefines: 'redefines',
     references: 'references',
+    result: 'result',
     shortName: 'shortName',
     subsets: 'subsets',
     then: 'then',
@@ -329,12 +384,14 @@ export interface AllocationUsage extends Element {
     crosses: Array<FeatureChain>;
     ends: Array<ConnectorEnd>;
     exposes: Array<Expose>;
+    filters: Array<ElementFilter>;
     imports: Array<ImportDecl>;
     members: Array<Member>;
     multiplicities: Array<Multiplicity>;
     name?: Name;
     redefines: Array<FeatureChain>;
     references: Array<FeatureChain>;
+    result?: Expression;
     shortName?: Name;
     source?: ConnectorEnd;
     subsets: Array<FeatureChain>;
@@ -348,8 +405,10 @@ export const AllocationUsage = {
     annotations: 'annotations',
     crosses: 'crosses',
     direction: 'direction',
+    endMultiplicity: 'endMultiplicity',
     ends: 'ends',
     exposes: 'exposes',
+    filters: 'filters',
     imports: 'imports',
     isAbstract: 'isAbstract',
     isConstant: 'isConstant',
@@ -357,6 +416,7 @@ export const AllocationUsage = {
     isEnd: 'isEnd',
     isIndividual: 'isIndividual',
     isReference: 'isReference',
+    isReturn: 'isReturn',
     isVariant: 'isVariant',
     isVariation: 'isVariation',
     members: 'members',
@@ -366,6 +426,7 @@ export const AllocationUsage = {
     prefixMetadata: 'prefixMetadata',
     redefines: 'redefines',
     references: 'references',
+    result: 'result',
     shortName: 'shortName',
     source: 'source',
     subsets: 'subsets',
@@ -389,14 +450,33 @@ export function isAnnotatingElement(item: unknown): item is AnnotatingElement {
     return reflection.isInstance(item, AnnotatingElement.$type);
 }
 
+export interface Argument extends langium.AstNode {
+    readonly $container: ConstructorExpression | FeatureReferenceExpression | InvocationOperation;
+    readonly $type: 'Argument';
+    name?: Name;
+    value: Expression;
+}
+
+export const Argument = {
+    $type: 'Argument',
+    name: 'name',
+    value: 'value'
+} as const;
+
+export function isArgument(item: unknown): item is Argument {
+    return reflection.isInstance(item, Argument.$type);
+}
+
 export interface AttributeDef extends Element {
     readonly $type: 'AttributeDef';
     aliases: Array<AliasMember>;
     annotations: Array<AnnotatingElement>;
     exposes: Array<Expose>;
+    filters: Array<ElementFilter>;
     imports: Array<ImportDecl>;
     members: Array<Member>;
     name?: Name;
+    result?: Expression;
     shortName?: Name;
     supertypes: Array<QualifiedName>;
 }
@@ -406,7 +486,9 @@ export const AttributeDef = {
     aliases: 'aliases',
     annotations: 'annotations',
     direction: 'direction',
+    endMultiplicity: 'endMultiplicity',
     exposes: 'exposes',
+    filters: 'filters',
     imports: 'imports',
     isAbstract: 'isAbstract',
     isConstant: 'isConstant',
@@ -414,12 +496,14 @@ export const AttributeDef = {
     isEnd: 'isEnd',
     isIndividual: 'isIndividual',
     isReference: 'isReference',
+    isReturn: 'isReturn',
     isVariant: 'isVariant',
     isVariation: 'isVariation',
     members: 'members',
     name: 'name',
     portionKind: 'portionKind',
     prefixMetadata: 'prefixMetadata',
+    result: 'result',
     shortName: 'shortName',
     supertypes: 'supertypes',
     then: 'then',
@@ -436,6 +520,7 @@ export interface AttributeUsage extends Element {
     annotations: Array<AnnotatingElement>;
     crosses: Array<FeatureChain>;
     exposes: Array<Expose>;
+    filters: Array<ElementFilter>;
     imports: Array<ImportDecl>;
     isDefault: boolean;
     isInitial: boolean;
@@ -444,11 +529,12 @@ export interface AttributeUsage extends Element {
     name?: Name;
     redefines: Array<FeatureChain>;
     references: Array<FeatureChain>;
+    result?: Expression;
     shortName?: Name;
     subsets: Array<FeatureChain>;
     type?: QualifiedName;
     types: Array<TypeName>;
-    value?: Literal;
+    value?: Expression;
 }
 
 export const AttributeUsage = {
@@ -457,7 +543,9 @@ export const AttributeUsage = {
     annotations: 'annotations',
     crosses: 'crosses',
     direction: 'direction',
+    endMultiplicity: 'endMultiplicity',
     exposes: 'exposes',
+    filters: 'filters',
     imports: 'imports',
     isAbstract: 'isAbstract',
     isConstant: 'isConstant',
@@ -467,6 +555,7 @@ export const AttributeUsage = {
     isIndividual: 'isIndividual',
     isInitial: 'isInitial',
     isReference: 'isReference',
+    isReturn: 'isReturn',
     isVariant: 'isVariant',
     isVariation: 'isVariation',
     members: 'members',
@@ -476,6 +565,7 @@ export const AttributeUsage = {
     prefixMetadata: 'prefixMetadata',
     redefines: 'redefines',
     references: 'references',
+    result: 'result',
     shortName: 'shortName',
     subsets: 'subsets',
     then: 'then',
@@ -489,12 +579,23 @@ export function isAttributeUsage(item: unknown): item is AttributeUsage {
     return reflection.isInstance(item, AttributeUsage.$type);
 }
 
+export type BaseExpression = BodyExpression | ConstructorExpression | FeatureReferenceExpression | LiteralExpression | SequenceExpression;
+
+export const BaseExpression = {
+    $type: 'BaseExpression'
+} as const;
+
+export function isBaseExpression(item: unknown): item is BaseExpression {
+    return reflection.isInstance(item, BaseExpression.$type);
+}
+
 export interface BindingUsage extends Element {
     readonly $type: 'BindingUsage';
     aliases: Array<AliasMember>;
     annotations: Array<AnnotatingElement>;
     crosses: Array<FeatureChain>;
     exposes: Array<Expose>;
+    filters: Array<ElementFilter>;
     imports: Array<ImportDecl>;
     left: FeatureChain;
     members: Array<Member>;
@@ -502,6 +603,7 @@ export interface BindingUsage extends Element {
     name?: Name;
     redefines: Array<FeatureChain>;
     references: Array<FeatureChain>;
+    result?: Expression;
     right: FeatureChain;
     shortName?: Name;
     subsets: Array<FeatureChain>;
@@ -514,7 +616,9 @@ export const BindingUsage = {
     annotations: 'annotations',
     crosses: 'crosses',
     direction: 'direction',
+    endMultiplicity: 'endMultiplicity',
     exposes: 'exposes',
+    filters: 'filters',
     imports: 'imports',
     isAbstract: 'isAbstract',
     isConstant: 'isConstant',
@@ -522,6 +626,7 @@ export const BindingUsage = {
     isEnd: 'isEnd',
     isIndividual: 'isIndividual',
     isReference: 'isReference',
+    isReturn: 'isReturn',
     isVariant: 'isVariant',
     isVariation: 'isVariation',
     left: 'left',
@@ -532,6 +637,7 @@ export const BindingUsage = {
     prefixMetadata: 'prefixMetadata',
     redefines: 'redefines',
     references: 'references',
+    result: 'result',
     right: 'right',
     shortName: 'shortName',
     subsets: 'subsets',
@@ -542,6 +648,80 @@ export const BindingUsage = {
 
 export function isBindingUsage(item: unknown): item is BindingUsage {
     return reflection.isInstance(item, BindingUsage.$type);
+}
+
+export interface BodyExpression extends langium.AstNode {
+    readonly $container: BracketExpression | CollectExpression | FeatureChainExpression | IndexExpression | InvocationOperation | MetadataAccessExpression | OperatorExpression | PrefixExpression | SelectExpression;
+    readonly $type: 'BodyExpression';
+    members: Array<Member>;
+    result?: Expression;
+}
+
+export const BodyExpression = {
+    $type: 'BodyExpression',
+    members: 'members',
+    result: 'result'
+} as const;
+
+export function isBodyExpression(item: unknown): item is BodyExpression {
+    return reflection.isInstance(item, BodyExpression.$type);
+}
+
+export interface BracketExpression extends langium.AstNode {
+    readonly $container: OperatorExpression | PrefixExpression;
+    readonly $type: 'BracketExpression';
+    index: Array<Expression>;
+    source: BaseExpression;
+}
+
+export const BracketExpression = {
+    $type: 'BracketExpression',
+    index: 'index',
+    source: 'source'
+} as const;
+
+export function isBracketExpression(item: unknown): item is BracketExpression {
+    return reflection.isInstance(item, BracketExpression.$type);
+}
+
+export type ChainedName = string;
+
+export function isChainedName(item: unknown): item is ChainedName {
+    return typeof item === 'string';
+}
+
+export interface ClassificationExpression extends langium.AstNode {
+    readonly $container: OperatorExpression | PrefixExpression;
+    readonly $type: 'ClassificationExpression';
+    operator: '@' | '@@' | 'as' | 'hastype' | 'istype' | 'meta';
+    type: QualifiedName;
+}
+
+export const ClassificationExpression = {
+    $type: 'ClassificationExpression',
+    operator: 'operator',
+    type: 'type'
+} as const;
+
+export function isClassificationExpression(item: unknown): item is ClassificationExpression {
+    return reflection.isInstance(item, ClassificationExpression.$type);
+}
+
+export interface CollectExpression extends langium.AstNode {
+    readonly $container: OperatorExpression | PrefixExpression;
+    readonly $type: 'CollectExpression';
+    body: BodyExpression;
+    source: BaseExpression;
+}
+
+export const CollectExpression = {
+    $type: 'CollectExpression',
+    body: 'body',
+    source: 'source'
+} as const;
+
+export function isCollectExpression(item: unknown): item is CollectExpression {
+    return reflection.isInstance(item, CollectExpression.$type);
 }
 
 export interface Comment extends langium.AstNode {
@@ -574,6 +754,7 @@ export interface ConnectionUsage extends Element {
     crosses: Array<FeatureChain>;
     ends: Array<ConnectorEnd>;
     exposes: Array<Expose>;
+    filters: Array<ElementFilter>;
     imports: Array<ImportDecl>;
     isDefault: boolean;
     isInitial: boolean;
@@ -583,13 +764,14 @@ export interface ConnectionUsage extends Element {
     name?: Name;
     redefines: Array<FeatureChain>;
     references: Array<FeatureChain>;
+    result?: Expression;
     shortName?: Name;
     source?: ConnectorEnd;
     subsets: Array<FeatureChain>;
     target?: ConnectorEnd;
     type?: langium.Reference<Definition>;
     types: Array<TypeName>;
-    value?: Literal;
+    value?: Expression;
 }
 
 export const ConnectionUsage = {
@@ -598,8 +780,10 @@ export const ConnectionUsage = {
     annotations: 'annotations',
     crosses: 'crosses',
     direction: 'direction',
+    endMultiplicity: 'endMultiplicity',
     ends: 'ends',
     exposes: 'exposes',
+    filters: 'filters',
     imports: 'imports',
     isAbstract: 'isAbstract',
     isConstant: 'isConstant',
@@ -609,6 +793,7 @@ export const ConnectionUsage = {
     isIndividual: 'isIndividual',
     isInitial: 'isInitial',
     isReference: 'isReference',
+    isReturn: 'isReturn',
     isVariant: 'isVariant',
     isVariation: 'isVariation',
     kind: 'kind',
@@ -619,6 +804,7 @@ export const ConnectionUsage = {
     prefixMetadata: 'prefixMetadata',
     redefines: 'redefines',
     references: 'references',
+    result: 'result',
     shortName: 'shortName',
     source: 'source',
     subsets: 'subsets',
@@ -653,12 +839,30 @@ export function isConnectorEnd(item: unknown): item is ConnectorEnd {
     return reflection.isInstance(item, ConnectorEnd.$type);
 }
 
+export interface ConstructorExpression extends langium.AstNode {
+    readonly $container: BracketExpression | CollectExpression | FeatureChainExpression | IndexExpression | InvocationOperation | MetadataAccessExpression | OperatorExpression | PrefixExpression | SelectExpression;
+    readonly $type: 'ConstructorExpression';
+    arguments: Array<Argument>;
+    type: QualifiedName;
+}
+
+export const ConstructorExpression = {
+    $type: 'ConstructorExpression',
+    arguments: 'arguments',
+    type: 'type'
+} as const;
+
+export function isConstructorExpression(item: unknown): item is ConstructorExpression {
+    return reflection.isInstance(item, ConstructorExpression.$type);
+}
+
 export interface DefaultUsage extends Element {
     readonly $type: 'DefaultUsage';
     aliases: Array<AliasMember>;
     annotations: Array<AnnotatingElement>;
     crosses: Array<FeatureChain>;
     exposes: Array<Expose>;
+    filters: Array<ElementFilter>;
     imports: Array<ImportDecl>;
     isDefault: boolean;
     isInitial: boolean;
@@ -667,10 +871,11 @@ export interface DefaultUsage extends Element {
     name?: Name;
     redefines: Array<FeatureChain>;
     references: Array<FeatureChain>;
+    result?: Expression;
     shortName?: Name;
     subsets: Array<FeatureChain>;
     types: Array<TypeName>;
-    value?: Literal;
+    value?: Expression;
 }
 
 export const DefaultUsage = {
@@ -679,7 +884,9 @@ export const DefaultUsage = {
     annotations: 'annotations',
     crosses: 'crosses',
     direction: 'direction',
+    endMultiplicity: 'endMultiplicity',
     exposes: 'exposes',
+    filters: 'filters',
     imports: 'imports',
     isAbstract: 'isAbstract',
     isConstant: 'isConstant',
@@ -689,6 +896,7 @@ export const DefaultUsage = {
     isIndividual: 'isIndividual',
     isInitial: 'isInitial',
     isReference: 'isReference',
+    isReturn: 'isReturn',
     isVariant: 'isVariant',
     isVariation: 'isVariation',
     members: 'members',
@@ -698,6 +906,7 @@ export const DefaultUsage = {
     prefixMetadata: 'prefixMetadata',
     redefines: 'redefines',
     references: 'references',
+    result: 'result',
     shortName: 'shortName',
     subsets: 'subsets',
     then: 'then',
@@ -740,12 +949,14 @@ export const Dependency = {
     annotations: 'annotations',
     clients: 'clients',
     direction: 'direction',
+    endMultiplicity: 'endMultiplicity',
     isAbstract: 'isAbstract',
     isConstant: 'isConstant',
     isDerived: 'isDerived',
     isEnd: 'isEnd',
     isIndividual: 'isIndividual',
     isReference: 'isReference',
+    isReturn: 'isReturn',
     isVariant: 'isVariant',
     isVariation: 'isVariation',
     name: 'name',
@@ -791,12 +1002,14 @@ export function isDocumentation(item: unknown): item is Documentation {
 export interface Element extends langium.AstNode {
     readonly $type: 'ActionDef' | 'ActionUsage' | 'ActorUsage' | 'AllocationUsage' | 'AttributeDef' | 'AttributeUsage' | 'BindingUsage' | 'ConnectionUsage' | 'DefaultUsage' | 'Dependency' | 'Element' | 'FlowUsage' | 'IncludeUsage' | 'InterfaceDef' | 'MessageUsage' | 'MetadataUsage' | 'OtherDefinition' | 'OtherUsage' | 'PartDef' | 'PartUsage' | 'PerformUsage' | 'PortDef' | 'PortUsage' | 'SatisfyUsage' | 'SubjectUsage' | 'UseCaseDef' | 'UseCaseUsage' | 'ViewUsage';
     direction?: Direction;
+    endMultiplicity?: Multiplicity;
     isAbstract: boolean;
     isConstant: boolean;
     isDerived: boolean;
     isEnd: boolean;
     isIndividual: boolean;
     isReference: boolean;
+    isReturn: boolean;
     isVariant: boolean;
     isVariation: boolean;
     portionKind?: PortionKind;
@@ -808,12 +1021,14 @@ export interface Element extends langium.AstNode {
 export const Element = {
     $type: 'Element',
     direction: 'direction',
+    endMultiplicity: 'endMultiplicity',
     isAbstract: 'isAbstract',
     isConstant: 'isConstant',
     isDerived: 'isDerived',
     isEnd: 'isEnd',
     isIndividual: 'isIndividual',
     isReference: 'isReference',
+    isReturn: 'isReturn',
     isVariant: 'isVariant',
     isVariation: 'isVariation',
     portionKind: 'portionKind',
@@ -826,11 +1041,29 @@ export function isElement(item: unknown): item is Element {
     return reflection.isInstance(item, Element.$type);
 }
 
+export interface ElementFilter extends langium.AstNode {
+    readonly $container: ActionDef | ActionUsage | ActorUsage | AllocationUsage | AttributeDef | AttributeUsage | BindingUsage | ConnectionUsage | DefaultUsage | FlowUsage | IncludeUsage | InterfaceDef | MessageUsage | MetadataUsage | OtherDefinition | OtherUsage | PackageDecl | PartDef | PartUsage | PerformUsage | PortDef | PortUsage | SatisfyUsage | SubjectUsage | UseCaseDef | UseCaseUsage | ViewUsage;
+    readonly $type: 'ElementFilter';
+    condition: Expression;
+    visibility?: Visibility;
+}
+
+export const ElementFilter = {
+    $type: 'ElementFilter',
+    condition: 'condition',
+    visibility: 'visibility'
+} as const;
+
+export function isElementFilter(item: unknown): item is ElementFilter {
+    return reflection.isInstance(item, ElementFilter.$type);
+}
+
 export interface Expose extends langium.AstNode {
     readonly $container: ActionDef | ActionUsage | ActorUsage | AllocationUsage | AttributeDef | AttributeUsage | BindingUsage | ConnectionUsage | DefaultUsage | FlowUsage | IncludeUsage | InterfaceDef | MessageUsage | MetadataUsage | OtherDefinition | OtherUsage | PackageDecl | PartDef | PartUsage | PerformUsage | PortDef | PortUsage | SatisfyUsage | SubjectUsage | UseCaseDef | UseCaseUsage | ViewUsage;
     readonly $type: 'Expose';
     annotations: Array<AnnotatingElement>;
     element: langium.Reference<Member>;
+    filters: Array<Expression>;
     recursive: boolean;
     visibility?: Visibility;
     wildcard: boolean;
@@ -840,6 +1073,7 @@ export const Expose = {
     $type: 'Expose',
     annotations: 'annotations',
     element: 'element',
+    filters: 'filters',
     recursive: 'recursive',
     visibility: 'visibility',
     wildcard: 'wildcard'
@@ -847,6 +1081,31 @@ export const Expose = {
 
 export function isExpose(item: unknown): item is Expose {
     return reflection.isInstance(item, Expose.$type);
+}
+
+export type Expression = IfExpression | OperatorExpression;
+
+export const Expression = {
+    $type: 'Expression'
+} as const;
+
+export function isExpression(item: unknown): item is Expression {
+    return reflection.isInstance(item, Expression.$type);
+}
+
+export interface ExtentExpression extends langium.AstNode {
+    readonly $container: OperatorExpression | PrefixExpression;
+    readonly $type: 'ExtentExpression';
+    type: QualifiedName;
+}
+
+export const ExtentExpression = {
+    $type: 'ExtentExpression',
+    type: 'type'
+} as const;
+
+export function isExtentExpression(item: unknown): item is ExtentExpression {
+    return reflection.isInstance(item, ExtentExpression.$type);
 }
 
 export type Feature = ActionUsage | ActorUsage | AttributeUsage | DefaultUsage | OtherUsage | PartUsage | PerformUsage | PortUsage | SubjectUsage | UseCaseUsage;
@@ -865,12 +1124,49 @@ export function isFeatureChain(item: unknown): item is FeatureChain {
     return typeof item === 'string';
 }
 
+export interface FeatureChainExpression extends langium.AstNode {
+    readonly $container: OperatorExpression | PrefixExpression;
+    readonly $type: 'FeatureChainExpression';
+    member: Name;
+    source: BaseExpression;
+}
+
+export const FeatureChainExpression = {
+    $type: 'FeatureChainExpression',
+    member: 'member',
+    source: 'source'
+} as const;
+
+export function isFeatureChainExpression(item: unknown): item is FeatureChainExpression {
+    return reflection.isInstance(item, FeatureChainExpression.$type);
+}
+
+export interface FeatureReferenceExpression extends langium.AstNode {
+    readonly $container: BracketExpression | CollectExpression | FeatureChainExpression | IndexExpression | InvocationOperation | MetadataAccessExpression | OperatorExpression | PrefixExpression | SelectExpression;
+    readonly $type: 'FeatureReferenceExpression';
+    arguments: Array<Argument>;
+    invocation: boolean;
+    name: QualifiedName;
+}
+
+export const FeatureReferenceExpression = {
+    $type: 'FeatureReferenceExpression',
+    arguments: 'arguments',
+    invocation: 'invocation',
+    name: 'name'
+} as const;
+
+export function isFeatureReferenceExpression(item: unknown): item is FeatureReferenceExpression {
+    return reflection.isInstance(item, FeatureReferenceExpression.$type);
+}
+
 export interface FlowUsage extends Element {
     readonly $type: 'FlowUsage';
     aliases: Array<AliasMember>;
     annotations: Array<AnnotatingElement>;
     crosses: Array<FeatureChain>;
     exposes: Array<Expose>;
+    filters: Array<ElementFilter>;
     imports: Array<ImportDecl>;
     isDefault: boolean;
     isInitial: boolean;
@@ -880,15 +1176,17 @@ export interface FlowUsage extends Element {
     payload?: TypeName;
     payloadMultiplicity?: Multiplicity;
     payloadName?: Name;
+    payloadValue?: Expression;
     redefines: Array<FeatureChain>;
     references: Array<FeatureChain>;
+    result?: Expression;
     shortName?: Name;
     source: FeatureChain;
     subsets: Array<FeatureChain>;
     succession: boolean;
     target: FeatureChain;
     types: Array<TypeName>;
-    value?: Literal;
+    value?: Expression;
 }
 
 export const FlowUsage = {
@@ -897,7 +1195,9 @@ export const FlowUsage = {
     annotations: 'annotations',
     crosses: 'crosses',
     direction: 'direction',
+    endMultiplicity: 'endMultiplicity',
     exposes: 'exposes',
+    filters: 'filters',
     imports: 'imports',
     isAbstract: 'isAbstract',
     isConstant: 'isConstant',
@@ -907,6 +1207,7 @@ export const FlowUsage = {
     isIndividual: 'isIndividual',
     isInitial: 'isInitial',
     isReference: 'isReference',
+    isReturn: 'isReturn',
     isVariant: 'isVariant',
     isVariation: 'isVariation',
     members: 'members',
@@ -915,10 +1216,12 @@ export const FlowUsage = {
     payload: 'payload',
     payloadMultiplicity: 'payloadMultiplicity',
     payloadName: 'payloadName',
+    payloadValue: 'payloadValue',
     portionKind: 'portionKind',
     prefixMetadata: 'prefixMetadata',
     redefines: 'redefines',
     references: 'references',
+    result: 'result',
     shortName: 'shortName',
     source: 'source',
     subsets: 'subsets',
@@ -934,11 +1237,31 @@ export function isFlowUsage(item: unknown): item is FlowUsage {
     return reflection.isInstance(item, FlowUsage.$type);
 }
 
+export interface IfExpression extends langium.AstNode {
+    readonly $container: ActionDef | ActionUsage | ActorUsage | AllocationUsage | Argument | AttributeDef | AttributeUsage | BindingUsage | BodyExpression | BracketExpression | ConnectionUsage | DefaultUsage | ElementFilter | Expose | FlowUsage | IfExpression | ImportDecl | IncludeUsage | IndexExpression | InterfaceDef | MessageUsage | MetadataUsage | OtherDefinition | OtherUsage | PackageDecl | PartDef | PartUsage | PerformUsage | PortDef | PortUsage | SatisfyUsage | SequenceExpression | SubjectUsage | UseCaseDef | UseCaseUsage | ViewUsage;
+    readonly $type: 'IfExpression';
+    condition: Expression;
+    else: Expression;
+    then: Expression;
+}
+
+export const IfExpression = {
+    $type: 'IfExpression',
+    condition: 'condition',
+    else: 'else',
+    then: 'then'
+} as const;
+
+export function isIfExpression(item: unknown): item is IfExpression {
+    return reflection.isInstance(item, IfExpression.$type);
+}
+
 export interface ImportDecl extends langium.AstNode {
     readonly $container: ActionDef | ActionUsage | ActorUsage | AllocationUsage | AttributeDef | AttributeUsage | BindingUsage | ConnectionUsage | DefaultUsage | FlowUsage | IncludeUsage | InterfaceDef | MessageUsage | MetadataUsage | Model | OtherDefinition | OtherUsage | PackageDecl | PartDef | PartUsage | PerformUsage | PortDef | PortUsage | SatisfyUsage | SubjectUsage | UseCaseDef | UseCaseUsage | ViewUsage;
     readonly $type: 'ImportDecl';
     all: boolean;
     annotations: Array<AnnotatingElement>;
+    filters: Array<Expression>;
     recursive: boolean;
     target: langium.Reference<Member>;
     visibility: Visibility;
@@ -949,6 +1272,7 @@ export const ImportDecl = {
     $type: 'ImportDecl',
     all: 'all',
     annotations: 'annotations',
+    filters: 'filters',
     recursive: 'recursive',
     target: 'target',
     visibility: 'visibility',
@@ -965,13 +1289,20 @@ export interface IncludeUsage extends Element {
     annotations: Array<AnnotatingElement>;
     crosses: Array<FeatureChain>;
     exposes: Array<Expose>;
+    filters: Array<ElementFilter>;
     imports: Array<ImportDecl>;
+    isDefault: boolean;
+    isInitial: boolean;
     members: Array<Member>;
     multiplicities: Array<Multiplicity>;
     redefines: Array<FeatureChain>;
     references: Array<FeatureChain>;
+    result?: Expression;
     subsets: Array<FeatureChain>;
     target: langium.Reference<UseCaseUsage>;
+    types: Array<TypeName>;
+    useCase: boolean;
+    value?: Expression;
 }
 
 export const IncludeUsage = {
@@ -980,14 +1311,19 @@ export const IncludeUsage = {
     annotations: 'annotations',
     crosses: 'crosses',
     direction: 'direction',
+    endMultiplicity: 'endMultiplicity',
     exposes: 'exposes',
+    filters: 'filters',
     imports: 'imports',
     isAbstract: 'isAbstract',
     isConstant: 'isConstant',
+    isDefault: 'isDefault',
     isDerived: 'isDerived',
     isEnd: 'isEnd',
     isIndividual: 'isIndividual',
+    isInitial: 'isInitial',
     isReference: 'isReference',
+    isReturn: 'isReturn',
     isVariant: 'isVariant',
     isVariation: 'isVariation',
     members: 'members',
@@ -996,9 +1332,13 @@ export const IncludeUsage = {
     prefixMetadata: 'prefixMetadata',
     redefines: 'redefines',
     references: 'references',
+    result: 'result',
     subsets: 'subsets',
     target: 'target',
     then: 'then',
+    types: 'types',
+    useCase: 'useCase',
+    value: 'value',
     visibility: 'visibility'
 } as const;
 
@@ -1006,14 +1346,33 @@ export function isIncludeUsage(item: unknown): item is IncludeUsage {
     return reflection.isInstance(item, IncludeUsage.$type);
 }
 
+export interface IndexExpression extends langium.AstNode {
+    readonly $container: OperatorExpression | PrefixExpression;
+    readonly $type: 'IndexExpression';
+    index: Array<Expression>;
+    source: BaseExpression;
+}
+
+export const IndexExpression = {
+    $type: 'IndexExpression',
+    index: 'index',
+    source: 'source'
+} as const;
+
+export function isIndexExpression(item: unknown): item is IndexExpression {
+    return reflection.isInstance(item, IndexExpression.$type);
+}
+
 export interface InterfaceDef extends Element {
     readonly $type: 'InterfaceDef';
     aliases: Array<AliasMember>;
     annotations: Array<AnnotatingElement>;
     exposes: Array<Expose>;
+    filters: Array<ElementFilter>;
     imports: Array<ImportDecl>;
     members: Array<Member>;
     name?: Name;
+    result?: Expression;
     shortName?: Name;
     supertypes: Array<QualifiedName>;
 }
@@ -1023,7 +1382,9 @@ export const InterfaceDef = {
     aliases: 'aliases',
     annotations: 'annotations',
     direction: 'direction',
+    endMultiplicity: 'endMultiplicity',
     exposes: 'exposes',
+    filters: 'filters',
     imports: 'imports',
     isAbstract: 'isAbstract',
     isConstant: 'isConstant',
@@ -1031,12 +1392,14 @@ export const InterfaceDef = {
     isEnd: 'isEnd',
     isIndividual: 'isIndividual',
     isReference: 'isReference',
+    isReturn: 'isReturn',
     isVariant: 'isVariant',
     isVariation: 'isVariation',
     members: 'members',
     name: 'name',
     portionKind: 'portionKind',
     prefixMetadata: 'prefixMetadata',
+    result: 'result',
     shortName: 'shortName',
     supertypes: 'supertypes',
     then: 'then',
@@ -1047,10 +1410,42 @@ export function isInterfaceDef(item: unknown): item is InterfaceDef {
     return reflection.isInstance(item, InterfaceDef.$type);
 }
 
-export type Literal = string;
+export interface InvocationOperation extends langium.AstNode {
+    readonly $container: OperatorExpression | PrefixExpression;
+    readonly $type: 'InvocationOperation';
+    arguments: Array<Argument>;
+    body?: BodyExpression;
+    function: QualifiedName;
+    reference?: QualifiedName;
+    source: BaseExpression;
+}
 
-export function isLiteral(item: unknown): item is Literal {
-    return (typeof item === 'string' && (/[0-9]+(\.[0-9]+)?/.test(item) || /"(\\.|[^"\\\r\n])*"/.test(item) || /[_a-zA-Z][\w_]*/.test(item)));
+export const InvocationOperation = {
+    $type: 'InvocationOperation',
+    arguments: 'arguments',
+    body: 'body',
+    function: 'function',
+    reference: 'reference',
+    source: 'source'
+} as const;
+
+export function isInvocationOperation(item: unknown): item is InvocationOperation {
+    return reflection.isInstance(item, InvocationOperation.$type);
+}
+
+export interface LiteralExpression extends langium.AstNode {
+    readonly $container: BracketExpression | CollectExpression | FeatureChainExpression | IndexExpression | InvocationOperation | MetadataAccessExpression | OperatorExpression | PrefixExpression | SelectExpression;
+    readonly $type: 'LiteralExpression';
+    value: '*' | 'false' | 'null' | 'true' | string;
+}
+
+export const LiteralExpression = {
+    $type: 'LiteralExpression',
+    value: 'value'
+} as const;
+
+export function isLiteralExpression(item: unknown): item is LiteralExpression {
+    return reflection.isInstance(item, LiteralExpression.$type);
 }
 
 export type Member = Element | PackageDecl;
@@ -1069,6 +1464,7 @@ export interface MessageUsage extends Element {
     annotations: Array<AnnotatingElement>;
     crosses: Array<FeatureChain>;
     exposes: Array<Expose>;
+    filters: Array<ElementFilter>;
     imports: Array<ImportDecl>;
     isDefault: boolean;
     isInitial: boolean;
@@ -1078,14 +1474,16 @@ export interface MessageUsage extends Element {
     payload?: langium.Reference<Definition>;
     payloadMultiplicity?: Multiplicity;
     payloadName?: Name;
+    payloadValue?: Expression;
     redefines: Array<FeatureChain>;
     references: Array<FeatureChain>;
+    result?: Expression;
     shortName?: Name;
     source: ConnectorEnd;
     subsets: Array<FeatureChain>;
     target: ConnectorEnd;
     types: Array<TypeName>;
-    value?: Literal;
+    value?: Expression;
 }
 
 export const MessageUsage = {
@@ -1094,7 +1492,9 @@ export const MessageUsage = {
     annotations: 'annotations',
     crosses: 'crosses',
     direction: 'direction',
+    endMultiplicity: 'endMultiplicity',
     exposes: 'exposes',
+    filters: 'filters',
     imports: 'imports',
     isAbstract: 'isAbstract',
     isConstant: 'isConstant',
@@ -1104,6 +1504,7 @@ export const MessageUsage = {
     isIndividual: 'isIndividual',
     isInitial: 'isInitial',
     isReference: 'isReference',
+    isReturn: 'isReturn',
     isVariant: 'isVariant',
     isVariation: 'isVariation',
     members: 'members',
@@ -1112,10 +1513,12 @@ export const MessageUsage = {
     payload: 'payload',
     payloadMultiplicity: 'payloadMultiplicity',
     payloadName: 'payloadName',
+    payloadValue: 'payloadValue',
     portionKind: 'portionKind',
     prefixMetadata: 'prefixMetadata',
     redefines: 'redefines',
     references: 'references',
+    result: 'result',
     shortName: 'shortName',
     source: 'source',
     subsets: 'subsets',
@@ -1130,15 +1533,32 @@ export function isMessageUsage(item: unknown): item is MessageUsage {
     return reflection.isInstance(item, MessageUsage.$type);
 }
 
+export interface MetadataAccessExpression extends langium.AstNode {
+    readonly $container: OperatorExpression | PrefixExpression;
+    readonly $type: 'MetadataAccessExpression';
+    source: BaseExpression;
+}
+
+export const MetadataAccessExpression = {
+    $type: 'MetadataAccessExpression',
+    source: 'source'
+} as const;
+
+export function isMetadataAccessExpression(item: unknown): item is MetadataAccessExpression {
+    return reflection.isInstance(item, MetadataAccessExpression.$type);
+}
+
 export interface MetadataUsage extends Element {
     readonly $type: 'MetadataUsage';
     about: Array<QualifiedName>;
     aliases: Array<AliasMember>;
     annotations: Array<AnnotatingElement>;
     exposes: Array<Expose>;
+    filters: Array<ElementFilter>;
     imports: Array<ImportDecl>;
     members: Array<Member>;
     name?: Name;
+    result?: Expression;
     shortName?: Name;
     type: QualifiedName;
 }
@@ -1149,7 +1569,9 @@ export const MetadataUsage = {
     aliases: 'aliases',
     annotations: 'annotations',
     direction: 'direction',
+    endMultiplicity: 'endMultiplicity',
     exposes: 'exposes',
+    filters: 'filters',
     imports: 'imports',
     isAbstract: 'isAbstract',
     isConstant: 'isConstant',
@@ -1157,12 +1579,14 @@ export const MetadataUsage = {
     isEnd: 'isEnd',
     isIndividual: 'isIndividual',
     isReference: 'isReference',
+    isReturn: 'isReturn',
     isVariant: 'isVariant',
     isVariation: 'isVariation',
     members: 'members',
     name: 'name',
     portionKind: 'portionKind',
     prefixMetadata: 'prefixMetadata',
+    result: 'result',
     shortName: 'shortName',
     then: 'then',
     type: 'type',
@@ -1196,7 +1620,7 @@ export function isModel(item: unknown): item is Model {
 }
 
 export interface Multiplicity extends langium.AstNode {
-    readonly $container: ActionUsage | ActorUsage | AllocationUsage | AttributeUsage | BindingUsage | ConnectionUsage | ConnectorEnd | DefaultUsage | FlowUsage | IncludeUsage | MessageUsage | OtherUsage | PartUsage | PerformUsage | PortUsage | SatisfyUsage | SubjectUsage | UseCaseUsage | ViewUsage;
+    readonly $container: ActionUsage | ActorUsage | AllocationUsage | AttributeUsage | BindingUsage | ConnectionUsage | ConnectorEnd | DefaultUsage | Element | FlowUsage | IncludeUsage | MessageUsage | OtherUsage | PartUsage | PerformUsage | PortUsage | SatisfyUsage | SubjectUsage | UseCaseUsage | ViewUsage;
     readonly $type: 'Multiplicity';
     lower: MultiplicityBound;
     upper?: MultiplicityBound;
@@ -1215,7 +1639,7 @@ export function isMultiplicity(item: unknown): item is Multiplicity {
 export type MultiplicityBound = '*' | QualifiedName | string;
 
 export function isMultiplicityBound(item: unknown): item is MultiplicityBound {
-    return isQualifiedName(item) || item === '*' || (typeof item === 'string' && (/[0-9]+(\.[0-9]+)?/.test(item)));
+    return isQualifiedName(item) || item === '*' || (typeof item === 'string' && (/[0-9]+(\.[0-9]+)?([eE][+-]?[0-9]+)?/.test(item)));
 }
 
 export type Name = string;
@@ -1224,15 +1648,36 @@ export function isName(item: unknown): item is Name {
     return (typeof item === 'string' && (/[_a-zA-Z][\w_]*/.test(item) || /'(\\.|[^'\\\r\n])*'/.test(item)));
 }
 
+export interface OperatorExpression extends langium.AstNode {
+    readonly $container: ActionDef | ActionUsage | ActorUsage | AllocationUsage | Argument | AttributeDef | AttributeUsage | BindingUsage | BodyExpression | BracketExpression | ConnectionUsage | DefaultUsage | ElementFilter | Expose | FlowUsage | IfExpression | ImportDecl | IncludeUsage | IndexExpression | InterfaceDef | MessageUsage | MetadataUsage | OtherDefinition | OtherUsage | PackageDecl | PartDef | PartUsage | PerformUsage | PortDef | PortUsage | SatisfyUsage | SequenceExpression | SubjectUsage | UseCaseDef | UseCaseUsage | ViewUsage;
+    readonly $type: 'OperatorExpression';
+    left: UnaryExpression;
+    operator: '!=' | '!==' | '%' | '&' | '*' | '**' | '+' | '-' | '..' | '/' | '<' | '<=' | '==' | '===' | '>' | '>=' | '??' | '@' | '@@' | '^' | 'and' | 'as' | 'hastype' | 'implies' | 'istype' | 'meta' | 'or' | 'xor' | '|';
+    right: UnaryExpression;
+}
+
+export const OperatorExpression = {
+    $type: 'OperatorExpression',
+    left: 'left',
+    operator: 'operator',
+    right: 'right'
+} as const;
+
+export function isOperatorExpression(item: unknown): item is OperatorExpression {
+    return reflection.isInstance(item, OperatorExpression.$type);
+}
+
 export interface OtherDefinition extends Element {
     readonly $type: 'OtherDefinition';
     aliases: Array<AliasMember>;
     annotations: Array<AnnotatingElement>;
     exposes: Array<Expose>;
+    filters: Array<ElementFilter>;
     imports: Array<ImportDecl>;
     kind?: DefinitionKind;
     members: Array<Member>;
     name?: Name;
+    result?: Expression;
     shortName?: Name;
     supertypes: Array<QualifiedName>;
 }
@@ -1242,7 +1687,9 @@ export const OtherDefinition = {
     aliases: 'aliases',
     annotations: 'annotations',
     direction: 'direction',
+    endMultiplicity: 'endMultiplicity',
     exposes: 'exposes',
+    filters: 'filters',
     imports: 'imports',
     isAbstract: 'isAbstract',
     isConstant: 'isConstant',
@@ -1250,6 +1697,7 @@ export const OtherDefinition = {
     isEnd: 'isEnd',
     isIndividual: 'isIndividual',
     isReference: 'isReference',
+    isReturn: 'isReturn',
     isVariant: 'isVariant',
     isVariation: 'isVariation',
     kind: 'kind',
@@ -1257,6 +1705,7 @@ export const OtherDefinition = {
     name: 'name',
     portionKind: 'portionKind',
     prefixMetadata: 'prefixMetadata',
+    result: 'result',
     shortName: 'shortName',
     supertypes: 'supertypes',
     then: 'then',
@@ -1273,19 +1722,23 @@ export interface OtherUsage extends Element {
     annotations: Array<AnnotatingElement>;
     crosses: Array<FeatureChain>;
     exposes: Array<Expose>;
+    filters: Array<ElementFilter>;
     imports: Array<ImportDecl>;
     isDefault: boolean;
     isInitial: boolean;
-    kind: 'assert' | 'event' | 'exhibit' | 'frame' | 'objective' | 'render' | 'stakeholder' | 'verify' | UsageKind;
+    kind: 'assert' | 'assume' | 'event' | 'exhibit' | 'frame' | 'objective' | 'render' | 'require' | 'stakeholder' | 'verify' | UsageKind;
     members: Array<Member>;
     multiplicities: Array<Multiplicity>;
     name?: Name;
+    prefixMetadata: Array<PrefixMetadata>;
     redefines: Array<FeatureChain>;
+    reference?: ChainedName;
     references: Array<FeatureChain>;
+    result?: Expression;
     shortName?: Name;
     subsets: Array<FeatureChain>;
     types: Array<TypeName>;
-    value?: Literal;
+    value?: Expression;
 }
 
 export const OtherUsage = {
@@ -1294,7 +1747,9 @@ export const OtherUsage = {
     annotations: 'annotations',
     crosses: 'crosses',
     direction: 'direction',
+    endMultiplicity: 'endMultiplicity',
     exposes: 'exposes',
+    filters: 'filters',
     imports: 'imports',
     isAbstract: 'isAbstract',
     isConstant: 'isConstant',
@@ -1304,6 +1759,7 @@ export const OtherUsage = {
     isIndividual: 'isIndividual',
     isInitial: 'isInitial',
     isReference: 'isReference',
+    isReturn: 'isReturn',
     isVariant: 'isVariant',
     isVariation: 'isVariation',
     kind: 'kind',
@@ -1313,7 +1769,9 @@ export const OtherUsage = {
     portionKind: 'portionKind',
     prefixMetadata: 'prefixMetadata',
     redefines: 'redefines',
+    reference: 'reference',
     references: 'references',
+    result: 'result',
     shortName: 'shortName',
     subsets: 'subsets',
     then: 'then',
@@ -1327,17 +1785,19 @@ export function isOtherUsage(item: unknown): item is OtherUsage {
 }
 
 export interface PackageDecl extends langium.AstNode {
-    readonly $container: ActionDef | ActionUsage | ActorUsage | AllocationUsage | AttributeDef | AttributeUsage | BindingUsage | ConnectionUsage | DefaultUsage | FlowUsage | IncludeUsage | InterfaceDef | MessageUsage | MetadataUsage | Model | OtherDefinition | OtherUsage | PackageDecl | PartDef | PartUsage | PerformUsage | PortDef | PortUsage | SatisfyUsage | SubjectUsage | UseCaseDef | UseCaseUsage | ViewUsage;
+    readonly $container: ActionDef | ActionUsage | ActorUsage | AllocationUsage | AttributeDef | AttributeUsage | BindingUsage | BodyExpression | ConnectionUsage | DefaultUsage | FlowUsage | IncludeUsage | InterfaceDef | MessageUsage | MetadataUsage | Model | OtherDefinition | OtherUsage | PackageDecl | PartDef | PartUsage | PerformUsage | PortDef | PortUsage | SatisfyUsage | SubjectUsage | UseCaseDef | UseCaseUsage | ViewUsage;
     readonly $type: 'PackageDecl';
     aliases: Array<AliasMember>;
     annotations: Array<AnnotatingElement>;
     exposes: Array<Expose>;
+    filters: Array<ElementFilter>;
     imports: Array<ImportDecl>;
     isLibrary: boolean;
     isStandard: boolean;
     members: Array<Member>;
     name?: Name;
     prefixMetadata: Array<PrefixMetadata>;
+    result?: Expression;
     shortName?: Name;
     visibility?: Visibility;
 }
@@ -1347,12 +1807,14 @@ export const PackageDecl = {
     aliases: 'aliases',
     annotations: 'annotations',
     exposes: 'exposes',
+    filters: 'filters',
     imports: 'imports',
     isLibrary: 'isLibrary',
     isStandard: 'isStandard',
     members: 'members',
     name: 'name',
     prefixMetadata: 'prefixMetadata',
+    result: 'result',
     shortName: 'shortName',
     visibility: 'visibility'
 } as const;
@@ -1366,9 +1828,11 @@ export interface PartDef extends Element {
     aliases: Array<AliasMember>;
     annotations: Array<AnnotatingElement>;
     exposes: Array<Expose>;
+    filters: Array<ElementFilter>;
     imports: Array<ImportDecl>;
     members: Array<Member>;
     name?: Name;
+    result?: Expression;
     shortName?: Name;
     supertypes: Array<langium.Reference<Definition>>;
 }
@@ -1378,7 +1842,9 @@ export const PartDef = {
     aliases: 'aliases',
     annotations: 'annotations',
     direction: 'direction',
+    endMultiplicity: 'endMultiplicity',
     exposes: 'exposes',
+    filters: 'filters',
     imports: 'imports',
     isAbstract: 'isAbstract',
     isConstant: 'isConstant',
@@ -1386,12 +1852,14 @@ export const PartDef = {
     isEnd: 'isEnd',
     isIndividual: 'isIndividual',
     isReference: 'isReference',
+    isReturn: 'isReturn',
     isVariant: 'isVariant',
     isVariation: 'isVariation',
     members: 'members',
     name: 'name',
     portionKind: 'portionKind',
     prefixMetadata: 'prefixMetadata',
+    result: 'result',
     shortName: 'shortName',
     supertypes: 'supertypes',
     then: 'then',
@@ -1408,6 +1876,7 @@ export interface PartUsage extends Element {
     annotations: Array<AnnotatingElement>;
     crosses: Array<FeatureChain>;
     exposes: Array<Expose>;
+    filters: Array<ElementFilter>;
     imports: Array<ImportDecl>;
     isDefault: boolean;
     isInitial: boolean;
@@ -1416,11 +1885,12 @@ export interface PartUsage extends Element {
     name?: Name;
     redefines: Array<FeatureChain>;
     references: Array<FeatureChain>;
+    result?: Expression;
     shortName?: Name;
     subsets: Array<FeatureChain>;
     type?: langium.Reference<Definition>;
     types: Array<TypeName>;
-    value?: Literal;
+    value?: Expression;
 }
 
 export const PartUsage = {
@@ -1429,7 +1899,9 @@ export const PartUsage = {
     annotations: 'annotations',
     crosses: 'crosses',
     direction: 'direction',
+    endMultiplicity: 'endMultiplicity',
     exposes: 'exposes',
+    filters: 'filters',
     imports: 'imports',
     isAbstract: 'isAbstract',
     isConstant: 'isConstant',
@@ -1439,6 +1911,7 @@ export const PartUsage = {
     isIndividual: 'isIndividual',
     isInitial: 'isInitial',
     isReference: 'isReference',
+    isReturn: 'isReturn',
     isVariant: 'isVariant',
     isVariation: 'isVariation',
     members: 'members',
@@ -1448,6 +1921,7 @@ export const PartUsage = {
     prefixMetadata: 'prefixMetadata',
     redefines: 'redefines',
     references: 'references',
+    result: 'result',
     shortName: 'shortName',
     subsets: 'subsets',
     then: 'then',
@@ -1467,6 +1941,7 @@ export interface PerformUsage extends Element {
     annotations: Array<AnnotatingElement>;
     crosses: Array<FeatureChain>;
     exposes: Array<Expose>;
+    filters: Array<ElementFilter>;
     imports: Array<ImportDecl>;
     isDefault: boolean;
     isInitial: boolean;
@@ -1475,11 +1950,12 @@ export interface PerformUsage extends Element {
     name?: Name;
     redefines: Array<FeatureChain>;
     references: Array<FeatureChain>;
+    result?: Expression;
     shortName?: Name;
     subsets: Array<FeatureChain>;
     target?: ConnectorEnd;
     types: Array<TypeName>;
-    value?: Literal;
+    value?: Expression;
 }
 
 export const PerformUsage = {
@@ -1488,7 +1964,9 @@ export const PerformUsage = {
     annotations: 'annotations',
     crosses: 'crosses',
     direction: 'direction',
+    endMultiplicity: 'endMultiplicity',
     exposes: 'exposes',
+    filters: 'filters',
     imports: 'imports',
     isAbstract: 'isAbstract',
     isConstant: 'isConstant',
@@ -1498,6 +1976,7 @@ export const PerformUsage = {
     isIndividual: 'isIndividual',
     isInitial: 'isInitial',
     isReference: 'isReference',
+    isReturn: 'isReturn',
     isVariant: 'isVariant',
     isVariation: 'isVariation',
     members: 'members',
@@ -1507,6 +1986,7 @@ export const PerformUsage = {
     prefixMetadata: 'prefixMetadata',
     redefines: 'redefines',
     references: 'references',
+    result: 'result',
     shortName: 'shortName',
     subsets: 'subsets',
     target: 'target',
@@ -1525,9 +2005,11 @@ export interface PortDef extends Element {
     aliases: Array<AliasMember>;
     annotations: Array<AnnotatingElement>;
     exposes: Array<Expose>;
+    filters: Array<ElementFilter>;
     imports: Array<ImportDecl>;
     members: Array<Member>;
     name?: Name;
+    result?: Expression;
     shortName?: Name;
     supertypes: Array<langium.Reference<PortDef>>;
 }
@@ -1537,7 +2019,9 @@ export const PortDef = {
     aliases: 'aliases',
     annotations: 'annotations',
     direction: 'direction',
+    endMultiplicity: 'endMultiplicity',
     exposes: 'exposes',
+    filters: 'filters',
     imports: 'imports',
     isAbstract: 'isAbstract',
     isConstant: 'isConstant',
@@ -1545,12 +2029,14 @@ export const PortDef = {
     isEnd: 'isEnd',
     isIndividual: 'isIndividual',
     isReference: 'isReference',
+    isReturn: 'isReturn',
     isVariant: 'isVariant',
     isVariation: 'isVariation',
     members: 'members',
     name: 'name',
     portionKind: 'portionKind',
     prefixMetadata: 'prefixMetadata',
+    result: 'result',
     shortName: 'shortName',
     supertypes: 'supertypes',
     then: 'then',
@@ -1574,6 +2060,7 @@ export interface PortUsage extends Element {
     conjugated: boolean;
     crosses: Array<FeatureChain>;
     exposes: Array<Expose>;
+    filters: Array<ElementFilter>;
     imports: Array<ImportDecl>;
     isDefault: boolean;
     isInitial: boolean;
@@ -1582,11 +2069,12 @@ export interface PortUsage extends Element {
     name?: Name;
     redefines: Array<FeatureChain>;
     references: Array<FeatureChain>;
+    result?: Expression;
     shortName?: Name;
     subsets: Array<FeatureChain>;
     type?: langium.Reference<PortDef>;
     types: Array<TypeName>;
-    value?: Literal;
+    value?: Expression;
 }
 
 export const PortUsage = {
@@ -1596,7 +2084,9 @@ export const PortUsage = {
     conjugated: 'conjugated',
     crosses: 'crosses',
     direction: 'direction',
+    endMultiplicity: 'endMultiplicity',
     exposes: 'exposes',
+    filters: 'filters',
     imports: 'imports',
     isAbstract: 'isAbstract',
     isConstant: 'isConstant',
@@ -1606,6 +2096,7 @@ export const PortUsage = {
     isIndividual: 'isIndividual',
     isInitial: 'isInitial',
     isReference: 'isReference',
+    isReturn: 'isReturn',
     isVariant: 'isVariant',
     isVariation: 'isVariation',
     members: 'members',
@@ -1615,6 +2106,7 @@ export const PortUsage = {
     prefixMetadata: 'prefixMetadata',
     redefines: 'redefines',
     references: 'references',
+    result: 'result',
     shortName: 'shortName',
     subsets: 'subsets',
     then: 'then',
@@ -1628,10 +2120,37 @@ export function isPortUsage(item: unknown): item is PortUsage {
     return reflection.isInstance(item, PortUsage.$type);
 }
 
+export interface PrefixExpression extends langium.AstNode {
+    readonly $container: OperatorExpression | PrefixExpression;
+    readonly $type: 'PrefixExpression';
+    operand: UnaryExpression;
+    operator: '+' | '-' | 'not' | '~';
+}
+
+export const PrefixExpression = {
+    $type: 'PrefixExpression',
+    operand: 'operand',
+    operator: 'operator'
+} as const;
+
+export function isPrefixExpression(item: unknown): item is PrefixExpression {
+    return reflection.isInstance(item, PrefixExpression.$type);
+}
+
 export type PrefixMetadata = string;
 
 export function isPrefixMetadata(item: unknown): item is PrefixMetadata {
     return typeof item === 'string';
+}
+
+export type PrimaryExpression = BaseExpression | BracketExpression | CollectExpression | FeatureChainExpression | IndexExpression | InvocationOperation | MetadataAccessExpression | SelectExpression;
+
+export const PrimaryExpression = {
+    $type: 'PrimaryExpression'
+} as const;
+
+export function isPrimaryExpression(item: unknown): item is PrimaryExpression {
+    return reflection.isInstance(item, PrimaryExpression.$type);
 }
 
 export type QualifiedName = string;
@@ -1646,6 +2165,7 @@ export interface SatisfyUsage extends Element {
     annotations: Array<AnnotatingElement>;
     crosses: Array<FeatureChain>;
     exposes: Array<Expose>;
+    filters: Array<ElementFilter>;
     imports: Array<ImportDecl>;
     isDefault: boolean;
     isInitial: boolean;
@@ -1656,11 +2176,12 @@ export interface SatisfyUsage extends Element {
     redefines: Array<FeatureChain>;
     references: Array<FeatureChain>;
     requirement?: FeatureChain;
+    result?: Expression;
     satisfier?: FeatureChain;
     shortName?: Name;
     subsets: Array<FeatureChain>;
     types: Array<TypeName>;
-    value?: Literal;
+    value?: Expression;
 }
 
 export const SatisfyUsage = {
@@ -1669,7 +2190,9 @@ export const SatisfyUsage = {
     annotations: 'annotations',
     crosses: 'crosses',
     direction: 'direction',
+    endMultiplicity: 'endMultiplicity',
     exposes: 'exposes',
+    filters: 'filters',
     imports: 'imports',
     isAbstract: 'isAbstract',
     isConstant: 'isConstant',
@@ -1679,6 +2202,7 @@ export const SatisfyUsage = {
     isIndividual: 'isIndividual',
     isInitial: 'isInitial',
     isReference: 'isReference',
+    isReturn: 'isReturn',
     isVariant: 'isVariant',
     isVariation: 'isVariation',
     members: 'members',
@@ -1690,6 +2214,7 @@ export const SatisfyUsage = {
     redefines: 'redefines',
     references: 'references',
     requirement: 'requirement',
+    result: 'result',
     satisfier: 'satisfier',
     shortName: 'shortName',
     subsets: 'subsets',
@@ -1703,12 +2228,45 @@ export function isSatisfyUsage(item: unknown): item is SatisfyUsage {
     return reflection.isInstance(item, SatisfyUsage.$type);
 }
 
+export interface SelectExpression extends langium.AstNode {
+    readonly $container: OperatorExpression | PrefixExpression;
+    readonly $type: 'SelectExpression';
+    body: BodyExpression;
+    source: BaseExpression;
+}
+
+export const SelectExpression = {
+    $type: 'SelectExpression',
+    body: 'body',
+    source: 'source'
+} as const;
+
+export function isSelectExpression(item: unknown): item is SelectExpression {
+    return reflection.isInstance(item, SelectExpression.$type);
+}
+
+export interface SequenceExpression extends langium.AstNode {
+    readonly $container: BracketExpression | CollectExpression | FeatureChainExpression | IndexExpression | InvocationOperation | MetadataAccessExpression | OperatorExpression | PrefixExpression | SelectExpression;
+    readonly $type: 'SequenceExpression';
+    items: Array<Expression>;
+}
+
+export const SequenceExpression = {
+    $type: 'SequenceExpression',
+    items: 'items'
+} as const;
+
+export function isSequenceExpression(item: unknown): item is SequenceExpression {
+    return reflection.isInstance(item, SequenceExpression.$type);
+}
+
 export interface SubjectUsage extends Element {
     readonly $type: 'SubjectUsage';
     aliases: Array<AliasMember>;
     annotations: Array<AnnotatingElement>;
     crosses: Array<FeatureChain>;
     exposes: Array<Expose>;
+    filters: Array<ElementFilter>;
     imports: Array<ImportDecl>;
     isDefault: boolean;
     isInitial: boolean;
@@ -1717,11 +2275,12 @@ export interface SubjectUsage extends Element {
     name?: Name;
     redefines: Array<FeatureChain>;
     references: Array<FeatureChain>;
+    result?: Expression;
     shortName?: Name;
     subsets: Array<FeatureChain>;
     type?: langium.Reference<Definition>;
     types: Array<TypeName>;
-    value?: Literal;
+    value?: Expression;
 }
 
 export const SubjectUsage = {
@@ -1730,7 +2289,9 @@ export const SubjectUsage = {
     annotations: 'annotations',
     crosses: 'crosses',
     direction: 'direction',
+    endMultiplicity: 'endMultiplicity',
     exposes: 'exposes',
+    filters: 'filters',
     imports: 'imports',
     isAbstract: 'isAbstract',
     isConstant: 'isConstant',
@@ -1740,6 +2301,7 @@ export const SubjectUsage = {
     isIndividual: 'isIndividual',
     isInitial: 'isInitial',
     isReference: 'isReference',
+    isReturn: 'isReturn',
     isVariant: 'isVariant',
     isVariation: 'isVariation',
     members: 'members',
@@ -1749,6 +2311,7 @@ export const SubjectUsage = {
     prefixMetadata: 'prefixMetadata',
     redefines: 'redefines',
     references: 'references',
+    result: 'result',
     shortName: 'shortName',
     subsets: 'subsets',
     then: 'then',
@@ -1789,6 +2352,16 @@ export function isTypeName(item: unknown): item is TypeName {
     return typeof item === 'string';
 }
 
+export type UnaryExpression = ClassificationExpression | ExtentExpression | PrefixExpression | PrimaryExpression;
+
+export const UnaryExpression = {
+    $type: 'UnaryExpression'
+} as const;
+
+export function isUnaryExpression(item: unknown): item is UnaryExpression {
+    return reflection.isInstance(item, UnaryExpression.$type);
+}
+
 export type UsageKind = 'analysis' | 'calc' | 'case' | 'concern' | 'constraint' | 'enum' | 'item' | 'occurrence' | 'rendering' | 'requirement' | 'state' | 'verification' | 'viewpoint';
 
 export function isUsageKind(item: unknown): item is UsageKind {
@@ -1800,9 +2373,11 @@ export interface UseCaseDef extends Element {
     aliases: Array<AliasMember>;
     annotations: Array<AnnotatingElement>;
     exposes: Array<Expose>;
+    filters: Array<ElementFilter>;
     imports: Array<ImportDecl>;
     members: Array<Member>;
     name?: Name;
+    result?: Expression;
     shortName?: Name;
     supertypes: Array<QualifiedName>;
 }
@@ -1812,7 +2387,9 @@ export const UseCaseDef = {
     aliases: 'aliases',
     annotations: 'annotations',
     direction: 'direction',
+    endMultiplicity: 'endMultiplicity',
     exposes: 'exposes',
+    filters: 'filters',
     imports: 'imports',
     isAbstract: 'isAbstract',
     isConstant: 'isConstant',
@@ -1820,12 +2397,14 @@ export const UseCaseDef = {
     isEnd: 'isEnd',
     isIndividual: 'isIndividual',
     isReference: 'isReference',
+    isReturn: 'isReturn',
     isVariant: 'isVariant',
     isVariation: 'isVariation',
     members: 'members',
     name: 'name',
     portionKind: 'portionKind',
     prefixMetadata: 'prefixMetadata',
+    result: 'result',
     shortName: 'shortName',
     supertypes: 'supertypes',
     then: 'then',
@@ -1842,6 +2421,7 @@ export interface UseCaseUsage extends Element {
     annotations: Array<AnnotatingElement>;
     crosses: Array<FeatureChain>;
     exposes: Array<Expose>;
+    filters: Array<ElementFilter>;
     imports: Array<ImportDecl>;
     isDefault: boolean;
     isInitial: boolean;
@@ -1850,11 +2430,12 @@ export interface UseCaseUsage extends Element {
     name?: Name;
     redefines: Array<FeatureChain>;
     references: Array<FeatureChain>;
+    result?: Expression;
     shortName?: Name;
     subsets: Array<FeatureChain>;
     type?: langium.Reference<UseCaseDef>;
     types: Array<TypeName>;
-    value?: Literal;
+    value?: Expression;
 }
 
 export const UseCaseUsage = {
@@ -1863,7 +2444,9 @@ export const UseCaseUsage = {
     annotations: 'annotations',
     crosses: 'crosses',
     direction: 'direction',
+    endMultiplicity: 'endMultiplicity',
     exposes: 'exposes',
+    filters: 'filters',
     imports: 'imports',
     isAbstract: 'isAbstract',
     isConstant: 'isConstant',
@@ -1873,6 +2456,7 @@ export const UseCaseUsage = {
     isIndividual: 'isIndividual',
     isInitial: 'isInitial',
     isReference: 'isReference',
+    isReturn: 'isReturn',
     isVariant: 'isVariant',
     isVariation: 'isVariation',
     members: 'members',
@@ -1882,6 +2466,7 @@ export const UseCaseUsage = {
     prefixMetadata: 'prefixMetadata',
     redefines: 'redefines',
     references: 'references',
+    result: 'result',
     shortName: 'shortName',
     subsets: 'subsets',
     then: 'then',
@@ -1902,6 +2487,7 @@ export interface ViewUsage extends Element {
     crosses: Array<FeatureChain>;
     definition?: QualifiedName;
     exposes: Array<Expose>;
+    filters: Array<ElementFilter>;
     imports: Array<ImportDecl>;
     isDefault: boolean;
     isInitial: boolean;
@@ -1910,10 +2496,11 @@ export interface ViewUsage extends Element {
     name?: Name;
     redefines: Array<FeatureChain>;
     references: Array<FeatureChain>;
+    result?: Expression;
     shortName?: Name;
     subsets: Array<FeatureChain>;
     types: Array<TypeName>;
-    value?: Literal;
+    value?: Expression;
 }
 
 export const ViewUsage = {
@@ -1923,7 +2510,9 @@ export const ViewUsage = {
     crosses: 'crosses',
     definition: 'definition',
     direction: 'direction',
+    endMultiplicity: 'endMultiplicity',
     exposes: 'exposes',
+    filters: 'filters',
     imports: 'imports',
     isAbstract: 'isAbstract',
     isConstant: 'isConstant',
@@ -1933,6 +2522,7 @@ export const ViewUsage = {
     isIndividual: 'isIndividual',
     isInitial: 'isInitial',
     isReference: 'isReference',
+    isReturn: 'isReturn',
     isVariant: 'isVariant',
     isVariation: 'isVariation',
     members: 'members',
@@ -1942,6 +2532,7 @@ export const ViewUsage = {
     prefixMetadata: 'prefixMetadata',
     redefines: 'redefines',
     references: 'references',
+    result: 'result',
     shortName: 'shortName',
     subsets: 'subsets',
     then: 'then',
@@ -1967,28 +2558,46 @@ export type SysmlAstType = {
     AliasMember: AliasMember
     AllocationUsage: AllocationUsage
     AnnotatingElement: AnnotatingElement
+    Argument: Argument
     AttributeDef: AttributeDef
     AttributeUsage: AttributeUsage
+    BaseExpression: BaseExpression
     BindingUsage: BindingUsage
+    BodyExpression: BodyExpression
+    BracketExpression: BracketExpression
+    ClassificationExpression: ClassificationExpression
+    CollectExpression: CollectExpression
     Comment: Comment
     ConnectionUsage: ConnectionUsage
     ConnectorEnd: ConnectorEnd
+    ConstructorExpression: ConstructorExpression
     DefaultUsage: DefaultUsage
     Definition: Definition
     Dependency: Dependency
     Documentation: Documentation
     Element: Element
+    ElementFilter: ElementFilter
     Expose: Expose
+    Expression: Expression
+    ExtentExpression: ExtentExpression
     Feature: Feature
+    FeatureChainExpression: FeatureChainExpression
+    FeatureReferenceExpression: FeatureReferenceExpression
     FlowUsage: FlowUsage
+    IfExpression: IfExpression
     ImportDecl: ImportDecl
     IncludeUsage: IncludeUsage
+    IndexExpression: IndexExpression
     InterfaceDef: InterfaceDef
+    InvocationOperation: InvocationOperation
+    LiteralExpression: LiteralExpression
     Member: Member
     MessageUsage: MessageUsage
+    MetadataAccessExpression: MetadataAccessExpression
     MetadataUsage: MetadataUsage
     Model: Model
     Multiplicity: Multiplicity
+    OperatorExpression: OperatorExpression
     OtherDefinition: OtherDefinition
     OtherUsage: OtherUsage
     PackageDecl: PackageDecl
@@ -1997,9 +2606,14 @@ export type SysmlAstType = {
     PerformUsage: PerformUsage
     PortDef: PortDef
     PortUsage: PortUsage
+    PrefixExpression: PrefixExpression
+    PrimaryExpression: PrimaryExpression
     SatisfyUsage: SatisfyUsage
+    SelectExpression: SelectExpression
+    SequenceExpression: SequenceExpression
     SubjectUsage: SubjectUsage
     TextualRepresentation: TextualRepresentation
+    UnaryExpression: UnaryExpression
     UseCaseDef: UseCaseDef
     UseCaseUsage: UseCaseUsage
     ViewUsage: ViewUsage
@@ -2024,8 +2638,17 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: ActionDef.direction,
                     optional: true
                 },
+                endMultiplicity: {
+                    name: ActionDef.endMultiplicity,
+                    optional: true
+                },
                 exposes: {
                     name: ActionDef.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                filters: {
+                    name: ActionDef.filters,
                     defaultValue: [],
                     optional: true
                 },
@@ -2064,6 +2687,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: false,
                     optional: true
                 },
+                isReturn: {
+                    name: ActionDef.isReturn,
+                    defaultValue: false,
+                    optional: true
+                },
                 isVariant: {
                     name: ActionDef.isVariant,
                     defaultValue: false,
@@ -2090,6 +2718,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 prefixMetadata: {
                     name: ActionDef.prefixMetadata,
                     defaultValue: [],
+                    optional: true
+                },
+                result: {
+                    name: ActionDef.result,
                     optional: true
                 },
                 shortName: {
@@ -2135,8 +2767,17 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: ActionUsage.direction,
                     optional: true
                 },
+                endMultiplicity: {
+                    name: ActionUsage.endMultiplicity,
+                    optional: true
+                },
                 exposes: {
                     name: ActionUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                filters: {
+                    name: ActionUsage.filters,
                     defaultValue: [],
                     optional: true
                 },
@@ -2185,6 +2826,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: false,
                     optional: true
                 },
+                isReturn: {
+                    name: ActionUsage.isReturn,
+                    defaultValue: false,
+                    optional: true
+                },
                 isVariant: {
                     name: ActionUsage.isVariant,
                     defaultValue: false,
@@ -2226,6 +2872,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 references: {
                     name: ActionUsage.references,
                     defaultValue: [],
+                    optional: true
+                },
+                result: {
+                    name: ActionUsage.result,
                     optional: true
                 },
                 shortName: {
@@ -2285,8 +2935,17 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: ActorUsage.direction,
                     optional: true
                 },
+                endMultiplicity: {
+                    name: ActorUsage.endMultiplicity,
+                    optional: true
+                },
                 exposes: {
                     name: ActorUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                filters: {
+                    name: ActorUsage.filters,
                     defaultValue: [],
                     optional: true
                 },
@@ -2335,6 +2994,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: false,
                     optional: true
                 },
+                isReturn: {
+                    name: ActorUsage.isReturn,
+                    defaultValue: false,
+                    optional: true
+                },
                 isVariant: {
                     name: ActorUsage.isVariant,
                     defaultValue: false,
@@ -2376,6 +3040,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 references: {
                     name: ActorUsage.references,
                     defaultValue: [],
+                    optional: true
+                },
+                result: {
+                    name: ActorUsage.result,
                     optional: true
                 },
                 shortName: {
@@ -2461,6 +3129,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: AllocationUsage.direction,
                     optional: true
                 },
+                endMultiplicity: {
+                    name: AllocationUsage.endMultiplicity,
+                    optional: true
+                },
                 ends: {
                     name: AllocationUsage.ends,
                     defaultValue: [],
@@ -2468,6 +3140,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 },
                 exposes: {
                     name: AllocationUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                filters: {
+                    name: AllocationUsage.filters,
                     defaultValue: [],
                     optional: true
                 },
@@ -2503,6 +3180,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 },
                 isReference: {
                     name: AllocationUsage.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReturn: {
+                    name: AllocationUsage.isReturn,
                     defaultValue: false,
                     optional: true
                 },
@@ -2549,6 +3231,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: [],
                     optional: true
                 },
+                result: {
+                    name: AllocationUsage.result,
+                    optional: true
+                },
                 shortName: {
                     name: AllocationUsage.shortName,
                     optional: true
@@ -2589,6 +3275,19 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
             },
             superTypes: []
         },
+        Argument: {
+            name: Argument.$type,
+            properties: {
+                name: {
+                    name: Argument.name,
+                    optional: true
+                },
+                value: {
+                    name: Argument.value
+                }
+            },
+            superTypes: []
+        },
         AttributeDef: {
             name: AttributeDef.$type,
             properties: {
@@ -2606,8 +3305,17 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: AttributeDef.direction,
                     optional: true
                 },
+                endMultiplicity: {
+                    name: AttributeDef.endMultiplicity,
+                    optional: true
+                },
                 exposes: {
                     name: AttributeDef.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                filters: {
+                    name: AttributeDef.filters,
                     defaultValue: [],
                     optional: true
                 },
@@ -2646,6 +3354,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: false,
                     optional: true
                 },
+                isReturn: {
+                    name: AttributeDef.isReturn,
+                    defaultValue: false,
+                    optional: true
+                },
                 isVariant: {
                     name: AttributeDef.isVariant,
                     defaultValue: false,
@@ -2672,6 +3385,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 prefixMetadata: {
                     name: AttributeDef.prefixMetadata,
                     defaultValue: [],
+                    optional: true
+                },
+                result: {
+                    name: AttributeDef.result,
                     optional: true
                 },
                 shortName: {
@@ -2717,8 +3434,17 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: AttributeUsage.direction,
                     optional: true
                 },
+                endMultiplicity: {
+                    name: AttributeUsage.endMultiplicity,
+                    optional: true
+                },
                 exposes: {
                     name: AttributeUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                filters: {
+                    name: AttributeUsage.filters,
                     defaultValue: [],
                     optional: true
                 },
@@ -2767,6 +3493,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: false,
                     optional: true
                 },
+                isReturn: {
+                    name: AttributeUsage.isReturn,
+                    defaultValue: false,
+                    optional: true
+                },
                 isVariant: {
                     name: AttributeUsage.isVariant,
                     defaultValue: false,
@@ -2810,6 +3541,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: [],
                     optional: true
                 },
+                result: {
+                    name: AttributeUsage.result,
+                    optional: true
+                },
                 shortName: {
                     name: AttributeUsage.shortName,
                     optional: true
@@ -2844,6 +3579,12 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
             },
             superTypes: [Element.$type, Feature.$type]
         },
+        BaseExpression: {
+            name: BaseExpression.$type,
+            properties: {
+            },
+            superTypes: [PrimaryExpression.$type]
+        },
         BindingUsage: {
             name: BindingUsage.$type,
             properties: {
@@ -2866,8 +3607,17 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: BindingUsage.direction,
                     optional: true
                 },
+                endMultiplicity: {
+                    name: BindingUsage.endMultiplicity,
+                    optional: true
+                },
                 exposes: {
                     name: BindingUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                filters: {
+                    name: BindingUsage.filters,
                     defaultValue: [],
                     optional: true
                 },
@@ -2903,6 +3653,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 },
                 isReference: {
                     name: BindingUsage.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReturn: {
+                    name: BindingUsage.isReturn,
                     defaultValue: false,
                     optional: true
                 },
@@ -2952,6 +3707,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: [],
                     optional: true
                 },
+                result: {
+                    name: BindingUsage.result,
+                    optional: true
+                },
                 right: {
                     name: BindingUsage.right
                 },
@@ -2980,6 +3739,59 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 }
             },
             superTypes: [Element.$type]
+        },
+        BodyExpression: {
+            name: BodyExpression.$type,
+            properties: {
+                members: {
+                    name: BodyExpression.members,
+                    defaultValue: [],
+                    optional: true
+                },
+                result: {
+                    name: BodyExpression.result,
+                    optional: true
+                }
+            },
+            superTypes: [BaseExpression.$type]
+        },
+        BracketExpression: {
+            name: BracketExpression.$type,
+            properties: {
+                index: {
+                    name: BracketExpression.index,
+                    defaultValue: [],
+                    optional: true
+                },
+                source: {
+                    name: BracketExpression.source
+                }
+            },
+            superTypes: [PrimaryExpression.$type]
+        },
+        ClassificationExpression: {
+            name: ClassificationExpression.$type,
+            properties: {
+                operator: {
+                    name: ClassificationExpression.operator
+                },
+                type: {
+                    name: ClassificationExpression.type
+                }
+            },
+            superTypes: [UnaryExpression.$type]
+        },
+        CollectExpression: {
+            name: CollectExpression.$type,
+            properties: {
+                body: {
+                    name: CollectExpression.body
+                },
+                source: {
+                    name: CollectExpression.source
+                }
+            },
+            superTypes: [PrimaryExpression.$type]
         },
         Comment: {
             name: Comment.$type,
@@ -3029,6 +3841,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: ConnectionUsage.direction,
                     optional: true
                 },
+                endMultiplicity: {
+                    name: ConnectionUsage.endMultiplicity,
+                    optional: true
+                },
                 ends: {
                     name: ConnectionUsage.ends,
                     defaultValue: [],
@@ -3036,6 +3852,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 },
                 exposes: {
                     name: ConnectionUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                filters: {
+                    name: ConnectionUsage.filters,
                     defaultValue: [],
                     optional: true
                 },
@@ -3084,6 +3905,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: false,
                     optional: true
                 },
+                isReturn: {
+                    name: ConnectionUsage.isReturn,
+                    defaultValue: false,
+                    optional: true
+                },
                 isVariant: {
                     name: ConnectionUsage.isVariant,
                     defaultValue: false,
@@ -3129,6 +3955,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 references: {
                     name: ConnectionUsage.references,
                     defaultValue: [],
+                    optional: true
+                },
+                result: {
+                    name: ConnectionUsage.result,
                     optional: true
                 },
                 shortName: {
@@ -3193,6 +4023,20 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
             },
             superTypes: []
         },
+        ConstructorExpression: {
+            name: ConstructorExpression.$type,
+            properties: {
+                arguments: {
+                    name: ConstructorExpression.arguments,
+                    defaultValue: [],
+                    optional: true
+                },
+                type: {
+                    name: ConstructorExpression.type
+                }
+            },
+            superTypes: [BaseExpression.$type]
+        },
         DefaultUsage: {
             name: DefaultUsage.$type,
             properties: {
@@ -3215,8 +4059,17 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: DefaultUsage.direction,
                     optional: true
                 },
+                endMultiplicity: {
+                    name: DefaultUsage.endMultiplicity,
+                    optional: true
+                },
                 exposes: {
                     name: DefaultUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                filters: {
+                    name: DefaultUsage.filters,
                     defaultValue: [],
                     optional: true
                 },
@@ -3265,6 +4118,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: false,
                     optional: true
                 },
+                isReturn: {
+                    name: DefaultUsage.isReturn,
+                    defaultValue: false,
+                    optional: true
+                },
                 isVariant: {
                     name: DefaultUsage.isVariant,
                     defaultValue: false,
@@ -3306,6 +4164,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 references: {
                     name: DefaultUsage.references,
                     defaultValue: [],
+                    optional: true
+                },
+                result: {
+                    name: DefaultUsage.result,
                     optional: true
                 },
                 shortName: {
@@ -3360,6 +4222,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: Dependency.direction,
                     optional: true
                 },
+                endMultiplicity: {
+                    name: Dependency.endMultiplicity,
+                    optional: true
+                },
                 isAbstract: {
                     name: Dependency.isAbstract,
                     defaultValue: false,
@@ -3387,6 +4253,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 },
                 isReference: {
                     name: Dependency.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReturn: {
+                    name: Dependency.isReturn,
                     defaultValue: false,
                     optional: true
                 },
@@ -3461,6 +4332,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: Element.direction,
                     optional: true
                 },
+                endMultiplicity: {
+                    name: Element.endMultiplicity,
+                    optional: true
+                },
                 isAbstract: {
                     name: Element.isAbstract,
                     defaultValue: false,
@@ -3488,6 +4363,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 },
                 isReference: {
                     name: Element.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReturn: {
+                    name: Element.isReturn,
                     defaultValue: false,
                     optional: true
                 },
@@ -3522,6 +4402,19 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
             },
             superTypes: [Member.$type]
         },
+        ElementFilter: {
+            name: ElementFilter.$type,
+            properties: {
+                condition: {
+                    name: ElementFilter.condition
+                },
+                visibility: {
+                    name: ElementFilter.visibility,
+                    optional: true
+                }
+            },
+            superTypes: []
+        },
         Expose: {
             name: Expose.$type,
             properties: {
@@ -3533,6 +4426,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 element: {
                     name: Expose.element,
                     referenceType: Member.$type
+                },
+                filters: {
+                    name: Expose.filters,
+                    defaultValue: [],
+                    optional: true
                 },
                 recursive: {
                     name: Expose.recursive,
@@ -3551,11 +4449,57 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
             },
             superTypes: []
         },
+        Expression: {
+            name: Expression.$type,
+            properties: {
+            },
+            superTypes: []
+        },
+        ExtentExpression: {
+            name: ExtentExpression.$type,
+            properties: {
+                type: {
+                    name: ExtentExpression.type
+                }
+            },
+            superTypes: [UnaryExpression.$type]
+        },
         Feature: {
             name: Feature.$type,
             properties: {
             },
             superTypes: []
+        },
+        FeatureChainExpression: {
+            name: FeatureChainExpression.$type,
+            properties: {
+                member: {
+                    name: FeatureChainExpression.member
+                },
+                source: {
+                    name: FeatureChainExpression.source
+                }
+            },
+            superTypes: [PrimaryExpression.$type]
+        },
+        FeatureReferenceExpression: {
+            name: FeatureReferenceExpression.$type,
+            properties: {
+                arguments: {
+                    name: FeatureReferenceExpression.arguments,
+                    defaultValue: [],
+                    optional: true
+                },
+                invocation: {
+                    name: FeatureReferenceExpression.invocation,
+                    defaultValue: false,
+                    optional: true
+                },
+                name: {
+                    name: FeatureReferenceExpression.name
+                }
+            },
+            superTypes: [BaseExpression.$type]
         },
         FlowUsage: {
             name: FlowUsage.$type,
@@ -3579,8 +4523,17 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: FlowUsage.direction,
                     optional: true
                 },
+                endMultiplicity: {
+                    name: FlowUsage.endMultiplicity,
+                    optional: true
+                },
                 exposes: {
                     name: FlowUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                filters: {
+                    name: FlowUsage.filters,
                     defaultValue: [],
                     optional: true
                 },
@@ -3629,6 +4582,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: false,
                     optional: true
                 },
+                isReturn: {
+                    name: FlowUsage.isReturn,
+                    defaultValue: false,
+                    optional: true
+                },
                 isVariant: {
                     name: FlowUsage.isVariant,
                     defaultValue: false,
@@ -3665,6 +4623,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: FlowUsage.payloadName,
                     optional: true
                 },
+                payloadValue: {
+                    name: FlowUsage.payloadValue,
+                    optional: true
+                },
                 portionKind: {
                     name: FlowUsage.portionKind,
                     optional: true
@@ -3682,6 +4644,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 references: {
                     name: FlowUsage.references,
                     defaultValue: [],
+                    optional: true
+                },
+                result: {
+                    name: FlowUsage.result,
                     optional: true
                 },
                 shortName: {
@@ -3725,6 +4691,21 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
             },
             superTypes: [Element.$type]
         },
+        IfExpression: {
+            name: IfExpression.$type,
+            properties: {
+                condition: {
+                    name: IfExpression.condition
+                },
+                else: {
+                    name: IfExpression.else
+                },
+                then: {
+                    name: IfExpression.then
+                }
+            },
+            superTypes: [Expression.$type]
+        },
         ImportDecl: {
             name: ImportDecl.$type,
             properties: {
@@ -3735,6 +4716,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 },
                 annotations: {
                     name: ImportDecl.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
+                filters: {
+                    name: ImportDecl.filters,
                     defaultValue: [],
                     optional: true
                 },
@@ -3780,8 +4766,17 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: IncludeUsage.direction,
                     optional: true
                 },
+                endMultiplicity: {
+                    name: IncludeUsage.endMultiplicity,
+                    optional: true
+                },
                 exposes: {
                     name: IncludeUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                filters: {
+                    name: IncludeUsage.filters,
                     defaultValue: [],
                     optional: true
                 },
@@ -3800,6 +4795,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: false,
                     optional: true
                 },
+                isDefault: {
+                    name: IncludeUsage.isDefault,
+                    defaultValue: false,
+                    optional: true
+                },
                 isDerived: {
                     name: IncludeUsage.isDerived,
                     defaultValue: false,
@@ -3815,8 +4815,18 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: false,
                     optional: true
                 },
+                isInitial: {
+                    name: IncludeUsage.isInitial,
+                    defaultValue: false,
+                    optional: true
+                },
                 isReference: {
                     name: IncludeUsage.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReturn: {
+                    name: IncludeUsage.isReturn,
                     defaultValue: false,
                     optional: true
                 },
@@ -3859,6 +4869,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: [],
                     optional: true
                 },
+                result: {
+                    name: IncludeUsage.result,
+                    optional: true
+                },
                 subsets: {
                     name: IncludeUsage.subsets,
                     defaultValue: [],
@@ -3873,12 +4887,39 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: false,
                     optional: true
                 },
+                types: {
+                    name: IncludeUsage.types,
+                    defaultValue: [],
+                    optional: true
+                },
+                useCase: {
+                    name: IncludeUsage.useCase,
+                    defaultValue: false,
+                    optional: true
+                },
+                value: {
+                    name: IncludeUsage.value,
+                    optional: true
+                },
                 visibility: {
                     name: IncludeUsage.visibility,
                     optional: true
                 }
             },
             superTypes: [Element.$type]
+        },
+        IndexExpression: {
+            name: IndexExpression.$type,
+            properties: {
+                index: {
+                    name: IndexExpression.index,
+                    defaultValue: []
+                },
+                source: {
+                    name: IndexExpression.source
+                }
+            },
+            superTypes: [PrimaryExpression.$type]
         },
         InterfaceDef: {
             name: InterfaceDef.$type,
@@ -3897,8 +4938,17 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: InterfaceDef.direction,
                     optional: true
                 },
+                endMultiplicity: {
+                    name: InterfaceDef.endMultiplicity,
+                    optional: true
+                },
                 exposes: {
                     name: InterfaceDef.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                filters: {
+                    name: InterfaceDef.filters,
                     defaultValue: [],
                     optional: true
                 },
@@ -3937,6 +4987,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: false,
                     optional: true
                 },
+                isReturn: {
+                    name: InterfaceDef.isReturn,
+                    defaultValue: false,
+                    optional: true
+                },
                 isVariant: {
                     name: InterfaceDef.isVariant,
                     defaultValue: false,
@@ -3965,6 +5020,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: [],
                     optional: true
                 },
+                result: {
+                    name: InterfaceDef.result,
+                    optional: true
+                },
                 shortName: {
                     name: InterfaceDef.shortName,
                     optional: true
@@ -3985,6 +5044,40 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 }
             },
             superTypes: [Element.$type, Definition.$type]
+        },
+        InvocationOperation: {
+            name: InvocationOperation.$type,
+            properties: {
+                arguments: {
+                    name: InvocationOperation.arguments,
+                    defaultValue: [],
+                    optional: true
+                },
+                body: {
+                    name: InvocationOperation.body,
+                    optional: true
+                },
+                function: {
+                    name: InvocationOperation.function
+                },
+                reference: {
+                    name: InvocationOperation.reference,
+                    optional: true
+                },
+                source: {
+                    name: InvocationOperation.source
+                }
+            },
+            superTypes: [PrimaryExpression.$type]
+        },
+        LiteralExpression: {
+            name: LiteralExpression.$type,
+            properties: {
+                value: {
+                    name: LiteralExpression.value
+                }
+            },
+            superTypes: [BaseExpression.$type]
         },
         Member: {
             name: Member.$type,
@@ -4014,8 +5107,17 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: MessageUsage.direction,
                     optional: true
                 },
+                endMultiplicity: {
+                    name: MessageUsage.endMultiplicity,
+                    optional: true
+                },
                 exposes: {
                     name: MessageUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                filters: {
+                    name: MessageUsage.filters,
                     defaultValue: [],
                     optional: true
                 },
@@ -4064,6 +5166,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: false,
                     optional: true
                 },
+                isReturn: {
+                    name: MessageUsage.isReturn,
+                    defaultValue: false,
+                    optional: true
+                },
                 isVariant: {
                     name: MessageUsage.isVariant,
                     defaultValue: false,
@@ -4101,6 +5208,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: MessageUsage.payloadName,
                     optional: true
                 },
+                payloadValue: {
+                    name: MessageUsage.payloadValue,
+                    optional: true
+                },
                 portionKind: {
                     name: MessageUsage.portionKind,
                     optional: true
@@ -4118,6 +5229,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 references: {
                     name: MessageUsage.references,
                     defaultValue: [],
+                    optional: true
+                },
+                result: {
+                    name: MessageUsage.result,
                     optional: true
                 },
                 shortName: {
@@ -4156,6 +5271,15 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
             },
             superTypes: [Element.$type]
         },
+        MetadataAccessExpression: {
+            name: MetadataAccessExpression.$type,
+            properties: {
+                source: {
+                    name: MetadataAccessExpression.source
+                }
+            },
+            superTypes: [PrimaryExpression.$type]
+        },
         MetadataUsage: {
             name: MetadataUsage.$type,
             properties: {
@@ -4178,8 +5302,17 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: MetadataUsage.direction,
                     optional: true
                 },
+                endMultiplicity: {
+                    name: MetadataUsage.endMultiplicity,
+                    optional: true
+                },
                 exposes: {
                     name: MetadataUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                filters: {
+                    name: MetadataUsage.filters,
                     defaultValue: [],
                     optional: true
                 },
@@ -4218,6 +5351,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: false,
                     optional: true
                 },
+                isReturn: {
+                    name: MetadataUsage.isReturn,
+                    defaultValue: false,
+                    optional: true
+                },
                 isVariant: {
                     name: MetadataUsage.isVariant,
                     defaultValue: false,
@@ -4244,6 +5382,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 prefixMetadata: {
                     name: MetadataUsage.prefixMetadata,
                     defaultValue: [],
+                    optional: true
+                },
+                result: {
+                    name: MetadataUsage.result,
                     optional: true
                 },
                 shortName: {
@@ -4309,6 +5451,21 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
             },
             superTypes: []
         },
+        OperatorExpression: {
+            name: OperatorExpression.$type,
+            properties: {
+                left: {
+                    name: OperatorExpression.left
+                },
+                operator: {
+                    name: OperatorExpression.operator
+                },
+                right: {
+                    name: OperatorExpression.right
+                }
+            },
+            superTypes: [Expression.$type]
+        },
         OtherDefinition: {
             name: OtherDefinition.$type,
             properties: {
@@ -4326,8 +5483,17 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: OtherDefinition.direction,
                     optional: true
                 },
+                endMultiplicity: {
+                    name: OtherDefinition.endMultiplicity,
+                    optional: true
+                },
                 exposes: {
                     name: OtherDefinition.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                filters: {
+                    name: OtherDefinition.filters,
                     defaultValue: [],
                     optional: true
                 },
@@ -4366,6 +5532,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: false,
                     optional: true
                 },
+                isReturn: {
+                    name: OtherDefinition.isReturn,
+                    defaultValue: false,
+                    optional: true
+                },
                 isVariant: {
                     name: OtherDefinition.isVariant,
                     defaultValue: false,
@@ -4396,6 +5567,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 prefixMetadata: {
                     name: OtherDefinition.prefixMetadata,
                     defaultValue: [],
+                    optional: true
+                },
+                result: {
+                    name: OtherDefinition.result,
                     optional: true
                 },
                 shortName: {
@@ -4441,8 +5616,17 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: OtherUsage.direction,
                     optional: true
                 },
+                endMultiplicity: {
+                    name: OtherUsage.endMultiplicity,
+                    optional: true
+                },
                 exposes: {
                     name: OtherUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                filters: {
+                    name: OtherUsage.filters,
                     defaultValue: [],
                     optional: true
                 },
@@ -4491,6 +5675,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: false,
                     optional: true
                 },
+                isReturn: {
+                    name: OtherUsage.isReturn,
+                    defaultValue: false,
+                    optional: true
+                },
                 isVariant: {
                     name: OtherUsage.isVariant,
                     defaultValue: false,
@@ -4532,9 +5721,17 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: [],
                     optional: true
                 },
+                reference: {
+                    name: OtherUsage.reference,
+                    optional: true
+                },
                 references: {
                     name: OtherUsage.references,
                     defaultValue: [],
+                    optional: true
+                },
+                result: {
+                    name: OtherUsage.result,
                     optional: true
                 },
                 shortName: {
@@ -4585,6 +5782,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: [],
                     optional: true
                 },
+                filters: {
+                    name: PackageDecl.filters,
+                    defaultValue: [],
+                    optional: true
+                },
                 imports: {
                     name: PackageDecl.imports,
                     defaultValue: [],
@@ -4612,6 +5814,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 prefixMetadata: {
                     name: PackageDecl.prefixMetadata,
                     defaultValue: [],
+                    optional: true
+                },
+                result: {
+                    name: PackageDecl.result,
                     optional: true
                 },
                 shortName: {
@@ -4642,8 +5848,17 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: PartDef.direction,
                     optional: true
                 },
+                endMultiplicity: {
+                    name: PartDef.endMultiplicity,
+                    optional: true
+                },
                 exposes: {
                     name: PartDef.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                filters: {
+                    name: PartDef.filters,
                     defaultValue: [],
                     optional: true
                 },
@@ -4682,6 +5897,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: false,
                     optional: true
                 },
+                isReturn: {
+                    name: PartDef.isReturn,
+                    defaultValue: false,
+                    optional: true
+                },
                 isVariant: {
                     name: PartDef.isVariant,
                     defaultValue: false,
@@ -4708,6 +5928,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 prefixMetadata: {
                     name: PartDef.prefixMetadata,
                     defaultValue: [],
+                    optional: true
+                },
+                result: {
+                    name: PartDef.result,
                     optional: true
                 },
                 shortName: {
@@ -4754,8 +5978,17 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: PartUsage.direction,
                     optional: true
                 },
+                endMultiplicity: {
+                    name: PartUsage.endMultiplicity,
+                    optional: true
+                },
                 exposes: {
                     name: PartUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                filters: {
+                    name: PartUsage.filters,
                     defaultValue: [],
                     optional: true
                 },
@@ -4804,6 +6037,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: false,
                     optional: true
                 },
+                isReturn: {
+                    name: PartUsage.isReturn,
+                    defaultValue: false,
+                    optional: true
+                },
                 isVariant: {
                     name: PartUsage.isVariant,
                     defaultValue: false,
@@ -4845,6 +6083,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 references: {
                     name: PartUsage.references,
                     defaultValue: [],
+                    optional: true
+                },
+                result: {
+                    name: PartUsage.result,
                     optional: true
                 },
                 shortName: {
@@ -4904,8 +6146,17 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: PerformUsage.direction,
                     optional: true
                 },
+                endMultiplicity: {
+                    name: PerformUsage.endMultiplicity,
+                    optional: true
+                },
                 exposes: {
                     name: PerformUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                filters: {
+                    name: PerformUsage.filters,
                     defaultValue: [],
                     optional: true
                 },
@@ -4954,6 +6205,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: false,
                     optional: true
                 },
+                isReturn: {
+                    name: PerformUsage.isReturn,
+                    defaultValue: false,
+                    optional: true
+                },
                 isVariant: {
                     name: PerformUsage.isVariant,
                     defaultValue: false,
@@ -4995,6 +6251,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 references: {
                     name: PerformUsage.references,
                     defaultValue: [],
+                    optional: true
+                },
+                result: {
+                    name: PerformUsage.result,
                     optional: true
                 },
                 shortName: {
@@ -5048,8 +6308,17 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: PortDef.direction,
                     optional: true
                 },
+                endMultiplicity: {
+                    name: PortDef.endMultiplicity,
+                    optional: true
+                },
                 exposes: {
                     name: PortDef.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                filters: {
+                    name: PortDef.filters,
                     defaultValue: [],
                     optional: true
                 },
@@ -5088,6 +6357,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: false,
                     optional: true
                 },
+                isReturn: {
+                    name: PortDef.isReturn,
+                    defaultValue: false,
+                    optional: true
+                },
                 isVariant: {
                     name: PortDef.isVariant,
                     defaultValue: false,
@@ -5114,6 +6388,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 prefixMetadata: {
                     name: PortDef.prefixMetadata,
                     defaultValue: [],
+                    optional: true
+                },
+                result: {
+                    name: PortDef.result,
                     optional: true
                 },
                 shortName: {
@@ -5165,8 +6443,17 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: PortUsage.direction,
                     optional: true
                 },
+                endMultiplicity: {
+                    name: PortUsage.endMultiplicity,
+                    optional: true
+                },
                 exposes: {
                     name: PortUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                filters: {
+                    name: PortUsage.filters,
                     defaultValue: [],
                     optional: true
                 },
@@ -5215,6 +6502,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: false,
                     optional: true
                 },
+                isReturn: {
+                    name: PortUsage.isReturn,
+                    defaultValue: false,
+                    optional: true
+                },
                 isVariant: {
                     name: PortUsage.isVariant,
                     defaultValue: false,
@@ -5258,6 +6550,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: [],
                     optional: true
                 },
+                result: {
+                    name: PortUsage.result,
+                    optional: true
+                },
                 shortName: {
                     name: PortUsage.shortName,
                     optional: true
@@ -5293,6 +6589,24 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
             },
             superTypes: [Element.$type, Feature.$type]
         },
+        PrefixExpression: {
+            name: PrefixExpression.$type,
+            properties: {
+                operand: {
+                    name: PrefixExpression.operand
+                },
+                operator: {
+                    name: PrefixExpression.operator
+                }
+            },
+            superTypes: [UnaryExpression.$type]
+        },
+        PrimaryExpression: {
+            name: PrimaryExpression.$type,
+            properties: {
+            },
+            superTypes: [UnaryExpression.$type]
+        },
         SatisfyUsage: {
             name: SatisfyUsage.$type,
             properties: {
@@ -5315,8 +6629,17 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: SatisfyUsage.direction,
                     optional: true
                 },
+                endMultiplicity: {
+                    name: SatisfyUsage.endMultiplicity,
+                    optional: true
+                },
                 exposes: {
                     name: SatisfyUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                filters: {
+                    name: SatisfyUsage.filters,
                     defaultValue: [],
                     optional: true
                 },
@@ -5362,6 +6685,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 },
                 isReference: {
                     name: SatisfyUsage.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReturn: {
+                    name: SatisfyUsage.isReturn,
                     defaultValue: false,
                     optional: true
                 },
@@ -5417,6 +6745,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: SatisfyUsage.requirement,
                     optional: true
                 },
+                result: {
+                    name: SatisfyUsage.result,
+                    optional: true
+                },
                 satisfier: {
                     name: SatisfyUsage.satisfier,
                     optional: true
@@ -5451,6 +6783,29 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
             },
             superTypes: [Element.$type]
         },
+        SelectExpression: {
+            name: SelectExpression.$type,
+            properties: {
+                body: {
+                    name: SelectExpression.body
+                },
+                source: {
+                    name: SelectExpression.source
+                }
+            },
+            superTypes: [PrimaryExpression.$type]
+        },
+        SequenceExpression: {
+            name: SequenceExpression.$type,
+            properties: {
+                items: {
+                    name: SequenceExpression.items,
+                    defaultValue: [],
+                    optional: true
+                }
+            },
+            superTypes: [BaseExpression.$type]
+        },
         SubjectUsage: {
             name: SubjectUsage.$type,
             properties: {
@@ -5473,8 +6828,17 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: SubjectUsage.direction,
                     optional: true
                 },
+                endMultiplicity: {
+                    name: SubjectUsage.endMultiplicity,
+                    optional: true
+                },
                 exposes: {
                     name: SubjectUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                filters: {
+                    name: SubjectUsage.filters,
                     defaultValue: [],
                     optional: true
                 },
@@ -5523,6 +6887,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: false,
                     optional: true
                 },
+                isReturn: {
+                    name: SubjectUsage.isReturn,
+                    defaultValue: false,
+                    optional: true
+                },
                 isVariant: {
                     name: SubjectUsage.isVariant,
                     defaultValue: false,
@@ -5564,6 +6933,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 references: {
                     name: SubjectUsage.references,
                     defaultValue: [],
+                    optional: true
+                },
+                result: {
+                    name: SubjectUsage.result,
                     optional: true
                 },
                 shortName: {
@@ -5621,6 +6994,12 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
             },
             superTypes: [AnnotatingElement.$type]
         },
+        UnaryExpression: {
+            name: UnaryExpression.$type,
+            properties: {
+            },
+            superTypes: []
+        },
         UseCaseDef: {
             name: UseCaseDef.$type,
             properties: {
@@ -5638,8 +7017,17 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: UseCaseDef.direction,
                     optional: true
                 },
+                endMultiplicity: {
+                    name: UseCaseDef.endMultiplicity,
+                    optional: true
+                },
                 exposes: {
                     name: UseCaseDef.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                filters: {
+                    name: UseCaseDef.filters,
                     defaultValue: [],
                     optional: true
                 },
@@ -5678,6 +7066,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: false,
                     optional: true
                 },
+                isReturn: {
+                    name: UseCaseDef.isReturn,
+                    defaultValue: false,
+                    optional: true
+                },
                 isVariant: {
                     name: UseCaseDef.isVariant,
                     defaultValue: false,
@@ -5704,6 +7097,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 prefixMetadata: {
                     name: UseCaseDef.prefixMetadata,
                     defaultValue: [],
+                    optional: true
+                },
+                result: {
+                    name: UseCaseDef.result,
                     optional: true
                 },
                 shortName: {
@@ -5749,8 +7146,17 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: UseCaseUsage.direction,
                     optional: true
                 },
+                endMultiplicity: {
+                    name: UseCaseUsage.endMultiplicity,
+                    optional: true
+                },
                 exposes: {
                     name: UseCaseUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                filters: {
+                    name: UseCaseUsage.filters,
                     defaultValue: [],
                     optional: true
                 },
@@ -5799,6 +7205,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: false,
                     optional: true
                 },
+                isReturn: {
+                    name: UseCaseUsage.isReturn,
+                    defaultValue: false,
+                    optional: true
+                },
                 isVariant: {
                     name: UseCaseUsage.isVariant,
                     defaultValue: false,
@@ -5840,6 +7251,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 references: {
                     name: UseCaseUsage.references,
                     defaultValue: [],
+                    optional: true
+                },
+                result: {
+                    name: UseCaseUsage.result,
                     optional: true
                 },
                 shortName: {
@@ -5903,8 +7318,17 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: ViewUsage.direction,
                     optional: true
                 },
+                endMultiplicity: {
+                    name: ViewUsage.endMultiplicity,
+                    optional: true
+                },
                 exposes: {
                     name: ViewUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                filters: {
+                    name: ViewUsage.filters,
                     defaultValue: [],
                     optional: true
                 },
@@ -5953,6 +7377,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: false,
                     optional: true
                 },
+                isReturn: {
+                    name: ViewUsage.isReturn,
+                    defaultValue: false,
+                    optional: true
+                },
                 isVariant: {
                     name: ViewUsage.isVariant,
                     defaultValue: false,
@@ -5994,6 +7423,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 references: {
                     name: ViewUsage.references,
                     defaultValue: [],
+                    optional: true
+                },
+                result: {
+                    name: ViewUsage.result,
                     optional: true
                 },
                 shortName: {

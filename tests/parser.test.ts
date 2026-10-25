@@ -378,6 +378,28 @@ describe('definitions and usages', () => {
         `);
     });
 
+    it('reads values and expressions, which no view evaluates', async () => {
+        await parseOk(`
+            package ExprParts { metadata def Safety; #Safety part def Brake; }
+            package ExprKinds {
+                private import ScalarValues::*;
+                private import ExprParts::*[@Safety];
+                attribute def Mass;
+                part def Car {
+                    attribute mass : Mass = 1500 [kg];
+                    attribute speed default := 3.6e1 * 2 ** 2;
+                    attribute fast = if speed > 100 ? true else false;
+                    attribute counts[*] = (1, 2, 3);
+                    attribute heavy = counts->select { in c; c > 1 }->size() >= 2 and not fast;
+                    constraint limit { mass <= 2000 [kg] }
+                    requirement r { require constraint { speed < 200 } }
+                }
+                calc def Area { in w : Real; in h : Real; return a : Real = w * h; }
+                view v : GeneralView { filter @Safety; }
+            }
+        `);
+    });
+
     it('takes a message from and to event occurrences, on the parts that have them', async () => {
         const document = await parseOk(`
             package KindEvents {

@@ -219,8 +219,8 @@ In priority order:
   models in OMG's release should load, as `tests/omg-models.test.ts` counts.
   Existing parsers were tried first: `sysml-v2-lsp` offers no parser API, and
   OpenSysML's does not expose what the views draw. So ortho's grammar grows
-  from the spec's: names, comments, definitions and usages are done;
-  expressions, behaviour and the rest follow.
+  from the spec's: names, comments, definitions, usages and expressions are
+  done; behaviour follows.
 - [ ] **Render every view a model declares**, one SVG per `view`:
   `ortho render model/ -o diagrams/`. The first-file rule and the README's
   file lists go.

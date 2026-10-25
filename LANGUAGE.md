@@ -449,7 +449,9 @@ package Operations {
 }
 ```
 
-**Attribute values**, such as `capacity_mAh : Real = 10000` above.
+**Values and expressions** (KerML §8.2.5.8): `capacity_mAh : Real = 10000`
+above, a quantity with its unit, `mass = 1500 [kg]`, a calculation, or a
+constraint's condition. No view evaluates them.
 
 ## Not supported
 
@@ -457,11 +459,8 @@ SysML v2 that ortho does not parse yet, so a model using it fails to load:
 
 | Construct | § | Instead |
 |---|---|---|
-| a value other than a number, string or name, such as `100 [kg]` or `a + b` | 7.7, 7.19 | put the unit in the name, `mass_kg` |
-| calculation and constraint bodies, `require constraint { ... }` | 7.19–7.21 | |
 | successions, `first a then b`, and control nodes, `accept`, `send`, `assign`, `if`, `while` and `for` in actions | 7.16–7.17 | `then message` in a scenario |
 | state bodies: `entry`, `do`, `exit` and transitions | 7.18 | |
-| filters, `filter` and `[...]` on imports and exposes | 7.5.4, 7.26 | `::*`, `::**` or a single element |
 
 ## How this is checked
 
