@@ -1,3 +1,4 @@
+import { GrammarUtils } from 'langium';
 import type { AstNode, ValidationAcceptor, ValidationChecks } from 'langium';
 import {
     isActionUsage, isActorUsage, isPackageDecl, isSubjectUsage, isUseCaseUsage
@@ -48,10 +49,14 @@ export function registerValidationChecks(services: SysmlServices): void {
     services.validation.ValidationRegistry.register(checks);
 }
 
+/** A quoted name may be anything: `'part'` is a name where `part` is a keyword. */
 function checkNameNotReserved(node: AstNode, accept: ValidationAcceptor): void {
-    const name = (node as { name?: unknown }).name;
-    if (typeof name === 'string' && RESERVED_WORDS.has(name)) {
-        accept('error', `'${name}' is a reserved word in SysML v2 and cannot be a name.`, { node, property: 'name' });
+    for (const property of ['name', 'shortName']) {
+        const name = (node as unknown as Record<string, unknown>)[property];
+        const written = GrammarUtils.findNodeForProperty(node.$cstNode, property)?.text;
+        if (typeof name === 'string' && RESERVED_WORDS.has(name) && !written?.startsWith("'")) {
+            accept('error', `'${name}' is a reserved word in SysML v2 and cannot be a name.`, { node, property });
+        }
     }
 }
 

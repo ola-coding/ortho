@@ -271,6 +271,75 @@ describe('imports', () => {
     });
 });
 
+// Every test's document stays in the workspace, so these packages have names
+// no other test uses.
+describe('names and comments', () => {
+    it('reads a quoted name as the name without its quotes, in declarations and references', async () => {
+        const document = await parseOk(`
+            package 'Name Hardware' {
+                part def 'Brew unit' { port 'water in' : 'Water port'; }
+                port def 'Water port';
+                part def Machine {
+                    part brew : 'Brew unit';
+                    part tank : 'Name Hardware'::Tank;
+                    connect brew.'water in' to tank.outlet;
+                }
+                part def Tank { port outlet : 'Water port'; }
+            }
+        `);
+        const pkg = document.parseResult.value.packages[0];
+        expect(pkg.name).toBe('Name Hardware');
+        const machine = pkg.members.find(m => isPartDef(m) && m.name === 'Machine') as PartDef;
+        const [brew, tank] = machine.members.filter(isPartUsage);
+        expect([brew.type?.ref?.name, tank.type?.ref?.name]).toEqual(['Brew unit', 'Tank']);
+        const connection = machine.members.find(isConnectionUsage)!;
+        expect(connection.source.segments.map(s => s.ref?.name)).toEqual(['brew', 'water in']);
+    });
+
+    it('finds an element by its short name or an alias', async () => {
+        const document = await parseOk(`
+            package <NS> 'Name Short' {
+                part def <BU> 'Brew unit';
+                alias Unit for BU;
+                part a : BU;
+                part b : Unit;
+                part c : NS::BU;
+            }
+        `);
+        const parts = document.parseResult.value.packages[0].members.filter(isPartUsage);
+        expect(parts.map(p => p.type?.ref?.name)).toEqual(['Brew unit', 'Brew unit', 'Brew unit']);
+    });
+
+    it('keeps comments in the model and notes out of it', async () => {
+        await parseOk(`
+            /* A comment on the whole file. */
+            standard library package NameLibrary {
+                doc /* Documentation of the package. */
+                //* A note, which no tool keeps. */
+                // Another note.
+                comment about Engine /* About the engine. */
+                part def Engine {
+                    doc <D1> locale "en_US" /* Documentation of the engine. */
+                    rep language "text" /* An engine. */
+                }
+            }
+            library package NameOther {
+                comment Note /* A named comment. */
+            }
+        `);
+    });
+
+    it('imports everything nested in a package with ::**', async () => {
+        await parseOk(`
+            package NameDeep { package Inner { part def Pump; } }
+            package NameUser {
+                private import all NameDeep::**;
+                part pump : Pump;
+            }
+        `);
+    });
+});
+
 // A model ortho accepts should also be valid SysML v2, so the rules the OMG
 // pilot implementation enforces and ortho can check are checked here too.
 describe('SysML v2 conformance', () => {
@@ -287,9 +356,10 @@ describe('SysML v2 conformance', () => {
         }
     });
 
-    it('rejects a reserved word as a name, even one ortho does not parse', async () => {
+    it('rejects a reserved word as a name, even one ortho does not parse, unless it is quoted', async () => {
         const errors = await errorsOf('package P { part def Drone { part frame; } }');
         expect(errors).toEqual(["'frame' is a reserved word in SysML v2 and cannot be a name."]);
+        expect(await errorsOf("package P { part def Drone { part 'frame'; } }")).toEqual([]);
     });
 
     it('rejects a qualified name into a definition, and accepts the chain from a usage', async () => {

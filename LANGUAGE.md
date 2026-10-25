@@ -66,11 +66,15 @@ features, and a chain starts at a usage: `Hardware::machine.controller`, not
 with one usage of the whole, `part sw { ... }` or `part machine : CoffeeMachine`,
 for other files to start from.
 
-**Names** (§8.2.2.1.2). None of SysML v2's 128 reserved words can be a name,
-even those ortho does not use, such as `frame`, `state`, `item`, `flow` and
-`out`.
+**Names** (§8.2.2.1.2). A name in single quotes may hold anything, as in
+`'Brew unit'`, and is the same name without them. An unquoted name may not be
+one of SysML v2's 128 reserved words, even those ortho does not use, such as
+`frame`, `state`, `item`, `flow` and `out`. A short name in angle brackets,
+`part def <BU> 'Brew unit';`, names the element too, as does an `alias`.
 
-**Comments.** `// ...` to the end of the line, `/* ... */` across lines.
+**Comments** (§8.2.2.4). `// ...` and `//* ... */` are notes, which no tool
+keeps. `/* ... */`, `doc /* ... */` and `comment about x /* ... */` are part of
+the model; no view draws them.
 
 ## Views
 
@@ -461,58 +465,14 @@ Common SysML v2 that ortho does not parse, so a model using it fails to load:
 | `view def`, `viewpoint`, `filter`, `render` | 7.26 | a `view` of a standard view definition |
 | `ref`, `abstract`, `redefines`/`:>>`, `subsets` | 7.6 | |
 | units on values, `100 [kg]` | 7.7 | put the unit in the name, `mass_kg` |
-| `doc`, `comment` elements | 7.4 | plain `//` and `/* */` comments |
 | event occurrences as message ends | 7.9.5 | messages go from part to part |
-| recursive and filtered imports, `::**`, `[...]` | 7.5.3–7.5.4 | `::*` or a single element |
-
-## Keyword index
-
-Every keyword ortho's grammar knows, and nothing else.
-
-| Keyword | § | Used in |
-|---|---|---|
-| `action` | 7.17 | logical, process |
-| `actor` | 7.25 | use case |
-| `allocate` | 7.15 | deployment |
-| `allocation` | 7.15 | deployment, to name an allocation |
-| `attribute` | 7.7 | attribute usages; `attribute def` for message payloads |
-| `by` | 7.21.4 | `satisfy ... by` |
-| `case` | 7.25 | `use case` |
-| `connect` | 7.13 | physical |
-| `connection` | 7.13 | physical, to type or name a connection |
-| `def` | 7.6 | every definition |
-| `end` | 7.14 | interface ends |
-| `expose` | 7.26.2 | what a view shows |
-| `from` | 7.16 | messages |
-| `import` | 7.5.3 | every file that uses another |
-| `in` | 7.12.1 | the direction of a port's feature |
-| `include` | 7.25.3 | use case |
-| `inout` | 7.12.1 | a port feature that goes both ways |
-| `interface` | 7.14 | physical |
-| `message` | 7.16 | process |
-| `of` | 7.16 | message payloads |
-| `out` | 7.12.1 | the direction of a port's feature |
-| `package` | 7.5 | every file |
-| `part` | 7.11 | physical, implementation, deployment, process |
-| `perform` | 7.17.6 | realization, on the implementation and physical views |
-| `port` | 7.12 | physical, and the APIs on the implementation view |
-| `private` | 7.5.3 | imports |
-| `protected` | 7.5.3 | imports |
-| `public` | 7.5.3 | imports |
-| `requirement` | 7.21 | parsed, not drawn |
-| `satisfy` | 7.21.4 | parsed, not drawn |
-| `specializes` | 7.6 | the long form of `:>` |
-| `subject` | 7.25, 7.21 | use case boundaries; requirement subjects |
-| `then` | 7.17.4 | message order |
-| `to` | 7.13, 7.15, 7.16 | `connect`, `allocate`, `message` |
-| `use` | 7.25 | `use case` |
-| `view` | 7.26 | every file |
+| filtered imports, `[...]` | 7.5.4 | `::*`, `::**` or a single element |
 
 ## How this is checked
 
-Tests keep this page honest: the keyword index matches the grammar both ways,
-every `sysml` block above parses on its own, and every keyword has a worked
-example, here or in the example models.
+Tests keep this page honest: every `sysml` block above parses on its own.
+Another counts how many of OMG's own example, training and validation models
+load.
 
 Both example models and every block on this page also passed the OMG pilot
 implementation, release 0.62.0, on 2026-10-24, with no errors or warnings.

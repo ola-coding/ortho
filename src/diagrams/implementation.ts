@@ -1,9 +1,10 @@
+import { AstUtils } from 'langium';
 import { isPackageDecl, isPartDef, isPartUsage, isPortUsage } from '../generated/ast.js';
-import type { Exposable, PackageDecl, PartDef } from '../generated/ast.js';
+import type { Exposable, ImportDecl, PackageDecl, PartDef } from '../generated/ast.js';
 import type { Compartment, DiagramGraph, GraphEdge, GraphNode } from '../model/graph.js';
 import { qualifiedName } from '../model/graph.js';
 import { boxSize, performCompartments } from './connector-ends.js';
-import { collectPackages, importCandidates } from '../model/packages.js';
+import { collectPackages } from '../model/packages.js';
 import { measureText } from '../render/text-metrics.js';
 
 /**
@@ -72,21 +73,10 @@ function packageNode(pkg: PackageDecl): GraphNode {
     };
 }
 
-/**
- * The package an import points at, found the way names are. `Pkg::Element`
- * imports resolve to the containing package `Pkg`.
- */
-function resolveImportTarget(importer: PackageDecl, path: string, packageIds: Set<string>): string | undefined {
-    for (const candidate of [path, path.split('::').slice(0, -1).join('::')]) {
-        if (!candidate) {
-            continue;
-        }
-        const found = importCandidates(importer, candidate).find(fqn => packageIds.has(fqn));
-        if (found) {
-            return found;
-        }
-    }
-    return undefined;
+/** The package an import points at: `Pkg::Element` imports from `Pkg`. */
+function importedPackage(imp: ImportDecl): PackageDecl | undefined {
+    const target = imp.target?.ref;
+    return target ? AstUtils.getContainerOfType(target, isPackageDecl) : undefined;
 }
 
 export function extractImplementationGraph(exposed: Exposable[]): DiagramGraph {
@@ -105,7 +95,8 @@ export function extractImplementationGraph(exposed: Exposable[]): DiagramGraph {
     for (const pkg of allPackages) {
         const sourceId = qualifiedName(pkg);
         for (const imp of pkg.imports) {
-            const targetId = resolveImportTarget(pkg, imp.path, packageIds);
+            const target = importedPackage(imp);
+            const targetId = target && packageIds.has(qualifiedName(target)) ? qualifiedName(target) : undefined;
             if (targetId && targetId !== sourceId && !seen.has(`${sourceId}->${targetId}`)) {
                 seen.add(`${sourceId}->${targetId}`);
                 edges.push({

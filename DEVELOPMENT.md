@@ -30,13 +30,17 @@ layout and renderer on what the view exposes.
 ## Parsing
 
 **Name resolution** (`src/parser/sysml-scope.ts`) follows SysML v2. A name
-is looked up where it is written, among the namespace's own members, what a
-definition inherits through `:>` and what a package imports, then in each
-namespace around it, and last among the top-level packages; each `::`
-segment after that is a member of the one before, or a public import of it.
-An import's path is found the same way, and the implementation view uses
-that lookup for its «import» lines. A feature chain continues with dots, each
-segment a feature of the previous one's type, inherited members included.
+is looked up where it is written, among the namespace's own members and
+aliases, what a definition inherits through `:>` and what a namespace
+imports, then in each namespace around it, and last among the top-level
+elements; each `::` segment after that is a member of the one before, or a
+public import of it. An element answers to its short name too, and a quoted
+name loses its quotes as it is parsed (`sysml-value-converter.ts`). An
+import's target is a reference found the same way, which the implementation
+view follows for its «import» lines; one ortho does not have, such as the
+standard library's, imports nothing (`sysml-document-validator.ts`). A
+feature chain continues with dots, each segment a feature of the previous
+one's type, inherited members included.
 
 **Conformance** (`src/parser/sysml-validator.ts`). The grammar enforces what
 it can. After linking, the validator checks the rules it cannot, all listed
@@ -202,11 +206,12 @@ In priority order:
 - [x] **Imports that make names visible:** `Pkg::*` and `Pkg::Element`, public
   ones passed on; the examples rely on them.
 - [ ] **Read standard SysML v2.** Load any valid model, draw what the six
-  views need and ignore the rest. Today 2 of the 252 example, training and
-  validation models in OMG's SysML-v2-Release parse; most stop at a quoted
-  name, `doc`, `item`, `ref`, a unit or `:>` on a usage. The goal: all of them
-  load, checked in CI. Before choosing, try both extending our grammar and
-  building on an existing parser (`sysml-v2-lsp` or `@openmbee/opensysml-wasm`).
+  views need and ignore the rest: all 252 example, training and validation
+  models in OMG's release should load, as `tests/omg-models.test.ts` counts.
+  Existing parsers were tried first: `sysml-v2-lsp` offers no parser API, and
+  OpenSysML's does not expose what the views draw. So ortho's grammar grows
+  from the spec's: names and comments are done; definitions and usages,
+  expressions, behaviour and the rest follow.
 - [ ] **Render every view a model declares**, one SVG per `view`:
   `ortho render model/ -o diagrams/`. The first-file rule and the README's
   file lists go.

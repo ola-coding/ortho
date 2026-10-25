@@ -29,9 +29,9 @@ export function declaredViews(root: AstNode): ViewUsage[] {
     return AstUtils.streamAllContents(root).filter(isViewUsage).toArray();
 }
 
-/** A diagram's heading is its view's name (§7.26.5), without the quotes. */
+/** A diagram's heading is its view's name (§7.26.5). */
 export function viewHeading(view: ViewUsage): string {
-    return view.name.replace(/^'(.*)'$/, '$1');
+    return view.name;
 }
 
 /**

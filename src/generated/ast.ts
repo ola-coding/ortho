@@ -8,12 +8,13 @@ import * as langium from 'langium';
 
 export const SysmlTerminals = {
     WS: /\s+/,
+    ML_NOTE: /\/\/\*[\s\S]*?\*\//,
+    SL_NOTE: /\/\/[^\n\r]*/,
+    REGULAR_COMMENT: /\/\*[\s\S]*?\*\//,
     ID: /[_a-zA-Z][\w_]*/,
     NUMBER: /[0-9]+(\.[0-9]+)?/,
-    STRING: /"[^"]*"/,
-    UNRESTRICTED_NAME: /'[^'\r\n]*'/,
-    ML_COMMENT: /\/\*[\s\S]*?\*\//,
-    SL_COMMENT: /\/\/[^\n\r]*/,
+    STRING: /"(\\.|[^"\\\r\n])*"/,
+    UNRESTRICTED_NAME: /'(\\.|[^'\\\r\n])*'/,
 };
 
 export type SysmlTerminalNames = keyof typeof SysmlTerminals;
@@ -26,29 +27,41 @@ export type SysmlKeywordNames =
     | ":"
     | "::"
     | "::*"
+    | "::**"
     | ":>"
     | ";"
+    | "<"
     | "="
+    | ">"
     | "["
     | "]"
+    | "about"
     | "action"
     | "actor"
+    | "alias"
+    | "all"
     | "allocate"
     | "allocation"
     | "attribute"
     | "by"
     | "case"
+    | "comment"
     | "connect"
     | "connection"
     | "def"
+    | "doc"
     | "end"
     | "expose"
+    | "for"
     | "from"
     | "import"
     | "in"
     | "include"
     | "inout"
     | "interface"
+    | "language"
+    | "library"
+    | "locale"
     | "message"
     | "of"
     | "out"
@@ -59,9 +72,11 @@ export type SysmlKeywordNames =
     | "private"
     | "protected"
     | "public"
+    | "rep"
     | "requirement"
     | "satisfy"
     | "specializes"
+    | "standard"
     | "subject"
     | "then"
     | "to"
@@ -76,14 +91,18 @@ export type SysmlTokenNames = SysmlTerminalNames | SysmlKeywordNames;
 export interface ActionDef extends langium.AstNode {
     readonly $container: PackageDecl;
     readonly $type: 'ActionDef';
+    annotations: Array<AnnotatingElement>;
     members: Array<ActionMember>;
-    name: string;
+    name: Name;
+    shortName?: Name;
 }
 
 export const ActionDef = {
     $type: 'ActionDef',
+    annotations: 'annotations',
     members: 'members',
-    name: 'name'
+    name: 'name',
+    shortName: 'shortName'
 } as const;
 
 export function isActionDef(item: unknown): item is ActionDef {
@@ -103,15 +122,19 @@ export function isActionMember(item: unknown): item is ActionMember {
 export interface ActionUsage extends langium.AstNode {
     readonly $container: ActionDef | ActionUsage | PackageDecl | PartDef | PartUsage;
     readonly $type: 'ActionUsage';
+    annotations: Array<AnnotatingElement>;
     members: Array<ActionMember>;
-    name: string;
+    name: Name;
+    shortName?: Name;
     type?: langium.Reference<ActionDef>;
 }
 
 export const ActionUsage = {
     $type: 'ActionUsage',
+    annotations: 'annotations',
     members: 'members',
     name: 'name',
+    shortName: 'shortName',
     type: 'type'
 } as const;
 
@@ -122,13 +145,15 @@ export function isActionUsage(item: unknown): item is ActionUsage {
 export interface ActorUsage extends langium.AstNode {
     readonly $container: UseCaseDef | UseCaseUsage;
     readonly $type: 'ActorUsage';
-    name: string;
+    name: Name;
+    shortName?: Name;
     type?: langium.Reference<PartDef>;
 }
 
 export const ActorUsage = {
     $type: 'ActorUsage',
     name: 'name',
+    shortName: 'shortName',
     type: 'type'
 } as const;
 
@@ -136,10 +161,32 @@ export function isActorUsage(item: unknown): item is ActorUsage {
     return reflection.isInstance(item, ActorUsage.$type);
 }
 
+export interface AliasMember extends langium.AstNode {
+    readonly $container: PackageDecl;
+    readonly $type: 'AliasMember';
+    annotations: Array<AnnotatingElement>;
+    name?: Name;
+    shortName?: Name;
+    target: QualifiedName;
+}
+
+export const AliasMember = {
+    $type: 'AliasMember',
+    annotations: 'annotations',
+    name: 'name',
+    shortName: 'shortName',
+    target: 'target'
+} as const;
+
+export function isAliasMember(item: unknown): item is AliasMember {
+    return reflection.isInstance(item, AliasMember.$type);
+}
+
 export interface AllocationUsage extends langium.AstNode {
     readonly $container: PackageDecl | PartDef | PartUsage;
     readonly $type: 'AllocationUsage';
-    name?: string;
+    name?: Name;
+    shortName?: Name;
     source: ConnectorEnd;
     target: ConnectorEnd;
 }
@@ -147,6 +194,7 @@ export interface AllocationUsage extends langium.AstNode {
 export const AllocationUsage = {
     $type: 'AllocationUsage',
     name: 'name',
+    shortName: 'shortName',
     source: 'source',
     target: 'target'
 } as const;
@@ -155,17 +203,31 @@ export function isAllocationUsage(item: unknown): item is AllocationUsage {
     return reflection.isInstance(item, AllocationUsage.$type);
 }
 
+export type AnnotatingElement = Comment | Documentation | TextualRepresentation;
+
+export const AnnotatingElement = {
+    $type: 'AnnotatingElement'
+} as const;
+
+export function isAnnotatingElement(item: unknown): item is AnnotatingElement {
+    return reflection.isInstance(item, AnnotatingElement.$type);
+}
+
 export interface AttributeDef extends langium.AstNode {
     readonly $container: PackageDecl;
     readonly $type: 'AttributeDef';
+    annotations: Array<AnnotatingElement>;
     members: Array<AttributeUsage>;
-    name: string;
+    name: Name;
+    shortName?: Name;
 }
 
 export const AttributeDef = {
     $type: 'AttributeDef',
+    annotations: 'annotations',
     members: 'members',
-    name: 'name'
+    name: 'name',
+    shortName: 'shortName'
 } as const;
 
 export function isAttributeDef(item: unknown): item is AttributeDef {
@@ -176,7 +238,8 @@ export interface AttributeUsage extends langium.AstNode {
     readonly $container: ActionDef | ActionUsage | AttributeDef | InterfaceDef | PartDef | PartUsage | PortDef | RequirementDef | RequirementUsage | UseCaseDef | UseCaseUsage;
     readonly $type: 'AttributeUsage';
     direction?: Direction;
-    name: string;
+    name: Name;
+    shortName?: Name;
     type?: QualifiedName;
     value?: Literal;
 }
@@ -185,6 +248,7 @@ export const AttributeUsage = {
     $type: 'AttributeUsage',
     direction: 'direction',
     name: 'name',
+    shortName: 'shortName',
     type: 'type',
     value: 'value'
 } as const;
@@ -193,10 +257,34 @@ export function isAttributeUsage(item: unknown): item is AttributeUsage {
     return reflection.isInstance(item, AttributeUsage.$type);
 }
 
+export interface Comment extends langium.AstNode {
+    readonly $container: ActionDef | ActionUsage | AliasMember | AttributeDef | ImportDecl | InterfaceDef | Model | PackageDecl | PartDef | PartUsage | PortDef | RequirementDef | RequirementUsage | UseCaseDef | UseCaseUsage | ViewUsage;
+    readonly $type: 'Comment';
+    about: Array<QualifiedName>;
+    body: string;
+    locale?: string;
+    name?: Name;
+    shortName?: Name;
+}
+
+export const Comment = {
+    $type: 'Comment',
+    about: 'about',
+    body: 'body',
+    locale: 'locale',
+    name: 'name',
+    shortName: 'shortName'
+} as const;
+
+export function isComment(item: unknown): item is Comment {
+    return reflection.isInstance(item, Comment.$type);
+}
+
 export interface ConnectionUsage extends langium.AstNode {
     readonly $container: PackageDecl | PartDef | PartUsage;
     readonly $type: 'ConnectionUsage';
-    name?: string;
+    name?: Name;
+    shortName?: Name;
     source: ConnectorEnd;
     target: ConnectorEnd;
     type?: langium.Reference<InterfaceDef>;
@@ -205,6 +293,7 @@ export interface ConnectionUsage extends langium.AstNode {
 export const ConnectionUsage = {
     $type: 'ConnectionUsage',
     name: 'name',
+    shortName: 'shortName',
     source: 'source',
     target: 'target',
     type: 'type'
@@ -233,6 +322,37 @@ export type Direction = 'in' | 'inout' | 'out';
 
 export function isDirection(item: unknown): item is Direction {
     return item === 'in' || item === 'out' || item === 'inout';
+}
+
+export interface Documentation extends langium.AstNode {
+    readonly $container: ActionDef | ActionUsage | AliasMember | AttributeDef | ImportDecl | InterfaceDef | Model | PackageDecl | PartDef | PartUsage | PortDef | RequirementDef | RequirementUsage | UseCaseDef | UseCaseUsage | ViewUsage;
+    readonly $type: 'Documentation';
+    body: string;
+    locale?: string;
+    name?: Name;
+    shortName?: Name;
+}
+
+export const Documentation = {
+    $type: 'Documentation',
+    body: 'body',
+    locale: 'locale',
+    name: 'name',
+    shortName: 'shortName'
+} as const;
+
+export function isDocumentation(item: unknown): item is Documentation {
+    return reflection.isInstance(item, Documentation.$type);
+}
+
+export type Element = ActionDef | ActionUsage | AttributeDef | AttributeUsage | InterfaceDef | PackageDecl | PartDef | PartUsage | PortDef | PortUsage | RequirementDef | RequirementUsage | UseCaseDef | UseCaseUsage | ViewUsage;
+
+export const Element = {
+    $type: 'Element'
+} as const;
+
+export function isElement(item: unknown): item is Element {
+    return reflection.isInstance(item, Element.$type);
 }
 
 export type Exposable = ActionDef | PackageDecl | PartUsage;
@@ -271,16 +391,22 @@ export function isFeature(item: unknown): item is Feature {
 }
 
 export interface ImportDecl extends langium.AstNode {
-    readonly $container: PackageDecl;
+    readonly $container: Model | PackageDecl;
     readonly $type: 'ImportDecl';
-    path: QualifiedName;
+    all: boolean;
+    annotations: Array<AnnotatingElement>;
+    recursive: boolean;
+    target: langium.Reference<Element>;
     visibility: Visibility;
     wildcard: boolean;
 }
 
 export const ImportDecl = {
     $type: 'ImportDecl',
-    path: 'path',
+    all: 'all',
+    annotations: 'annotations',
+    recursive: 'recursive',
+    target: 'target',
     visibility: 'visibility',
     wildcard: 'wildcard'
 } as const;
@@ -307,16 +433,20 @@ export function isIncludeUsage(item: unknown): item is IncludeUsage {
 export interface InterfaceDef extends langium.AstNode {
     readonly $container: PackageDecl;
     readonly $type: 'InterfaceDef';
+    annotations: Array<AnnotatingElement>;
     ends: Array<InterfaceEnd>;
     members: Array<AttributeUsage>;
-    name: string;
+    name: Name;
+    shortName?: Name;
 }
 
 export const InterfaceDef = {
     $type: 'InterfaceDef',
+    annotations: 'annotations',
     ends: 'ends',
     members: 'members',
-    name: 'name'
+    name: 'name',
+    shortName: 'shortName'
 } as const;
 
 export function isInterfaceDef(item: unknown): item is InterfaceDef {
@@ -327,7 +457,8 @@ export interface InterfaceEnd extends langium.AstNode {
     readonly $container: InterfaceDef;
     readonly $type: 'InterfaceEnd';
     conjugated: boolean;
-    name: string;
+    name: Name;
+    shortName?: Name;
     type: langium.Reference<PortDef>;
 }
 
@@ -335,6 +466,7 @@ export const InterfaceEnd = {
     $type: 'InterfaceEnd',
     conjugated: 'conjugated',
     name: 'name',
+    shortName: 'shortName',
     type: 'type'
 } as const;
 
@@ -345,14 +477,15 @@ export function isInterfaceEnd(item: unknown): item is InterfaceEnd {
 export type Literal = string;
 
 export function isLiteral(item: unknown): item is Literal {
-    return (typeof item === 'string' && (/[0-9]+(\.[0-9]+)?/.test(item) || /"[^"]*"/.test(item) || /[_a-zA-Z][\w_]*/.test(item)));
+    return (typeof item === 'string' && (/[0-9]+(\.[0-9]+)?/.test(item) || /"(\\.|[^"\\\r\n])*"/.test(item) || /[_a-zA-Z][\w_]*/.test(item)));
 }
 
 export interface MessageUsage extends langium.AstNode {
     readonly $container: ActionDef | ActionUsage;
     readonly $type: 'MessageUsage';
-    name?: string;
+    name?: Name;
     payload?: langium.Reference<AttributeDef>;
+    shortName?: Name;
     source: ConnectorEnd;
     target: ConnectorEnd;
     then: boolean;
@@ -362,6 +495,7 @@ export const MessageUsage = {
     $type: 'MessageUsage',
     name: 'name',
     payload: 'payload',
+    shortName: 'shortName',
     source: 'source',
     target: 'target',
     then: 'then'
@@ -373,11 +507,15 @@ export function isMessageUsage(item: unknown): item is MessageUsage {
 
 export interface Model extends langium.AstNode {
     readonly $type: 'Model';
+    annotations: Array<AnnotatingElement>;
+    imports: Array<ImportDecl>;
     packages: Array<PackageDecl>;
 }
 
 export const Model = {
     $type: 'Model',
+    annotations: 'annotations',
+    imports: 'imports',
     packages: 'packages'
 } as const;
 
@@ -402,19 +540,35 @@ export function isMultiplicity(item: unknown): item is Multiplicity {
     return reflection.isInstance(item, Multiplicity.$type);
 }
 
+export type Name = string;
+
+export function isName(item: unknown): item is Name {
+    return (typeof item === 'string' && (/[_a-zA-Z][\w_]*/.test(item) || /'(\\.|[^'\\\r\n])*'/.test(item)));
+}
+
 export interface PackageDecl extends langium.AstNode {
     readonly $container: Model | PackageDecl;
     readonly $type: 'PackageDecl';
+    aliases: Array<AliasMember>;
+    annotations: Array<AnnotatingElement>;
     imports: Array<ImportDecl>;
+    isLibrary: boolean;
+    isStandard: boolean;
     members: Array<PackageMember>;
-    name: string;
+    name: Name;
+    shortName?: Name;
 }
 
 export const PackageDecl = {
     $type: 'PackageDecl',
+    aliases: 'aliases',
+    annotations: 'annotations',
     imports: 'imports',
+    isLibrary: 'isLibrary',
+    isStandard: 'isStandard',
     members: 'members',
-    name: 'name'
+    name: 'name',
+    shortName: 'shortName'
 } as const;
 
 export function isPackageDecl(item: unknown): item is PackageDecl {
@@ -434,15 +588,19 @@ export function isPackageMember(item: unknown): item is PackageMember {
 export interface PartDef extends langium.AstNode {
     readonly $container: PackageDecl;
     readonly $type: 'PartDef';
+    annotations: Array<AnnotatingElement>;
     members: Array<UsageMember>;
-    name: string;
+    name: Name;
+    shortName?: Name;
     supertypes: Array<langium.Reference<PartDef>>;
 }
 
 export const PartDef = {
     $type: 'PartDef',
+    annotations: 'annotations',
     members: 'members',
     name: 'name',
+    shortName: 'shortName',
     supertypes: 'supertypes'
 } as const;
 
@@ -453,17 +611,21 @@ export function isPartDef(item: unknown): item is PartDef {
 export interface PartUsage extends langium.AstNode {
     readonly $container: ActionDef | ActionUsage | PackageDecl | PartDef | PartUsage;
     readonly $type: 'PartUsage';
+    annotations: Array<AnnotatingElement>;
     members: Array<UsageMember>;
     multiplicity?: Multiplicity;
-    name: string;
+    name: Name;
+    shortName?: Name;
     type?: langium.Reference<PartDef>;
 }
 
 export const PartUsage = {
     $type: 'PartUsage',
+    annotations: 'annotations',
     members: 'members',
     multiplicity: 'multiplicity',
     name: 'name',
+    shortName: 'shortName',
     type: 'type'
 } as const;
 
@@ -489,15 +651,19 @@ export function isPerformUsage(item: unknown): item is PerformUsage {
 export interface PortDef extends langium.AstNode {
     readonly $container: PackageDecl;
     readonly $type: 'PortDef';
+    annotations: Array<AnnotatingElement>;
     members: Array<AttributeUsage>;
-    name: string;
+    name: Name;
+    shortName?: Name;
     supertypes: Array<langium.Reference<PortDef>>;
 }
 
 export const PortDef = {
     $type: 'PortDef',
+    annotations: 'annotations',
     members: 'members',
     name: 'name',
+    shortName: 'shortName',
     supertypes: 'supertypes'
 } as const;
 
@@ -509,7 +675,8 @@ export interface PortUsage extends langium.AstNode {
     readonly $container: PartDef | PartUsage;
     readonly $type: 'PortUsage';
     conjugated: boolean;
-    name: string;
+    name: Name;
+    shortName?: Name;
     type?: langium.Reference<PortDef>;
 }
 
@@ -517,6 +684,7 @@ export const PortUsage = {
     $type: 'PortUsage',
     conjugated: 'conjugated',
     name: 'name',
+    shortName: 'shortName',
     type: 'type'
 } as const;
 
@@ -533,14 +701,18 @@ export function isQualifiedName(item: unknown): item is QualifiedName {
 export interface RequirementDef extends langium.AstNode {
     readonly $container: PackageDecl;
     readonly $type: 'RequirementDef';
+    annotations: Array<AnnotatingElement>;
     members: Array<RequirementMember>;
-    name: string;
+    name: Name;
+    shortName?: Name;
 }
 
 export const RequirementDef = {
     $type: 'RequirementDef',
+    annotations: 'annotations',
     members: 'members',
-    name: 'name'
+    name: 'name',
+    shortName: 'shortName'
 } as const;
 
 export function isRequirementDef(item: unknown): item is RequirementDef {
@@ -560,15 +732,19 @@ export function isRequirementMember(item: unknown): item is RequirementMember {
 export interface RequirementUsage extends langium.AstNode {
     readonly $container: PackageDecl | PartDef | PartUsage;
     readonly $type: 'RequirementUsage';
+    annotations: Array<AnnotatingElement>;
     members: Array<RequirementMember>;
-    name: string;
+    name: Name;
+    shortName?: Name;
     type?: langium.Reference<RequirementDef>;
 }
 
 export const RequirementUsage = {
     $type: 'RequirementUsage',
+    annotations: 'annotations',
     members: 'members',
     name: 'name',
+    shortName: 'shortName',
     type: 'type'
 } as const;
 
@@ -596,18 +772,41 @@ export function isSatisfyUsage(item: unknown): item is SatisfyUsage {
 export interface SubjectUsage extends langium.AstNode {
     readonly $container: RequirementDef | RequirementUsage | UseCaseDef | UseCaseUsage;
     readonly $type: 'SubjectUsage';
-    name: string;
+    name: Name;
+    shortName?: Name;
     type?: langium.Reference<PartDef>;
 }
 
 export const SubjectUsage = {
     $type: 'SubjectUsage',
     name: 'name',
+    shortName: 'shortName',
     type: 'type'
 } as const;
 
 export function isSubjectUsage(item: unknown): item is SubjectUsage {
     return reflection.isInstance(item, SubjectUsage.$type);
+}
+
+export interface TextualRepresentation extends langium.AstNode {
+    readonly $container: ActionDef | ActionUsage | AliasMember | AttributeDef | ImportDecl | InterfaceDef | Model | PackageDecl | PartDef | PartUsage | PortDef | RequirementDef | RequirementUsage | UseCaseDef | UseCaseUsage | ViewUsage;
+    readonly $type: 'TextualRepresentation';
+    body: string;
+    language: string;
+    name?: Name;
+    shortName?: Name;
+}
+
+export const TextualRepresentation = {
+    $type: 'TextualRepresentation',
+    body: 'body',
+    language: 'language',
+    name: 'name',
+    shortName: 'shortName'
+} as const;
+
+export function isTextualRepresentation(item: unknown): item is TextualRepresentation {
+    return reflection.isInstance(item, TextualRepresentation.$type);
 }
 
 export type UpperBound = '*' | string;
@@ -629,14 +828,18 @@ export function isUsageMember(item: unknown): item is UsageMember {
 export interface UseCaseDef extends langium.AstNode {
     readonly $container: PackageDecl;
     readonly $type: 'UseCaseDef';
+    annotations: Array<AnnotatingElement>;
     members: Array<UseCaseMember>;
-    name: string;
+    name: Name;
+    shortName?: Name;
 }
 
 export const UseCaseDef = {
     $type: 'UseCaseDef',
+    annotations: 'annotations',
     members: 'members',
-    name: 'name'
+    name: 'name',
+    shortName: 'shortName'
 } as const;
 
 export function isUseCaseDef(item: unknown): item is UseCaseDef {
@@ -656,15 +859,19 @@ export function isUseCaseMember(item: unknown): item is UseCaseMember {
 export interface UseCaseUsage extends langium.AstNode {
     readonly $container: PackageDecl;
     readonly $type: 'UseCaseUsage';
+    annotations: Array<AnnotatingElement>;
     members: Array<UseCaseMember>;
-    name: string;
+    name: Name;
+    shortName?: Name;
     type?: langium.Reference<UseCaseDef>;
 }
 
 export const UseCaseUsage = {
     $type: 'UseCaseUsage',
+    annotations: 'annotations',
     members: 'members',
     name: 'name',
+    shortName: 'shortName',
     type: 'type'
 } as const;
 
@@ -672,25 +879,23 @@ export function isUseCaseUsage(item: unknown): item is UseCaseUsage {
     return reflection.isInstance(item, UseCaseUsage.$type);
 }
 
-export type ViewName = string;
-
-export function isViewName(item: unknown): item is ViewName {
-    return (typeof item === 'string' && (/[_a-zA-Z][\w_]*/.test(item) || /'[^'\r\n]*'/.test(item)));
-}
-
 export interface ViewUsage extends langium.AstNode {
     readonly $container: PackageDecl;
     readonly $type: 'ViewUsage';
+    annotations: Array<AnnotatingElement>;
     definition: QualifiedName;
     exposes: Array<Expose>;
-    name: ViewName;
+    name: Name;
+    shortName?: Name;
 }
 
 export const ViewUsage = {
     $type: 'ViewUsage',
+    annotations: 'annotations',
     definition: 'definition',
     exposes: 'exposes',
-    name: 'name'
+    name: 'name',
+    shortName: 'shortName'
 } as const;
 
 export function isViewUsage(item: unknown): item is ViewUsage {
@@ -708,11 +913,16 @@ export type SysmlAstType = {
     ActionMember: ActionMember
     ActionUsage: ActionUsage
     ActorUsage: ActorUsage
+    AliasMember: AliasMember
     AllocationUsage: AllocationUsage
+    AnnotatingElement: AnnotatingElement
     AttributeDef: AttributeDef
     AttributeUsage: AttributeUsage
+    Comment: Comment
     ConnectionUsage: ConnectionUsage
     ConnectorEnd: ConnectorEnd
+    Documentation: Documentation
+    Element: Element
     Exposable: Exposable
     Expose: Expose
     Feature: Feature
@@ -735,6 +945,7 @@ export type SysmlAstType = {
     RequirementUsage: RequirementUsage
     SatisfyUsage: SatisfyUsage
     SubjectUsage: SubjectUsage
+    TextualRepresentation: TextualRepresentation
     UsageMember: UsageMember
     UseCaseDef: UseCaseDef
     UseCaseMember: UseCaseMember
@@ -747,6 +958,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
         ActionDef: {
             name: ActionDef.$type,
             properties: {
+                annotations: {
+                    name: ActionDef.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
                 members: {
                     name: ActionDef.members,
                     defaultValue: [],
@@ -754,9 +970,13 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 },
                 name: {
                     name: ActionDef.name
+                },
+                shortName: {
+                    name: ActionDef.shortName,
+                    optional: true
                 }
             },
-            superTypes: [Exposable.$type, PackageMember.$type]
+            superTypes: [Element.$type, Exposable.$type, PackageMember.$type]
         },
         ActionMember: {
             name: ActionMember.$type,
@@ -767,6 +987,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
         ActionUsage: {
             name: ActionUsage.$type,
             properties: {
+                annotations: {
+                    name: ActionUsage.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
                 members: {
                     name: ActionUsage.members,
                     defaultValue: [],
@@ -775,19 +1000,27 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 name: {
                     name: ActionUsage.name
                 },
+                shortName: {
+                    name: ActionUsage.shortName,
+                    optional: true
+                },
                 type: {
                     name: ActionUsage.type,
                     referenceType: ActionDef.$type,
                     optional: true
                 }
             },
-            superTypes: [ActionMember.$type, Feature.$type, PackageMember.$type, UsageMember.$type]
+            superTypes: [ActionMember.$type, Element.$type, Feature.$type, PackageMember.$type, UsageMember.$type]
         },
         ActorUsage: {
             name: ActorUsage.$type,
             properties: {
                 name: {
                     name: ActorUsage.name
+                },
+                shortName: {
+                    name: ActorUsage.shortName,
+                    optional: true
                 },
                 type: {
                     name: ActorUsage.type,
@@ -797,11 +1030,37 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
             },
             superTypes: [UseCaseMember.$type]
         },
+        AliasMember: {
+            name: AliasMember.$type,
+            properties: {
+                annotations: {
+                    name: AliasMember.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
+                name: {
+                    name: AliasMember.name,
+                    optional: true
+                },
+                shortName: {
+                    name: AliasMember.shortName,
+                    optional: true
+                },
+                target: {
+                    name: AliasMember.target
+                }
+            },
+            superTypes: []
+        },
         AllocationUsage: {
             name: AllocationUsage.$type,
             properties: {
                 name: {
                     name: AllocationUsage.name,
+                    optional: true
+                },
+                shortName: {
+                    name: AllocationUsage.shortName,
                     optional: true
                 },
                 source: {
@@ -813,9 +1072,20 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
             },
             superTypes: [PackageMember.$type, UsageMember.$type]
         },
+        AnnotatingElement: {
+            name: AnnotatingElement.$type,
+            properties: {
+            },
+            superTypes: []
+        },
         AttributeDef: {
             name: AttributeDef.$type,
             properties: {
+                annotations: {
+                    name: AttributeDef.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
                 members: {
                     name: AttributeDef.members,
                     defaultValue: [],
@@ -823,9 +1093,13 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 },
                 name: {
                     name: AttributeDef.name
+                },
+                shortName: {
+                    name: AttributeDef.shortName,
+                    optional: true
                 }
             },
-            superTypes: [PackageMember.$type]
+            superTypes: [Element.$type, PackageMember.$type]
         },
         AttributeUsage: {
             name: AttributeUsage.$type,
@@ -837,6 +1111,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 name: {
                     name: AttributeUsage.name
                 },
+                shortName: {
+                    name: AttributeUsage.shortName,
+                    optional: true
+                },
                 type: {
                     name: AttributeUsage.type,
                     optional: true
@@ -846,13 +1124,43 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     optional: true
                 }
             },
-            superTypes: [ActionMember.$type, Feature.$type, RequirementMember.$type, UsageMember.$type, UseCaseMember.$type]
+            superTypes: [ActionMember.$type, Element.$type, Feature.$type, RequirementMember.$type, UsageMember.$type, UseCaseMember.$type]
+        },
+        Comment: {
+            name: Comment.$type,
+            properties: {
+                about: {
+                    name: Comment.about,
+                    defaultValue: [],
+                    optional: true
+                },
+                body: {
+                    name: Comment.body
+                },
+                locale: {
+                    name: Comment.locale,
+                    optional: true
+                },
+                name: {
+                    name: Comment.name,
+                    optional: true
+                },
+                shortName: {
+                    name: Comment.shortName,
+                    optional: true
+                }
+            },
+            superTypes: [AnnotatingElement.$type]
         },
         ConnectionUsage: {
             name: ConnectionUsage.$type,
             properties: {
                 name: {
                     name: ConnectionUsage.name,
+                    optional: true
+                },
+                shortName: {
+                    name: ConnectionUsage.shortName,
                     optional: true
                 },
                 source: {
@@ -877,6 +1185,33 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: [],
                     referenceType: Feature.$type
                 }
+            },
+            superTypes: []
+        },
+        Documentation: {
+            name: Documentation.$type,
+            properties: {
+                body: {
+                    name: Documentation.body
+                },
+                locale: {
+                    name: Documentation.locale,
+                    optional: true
+                },
+                name: {
+                    name: Documentation.name,
+                    optional: true
+                },
+                shortName: {
+                    name: Documentation.shortName,
+                    optional: true
+                }
+            },
+            superTypes: [AnnotatingElement.$type]
+        },
+        Element: {
+            name: Element.$type,
+            properties: {
             },
             superTypes: []
         },
@@ -905,8 +1240,24 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
         ImportDecl: {
             name: ImportDecl.$type,
             properties: {
-                path: {
-                    name: ImportDecl.path
+                all: {
+                    name: ImportDecl.all,
+                    defaultValue: false,
+                    optional: true
+                },
+                annotations: {
+                    name: ImportDecl.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
+                recursive: {
+                    name: ImportDecl.recursive,
+                    defaultValue: false,
+                    optional: true
+                },
+                target: {
+                    name: ImportDecl.target,
+                    referenceType: Element.$type
                 },
                 visibility: {
                     name: ImportDecl.visibility
@@ -932,6 +1283,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
         InterfaceDef: {
             name: InterfaceDef.$type,
             properties: {
+                annotations: {
+                    name: InterfaceDef.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
                 ends: {
                     name: InterfaceDef.ends,
                     defaultValue: [],
@@ -944,9 +1300,13 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 },
                 name: {
                     name: InterfaceDef.name
+                },
+                shortName: {
+                    name: InterfaceDef.shortName,
+                    optional: true
                 }
             },
-            superTypes: [PackageMember.$type]
+            superTypes: [Element.$type, PackageMember.$type]
         },
         InterfaceEnd: {
             name: InterfaceEnd.$type,
@@ -958,6 +1318,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 },
                 name: {
                     name: InterfaceEnd.name
+                },
+                shortName: {
+                    name: InterfaceEnd.shortName,
+                    optional: true
                 },
                 type: {
                     name: InterfaceEnd.type,
@@ -978,6 +1342,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     referenceType: AttributeDef.$type,
                     optional: true
                 },
+                shortName: {
+                    name: MessageUsage.shortName,
+                    optional: true
+                },
                 source: {
                     name: MessageUsage.source
                 },
@@ -995,6 +1363,16 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
         Model: {
             name: Model.$type,
             properties: {
+                annotations: {
+                    name: Model.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
+                imports: {
+                    name: Model.imports,
+                    defaultValue: [],
+                    optional: true
+                },
                 packages: {
                     name: Model.packages,
                     defaultValue: [],
@@ -1019,9 +1397,29 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
         PackageDecl: {
             name: PackageDecl.$type,
             properties: {
+                aliases: {
+                    name: PackageDecl.aliases,
+                    defaultValue: [],
+                    optional: true
+                },
+                annotations: {
+                    name: PackageDecl.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
                 imports: {
                     name: PackageDecl.imports,
                     defaultValue: [],
+                    optional: true
+                },
+                isLibrary: {
+                    name: PackageDecl.isLibrary,
+                    defaultValue: false,
+                    optional: true
+                },
+                isStandard: {
+                    name: PackageDecl.isStandard,
+                    defaultValue: false,
                     optional: true
                 },
                 members: {
@@ -1031,9 +1429,13 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 },
                 name: {
                     name: PackageDecl.name
+                },
+                shortName: {
+                    name: PackageDecl.shortName,
+                    optional: true
                 }
             },
-            superTypes: [Exposable.$type, PackageMember.$type]
+            superTypes: [Element.$type, Exposable.$type, PackageMember.$type]
         },
         PackageMember: {
             name: PackageMember.$type,
@@ -1044,6 +1446,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
         PartDef: {
             name: PartDef.$type,
             properties: {
+                annotations: {
+                    name: PartDef.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
                 members: {
                     name: PartDef.members,
                     defaultValue: [],
@@ -1052,6 +1459,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 name: {
                     name: PartDef.name
                 },
+                shortName: {
+                    name: PartDef.shortName,
+                    optional: true
+                },
                 supertypes: {
                     name: PartDef.supertypes,
                     defaultValue: [],
@@ -1059,11 +1470,16 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     optional: true
                 }
             },
-            superTypes: [PackageMember.$type]
+            superTypes: [Element.$type, PackageMember.$type]
         },
         PartUsage: {
             name: PartUsage.$type,
             properties: {
+                annotations: {
+                    name: PartUsage.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
                 members: {
                     name: PartUsage.members,
                     defaultValue: [],
@@ -1076,13 +1492,17 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 name: {
                     name: PartUsage.name
                 },
+                shortName: {
+                    name: PartUsage.shortName,
+                    optional: true
+                },
                 type: {
                     name: PartUsage.type,
                     referenceType: PartDef.$type,
                     optional: true
                 }
             },
-            superTypes: [ActionMember.$type, Exposable.$type, Feature.$type, PackageMember.$type, UsageMember.$type]
+            superTypes: [ActionMember.$type, Element.$type, Exposable.$type, Feature.$type, PackageMember.$type, UsageMember.$type]
         },
         PerformUsage: {
             name: PerformUsage.$type,
@@ -1096,6 +1516,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
         PortDef: {
             name: PortDef.$type,
             properties: {
+                annotations: {
+                    name: PortDef.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
                 members: {
                     name: PortDef.members,
                     defaultValue: [],
@@ -1104,6 +1529,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 name: {
                     name: PortDef.name
                 },
+                shortName: {
+                    name: PortDef.shortName,
+                    optional: true
+                },
                 supertypes: {
                     name: PortDef.supertypes,
                     defaultValue: [],
@@ -1111,7 +1540,7 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     optional: true
                 }
             },
-            superTypes: [PackageMember.$type]
+            superTypes: [Element.$type, PackageMember.$type]
         },
         PortUsage: {
             name: PortUsage.$type,
@@ -1124,17 +1553,26 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 name: {
                     name: PortUsage.name
                 },
+                shortName: {
+                    name: PortUsage.shortName,
+                    optional: true
+                },
                 type: {
                     name: PortUsage.type,
                     referenceType: PortDef.$type,
                     optional: true
                 }
             },
-            superTypes: [Feature.$type, UsageMember.$type]
+            superTypes: [Element.$type, Feature.$type, UsageMember.$type]
         },
         RequirementDef: {
             name: RequirementDef.$type,
             properties: {
+                annotations: {
+                    name: RequirementDef.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
                 members: {
                     name: RequirementDef.members,
                     defaultValue: [],
@@ -1142,9 +1580,13 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 },
                 name: {
                     name: RequirementDef.name
+                },
+                shortName: {
+                    name: RequirementDef.shortName,
+                    optional: true
                 }
             },
-            superTypes: [PackageMember.$type]
+            superTypes: [Element.$type, PackageMember.$type]
         },
         RequirementMember: {
             name: RequirementMember.$type,
@@ -1155,6 +1597,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
         RequirementUsage: {
             name: RequirementUsage.$type,
             properties: {
+                annotations: {
+                    name: RequirementUsage.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
                 members: {
                     name: RequirementUsage.members,
                     defaultValue: [],
@@ -1163,13 +1610,17 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 name: {
                     name: RequirementUsage.name
                 },
+                shortName: {
+                    name: RequirementUsage.shortName,
+                    optional: true
+                },
                 type: {
                     name: RequirementUsage.type,
                     referenceType: RequirementDef.$type,
                     optional: true
                 }
             },
-            superTypes: [PackageMember.$type, UsageMember.$type]
+            superTypes: [Element.$type, PackageMember.$type, UsageMember.$type]
         },
         SatisfyUsage: {
             name: SatisfyUsage.$type,
@@ -1191,6 +1642,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 name: {
                     name: SubjectUsage.name
                 },
+                shortName: {
+                    name: SubjectUsage.shortName,
+                    optional: true
+                },
                 type: {
                     name: SubjectUsage.type,
                     referenceType: PartDef.$type,
@@ -1198,6 +1653,26 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 }
             },
             superTypes: [Feature.$type, RequirementMember.$type, UseCaseMember.$type]
+        },
+        TextualRepresentation: {
+            name: TextualRepresentation.$type,
+            properties: {
+                body: {
+                    name: TextualRepresentation.body
+                },
+                language: {
+                    name: TextualRepresentation.language
+                },
+                name: {
+                    name: TextualRepresentation.name,
+                    optional: true
+                },
+                shortName: {
+                    name: TextualRepresentation.shortName,
+                    optional: true
+                }
+            },
+            superTypes: [AnnotatingElement.$type]
         },
         UsageMember: {
             name: UsageMember.$type,
@@ -1208,6 +1683,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
         UseCaseDef: {
             name: UseCaseDef.$type,
             properties: {
+                annotations: {
+                    name: UseCaseDef.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
                 members: {
                     name: UseCaseDef.members,
                     defaultValue: [],
@@ -1215,9 +1695,13 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 },
                 name: {
                     name: UseCaseDef.name
+                },
+                shortName: {
+                    name: UseCaseDef.shortName,
+                    optional: true
                 }
             },
-            superTypes: [PackageMember.$type]
+            superTypes: [Element.$type, PackageMember.$type]
         },
         UseCaseMember: {
             name: UseCaseMember.$type,
@@ -1228,6 +1712,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
         UseCaseUsage: {
             name: UseCaseUsage.$type,
             properties: {
+                annotations: {
+                    name: UseCaseUsage.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
                 members: {
                     name: UseCaseUsage.members,
                     defaultValue: [],
@@ -1236,29 +1725,43 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 name: {
                     name: UseCaseUsage.name
                 },
+                shortName: {
+                    name: UseCaseUsage.shortName,
+                    optional: true
+                },
                 type: {
                     name: UseCaseUsage.type,
                     referenceType: UseCaseDef.$type,
                     optional: true
                 }
             },
-            superTypes: [Feature.$type, PackageMember.$type]
+            superTypes: [Element.$type, Feature.$type, PackageMember.$type]
         },
         ViewUsage: {
             name: ViewUsage.$type,
             properties: {
+                annotations: {
+                    name: ViewUsage.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
                 definition: {
                     name: ViewUsage.definition
                 },
                 exposes: {
                     name: ViewUsage.exposes,
-                    defaultValue: []
+                    defaultValue: [],
+                    optional: true
                 },
                 name: {
                     name: ViewUsage.name
+                },
+                shortName: {
+                    name: ViewUsage.shortName,
+                    optional: true
                 }
             },
-            superTypes: [PackageMember.$type]
+            superTypes: [Element.$type, PackageMember.$type]
         }
     } as const satisfies langium.AstMetaData
 }
