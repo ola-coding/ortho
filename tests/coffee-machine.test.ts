@@ -12,8 +12,7 @@ import { extractPhysicalGraph } from '../src/diagrams/physical.js';
 import { extractDeploymentGraph } from '../src/diagrams/deployment.js';
 import { extractSequenceModel } from '../src/diagrams/sequence.js';
 import { declaredViews, diagramKind, exposedElements, viewHeading } from '../src/model/views.js';
-import type { DiagramKind } from '../src/model/views.js';
-import { renderView } from '../src/pipeline.js';
+import { renderViews } from '../src/pipeline.js';
 
 const BASE = resolve(dirname(fileURLToPath(import.meta.url)), '../examples/coffee-machine');
 
@@ -203,22 +202,22 @@ describe('coffee machine example model', () => {
         expect(sequence.messages.at(-1)!.label).toBe('beverageReady');
     });
 
-    it('renders all six views end-to-end, each from the view its first file declares', async () => {
-        const jobs: Array<[DiagramKind, string[]]> = [
-            ['use-case', ['use-case.sysml']],
-            ['logical', ['logical.sysml']],
-            ['implementation', ['implementation.sysml', 'logical.sysml']],
-            ['physical', ['physical.sysml', 'logical.sysml']],
-            ['deployment', ['deployment.sysml', 'implementation.sysml', 'physical.sysml', 'logical.sysml']],
-            ['process', ['process.sysml', 'implementation.sysml', 'logical.sysml']]
-        ];
-        for (const [kind, files] of jobs) {
-            const model = await parseSet(...files);
-            const [view] = declaredViews(model.packages[0]);
-            expect(diagramKind(view), files[0]).toBe(kind);
-            const { svg } = await renderView(view, model, { heading: viewHeading(view), source: files[0] });
-            expect(svg.startsWith('<svg'), kind).toBe(true);
-            expect(svg, kind).toContain(viewHeading(view));
+    it('renders all six views, each to a file named after it', async () => {
+        const { rendered, skipped } = await renderViews(await parseSysmlFiles(createSysmlServices().Sysml, ALL.map(f => resolve(BASE, f))));
+        expect(skipped).toEqual([]);
+        expect(Object.fromEntries(rendered.map(r => [diagramKind(r.view), r.file]))).toEqual({
+            'use-case': 'use-case-view-coffee-machine.svg',
+            logical: 'logical-view-coffee-machine.svg',
+            implementation: 'implementation-view-coffee-machine.svg',
+            physical: 'physical-view-coffee-machine.svg',
+            deployment: 'deployment-view-coffee-machine.svg',
+            process: 'process-view-coffee-machine.svg'
+        });
+        for (const { view, result } of rendered) {
+            expect(result.svg.startsWith('<svg'), view.name).toBe(true);
+            expect(result.svg, view.name).toContain(viewHeading(view));
         }
+        // Each diagram names the file that declares its view.
+        expect(rendered.find(r => diagramKind(r.view) === 'physical')!.result.svg).toContain('examples/coffee-machine/physical.sysml');
     }, 30_000);
 });

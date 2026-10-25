@@ -1,28 +1,18 @@
 import { mkdir, readFile, writeFile, readdir, stat } from 'node:fs/promises';
-import { dirname, join } from 'node:path';
+import { join } from 'node:path';
 import { Command } from 'commander';
 import { createSysmlServices } from './parser/sysml-module.js';
 import { parseSysmlFiles } from './parser/parse.js';
-import type { DiagramTitle } from './render/svg-renderer.js';
-import { renderView } from './pipeline.js';
-import { declaredViews, viewHeading, whyUndrawable } from './model/views.js';
+import { renderViews } from './pipeline.js';
+import { viewHeading } from './model/views.js';
 import { getTheme, themes } from './render/theme.js';
 
-interface ExpandedInput {
-    isDirectory: boolean;
-    files: string[];
-}
-
-async function expandInput(path: string): Promise<ExpandedInput> {
-    const info = await stat(path);
-    if (!info.isDirectory()) {
-        return { isDirectory: false, files: [path] };
+/** A file, or the .sysml files in a folder. */
+async function expandInput(path: string): Promise<string[]> {
+    if (!(await stat(path)).isDirectory()) {
+        return [path];
     }
-    const entries = await readdir(path);
-    return {
-        isDirectory: true,
-        files: entries.filter(e => e.endsWith('.sysml')).sort().map(e => join(path, e))
-    };
+    return (await readdir(path)).filter(e => e.endsWith('.sysml')).sort().map(e => join(path, e));
 }
 
 // Read from the package rather than hard-coding, so `--version` cannot drift.
@@ -40,12 +30,11 @@ program
 
 program
     .command('render')
-    .description('Render the view the first model file declares')
-    .argument('<models...>', 'one or more .sysml files or directories (linked as one workspace)')
-    .requiredOption('-o, --out <file>', 'output SVG file path')
-    .option('-t, --title <heading>', "override the heading (default: the view's name)")
-    .option('--theme <name>', `paint the diagram with a theme (${Object.keys(themes).join(', ')})`, 'light')
-    .action(async (modelPaths: string[], options: { out: string; title?: string; theme: string }) => {
+    .description('Render every view the model declares, one SVG each')
+    .argument('<models...>', 'one or more .sysml files or folders, read as one model')
+    .requiredOption('-o, --out <folder>', 'the folder to write the SVGs to, each named after its view')
+    .option('--theme <name>', `paint the diagrams with a theme (${Object.keys(themes).join(', ')})`, 'light')
+    .action(async (modelPaths: string[], options: { out: string; theme: string }) => {
         const theme = getTheme(options.theme);
         if (!theme) {
             console.error(`Unknown theme "${options.theme}". Available: ${Object.keys(themes).join(', ')}.`);
@@ -53,50 +42,35 @@ program
             return;
         }
         const inputs = await Promise.all(modelPaths.map(expandInput));
-        const uniqueFiles = [...new Set(inputs.flatMap(i => i.files).map(f => f.replace(/\\/g, '/')))];
+        const uniqueFiles = [...new Set(inputs.flat().map(f => f.replace(/\\/g, '/')))];
         if (uniqueFiles.length === 0) {
             console.error('No .sysml files found in the given inputs.');
             process.exitCode = 1;
             return;
         }
 
-        const services = createSysmlServices();
-        let parsed: Awaited<ReturnType<typeof parseSysmlFiles>>;
         try {
-            parsed = await parseSysmlFiles(services.Sysml, uniqueFiles);
+            const { rendered, skipped } = await renderViews(await parseSysmlFiles(createSysmlServices().Sysml, uniqueFiles), theme);
+            for (const { view, reason } of skipped) {
+                console.error(`Skipped '${viewHeading(view)}': ${reason}`);
+            }
+            if (rendered.length === 0) {
+                console.error(skipped.length > 0 ? 'The model declares no view ortho can draw.'
+                    : "The model declares no view. ortho draws the views a model declares, such as view 'Functions' : GeneralView { expose Functions; }.");
+                process.exitCode = 1;
+                return;
+            }
+            await mkdir(options.out, { recursive: true });
+            for (const { file, result } of rendered) {
+                const path = join(options.out, file);
+                await writeFile(path, result.svg, 'utf-8');
+                console.log(`Wrote ${path} (${result.summary})`);
+            }
         } catch (error) {
             // A model that does not load is reported, not a crash.
             console.error(error instanceof Error ? error.message : String(error));
             process.exitCode = 1;
-            return;
         }
-        const { model, documents } = parsed;
-
-        const views = declaredViews(documents[0].parseResult.value);
-        if (views.length !== 1) {
-            console.error(`${uniqueFiles[0]} declares ${views.length === 0 ? 'no view' : `${views.length} views`}; `
-                + 'ortho renders the one view its first file declares.');
-            process.exitCode = 1;
-            return;
-        }
-
-        const undrawable = whyUndrawable(views[0]);
-        if (undrawable) {
-            console.error(`${uniqueFiles[0]}: ${undrawable}`);
-            process.exitCode = 1;
-            return;
-        }
-
-        const firstInput = modelPaths[0].replace(/\\/g, '/');
-        const title: DiagramTitle = {
-            heading: options.title ?? viewHeading(views[0]),
-            source: inputs[0].isDirectory ? `${firstInput}/*.sysml` : uniqueFiles.join(', ')
-        };
-
-        const result = await renderView(views[0], model, title, theme);
-        await mkdir(dirname(options.out), { recursive: true });
-        await writeFile(options.out, result.svg, 'utf-8');
-        console.log(`Wrote ${options.out} (${result.summary})`);
     });
 
 await program.parseAsync(process.argv);

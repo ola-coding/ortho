@@ -57,6 +57,19 @@ export function viewHeading(view: ViewUsage): string {
 }
 
 /**
+ * The file a view is rendered to: its short name, or else its name, in lower
+ * case with hyphens. `view 'Logical view — Coffee Machine'` is written to
+ * logical-view-coffee-machine.svg, `view <logical> 'Logical view'` to
+ * logical.svg.
+ */
+export function viewFileName(view: ViewUsage): string {
+    const slug = (view.shortName ?? viewHeading(view))
+        .normalize('NFKD').replace(/\p{M}/gu, '')
+        .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    return `${slug || 'view'}.svg`;
+}
+
+/**
  * Which of ortho's six diagrams a view is. An InterconnectionView is the
  * physical view and a SequenceView the process view. A GeneralView presents
  * whatever it exposes, so its content decides: a function tree, use cases,

@@ -354,10 +354,10 @@
         <h1>Diagrams that <span class="accent">can't</span> go stale</h1>
         <p class="lede">
           <strong>ortho</strong> renders six architecture views straight from SysML v2 text.
-          No drawing tool, no cloud service, no model repository — a model file,
-          one command, and an SVG you commit next to the code.
+          No drawing tool, no cloud service, no model repository — a model, one
+          command, and SVGs you commit next to the code.
         </p>
-        <div class="command">ortho render models/logical.sysml <span class="flag">-o</span> diagrams/logical-view.svg</div>
+        <div class="command">ortho render models <span class="flag">-o</span> diagrams</div>
       </div>
       <div class="titleblock">
         <span>Project · ortho</span><span>Reference models · survey drone + coffee machine</span>
@@ -515,11 +515,11 @@ use case followProgress : SurveyTask;
           </div>
           <div class="figure">
             <div class="figure-head">
-              <h3 style="margin:0">Generated · use-case-view.svg</h3>
+              <h3 style="margin:0">Generated · use-case-view-survey-drone.svg</h3>
               <button type="button" data-zoom>Zoom</button>
             </div>
             <div class="figure-mount">
-              <div class="figure-svg" data-svg="drone/use-case-view.svg"></div>
+              <div class="figure-svg" data-svg="drone/use-case-view-survey-drone.svg"></div>
             </div>
           </div>
         </div>
@@ -568,11 +568,11 @@ action def PerformAerialSurvey {
           </div>
           <div class="figure">
             <div class="figure-head">
-              <h3 style="margin:0">Generated · logical-view.svg</h3>
+              <h3 style="margin:0">Generated · logical-view-survey-drone.svg</h3>
               <button type="button" data-zoom>Zoom</button>
             </div>
             <div class="figure-mount">
-              <div class="figure-svg" data-svg="drone/logical-view.svg"></div>
+              <div class="figure-svg" data-svg="drone/logical-view-survey-drone.svg"></div>
             </div>
           </div>
         </div>
@@ -639,11 +639,11 @@ package Software {
           </div>
           <div class="figure">
             <div class="figure-head">
-              <h3 style="margin:0">Generated · implementation-view.svg</h3>
+              <h3 style="margin:0">Generated · implementation-view-survey-drone.svg</h3>
               <button type="button" data-zoom>Zoom</button>
             </div>
             <div class="figure-mount">
-              <div class="figure-svg" data-svg="drone/implementation-view.svg"></div>
+              <div class="figure-svg" data-svg="drone/implementation-view-survey-drone.svg"></div>
             </div>
           </div>
         </div>
@@ -712,11 +712,11 @@ part system : SurveyDroneSystem;
           </div>
           <div class="figure">
             <div class="figure-head">
-              <h3 style="margin:0">Generated · physical-view.svg</h3>
+              <h3 style="margin:0">Generated · physical-view-survey-drone.svg</h3>
               <button type="button" data-zoom>Zoom</button>
             </div>
             <div class="figure-mount">
-              <div class="figure-svg" data-svg="drone/physical-view.svg"></div>
+              <div class="figure-svg" data-svg="drone/physical-view-survey-drone.svg"></div>
             </div>
           </div>
         </div>
@@ -761,11 +761,11 @@ package Deployment {
           </div>
           <div class="figure">
             <div class="figure-head">
-              <h3 style="margin:0">Generated · deployment-view.svg</h3>
+              <h3 style="margin:0">Generated · deployment-view-survey-drone.svg</h3>
               <button type="button" data-zoom>Zoom</button>
             </div>
             <div class="figure-mount">
-              <div class="figure-svg" data-svg="drone/deployment-view.svg"></div>
+              <div class="figure-svg" data-svg="drone/deployment-view-survey-drone.svg"></div>
             </div>
           </div>
         </div>
@@ -816,11 +816,11 @@ action def SurveyMission {
           </div>
           <div class="figure">
             <div class="figure-head">
-              <h3 style="margin:0">Generated · process-view.svg</h3>
+              <h3 style="margin:0">Generated · process-view-survey-drone.svg</h3>
               <button type="button" data-zoom>Zoom</button>
             </div>
             <div class="figure-mount">
-              <div class="figure-svg" data-svg="drone/process-view.svg"></div>
+              <div class="figure-svg" data-svg="drone/process-view-survey-drone.svg"></div>
             </div>
           </div>
         </div>
@@ -868,7 +868,7 @@ action def SurveyMission {
               <button type="button" data-zoom>Zoom</button>
             </div>
             <div class="figure-mount">
-              <div class="figure-svg" data-svg="coffee/logical-view.svg"></div>
+              <div class="figure-svg" data-svg="coffee/logical-view-coffee-machine.svg"></div>
             </div>
           </div>
         </div>
@@ -920,8 +920,7 @@ action def SurveyMission {
             </div>
             <div class="stack-tight">
               <h3>Render</h3>
-              <div class="command">./node_modules/.bin/ortho render models/logical.sysml \
-  <span class="flag">-o</span> diagrams/logical-view.svg</div>
+              <div class="command">./node_modules/.bin/ortho render models <span class="flag">-o</span> diagrams</div>
             </div>
             <div class="stack-tight">
               <h3>Keep honest</h3>

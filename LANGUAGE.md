@@ -77,9 +77,10 @@ the model; no view draws them.
 
 ## Views
 
-Each file declares the view it feeds (§7.26): a `view` typed by one of the
-standard view definitions, exposing what the diagram shows. Its name is the
-diagram's heading (§7.26.5), in single quotes unless it is a plain name.
+A model declares its views (§7.26), and ortho draws each: a `view` typed by
+one of the standard view definitions, exposing what the diagram shows. Its
+name is the diagram's heading (§7.26.5), in single quotes unless it is a plain
+name.
 ortho matches the definition by name rather than loading the standard library, so
 import `StandardViewDefinitions` for other tools.
 

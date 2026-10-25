@@ -51,7 +51,7 @@ function highlightSysml(code: string): string {
     return out + escapeHtml(code.slice(last));
 }
 
-/** "drone/logical-view.svg" -> repo-relative path. */
+/** "drone/logical-view-survey-drone.svg" -> repo-relative path. */
 function resolveRef(ref: string): { path: string; key: string } {
     const [prefix, file] = ref.split('/');
     const dir = DIAGRAM_DIRS[prefix];

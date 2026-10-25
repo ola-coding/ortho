@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { parseHelper } from 'langium/test';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
 import type { Model } from '../src/generated/ast.js';
-import { declaredViews, diagramKind, exposedElements, viewHeading, whyUndrawable } from '../src/model/views.js';
+import { declaredViews, diagramKind, exposedElements, viewFileName, viewHeading, whyUndrawable } from '../src/model/views.js';
+import { renderViews } from '../src/pipeline.js';
 import { extractLogicalGraph } from '../src/diagrams/logical.js';
 import { extractSequenceModel } from '../src/diagrams/sequence.js';
 
@@ -63,5 +64,41 @@ describe('views', () => {
             .toEqual(['An InterconnectionView exposes parts.']);
         expect(await why('package M { part p; view v : GeneralView { expose p; } }'))
             .toEqual(['A GeneralView exposes packages or action definitions.']);
+    });
+    it('writes each view to a file named after its short name, or else its name', async () => {
+        const views = declaredViews((await parse(`
+            package Files {
+                action def A;
+                view 'Logical view — Coffee Machine' : GeneralView { expose A; }
+                view <logical> 'Logical view' : GeneralView { expose A; }
+                view 'Översikt: Kaffe & Te' : GeneralView { expose A; }
+            }
+        `)).parseResult.value);
+        expect(views.map(viewFileName)).toEqual(['logical-view-coffee-machine.svg', 'logical.svg', 'oversikt-kaffe-te.svg']);
+    });
+
+    it('renders every view it can draw, passes over the rest, and refuses two views for one file', async () => {
+        const rendering = async (text: string) => {
+            const document = await parse(text);
+            return renderViews({ model: document.parseResult.value, documents: [document] });
+        };
+        const { rendered, skipped } = await rendering(`
+            package Every {
+                action def A { action b; }
+                view one : GeneralView { expose A; }
+                view states : StateTransitionView { expose A; }
+                view two : GeneralView { expose A; }
+            }
+        `);
+        expect(rendered.map(r => r.file)).toEqual(['one.svg', 'two.svg']);
+        expect(skipped.map(s => [s.view.name, s.reason]))
+            .toEqual([['states', "ortho draws a GeneralView, an InterconnectionView or a SequenceView, not 'StateTransitionView'."]]);
+        await expect(rendering(`
+            package Twice {
+                action def A;
+                view 'Functions' : GeneralView { expose A; }
+                view functions : GeneralView { expose A; }
+            }
+        `)).rejects.toThrow("'Functions' and 'functions' would both be written to functions.svg");
     });
 });

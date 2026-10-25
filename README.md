@@ -56,56 +56,53 @@ The `view` at the end is the diagram: its name is the heading, and it shows
 what it exposes. Render it:
 
 ```sh
-./node_modules/.bin/ortho render logical.sysml -o logical-view.svg
+./node_modules/.bin/ortho render logical.sysml -o diagrams
 ```
 
-Open `logical-view.svg` in a browser: a tree of ten functions, headed
-"Logical view — Coffee Machine".
+Open `diagrams/logical-view-coffee-machine.svg` in a browser: a tree of ten
+functions, headed "Logical view — Coffee Machine".
 
 ## The six views
 
-Keep one model file per view, each declaring its view with one of SysML's
-standard view definitions. Use case and logical stand alone; the others are
-rendered together with the files they refer to, the view's own file first.
+ortho renders every view a model declares, each typed by one of SysML's
+standard view definitions:
 
-| View | Standard view | Model files |
-| --- | --- | --- |
-| Use case | `GeneralView` | `use-case.sysml` |
-| Logical | `GeneralView` | `logical.sysml` |
-| Implementation | `GeneralView` | `implementation.sysml logical.sysml` |
-| Physical | `InterconnectionView` | `physical.sysml logical.sysml` |
-| Deployment | `GeneralView` | `deployment.sysml implementation.sysml physical.sysml logical.sysml` |
-| Process | `SequenceView` | `process.sysml implementation.sysml logical.sysml` |
+| View | Standard view |
+| --- | --- |
+| Use case | `GeneralView` |
+| Logical | `GeneralView` |
+| Implementation | `GeneralView` |
+| Physical | `InterconnectionView` |
+| Deployment | `GeneralView` |
+| Process | `SequenceView` |
 
-For example:
+With the model in `models/`, one command draws them all:
 
 ```sh
-ortho render physical.sysml logical.sysml -o physical-view.svg
+ortho render models -o diagrams
 ```
 
 ## Options
 
 ```text
-ortho render <models...> -o <file.svg> [-t <heading>] [--theme <name>]
+ortho render <models...> -o <folder> [--theme <name>]
 ```
 
-- `<models...>`: `.sysml` files, or directories of them, read as one model.
-  The first file declares the view to render.
-- `-o, --out`: where to write the SVG. Missing folders are created.
-- `-t, --title`: a heading other than the view's name.
+- `<models...>`: `.sysml` files, or folders of them, read as one model.
+- `-o, --out`: the folder to write to, one SVG per view, named after the view:
+  `view 'Logical view'` writes `logical-view.svg`, and a short name,
+  `view <logical> 'Logical view'`, `logical.svg`. Missing folders are created.
 - `--theme`: `light` (default) or `dark-glass`, a transparent version for dark
   slides. PowerPoint, Keynote and Google Slides all insert SVG directly.
 
 ## Using it in a project
 
-Commit your models and the generated SVGs, and render them with npm scripts:
+Commit your models and the generated SVGs, and render them with an npm script:
 
 ```json
 {
   "scripts": {
-    "diagrams": "npm run diagrams:logical && npm run diagrams:physical",
-    "diagrams:logical": "ortho render models/logical.sysml -o diagrams/logical-view.svg",
-    "diagrams:physical": "ortho render models/physical.sysml models/logical.sysml -o diagrams/physical-view.svg"
+    "diagrams": "ortho render models -o diagrams"
   }
 }
 ```

@@ -14,10 +14,10 @@ How ortho works inside, and why. For using it, see [README.md](README.md).
   → .svg file
 ```
 
-`src/cli.ts` renders the view the first file declares, and is the only way
-in; there is no programmatic API. `src/model/views.ts` says which of the six
-diagrams a view is, and `src/pipeline.ts` runs that diagram's extractor,
-layout and renderer on what the view exposes.
+`src/cli.ts` renders every view the model declares, and is the only way in;
+there is no programmatic API. `src/model/views.ts` says which of the six
+diagrams a view is and names its file, and `src/pipeline.ts` runs that
+diagram's extractor, layout and renderer on what the view exposes.
 
 - **Langium** does cross-reference resolution and scoping, the bulk of a SysML
   parser. The grammar is written from the OMG specification, not copied from
@@ -115,8 +115,8 @@ declare any view.
   between lifelines widen only where a label needs it, and an activation runs
   from a message's arrival until that lifeline next sends — a heuristic that
   suits linear scenarios.
-- **Headings** carry the view name and the first input's root package; every
-  input path is printed small in the corner, so a diagram names its sources.
+- **Headings** are the view's name, and the file that declares the view is
+  printed small in the corner, so a diagram names its source.
 - **Themes are colour only** (`src/render/theme.ts`). Every coordinate is
   fixed before a theme is consulted, and a test asserts both themes place
   everything alike. A theme adds nothing it does not paint, so the light
@@ -124,9 +124,8 @@ declare any view.
 
 ## One model file per view
 
-Each view is rendered from its own file, linked with the files it refers to
-(the [README](README.md#the-six-views) lists them). The rule behind that is
-that **a view file names nothing from another view**, except:
+The examples keep one model file per view. The rule behind that is that **a
+view file names nothing from another view**, except:
 
 ```text
 implementation, physical  →  logical
@@ -226,9 +225,8 @@ In priority order:
   the standard library's names are known without loading it. Existing parsers
   were tried first: `sysml-v2-lsp` offers no parser API, and OpenSysML's does
   not expose what the views draw.
-- [ ] **Render every view a model declares**, one SVG per `view`:
-  `ortho render model/ -o diagrams/`. The first-file rule and the README's
-  file lists go.
+- [x] **Render every view a model declares**, each to an SVG named after it:
+  `ortho render models -o diagrams`. The first-file rule and `-t` are gone.
 - [ ] **Follow SysML v2's graphical notation**, as a valid view must: rounded
   corners for usages and square for definitions, and allocation as a
   compartment on each host, as *perform actions* are, rather than software
