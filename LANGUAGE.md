@@ -108,7 +108,8 @@ package Functions {
 | process | `SequenceView` | the scenario's `action def` |
 
 A view draws only what it exposes. A `GeneralView` draws whatever that is: a
-function tree, use cases, allocations, or packages of software.
+function tree, use cases, allocations, or packages of software. A model may
+declare other views too; only rendering one fails.
 
 ## Use case view
 
@@ -402,12 +403,14 @@ may realize several.
 
 ## Parsed, not drawn
 
-These parse and must be valid, but no view draws them.
+Every other definition and usage, from items and requirements to states,
+calculations and metadata, parses, but no view draws it, and what it names is
+kept as written rather than checked.
 
 **Requirements** (§7.21). A non-functional requirement often proposes a
 solution on the implementation or physical view, so a model carrying
-requirements has to keep loading. `satisfy` names a requirement usage and the
-part usage that satisfies it.
+requirements has to keep loading. `satisfy` names a requirement and the part
+that satisfies it.
 
 ```sysml
 package Requirements {
@@ -450,23 +453,15 @@ package Operations {
 
 ## Not supported
 
-Common SysML v2 that ortho does not parse, so a model using it fails to load:
+SysML v2 that ortho does not parse yet, so a model using it fails to load:
 
 | Construct | § | Instead |
 |---|---|---|
-| `item def`, `item` | 7.10 | type a message payload with an `attribute def` |
-| `flow`, succession flows | 7.16 | `connect` for topology, `message` for scenarios |
-| `bind` | 7.13.3 | |
-| `state def`, `state`, `exhibit` | 7.18 | |
-| `allocation def` | 7.15.2 | the usage form, `allocate` or `allocation name allocate` |
-| `in`, `out`, `inout` on an action's parameters | 7.17.2 | they work on a port's features |
-| `enum def` | 7.8 | |
-| `calc`, `constraint` | 7.19–7.20 | |
-| `view def`, `viewpoint`, `filter`, `render` | 7.26 | a `view` of a standard view definition |
-| `ref`, `abstract`, `redefines`/`:>>`, `subsets` | 7.6 | |
-| units on values, `100 [kg]` | 7.7 | put the unit in the name, `mass_kg` |
-| event occurrences as message ends | 7.9.5 | messages go from part to part |
-| filtered imports, `[...]` | 7.5.4 | `::*`, `::**` or a single element |
+| a value other than a number, string or name, such as `100 [kg]` or `a + b` | 7.7, 7.19 | put the unit in the name, `mass_kg` |
+| calculation and constraint bodies, `require constraint { ... }` | 7.19–7.21 | |
+| successions, `first a then b`, and control nodes, `accept`, `send`, `assign`, `if`, `while` and `for` in actions | 7.16–7.17 | `then message` in a scenario |
+| state bodies: `entry`, `do`, `exit` and transitions | 7.18 | |
+| filters, `filter` and `[...]` on imports and exposes | 7.5.4, 7.26 | `::*`, `::**` or a single element |
 
 ## How this is checked
 

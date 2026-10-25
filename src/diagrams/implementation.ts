@@ -1,6 +1,6 @@
 import { AstUtils } from 'langium';
 import { isPackageDecl, isPartDef, isPartUsage, isPortUsage } from '../generated/ast.js';
-import type { Exposable, ImportDecl, PackageDecl, PartDef } from '../generated/ast.js';
+import type { Member, ImportDecl, PackageDecl, PartDef } from '../generated/ast.js';
 import type { Compartment, DiagramGraph, GraphEdge, GraphNode } from '../model/graph.js';
 import { qualifiedName } from '../model/graph.js';
 import { boxSize, performCompartments } from './connector-ends.js';
@@ -16,8 +16,8 @@ import { measureText } from '../render/text-metrics.js';
  */
 function portsCompartment(def: PartDef): Compartment[] {
     const lines = def.members.filter(isPortUsage).map(port => port.type
-        ? `${port.name} : ${port.conjugated ? '~' : ''}${port.type.ref?.name ?? port.type.$refText}`
-        : port.name);
+        ? `${port.name ?? ''} : ${port.conjugated ? '~' : ''}${port.type.ref?.name ?? port.type.$refText}`
+        : port.name ?? '');
     return lines.length > 0 ? [{ title: 'ports', lines }] : [];
 }
 
@@ -27,10 +27,10 @@ function moduleNode(def: PartDef): GraphNode {
         id: qualifiedName(def),
         shape: 'box',
         stereotype: '',
-        name: def.name,
+        name: def.name ?? '',
         compartments,
         ports: [],
-        ...boxSize(def.name, compartments, 120, 40)
+        ...boxSize(def.name ?? '', compartments, 120, 40)
     };
 }
 
@@ -64,11 +64,11 @@ function packageNode(pkg: PackageDecl): GraphNode {
         id: qualifiedName(pkg),
         shape: 'package',
         stereotype: '',
-        name: pkg.name,
+        name: pkg.name ?? '',
         compartments: [],
         ports: [],
         children: children.length > 0 ? children : undefined,
-        width: Math.max(130, measureText(pkg.name, 12, 'bold') + 50),
+        width: Math.max(130, measureText(pkg.name ?? '', 12, 'bold') + 50),
         height: 60
     };
 }
@@ -79,7 +79,7 @@ function importedPackage(imp: ImportDecl): PackageDecl | undefined {
     return target ? AstUtils.getContainerOfType(target, isPackageDecl) : undefined;
 }
 
-export function extractImplementationGraph(exposed: Exposable[]): DiagramGraph {
+export function extractImplementationGraph(exposed: Member[]): DiagramGraph {
     const drawn = exposed.filter(isPackageDecl).filter(holdsParts);
     const nodes = drawn.map(packageNode);
 

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { parseHelper } from 'langium/test';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
 import type { Model } from '../src/generated/ast.js';
-import { declaredViews, diagramKind, exposedElements, viewHeading } from '../src/model/views.js';
+import { declaredViews, diagramKind, exposedElements, viewHeading, whyUndrawable } from '../src/model/views.js';
 import { extractLogicalGraph } from '../src/diagrams/logical.js';
 import { extractSequenceModel } from '../src/diagrams/sequence.js';
 
@@ -51,13 +51,17 @@ describe('views', () => {
             .toEqual(['ping']);
     });
 
-    it('accepts the three standard views ortho draws, each exposing what it can show', async () => {
-        expect(await errorsOf(TWO_VIEWS)).toEqual([]);
-        expect(await errorsOf('package M { action def A; view v : StateTransitionView { expose A; } }'))
+    it('loads any view, and says why it cannot draw one other than the three it knows', async () => {
+        const why = async (text: string) => {
+            expect(await errorsOf(text)).toEqual([]);
+            return declaredViews((await parse(text)).parseResult.value).map(whyUndrawable);
+        };
+        expect(await why(TWO_VIEWS)).toEqual([undefined, undefined]);
+        expect(await why('package M { action def A; view v : StateTransitionView { expose A; } }'))
             .toEqual(["ortho draws a GeneralView, an InterconnectionView or a SequenceView, not 'StateTransitionView'."]);
-        expect(await errorsOf('package M { action def A; view v : InterconnectionView { expose A; } }'))
+        expect(await why('package M { action def A; view v : InterconnectionView { expose A; } }'))
             .toEqual(['An InterconnectionView exposes parts.']);
-        expect(await errorsOf('package M { part p; view v : GeneralView { expose p; } }'))
+        expect(await why('package M { part p; view v : GeneralView { expose p; } }'))
             .toEqual(['A GeneralView exposes packages or action definitions.']);
     });
 });

@@ -1,6 +1,6 @@
 import { AstUtils } from 'langium';
 import { isAllocationUsage, isPartDef, isPartUsage } from '../generated/ast.js';
-import type { AllocationUsage, Exposable, Model, PartDef, PartUsage } from '../generated/ast.js';
+import type { AllocationUsage, Definition, Member, Model, PartDef, PartUsage } from '../generated/ast.js';
 import type { DiagramGraph, GraphNode } from '../model/graph.js';
 import { qualifiedName } from '../model/graph.js';
 import { endPart, partLabel } from './connector-ends.js';
@@ -72,12 +72,12 @@ function deviceFrame(id: string, name: string): GraphNode {
  * containment cannot express; the first host named wins and the rest are
  * skipped, so every software part is drawn exactly once.
  */
-export function extractDeploymentGraph(exposed: Exposable[], model: Model): DiagramGraph {
+export function extractDeploymentGraph(exposed: Member[], model: Model): DiagramGraph {
     const allocations = exposed.flatMap(e => [...AstUtils.streamAllContents(e)])
         .filter((n): n is AllocationUsage => isAllocationUsage(n));
     const contents = [...AstUtils.streamAllContents(model)];
 
-    const usagesOf = new Map<PartDef, PartUsage[]>();
+    const usagesOf = new Map<Definition, PartUsage[]>();
     for (const node of contents) {
         if (isPartUsage(node) && node.type?.ref) {
             usagesOf.set(node.type.ref, [...(usagesOf.get(node.type.ref) ?? []), node]);
@@ -92,7 +92,7 @@ export function extractDeploymentGraph(exposed: Exposable[], model: Model): Diag
             return existing;
         }
         const uses = usagesOf.get(def) ?? [];
-        const frame = deviceFrame(`device:${qualifiedName(def)}`, uses.length === 1 ? partLabel(uses[0]) : def.name);
+        const frame = deviceFrame(`device:${qualifiedName(def)}`, uses.length === 1 ? partLabel(uses[0]) : def.name ?? '');
         frames.set(def, frame);
         const owner = uses.length === 1 ? uses[0].$container : undefined;
         if (isPartDef(owner) && !path.has(owner)) {

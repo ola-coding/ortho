@@ -3,8 +3,8 @@ import { parseHelper } from 'langium/test';
 import type { LangiumDocument } from 'langium';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
 import {
-    isAllocationUsage, isAttributeUsage, isConnectionUsage, isPackageDecl, isPartDef, isPartUsage, isPortDef, isPortUsage,
-    isRequirementDef, isRequirementUsage, isSatisfyUsage
+    isActionDef, isAllocationUsage, isAttributeUsage, isConnectionUsage, isMessageUsage, isOtherDefinition, isOtherUsage,
+    isPackageDecl, isPartDef, isPartUsage, isPortDef, isPortUsage, isSatisfyUsage
 } from '../src/generated/ast.js';
 import type { ConnectionUsage, Model, PartDef, SatisfyUsage } from '../src/generated/ast.js';
 
@@ -37,7 +37,7 @@ describe('core grammar', () => {
         expect(battery.members.filter(isPortUsage)).toHaveLength(1);
         const cell = battery.members.find(isPartUsage);
         expect(cell?.type?.ref?.name).toBe('Cell');
-        expect(cell?.multiplicity?.lower).toBe('4');
+        expect(cell?.multiplicities[0]?.lower).toBe('4');
     });
 
     it('resolves specialization and cross-package qualified names', async () => {
@@ -66,9 +66,9 @@ describe('core grammar', () => {
         const pkg = document.parseResult.value.packages[0];
         const drone = pkg.members.find(m => isPartDef(m) && m.name === 'Drone') as PartDef;
         const connection = drone.members.find(isConnectionUsage) as ConnectionUsage;
-        expect(connection.source.segments[0].ref?.name).toBe('battery');
-        expect(connection.source.segments[1].ref?.name).toBe('outlet');
-        expect(connection.target.segments[1].ref?.name).toBe('in_');
+        expect(connection.source!.segments[0].ref?.name).toBe('battery');
+        expect(connection.source!.segments[1].ref?.name).toBe('outlet');
+        expect(connection.target!.segments[1].ref?.name).toBe('in_');
     });
 
     it('parses requirements and satisfy relations', async () => {
@@ -84,13 +84,13 @@ describe('core grammar', () => {
                 satisfy massReq by drone;
             }
         `);
+        // No view draws requirements, so what they name is kept as written.
         const pkg = document.parseResult.value.packages[0];
-        expect(pkg.members.some(isRequirementDef)).toBe(true);
-        const usage = pkg.members.find(isRequirementUsage)!;
-        expect(usage.type?.ref?.name).toBe('MassLimit');
+        expect(pkg.members.find(isOtherDefinition)?.kind).toBe('requirement');
+        const usage = pkg.members.find(isOtherUsage)!;
+        expect([usage.kind, usage.types]).toEqual(['requirement', ['MassLimit']]);
         const satisfy = pkg.members.find(isSatisfyUsage) as SatisfyUsage;
-        expect(satisfy.requirement.ref?.name).toBe('massReq');
-        expect(satisfy.satisfier.ref?.name).toBe('drone');
+        expect([satisfy.requirement, satisfy.satisfier]).toEqual(['massReq', 'drone']);
     });
 
     it('resolves connector chains ending in an attribute', async () => {
@@ -108,8 +108,8 @@ describe('core grammar', () => {
         const pkg = document.parseResult.value.packages[0];
         const board = pkg.members.find(m => isPartDef(m) && m.name === 'Board') as PartDef;
         const connection = board.members.find(isConnectionUsage) as ConnectionUsage;
-        expect(connection.source.segments[1].ref?.name).toBe('rate');
-        expect(connection.target.segments[1].ref?.name).toBe('input');
+        expect(connection.source!.segments[1].ref?.name).toBe('rate');
+        expect(connection.target!.segments[1].ref?.name).toBe('input');
     });
 
     it('parses interface defs and imports', async () => {
@@ -151,8 +151,8 @@ describe('core grammar', () => {
         const design = document.parseResult.value.packages[0].members
             .find(m => isPartDef(m) && m.name === 'Design') as PartDef;
         const connection = design.members.find(isConnectionUsage) as ConnectionUsage;
-        expect(connection.source.segments[0].ref?.name).toBe('ctrlIn');
-        expect(connection.source.segments[0].ref?.$container).toHaveProperty('name', 'Block');
+        expect(connection.source!.segments[0].ref?.name).toBe('ctrlIn');
+        expect(connection.source!.segments[0].ref?.$container).toHaveProperty('name', 'Block');
     });
 
     it('a locally declared feature shadows an inherited one of the same name', async () => {
@@ -171,7 +171,7 @@ describe('core grammar', () => {
         const design = document.parseResult.value.packages[0].members
             .find(m => isPartDef(m) && m.name === 'Design') as PartDef;
         const connection = design.members.find(isConnectionUsage) as ConnectionUsage;
-        expect(connection.source.segments[0].ref?.$container).toHaveProperty('name', 'Design');
+        expect(connection.source!.segments[0].ref?.$container).toHaveProperty('name', 'Design');
     });
 });
 
@@ -206,8 +206,8 @@ describe('imports', () => {
         `);
         const deployment = document.parseResult.value.packages[2];
         const allocation = deployment.members.find(isAllocationUsage)!;
-        expect(allocation.source.segments.map(s => s.ref?.name)).toEqual(['sw', 'video']);
-        expect(allocation.target.segments.map(s => s.ref?.name)).toEqual(['hw', 'cpu']);
+        expect(allocation.source!.segments.map(s => s.ref?.name)).toEqual(['sw', 'video']);
+        expect(allocation.target!.segments.map(s => s.ref?.name)).toEqual(['hw', 'cpu']);
     });
 
     it('imports one element; a package\'s own members outrank imports, which reach nested packages', async () => {
@@ -222,7 +222,7 @@ describe('imports', () => {
                 private import ImpSoftware::Control::BrewController;
                 part def P { part b : BrewController; part m : MilkController; }
             }
-        `)).toEqual([unresolved('PartDef', 'MilkController')]);
+        `)).toEqual([unresolved('Definition', 'MilkController')]);
         const document = await parseOk(`${LIBRARY}
             package ImpOwn {
                 private import ImpSoftware::*;
@@ -236,7 +236,7 @@ describe('imports', () => {
         const own = document.parseResult.value.packages[2];
         const inner = own.members.find(isPackageDecl)!;
         const allocation = inner.members.find(isAllocationUsage)!;
-        expect(allocation.source.segments[0].ref?.$container).toBe(own);
+        expect(allocation.source!.segments[0].ref?.$container).toBe(own);
     });
 
     it('passes on public imports only', async () => {
@@ -259,7 +259,7 @@ describe('imports', () => {
                 private import ImpUnits::*;
                 part def E { part e : Engine; }
             }
-        `)).toEqual([unresolved('PartDef', 'Engine')]);
+        `)).toEqual([unresolved('Definition', 'Engine')]);
     });
 
     it('resolves nothing through a package that is not imported', async () => {
@@ -293,7 +293,7 @@ describe('names and comments', () => {
         const [brew, tank] = machine.members.filter(isPartUsage);
         expect([brew.type?.ref?.name, tank.type?.ref?.name]).toEqual(['Brew unit', 'Tank']);
         const connection = machine.members.find(isConnectionUsage)!;
-        expect(connection.source.segments.map(s => s.ref?.name)).toEqual(['brew', 'water in']);
+        expect(connection.source!.segments.map(s => s.ref?.name)).toEqual(['brew', 'water in']);
     });
 
     it('finds an element by its short name or an alias', async () => {
@@ -340,6 +340,80 @@ describe('names and comments', () => {
     });
 });
 
+describe('definitions and usages', () => {
+    it('reads every kind, keeping what no view draws as written', async () => {
+        await parseOk(`
+            package Kinds {
+                item def Fuel;
+                enum def Color { red; green; enum blue; }
+                abstract part def Vehicle {
+                    attribute mass : Real;
+                    ref item fuel : Fuel;
+                    part engine : Engine;
+                    port fuelIn : ~FuelPort;
+                }
+                part def Engine { event occurrence started; }
+                port def FuelPort { in item fuel : Fuel; }
+                part def Car :> Vehicle { part :>> engine : Engine; }
+                connection def Hose { end part a : Engine; end part b : Engine; }
+                allocation def Assign;
+                state def Running;
+                calc def Area;
+                constraint def Limit;
+                requirement def Speed { subject car : Car; }
+                action def Drive { in fuel : Fuel; out distance : Real; }
+                part car : Car {
+                    bind engine.started = engine.started;
+                    flow of Fuel from fuelIn to engine;
+                    exhibit state running : Running;
+                    #Safety part brake;
+                }
+                view def V;
+                individual def Car1 :> Car;
+                metadata def Safety;
+                @Safety;
+                dependency car to Car;
+                occurrence def O { snapshot s; timeslice t; }
+            }
+        `);
+    });
+
+    it('takes a message from and to event occurrences, on the parts that have them', async () => {
+        const document = await parseOk(`
+            package KindEvents {
+                part def Driver { event occurrence turnOn; }
+                part def Car { event occurrence started; }
+                action def Start {
+                    part driver : Driver;
+                    part car : Car;
+                    message go from driver.turnOn to car.started;
+                }
+            }
+        `);
+        const start = document.parseResult.value.packages[0].members.find(isActionDef)!;
+        const message = start.members.find(isMessageUsage)!;
+        expect(message.source!.segments.map(s => s.ref?.$type)).toEqual(['PartUsage', 'OtherUsage']);
+    });
+
+    it('names an unnamed redefinition and perform after what they refer to', async () => {
+        const document = await parseOk(`
+            package KindNames {
+                action def Work { action step; }
+                action work : Work;
+                part def Base { part arm; }
+                part def Robot :> Base {
+                    part :>> arm;
+                    perform work.step;
+                }
+                part robot : Robot;
+                allocate robot.arm to robot.step;
+            }
+        `);
+        const allocation = document.parseResult.value.packages[0].members.find(isAllocationUsage)!;
+        expect(allocation.target!.segments.map(s => s.ref?.$type)).toEqual(['PartUsage', 'PerformUsage']);
+    });
+});
+
 // A model ortho accepts should also be valid SysML v2, so the rules the OMG
 // pilot implementation enforces and ortho can check are checked here too.
 describe('SysML v2 conformance', () => {
@@ -357,9 +431,10 @@ describe('SysML v2 conformance', () => {
     });
 
     it('rejects a reserved word as a name, even one ortho does not parse, unless it is quoted', async () => {
-        const errors = await errorsOf('package P { part def Drone { part frame; } }');
-        expect(errors).toEqual(["'frame' is a reserved word in SysML v2 and cannot be a name."]);
-        expect(await errorsOf("package P { part def Drone { part 'frame'; } }")).toEqual([]);
+        for (const word of ['frame', 'until']) {
+            expect(await errorsOf(`package P { part def Drone { part ${word}; } }`)).not.toEqual([]);
+            expect(await errorsOf(`package P { part def Drone { part '${word}'; } }`)).toEqual([]);
+        }
     });
 
     it('rejects a qualified name into a definition, and accepts the chain from a usage', async () => {

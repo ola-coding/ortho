@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { parseHelper } from 'langium/test';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
-import type { Exposable, Model } from '../src/generated/ast.js';
+import type { Member, Model } from '../src/generated/ast.js';
 import { declaredViews, exposedElements } from '../src/model/views.js';
 import type { GraphNode } from '../src/model/graph.js';
 import { BOX_HEADER_HEIGHT, compartmentsHeight } from '../src/model/graph.js';
@@ -16,7 +16,7 @@ const services = createSysmlServices();
 const parse = parseHelper<Model>(services.Sysml);
 
 /** What a model's one view exposes. */
-function exposedByView(model: Model): Exposable[] {
+function exposedByView(model: Model): Member[] {
     return exposedElements(declaredViews(model)[0]);
 }
 

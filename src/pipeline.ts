@@ -1,4 +1,4 @@
-import type { Exposable, Model, ViewUsage } from './generated/ast.js';
+import type { Member, Model, ViewUsage } from './generated/ast.js';
 import type { DiagramGraph } from './model/graph.js';
 import { diagramKind, exposedElements } from './model/views.js';
 import type { DiagramKind } from './model/views.js';
@@ -22,8 +22,8 @@ export interface RenderResult {
     summary: string;
 }
 
-type Extractor = (exposed: Exposable[], model: Model) => DiagramGraph;
-type Renderer = (exposed: Exposable[], model: Model, title: DiagramTitle, theme: Theme) => Promise<RenderResult>;
+type Extractor = (exposed: Member[], model: Model) => DiagramGraph;
+type Renderer = (exposed: Member[], model: Model, title: DiagramTitle, theme: Theme) => Promise<RenderResult>;
 
 function graphDiagram(extract: Extractor, layout: LayoutOptions): Renderer {
     return async (exposed, model, title, theme) => {

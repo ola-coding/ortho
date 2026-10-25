@@ -3,7 +3,7 @@
  * DO NOT EDIT MANUALLY!
  ******************************************************************************/
 
-import type { LangiumSharedCoreServices, LangiumCoreServices, LangiumGeneratedCoreServices, LangiumGeneratedSharedCoreServices, LanguageMetaData, Module } from 'langium';
+import type { LangiumSharedCoreServices, LangiumCoreServices, LangiumGeneratedCoreServices, LangiumGeneratedSharedCoreServices, LanguageMetaData, Module, IParserConfig } from 'langium';
 import { SysmlAstReflection } from './ast.js';
 import { SysmlGrammar } from './grammar.js';
 
@@ -14,6 +14,10 @@ export const SysmlLanguageMetaData = {
     mode: 'development'
 } as const satisfies LanguageMetaData;
 
+export const SysmlParserConfig: IParserConfig = {
+    recoveryEnabled: false,
+};
+
 export const SysmlGeneratedSharedModule: Module<LangiumSharedCoreServices, LangiumGeneratedSharedCoreServices> = {
     AstReflection: () => new SysmlAstReflection()
 };
@@ -21,5 +25,7 @@ export const SysmlGeneratedSharedModule: Module<LangiumSharedCoreServices, Langi
 export const SysmlGeneratedModule: Module<LangiumCoreServices, LangiumGeneratedCoreServices> = {
     Grammar: () => SysmlGrammar(),
     LanguageMetaData: () => SysmlLanguageMetaData,
-    parser: {}
+    parser: {
+        ParserConfig: () => SysmlParserConfig
+    }
 };

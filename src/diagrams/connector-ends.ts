@@ -1,15 +1,15 @@
 import { isPartUsage, isPerformUsage, isPortUsage } from '../generated/ast.js';
-import type { ConnectorEnd, PartUsage, PerformUsage, UsageMember } from '../generated/ast.js';
+import type { ConnectorEnd, Member, PartUsage, PerformUsage } from '../generated/ast.js';
 import type { Compartment } from '../model/graph.js';
-import { BOX_HEADER_HEIGHT, compartmentsHeight } from '../model/graph.js';
+import { BOX_HEADER_HEIGHT, compartmentsHeight, effectiveName } from '../model/graph.js';
 import { measureText } from '../render/text-metrics.js';
 
 /**
  * Resolves a connector end to the part usage it names. A trailing port
  * segment falls back to the part that owns the port.
  */
-export function endPart(end: ConnectorEnd): PartUsage | undefined {
-    for (let i = end.segments.length - 1; i >= 0; i--) {
+export function endPart(end: ConnectorEnd | undefined): PartUsage | undefined {
+    for (let i = (end?.segments.length ?? 0) - 1; end && i >= 0; i--) {
         const resolved = end.segments[i]?.ref;
         if (isPartUsage(resolved)) {
             return resolved;
@@ -23,7 +23,7 @@ export function endPart(end: ConnectorEnd): PartUsage | undefined {
 
 export function partLabel(part: PartUsage): string {
     const type = part.type ? ` : ${part.type.ref?.name ?? part.type.$refText}` : '';
-    return `${part.name}${type}`;
+    return `${effectiveName(part) ?? ''}${type}`;
 }
 
 /**
@@ -31,14 +31,14 @@ export function partLabel(part: PartUsage): string {
  * (§7.17.6): one line per `perform`, named by the function it reaches. This is
  * how realization is drawn — on the part that realizes, not as an edge.
  */
-export function performCompartments(members: Array<UsageMember | PerformUsage>): Compartment[] {
+export function performCompartments(members: Member[]): Compartment[] {
     const lines = members.filter(isPerformUsage).map(performedName);
     return lines.length > 0 ? [{ title: 'perform actions', lines }] : [];
 }
 
 function performedName(perform: PerformUsage): string {
-    const last = perform.target.segments[perform.target.segments.length - 1];
-    return last?.ref?.name ?? last?.$refText ?? '';
+    const last = perform.target?.segments.at(-1);
+    return last?.ref?.name ?? last?.$refText ?? effectiveName(perform) ?? '';
 }
 
 /** A box's size once its compartments have to fit inside it. */

@@ -1,9 +1,10 @@
-import { isConnectionUsage, isPartUsage, isPerformUsage, isPortUsage } from '../generated/ast.js';
+import type { AstNode } from 'langium';
+import { isConnectionUsage, isPartDef, isPartUsage, isPerformUsage, isPortUsage } from '../generated/ast.js';
 import type {
-    ConnectionUsage, ConnectorEnd, Exposable, Multiplicity, PartDef, PartUsage, PortUsage, UsageMember
+    ConnectionUsage, ConnectorEnd, Definition, Member, Multiplicity, PartUsage, PortUsage
 } from '../generated/ast.js';
 import type { Compartment, DiagramGraph, GraphEdge, GraphNode } from '../model/graph.js';
-import { qualifiedName } from '../model/graph.js';
+import { effectiveName, qualifiedName } from '../model/graph.js';
 import { boxSize, partLabel, performCompartments } from './connector-ends.js';
 import { measureText } from '../render/text-metrics.js';
 
@@ -34,25 +35,33 @@ function multiplicityText(multiplicity: Multiplicity | undefined): string {
         : ` [${multiplicity.lower}]`;
 }
 
-/** First of each name wins, so a part's own members shadow what its type declares. */
-function uniqueByName<T extends { name?: string }>(items: T[]): T[] {
+/**
+ * First of each name wins, so a part's own members shadow what its type
+ * declares; a redefinition, `part :>> engine`, takes the name it redefines.
+ */
+function uniqueByName<T extends AstNode>(items: T[]): T[] {
     const seen = new Set<string>();
-    return items.filter(item => !item.name || (!seen.has(item.name) && seen.add(item.name)));
+    return items.filter(item => {
+        const name = effectiveName(item);
+        return !name || (!seen.has(name) && seen.add(name));
+    });
 }
 
 /**
  * The members a definition declares or inherits through `:>`. A local member
  * shadows an inherited one of the same name, as it does in name resolution.
  */
-function effectiveMembers<T extends UsageMember & { name?: string }>(
-    def: PartDef, pick: (member: UsageMember) => member is T, seen = new Set<PartDef>()
+function effectiveMembers<T extends Member>(
+    def: Definition, pick: (member: Member) => member is T, seen = new Set<Definition>()
 ): T[] {
     if (seen.has(def)) {
         return [];
     }
     seen.add(def);
     const own = def.members.filter(pick);
-    const inherited = def.supertypes.flatMap(s => (s.ref ? effectiveMembers(s.ref, pick, seen) : []));
+    // Only a part def's supertypes are resolved; the rest are kept as written.
+    const supertypes = isPartDef(def) ? def.supertypes.map(s => s.ref) : [];
+    const inherited = supertypes.flatMap(s => (s ? effectiveMembers(s, pick, seen) : []));
     return uniqueByName([...own, ...inherited]);
 }
 
@@ -63,17 +72,17 @@ function partBox(id: string, name: string, ports: PortUsage[], performs: Compart
         stereotype: '',
         name,
         compartments: performs,
-        ports: ports.map(p => ({ id: `${id}#${p.name}`, label: p.name })),
+        ports: ports.map(p => ({ id: `${id}#${effectiveName(p) ?? ''}`, label: effectiveName(p) ?? '' })),
         ...boxSize(name, performs, MIN_WIDTH, HEADER_HEIGHT)
     };
 }
 
-function portsOf(type: PartDef | undefined, body: UsageMember[]): PortUsage[] {
+function portsOf(type: Definition | undefined, body: Member[]): PortUsage[] {
     return uniqueByName([...body.filter(isPortUsage), ...(type ? effectiveMembers(type, isPortUsage) : [])]);
 }
 
 /** What a part performs: what its body says, plus what its type contributes. */
-function performsOf(type: PartDef | undefined, body: UsageMember[]): Compartment[] {
+function performsOf(type: Definition | undefined, body: Member[]): Compartment[] {
     return performCompartments([...body, ...(type ? effectiveMembers(type, isPerformUsage) : [])]);
 }
 
@@ -82,22 +91,22 @@ function performsOf(type: PartDef | undefined, body: UsageMember[]): Compartment
  * every part in the usage's own body, recursively. `path` holds the types
  * already being expanded, so a definition that contains itself is drawn once.
  */
-function expand(owner: Instance, type: PartDef | undefined, body: UsageMember[], path: Set<PartDef>, pending: Pending[]): void {
+function expand(owner: Instance, type: Definition | undefined, body: Member[], path: Set<Definition>, pending: Pending[]): void {
     const parts = uniqueByName([...body.filter(isPartUsage), ...(type ? effectiveMembers(type, isPartUsage) : [])]);
     for (const part of parts) {
         const partType = part.type?.ref;
-        const id = `${owner.node!.id}.${part.name}`;
+        const id = `${owner.node!.id}.${effectiveName(part) ?? ''}`;
         const child: Instance = {
             node: partBox(
                 id,
-                `${partLabel(part)}${multiplicityText(part.multiplicity)}`,
+                `${partLabel(part)}${multiplicityText(part.multiplicities[0])}`,
                 portsOf(partType, part.members),
                 performsOf(partType, part.members)
             ),
             usage: part,
             children: new Map()
         };
-        owner.children.set(part.name, child);
+        owner.children.set(effectiveName(part) ?? '', child);
         (owner.node!.children ??= []).push(child.node!);
         if (partType && path.has(partType)) {
             continue;
@@ -116,18 +125,18 @@ function expand(owner: Instance, type: PartDef | undefined, body: UsageMember[],
  * Resolving per instance is the point: the drone's radio and the ground
  * station's radio share a type but are two boxes, each wired on its own.
  */
-function resolveEnd(end: ConnectorEnd, context: Instance): { nodeId: string; portId?: string } | undefined {
+function resolveEnd(end: ConnectorEnd | undefined, context: Instance): { nodeId: string; portId?: string } | undefined {
     let current = context;
-    for (const segment of end.segments) {
+    for (const segment of end?.segments ?? []) {
         const feature = segment.ref;
         if (isPartUsage(feature)) {
-            const child = current.children.get(feature.name);
+            const child = current.children.get(effectiveName(feature) ?? '');
             if (!child || child.usage !== feature) {
                 return undefined;
             }
             current = child;
         } else if (isPortUsage(feature) && current.node) {
-            const portId = `${current.node.id}#${feature.name}`;
+            const portId = `${current.node.id}#${effectiveName(feature) ?? ''}`;
             return current.node.ports.some(p => p.id === portId)
                 ? { nodeId: current.node.id, portId }
                 : { nodeId: current.node.id };
@@ -152,7 +161,7 @@ function resolveEnd(end: ConnectorEnd, context: Instance): { nodeId: string; por
  *
  * The top-level boxes are the exposed parts.
  */
-export function extractPhysicalGraph(exposed: Exposable[]): DiagramGraph {
+export function extractPhysicalGraph(exposed: Member[]): DiagramGraph {
     const nodes: GraphNode[] = [];
     const pending: Pending[] = [];
     for (const usage of exposed.filter(isPartUsage)) {
@@ -160,7 +169,7 @@ export function extractPhysicalGraph(exposed: Exposable[]): DiagramGraph {
         const root: Instance = {
             node: partBox(
                 qualifiedName(usage),
-                `${partLabel(usage)}${multiplicityText(usage.multiplicity)}`,
+                `${partLabel(usage)}${multiplicityText(usage.multiplicities[0])}`,
                 portsOf(type, usage.members),
                 performsOf(type, usage.members)
             ),

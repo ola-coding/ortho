@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
 import { parseSysmlFiles } from '../src/parser/parse.js';
-import type { Exposable, Model } from '../src/generated/ast.js';
+import type { Member, Model } from '../src/generated/ast.js';
 import type { GraphNode } from '../src/model/graph.js';
 import { extractUseCaseGraph } from '../src/diagrams/use-case.js';
 import { extractLogicalGraph } from '../src/diagrams/logical.js';
@@ -38,7 +38,7 @@ async function parseSet(...files: string[]): Promise<Model> {
 }
 
 /** What the first file's view exposes, and the workspace it was parsed in. */
-async function viewSet(...files: string[]): Promise<[Exposable[], Model]> {
+async function viewSet(...files: string[]): Promise<[Member[], Model]> {
     const model = await parseSet(...files);
     return [exposedElements(declaredViews(model.packages[0])[0]), model];
 }

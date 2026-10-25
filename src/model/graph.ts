@@ -58,11 +58,25 @@ export interface DiagramGraph {
     edges: GraphEdge[];
 }
 
-export function qualifiedName(node: AstNode & { name: string }): string {
-    let qualified = node.name;
+/**
+ * An element's name, or the one an unnamed element takes on: a redefinition,
+ * `part :>> engine`, is named after what it redefines, and a perform,
+ * `perform providePower.generateTorque`, after what it performs.
+ */
+export function effectiveName(node: AstNode): string | undefined {
+    const element = node as { name?: string; redefines?: string[]; target?: { segments?: Array<{ $refText: string }> } };
+    if (element.name !== undefined) {
+        return element.name;
+    }
+    const named = element.redefines?.[0] ?? (node.$type === 'PerformUsage' ? element.target?.segments?.at(-1)?.$refText : undefined);
+    return named?.split(/::|\./).at(-1);
+}
+
+export function qualifiedName(node: AstNode): string {
+    let qualified = effectiveName(node) ?? '';
     let container: AstNode | undefined = node.$container;
     while (container) {
-        const containerName = (container as { name?: string }).name;
+        const containerName = effectiveName(container);
         if (containerName) {
             qualified = `${containerName}::${qualified}`;
         }

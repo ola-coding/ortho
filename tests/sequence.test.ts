@@ -5,12 +5,12 @@ import { describe, expect, it } from 'vitest';
 import { parseHelper } from 'langium/test';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
 import { isActionDef, isMessageUsage } from '../src/generated/ast.js';
-import type { Exposable, Model } from '../src/generated/ast.js';
+import type { Member, Model } from '../src/generated/ast.js';
 import { extractSequenceModel } from '../src/diagrams/sequence.js';
 import { renderSequenceSvg } from '../src/render/sequence-renderer.js';
 
 /** Exposes the whole test model, as a view of all of it would. */
-const everything = (model: Model): [Exposable[], Model] => [model.packages, model];
+const everything = (model: Model): [Member[], Model] => [model.packages, model];
 
 const services = createSysmlServices();
 const parse = parseHelper<Model>(services.Sysml);

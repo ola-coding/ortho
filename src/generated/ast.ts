@@ -20,6 +20,9 @@ export const SysmlTerminals = {
 export type SysmlTerminalNames = keyof typeof SysmlTerminals;
 
 export type SysmlKeywordNames =
+    | "#"
+    | "("
+    | ")"
     | "*"
     | ","
     | "."
@@ -28,42 +31,74 @@ export type SysmlKeywordNames =
     | "::"
     | "::*"
     | "::**"
+    | "::>"
+    | ":="
     | ":>"
+    | ":>>"
     | ";"
     | "<"
     | "="
+    | "=>"
     | ">"
+    | "@"
     | "["
     | "]"
     | "about"
+    | "abstract"
     | "action"
     | "actor"
     | "alias"
     | "all"
     | "allocate"
     | "allocation"
+    | "analysis"
+    | "assert"
     | "attribute"
+    | "bind"
+    | "binding"
     | "by"
+    | "calc"
     | "case"
     | "comment"
+    | "concern"
     | "connect"
     | "connection"
+    | "constant"
+    | "constraint"
+    | "crosses"
     | "def"
+    | "default"
+    | "defined"
+    | "dependency"
+    | "derived"
     | "doc"
     | "end"
+    | "enum"
+    | "event"
+    | "exhibit"
     | "expose"
+    | "flow"
     | "for"
+    | "frame"
     | "from"
     | "import"
     | "in"
     | "include"
+    | "individual"
     | "inout"
     | "interface"
+    | "item"
     | "language"
     | "library"
     | "locale"
     | "message"
+    | "metadata"
+    | "nonunique"
+    | "not"
+    | "objective"
+    | "occurrence"
     | "of"
+    | "ordered"
     | "out"
     | "package"
     | "part"
@@ -72,89 +107,192 @@ export type SysmlKeywordNames =
     | "private"
     | "protected"
     | "public"
+    | "redefines"
+    | "ref"
+    | "references"
+    | "render"
+    | "rendering"
     | "rep"
     | "requirement"
     | "satisfy"
+    | "snapshot"
     | "specializes"
+    | "stakeholder"
     | "standard"
+    | "state"
     | "subject"
+    | "subsets"
+    | "succession"
     | "then"
+    | "timeslice"
     | "to"
+    | "typed"
     | "use"
+    | "variant"
+    | "variation"
+    | "verification"
+    | "verify"
     | "view"
+    | "viewpoint"
     | "{"
     | "}"
     | "~";
 
 export type SysmlTokenNames = SysmlTerminalNames | SysmlKeywordNames;
 
-export interface ActionDef extends langium.AstNode {
-    readonly $container: PackageDecl;
+export interface ActionDef extends Element {
     readonly $type: 'ActionDef';
+    aliases: Array<AliasMember>;
     annotations: Array<AnnotatingElement>;
-    members: Array<ActionMember>;
-    name: Name;
+    exposes: Array<Expose>;
+    imports: Array<ImportDecl>;
+    members: Array<Member>;
+    name?: Name;
     shortName?: Name;
+    supertypes: Array<QualifiedName>;
 }
 
 export const ActionDef = {
     $type: 'ActionDef',
+    aliases: 'aliases',
     annotations: 'annotations',
+    direction: 'direction',
+    exposes: 'exposes',
+    imports: 'imports',
+    isAbstract: 'isAbstract',
+    isConstant: 'isConstant',
+    isDerived: 'isDerived',
+    isEnd: 'isEnd',
+    isIndividual: 'isIndividual',
+    isReference: 'isReference',
+    isVariant: 'isVariant',
+    isVariation: 'isVariation',
     members: 'members',
     name: 'name',
-    shortName: 'shortName'
+    portionKind: 'portionKind',
+    prefixMetadata: 'prefixMetadata',
+    shortName: 'shortName',
+    supertypes: 'supertypes',
+    then: 'then',
+    visibility: 'visibility'
 } as const;
 
 export function isActionDef(item: unknown): item is ActionDef {
     return reflection.isInstance(item, ActionDef.$type);
 }
 
-export type ActionMember = ActionUsage | AttributeUsage | MessageUsage | PartUsage;
-
-export const ActionMember = {
-    $type: 'ActionMember'
-} as const;
-
-export function isActionMember(item: unknown): item is ActionMember {
-    return reflection.isInstance(item, ActionMember.$type);
-}
-
-export interface ActionUsage extends langium.AstNode {
-    readonly $container: ActionDef | ActionUsage | PackageDecl | PartDef | PartUsage;
+export interface ActionUsage extends Element {
     readonly $type: 'ActionUsage';
+    aliases: Array<AliasMember>;
     annotations: Array<AnnotatingElement>;
-    members: Array<ActionMember>;
-    name: Name;
+    crosses: Array<FeatureChain>;
+    exposes: Array<Expose>;
+    imports: Array<ImportDecl>;
+    isDefault: boolean;
+    isInitial: boolean;
+    members: Array<Member>;
+    multiplicities: Array<Multiplicity>;
+    name?: Name;
+    redefines: Array<FeatureChain>;
+    references: Array<FeatureChain>;
     shortName?: Name;
+    subsets: Array<FeatureChain>;
     type?: langium.Reference<ActionDef>;
+    types: Array<TypeName>;
+    value?: Literal;
 }
 
 export const ActionUsage = {
     $type: 'ActionUsage',
+    aliases: 'aliases',
     annotations: 'annotations',
+    crosses: 'crosses',
+    direction: 'direction',
+    exposes: 'exposes',
+    imports: 'imports',
+    isAbstract: 'isAbstract',
+    isConstant: 'isConstant',
+    isDefault: 'isDefault',
+    isDerived: 'isDerived',
+    isEnd: 'isEnd',
+    isIndividual: 'isIndividual',
+    isInitial: 'isInitial',
+    isReference: 'isReference',
+    isVariant: 'isVariant',
+    isVariation: 'isVariation',
     members: 'members',
+    multiplicities: 'multiplicities',
     name: 'name',
+    portionKind: 'portionKind',
+    prefixMetadata: 'prefixMetadata',
+    redefines: 'redefines',
+    references: 'references',
     shortName: 'shortName',
-    type: 'type'
+    subsets: 'subsets',
+    then: 'then',
+    type: 'type',
+    types: 'types',
+    value: 'value',
+    visibility: 'visibility'
 } as const;
 
 export function isActionUsage(item: unknown): item is ActionUsage {
     return reflection.isInstance(item, ActionUsage.$type);
 }
 
-export interface ActorUsage extends langium.AstNode {
-    readonly $container: UseCaseDef | UseCaseUsage;
+export interface ActorUsage extends Element {
     readonly $type: 'ActorUsage';
-    name: Name;
+    aliases: Array<AliasMember>;
+    annotations: Array<AnnotatingElement>;
+    crosses: Array<FeatureChain>;
+    exposes: Array<Expose>;
+    imports: Array<ImportDecl>;
+    isDefault: boolean;
+    isInitial: boolean;
+    members: Array<Member>;
+    multiplicities: Array<Multiplicity>;
+    name?: Name;
+    redefines: Array<FeatureChain>;
+    references: Array<FeatureChain>;
     shortName?: Name;
-    type?: langium.Reference<PartDef>;
+    subsets: Array<FeatureChain>;
+    type?: langium.Reference<Definition>;
+    types: Array<TypeName>;
+    value?: Literal;
 }
 
 export const ActorUsage = {
     $type: 'ActorUsage',
+    aliases: 'aliases',
+    annotations: 'annotations',
+    crosses: 'crosses',
+    direction: 'direction',
+    exposes: 'exposes',
+    imports: 'imports',
+    isAbstract: 'isAbstract',
+    isConstant: 'isConstant',
+    isDefault: 'isDefault',
+    isDerived: 'isDerived',
+    isEnd: 'isEnd',
+    isIndividual: 'isIndividual',
+    isInitial: 'isInitial',
+    isReference: 'isReference',
+    isVariant: 'isVariant',
+    isVariation: 'isVariation',
+    members: 'members',
+    multiplicities: 'multiplicities',
     name: 'name',
+    portionKind: 'portionKind',
+    prefixMetadata: 'prefixMetadata',
+    redefines: 'redefines',
+    references: 'references',
     shortName: 'shortName',
-    type: 'type'
+    subsets: 'subsets',
+    then: 'then',
+    type: 'type',
+    types: 'types',
+    value: 'value',
+    visibility: 'visibility'
 } as const;
 
 export function isActorUsage(item: unknown): item is ActorUsage {
@@ -162,12 +300,13 @@ export function isActorUsage(item: unknown): item is ActorUsage {
 }
 
 export interface AliasMember extends langium.AstNode {
-    readonly $container: PackageDecl;
+    readonly $container: ActionDef | ActionUsage | ActorUsage | AllocationUsage | AttributeDef | AttributeUsage | BindingUsage | ConnectionUsage | DefaultUsage | FlowUsage | IncludeUsage | InterfaceDef | MessageUsage | MetadataUsage | Model | OtherDefinition | OtherUsage | PackageDecl | PartDef | PartUsage | PerformUsage | PortDef | PortUsage | SatisfyUsage | SubjectUsage | UseCaseDef | UseCaseUsage | ViewUsage;
     readonly $type: 'AliasMember';
     annotations: Array<AnnotatingElement>;
     name?: Name;
     shortName?: Name;
     target: QualifiedName;
+    visibility?: Visibility;
 }
 
 export const AliasMember = {
@@ -175,28 +314,65 @@ export const AliasMember = {
     annotations: 'annotations',
     name: 'name',
     shortName: 'shortName',
-    target: 'target'
+    target: 'target',
+    visibility: 'visibility'
 } as const;
 
 export function isAliasMember(item: unknown): item is AliasMember {
     return reflection.isInstance(item, AliasMember.$type);
 }
 
-export interface AllocationUsage extends langium.AstNode {
-    readonly $container: PackageDecl | PartDef | PartUsage;
+export interface AllocationUsage extends Element {
     readonly $type: 'AllocationUsage';
+    aliases: Array<AliasMember>;
+    annotations: Array<AnnotatingElement>;
+    crosses: Array<FeatureChain>;
+    ends: Array<ConnectorEnd>;
+    exposes: Array<Expose>;
+    imports: Array<ImportDecl>;
+    members: Array<Member>;
+    multiplicities: Array<Multiplicity>;
     name?: Name;
+    redefines: Array<FeatureChain>;
+    references: Array<FeatureChain>;
     shortName?: Name;
-    source: ConnectorEnd;
-    target: ConnectorEnd;
+    source?: ConnectorEnd;
+    subsets: Array<FeatureChain>;
+    target?: ConnectorEnd;
+    types: Array<TypeName>;
 }
 
 export const AllocationUsage = {
     $type: 'AllocationUsage',
+    aliases: 'aliases',
+    annotations: 'annotations',
+    crosses: 'crosses',
+    direction: 'direction',
+    ends: 'ends',
+    exposes: 'exposes',
+    imports: 'imports',
+    isAbstract: 'isAbstract',
+    isConstant: 'isConstant',
+    isDerived: 'isDerived',
+    isEnd: 'isEnd',
+    isIndividual: 'isIndividual',
+    isReference: 'isReference',
+    isVariant: 'isVariant',
+    isVariation: 'isVariation',
+    members: 'members',
+    multiplicities: 'multiplicities',
     name: 'name',
+    portionKind: 'portionKind',
+    prefixMetadata: 'prefixMetadata',
+    redefines: 'redefines',
+    references: 'references',
     shortName: 'shortName',
     source: 'source',
-    target: 'target'
+    subsets: 'subsets',
+    target: 'target',
+    then: 'then',
+    types: 'types',
+    visibility: 'visibility'
 } as const;
 
 export function isAllocationUsage(item: unknown): item is AllocationUsage {
@@ -213,52 +389,163 @@ export function isAnnotatingElement(item: unknown): item is AnnotatingElement {
     return reflection.isInstance(item, AnnotatingElement.$type);
 }
 
-export interface AttributeDef extends langium.AstNode {
-    readonly $container: PackageDecl;
+export interface AttributeDef extends Element {
     readonly $type: 'AttributeDef';
+    aliases: Array<AliasMember>;
     annotations: Array<AnnotatingElement>;
-    members: Array<AttributeUsage>;
-    name: Name;
+    exposes: Array<Expose>;
+    imports: Array<ImportDecl>;
+    members: Array<Member>;
+    name?: Name;
     shortName?: Name;
+    supertypes: Array<QualifiedName>;
 }
 
 export const AttributeDef = {
     $type: 'AttributeDef',
+    aliases: 'aliases',
     annotations: 'annotations',
+    direction: 'direction',
+    exposes: 'exposes',
+    imports: 'imports',
+    isAbstract: 'isAbstract',
+    isConstant: 'isConstant',
+    isDerived: 'isDerived',
+    isEnd: 'isEnd',
+    isIndividual: 'isIndividual',
+    isReference: 'isReference',
+    isVariant: 'isVariant',
+    isVariation: 'isVariation',
     members: 'members',
     name: 'name',
-    shortName: 'shortName'
+    portionKind: 'portionKind',
+    prefixMetadata: 'prefixMetadata',
+    shortName: 'shortName',
+    supertypes: 'supertypes',
+    then: 'then',
+    visibility: 'visibility'
 } as const;
 
 export function isAttributeDef(item: unknown): item is AttributeDef {
     return reflection.isInstance(item, AttributeDef.$type);
 }
 
-export interface AttributeUsage extends langium.AstNode {
-    readonly $container: ActionDef | ActionUsage | AttributeDef | InterfaceDef | PartDef | PartUsage | PortDef | RequirementDef | RequirementUsage | UseCaseDef | UseCaseUsage;
+export interface AttributeUsage extends Element {
     readonly $type: 'AttributeUsage';
-    direction?: Direction;
-    name: Name;
+    aliases: Array<AliasMember>;
+    annotations: Array<AnnotatingElement>;
+    crosses: Array<FeatureChain>;
+    exposes: Array<Expose>;
+    imports: Array<ImportDecl>;
+    isDefault: boolean;
+    isInitial: boolean;
+    members: Array<Member>;
+    multiplicities: Array<Multiplicity>;
+    name?: Name;
+    redefines: Array<FeatureChain>;
+    references: Array<FeatureChain>;
     shortName?: Name;
+    subsets: Array<FeatureChain>;
     type?: QualifiedName;
+    types: Array<TypeName>;
     value?: Literal;
 }
 
 export const AttributeUsage = {
     $type: 'AttributeUsage',
+    aliases: 'aliases',
+    annotations: 'annotations',
+    crosses: 'crosses',
     direction: 'direction',
+    exposes: 'exposes',
+    imports: 'imports',
+    isAbstract: 'isAbstract',
+    isConstant: 'isConstant',
+    isDefault: 'isDefault',
+    isDerived: 'isDerived',
+    isEnd: 'isEnd',
+    isIndividual: 'isIndividual',
+    isInitial: 'isInitial',
+    isReference: 'isReference',
+    isVariant: 'isVariant',
+    isVariation: 'isVariation',
+    members: 'members',
+    multiplicities: 'multiplicities',
     name: 'name',
+    portionKind: 'portionKind',
+    prefixMetadata: 'prefixMetadata',
+    redefines: 'redefines',
+    references: 'references',
     shortName: 'shortName',
+    subsets: 'subsets',
+    then: 'then',
     type: 'type',
-    value: 'value'
+    types: 'types',
+    value: 'value',
+    visibility: 'visibility'
 } as const;
 
 export function isAttributeUsage(item: unknown): item is AttributeUsage {
     return reflection.isInstance(item, AttributeUsage.$type);
 }
 
+export interface BindingUsage extends Element {
+    readonly $type: 'BindingUsage';
+    aliases: Array<AliasMember>;
+    annotations: Array<AnnotatingElement>;
+    crosses: Array<FeatureChain>;
+    exposes: Array<Expose>;
+    imports: Array<ImportDecl>;
+    left: FeatureChain;
+    members: Array<Member>;
+    multiplicities: Array<Multiplicity>;
+    name?: Name;
+    redefines: Array<FeatureChain>;
+    references: Array<FeatureChain>;
+    right: FeatureChain;
+    shortName?: Name;
+    subsets: Array<FeatureChain>;
+    types: Array<TypeName>;
+}
+
+export const BindingUsage = {
+    $type: 'BindingUsage',
+    aliases: 'aliases',
+    annotations: 'annotations',
+    crosses: 'crosses',
+    direction: 'direction',
+    exposes: 'exposes',
+    imports: 'imports',
+    isAbstract: 'isAbstract',
+    isConstant: 'isConstant',
+    isDerived: 'isDerived',
+    isEnd: 'isEnd',
+    isIndividual: 'isIndividual',
+    isReference: 'isReference',
+    isVariant: 'isVariant',
+    isVariation: 'isVariation',
+    left: 'left',
+    members: 'members',
+    multiplicities: 'multiplicities',
+    name: 'name',
+    portionKind: 'portionKind',
+    prefixMetadata: 'prefixMetadata',
+    redefines: 'redefines',
+    references: 'references',
+    right: 'right',
+    shortName: 'shortName',
+    subsets: 'subsets',
+    then: 'then',
+    types: 'types',
+    visibility: 'visibility'
+} as const;
+
+export function isBindingUsage(item: unknown): item is BindingUsage {
+    return reflection.isInstance(item, BindingUsage.$type);
+}
+
 export interface Comment extends langium.AstNode {
-    readonly $container: ActionDef | ActionUsage | AliasMember | AttributeDef | ImportDecl | InterfaceDef | Model | PackageDecl | PartDef | PartUsage | PortDef | RequirementDef | RequirementUsage | UseCaseDef | UseCaseUsage | ViewUsage;
+    readonly $container: ActionDef | ActionUsage | ActorUsage | AliasMember | AllocationUsage | AttributeDef | AttributeUsage | BindingUsage | ConnectionUsage | DefaultUsage | Dependency | Expose | FlowUsage | ImportDecl | IncludeUsage | InterfaceDef | MessageUsage | MetadataUsage | Model | OtherDefinition | OtherUsage | PackageDecl | PartDef | PartUsage | PerformUsage | PortDef | PortUsage | SatisfyUsage | SubjectUsage | UseCaseDef | UseCaseUsage | ViewUsage;
     readonly $type: 'Comment';
     about: Array<QualifiedName>;
     body: string;
@@ -280,23 +567,67 @@ export function isComment(item: unknown): item is Comment {
     return reflection.isInstance(item, Comment.$type);
 }
 
-export interface ConnectionUsage extends langium.AstNode {
-    readonly $container: PackageDecl | PartDef | PartUsage;
+export interface ConnectionUsage extends Element {
     readonly $type: 'ConnectionUsage';
+    aliases: Array<AliasMember>;
+    annotations: Array<AnnotatingElement>;
+    crosses: Array<FeatureChain>;
+    ends: Array<ConnectorEnd>;
+    exposes: Array<Expose>;
+    imports: Array<ImportDecl>;
+    isDefault: boolean;
+    isInitial: boolean;
+    kind?: 'connection' | 'interface';
+    members: Array<Member>;
+    multiplicities: Array<Multiplicity>;
     name?: Name;
+    redefines: Array<FeatureChain>;
+    references: Array<FeatureChain>;
     shortName?: Name;
-    source: ConnectorEnd;
-    target: ConnectorEnd;
-    type?: langium.Reference<InterfaceDef>;
+    source?: ConnectorEnd;
+    subsets: Array<FeatureChain>;
+    target?: ConnectorEnd;
+    type?: langium.Reference<Definition>;
+    types: Array<TypeName>;
+    value?: Literal;
 }
 
 export const ConnectionUsage = {
     $type: 'ConnectionUsage',
+    aliases: 'aliases',
+    annotations: 'annotations',
+    crosses: 'crosses',
+    direction: 'direction',
+    ends: 'ends',
+    exposes: 'exposes',
+    imports: 'imports',
+    isAbstract: 'isAbstract',
+    isConstant: 'isConstant',
+    isDefault: 'isDefault',
+    isDerived: 'isDerived',
+    isEnd: 'isEnd',
+    isIndividual: 'isIndividual',
+    isInitial: 'isInitial',
+    isReference: 'isReference',
+    isVariant: 'isVariant',
+    isVariation: 'isVariation',
+    kind: 'kind',
+    members: 'members',
+    multiplicities: 'multiplicities',
     name: 'name',
+    portionKind: 'portionKind',
+    prefixMetadata: 'prefixMetadata',
+    redefines: 'redefines',
+    references: 'references',
     shortName: 'shortName',
     source: 'source',
+    subsets: 'subsets',
     target: 'target',
-    type: 'type'
+    then: 'then',
+    type: 'type',
+    types: 'types',
+    value: 'value',
+    visibility: 'visibility'
 } as const;
 
 export function isConnectionUsage(item: unknown): item is ConnectionUsage {
@@ -306,16 +637,128 @@ export function isConnectionUsage(item: unknown): item is ConnectionUsage {
 export interface ConnectorEnd extends langium.AstNode {
     readonly $container: AllocationUsage | ConnectionUsage | MessageUsage | PerformUsage;
     readonly $type: 'ConnectorEnd';
+    endName?: Name;
+    multiplicity?: Multiplicity;
     segments: Array<langium.Reference<Feature>>;
 }
 
 export const ConnectorEnd = {
     $type: 'ConnectorEnd',
+    endName: 'endName',
+    multiplicity: 'multiplicity',
     segments: 'segments'
 } as const;
 
 export function isConnectorEnd(item: unknown): item is ConnectorEnd {
     return reflection.isInstance(item, ConnectorEnd.$type);
+}
+
+export interface DefaultUsage extends Element {
+    readonly $type: 'DefaultUsage';
+    aliases: Array<AliasMember>;
+    annotations: Array<AnnotatingElement>;
+    crosses: Array<FeatureChain>;
+    exposes: Array<Expose>;
+    imports: Array<ImportDecl>;
+    isDefault: boolean;
+    isInitial: boolean;
+    members: Array<Member>;
+    multiplicities: Array<Multiplicity>;
+    name?: Name;
+    redefines: Array<FeatureChain>;
+    references: Array<FeatureChain>;
+    shortName?: Name;
+    subsets: Array<FeatureChain>;
+    types: Array<TypeName>;
+    value?: Literal;
+}
+
+export const DefaultUsage = {
+    $type: 'DefaultUsage',
+    aliases: 'aliases',
+    annotations: 'annotations',
+    crosses: 'crosses',
+    direction: 'direction',
+    exposes: 'exposes',
+    imports: 'imports',
+    isAbstract: 'isAbstract',
+    isConstant: 'isConstant',
+    isDefault: 'isDefault',
+    isDerived: 'isDerived',
+    isEnd: 'isEnd',
+    isIndividual: 'isIndividual',
+    isInitial: 'isInitial',
+    isReference: 'isReference',
+    isVariant: 'isVariant',
+    isVariation: 'isVariation',
+    members: 'members',
+    multiplicities: 'multiplicities',
+    name: 'name',
+    portionKind: 'portionKind',
+    prefixMetadata: 'prefixMetadata',
+    redefines: 'redefines',
+    references: 'references',
+    shortName: 'shortName',
+    subsets: 'subsets',
+    then: 'then',
+    types: 'types',
+    value: 'value',
+    visibility: 'visibility'
+} as const;
+
+export function isDefaultUsage(item: unknown): item is DefaultUsage {
+    return reflection.isInstance(item, DefaultUsage.$type);
+}
+
+export type Definition = ActionDef | AttributeDef | InterfaceDef | OtherDefinition | PartDef | PortDef | UseCaseDef;
+
+export const Definition = {
+    $type: 'Definition'
+} as const;
+
+export function isDefinition(item: unknown): item is Definition {
+    return reflection.isInstance(item, Definition.$type);
+}
+
+export type DefinitionKind = 'allocation' | 'analysis' | 'calc' | 'case' | 'concern' | 'connection' | 'constraint' | 'enum' | 'flow' | 'item' | 'metadata' | 'occurrence' | 'rendering' | 'requirement' | 'state' | 'verification' | 'view' | 'viewpoint';
+
+export function isDefinitionKind(item: unknown): item is DefinitionKind {
+    return item === 'item' || item === 'connection' || item === 'flow' || item === 'allocation' || item === 'occurrence' || item === 'calc' || item === 'constraint' || item === 'state' || item === 'requirement' || item === 'concern' || item === 'case' || item === 'analysis' || item === 'verification' || item === 'view' || item === 'viewpoint' || item === 'rendering' || item === 'metadata' || item === 'enum';
+}
+
+export interface Dependency extends Element {
+    readonly $type: 'Dependency';
+    annotations: Array<AnnotatingElement>;
+    clients: Array<QualifiedName>;
+    name?: Name;
+    shortName?: Name;
+    suppliers: Array<QualifiedName>;
+}
+
+export const Dependency = {
+    $type: 'Dependency',
+    annotations: 'annotations',
+    clients: 'clients',
+    direction: 'direction',
+    isAbstract: 'isAbstract',
+    isConstant: 'isConstant',
+    isDerived: 'isDerived',
+    isEnd: 'isEnd',
+    isIndividual: 'isIndividual',
+    isReference: 'isReference',
+    isVariant: 'isVariant',
+    isVariation: 'isVariation',
+    name: 'name',
+    portionKind: 'portionKind',
+    prefixMetadata: 'prefixMetadata',
+    shortName: 'shortName',
+    suppliers: 'suppliers',
+    then: 'then',
+    visibility: 'visibility'
+} as const;
+
+export function isDependency(item: unknown): item is Dependency {
+    return reflection.isInstance(item, Dependency.$type);
 }
 
 export type Direction = 'in' | 'inout' | 'out';
@@ -325,7 +768,7 @@ export function isDirection(item: unknown): item is Direction {
 }
 
 export interface Documentation extends langium.AstNode {
-    readonly $container: ActionDef | ActionUsage | AliasMember | AttributeDef | ImportDecl | InterfaceDef | Model | PackageDecl | PartDef | PartUsage | PortDef | RequirementDef | RequirementUsage | UseCaseDef | UseCaseUsage | ViewUsage;
+    readonly $container: ActionDef | ActionUsage | ActorUsage | AliasMember | AllocationUsage | AttributeDef | AttributeUsage | BindingUsage | ConnectionUsage | DefaultUsage | Dependency | Expose | FlowUsage | ImportDecl | IncludeUsage | InterfaceDef | MessageUsage | MetadataUsage | Model | OtherDefinition | OtherUsage | PackageDecl | PartDef | PartUsage | PerformUsage | PortDef | PortUsage | SatisfyUsage | SubjectUsage | UseCaseDef | UseCaseUsage | ViewUsage;
     readonly $type: 'Documentation';
     body: string;
     locale?: string;
@@ -345,42 +788,68 @@ export function isDocumentation(item: unknown): item is Documentation {
     return reflection.isInstance(item, Documentation.$type);
 }
 
-export type Element = ActionDef | ActionUsage | AttributeDef | AttributeUsage | InterfaceDef | PackageDecl | PartDef | PartUsage | PortDef | PortUsage | RequirementDef | RequirementUsage | UseCaseDef | UseCaseUsage | ViewUsage;
+export interface Element extends langium.AstNode {
+    readonly $type: 'ActionDef' | 'ActionUsage' | 'ActorUsage' | 'AllocationUsage' | 'AttributeDef' | 'AttributeUsage' | 'BindingUsage' | 'ConnectionUsage' | 'DefaultUsage' | 'Dependency' | 'Element' | 'FlowUsage' | 'IncludeUsage' | 'InterfaceDef' | 'MessageUsage' | 'MetadataUsage' | 'OtherDefinition' | 'OtherUsage' | 'PartDef' | 'PartUsage' | 'PerformUsage' | 'PortDef' | 'PortUsage' | 'SatisfyUsage' | 'SubjectUsage' | 'UseCaseDef' | 'UseCaseUsage' | 'ViewUsage';
+    direction?: Direction;
+    isAbstract: boolean;
+    isConstant: boolean;
+    isDerived: boolean;
+    isEnd: boolean;
+    isIndividual: boolean;
+    isReference: boolean;
+    isVariant: boolean;
+    isVariation: boolean;
+    portionKind?: PortionKind;
+    prefixMetadata: Array<PrefixMetadata>;
+    then: boolean;
+    visibility?: Visibility;
+}
 
 export const Element = {
-    $type: 'Element'
+    $type: 'Element',
+    direction: 'direction',
+    isAbstract: 'isAbstract',
+    isConstant: 'isConstant',
+    isDerived: 'isDerived',
+    isEnd: 'isEnd',
+    isIndividual: 'isIndividual',
+    isReference: 'isReference',
+    isVariant: 'isVariant',
+    isVariation: 'isVariation',
+    portionKind: 'portionKind',
+    prefixMetadata: 'prefixMetadata',
+    then: 'then',
+    visibility: 'visibility'
 } as const;
 
 export function isElement(item: unknown): item is Element {
     return reflection.isInstance(item, Element.$type);
 }
 
-export type Exposable = ActionDef | PackageDecl | PartUsage;
-
-export const Exposable = {
-    $type: 'Exposable'
-} as const;
-
-export function isExposable(item: unknown): item is Exposable {
-    return reflection.isInstance(item, Exposable.$type);
-}
-
 export interface Expose extends langium.AstNode {
-    readonly $container: ViewUsage;
+    readonly $container: ActionDef | ActionUsage | ActorUsage | AllocationUsage | AttributeDef | AttributeUsage | BindingUsage | ConnectionUsage | DefaultUsage | FlowUsage | IncludeUsage | InterfaceDef | MessageUsage | MetadataUsage | OtherDefinition | OtherUsage | PackageDecl | PartDef | PartUsage | PerformUsage | PortDef | PortUsage | SatisfyUsage | SubjectUsage | UseCaseDef | UseCaseUsage | ViewUsage;
     readonly $type: 'Expose';
-    element: langium.Reference<Exposable>;
+    annotations: Array<AnnotatingElement>;
+    element: langium.Reference<Member>;
+    recursive: boolean;
+    visibility?: Visibility;
+    wildcard: boolean;
 }
 
 export const Expose = {
     $type: 'Expose',
-    element: 'element'
+    annotations: 'annotations',
+    element: 'element',
+    recursive: 'recursive',
+    visibility: 'visibility',
+    wildcard: 'wildcard'
 } as const;
 
 export function isExpose(item: unknown): item is Expose {
     return reflection.isInstance(item, Expose.$type);
 }
 
-export type Feature = ActionUsage | AttributeUsage | InterfaceEnd | PartUsage | PortUsage | SubjectUsage | UseCaseUsage;
+export type Feature = ActionUsage | ActorUsage | AttributeUsage | DefaultUsage | OtherUsage | PartUsage | PerformUsage | PortUsage | SubjectUsage | UseCaseUsage;
 
 export const Feature = {
     $type: 'Feature'
@@ -390,13 +859,88 @@ export function isFeature(item: unknown): item is Feature {
     return reflection.isInstance(item, Feature.$type);
 }
 
+export type FeatureChain = string;
+
+export function isFeatureChain(item: unknown): item is FeatureChain {
+    return typeof item === 'string';
+}
+
+export interface FlowUsage extends Element {
+    readonly $type: 'FlowUsage';
+    aliases: Array<AliasMember>;
+    annotations: Array<AnnotatingElement>;
+    crosses: Array<FeatureChain>;
+    exposes: Array<Expose>;
+    imports: Array<ImportDecl>;
+    isDefault: boolean;
+    isInitial: boolean;
+    members: Array<Member>;
+    multiplicities: Array<Multiplicity>;
+    name?: Name;
+    payload?: TypeName;
+    payloadMultiplicity?: Multiplicity;
+    payloadName?: Name;
+    redefines: Array<FeatureChain>;
+    references: Array<FeatureChain>;
+    shortName?: Name;
+    source: FeatureChain;
+    subsets: Array<FeatureChain>;
+    succession: boolean;
+    target: FeatureChain;
+    types: Array<TypeName>;
+    value?: Literal;
+}
+
+export const FlowUsage = {
+    $type: 'FlowUsage',
+    aliases: 'aliases',
+    annotations: 'annotations',
+    crosses: 'crosses',
+    direction: 'direction',
+    exposes: 'exposes',
+    imports: 'imports',
+    isAbstract: 'isAbstract',
+    isConstant: 'isConstant',
+    isDefault: 'isDefault',
+    isDerived: 'isDerived',
+    isEnd: 'isEnd',
+    isIndividual: 'isIndividual',
+    isInitial: 'isInitial',
+    isReference: 'isReference',
+    isVariant: 'isVariant',
+    isVariation: 'isVariation',
+    members: 'members',
+    multiplicities: 'multiplicities',
+    name: 'name',
+    payload: 'payload',
+    payloadMultiplicity: 'payloadMultiplicity',
+    payloadName: 'payloadName',
+    portionKind: 'portionKind',
+    prefixMetadata: 'prefixMetadata',
+    redefines: 'redefines',
+    references: 'references',
+    shortName: 'shortName',
+    source: 'source',
+    subsets: 'subsets',
+    succession: 'succession',
+    target: 'target',
+    then: 'then',
+    types: 'types',
+    value: 'value',
+    visibility: 'visibility'
+} as const;
+
+export function isFlowUsage(item: unknown): item is FlowUsage {
+    return reflection.isInstance(item, FlowUsage.$type);
+}
+
 export interface ImportDecl extends langium.AstNode {
-    readonly $container: Model | PackageDecl;
+    readonly $container: ActionDef | ActionUsage | ActorUsage | AllocationUsage | AttributeDef | AttributeUsage | BindingUsage | ConnectionUsage | DefaultUsage | FlowUsage | IncludeUsage | InterfaceDef | MessageUsage | MetadataUsage | Model | OtherDefinition | OtherUsage | PackageDecl | PartDef | PartUsage | PerformUsage | PortDef | PortUsage | SatisfyUsage | SubjectUsage | UseCaseDef | UseCaseUsage | ViewUsage;
     readonly $type: 'ImportDecl';
     all: boolean;
     annotations: Array<AnnotatingElement>;
     recursive: boolean;
-    target: langium.Reference<Element>;
+    target: langium.Reference<Member>;
     visibility: Visibility;
     wildcard: boolean;
 }
@@ -415,63 +959,92 @@ export function isImportDecl(item: unknown): item is ImportDecl {
     return reflection.isInstance(item, ImportDecl.$type);
 }
 
-export interface IncludeUsage extends langium.AstNode {
-    readonly $container: UseCaseDef | UseCaseUsage;
+export interface IncludeUsage extends Element {
     readonly $type: 'IncludeUsage';
+    aliases: Array<AliasMember>;
+    annotations: Array<AnnotatingElement>;
+    crosses: Array<FeatureChain>;
+    exposes: Array<Expose>;
+    imports: Array<ImportDecl>;
+    members: Array<Member>;
+    multiplicities: Array<Multiplicity>;
+    redefines: Array<FeatureChain>;
+    references: Array<FeatureChain>;
+    subsets: Array<FeatureChain>;
     target: langium.Reference<UseCaseUsage>;
 }
 
 export const IncludeUsage = {
     $type: 'IncludeUsage',
-    target: 'target'
+    aliases: 'aliases',
+    annotations: 'annotations',
+    crosses: 'crosses',
+    direction: 'direction',
+    exposes: 'exposes',
+    imports: 'imports',
+    isAbstract: 'isAbstract',
+    isConstant: 'isConstant',
+    isDerived: 'isDerived',
+    isEnd: 'isEnd',
+    isIndividual: 'isIndividual',
+    isReference: 'isReference',
+    isVariant: 'isVariant',
+    isVariation: 'isVariation',
+    members: 'members',
+    multiplicities: 'multiplicities',
+    portionKind: 'portionKind',
+    prefixMetadata: 'prefixMetadata',
+    redefines: 'redefines',
+    references: 'references',
+    subsets: 'subsets',
+    target: 'target',
+    then: 'then',
+    visibility: 'visibility'
 } as const;
 
 export function isIncludeUsage(item: unknown): item is IncludeUsage {
     return reflection.isInstance(item, IncludeUsage.$type);
 }
 
-export interface InterfaceDef extends langium.AstNode {
-    readonly $container: PackageDecl;
+export interface InterfaceDef extends Element {
     readonly $type: 'InterfaceDef';
+    aliases: Array<AliasMember>;
     annotations: Array<AnnotatingElement>;
-    ends: Array<InterfaceEnd>;
-    members: Array<AttributeUsage>;
-    name: Name;
+    exposes: Array<Expose>;
+    imports: Array<ImportDecl>;
+    members: Array<Member>;
+    name?: Name;
     shortName?: Name;
+    supertypes: Array<QualifiedName>;
 }
 
 export const InterfaceDef = {
     $type: 'InterfaceDef',
+    aliases: 'aliases',
     annotations: 'annotations',
-    ends: 'ends',
+    direction: 'direction',
+    exposes: 'exposes',
+    imports: 'imports',
+    isAbstract: 'isAbstract',
+    isConstant: 'isConstant',
+    isDerived: 'isDerived',
+    isEnd: 'isEnd',
+    isIndividual: 'isIndividual',
+    isReference: 'isReference',
+    isVariant: 'isVariant',
+    isVariation: 'isVariation',
     members: 'members',
     name: 'name',
-    shortName: 'shortName'
+    portionKind: 'portionKind',
+    prefixMetadata: 'prefixMetadata',
+    shortName: 'shortName',
+    supertypes: 'supertypes',
+    then: 'then',
+    visibility: 'visibility'
 } as const;
 
 export function isInterfaceDef(item: unknown): item is InterfaceDef {
     return reflection.isInstance(item, InterfaceDef.$type);
-}
-
-export interface InterfaceEnd extends langium.AstNode {
-    readonly $container: InterfaceDef;
-    readonly $type: 'InterfaceEnd';
-    conjugated: boolean;
-    name: Name;
-    shortName?: Name;
-    type: langium.Reference<PortDef>;
-}
-
-export const InterfaceEnd = {
-    $type: 'InterfaceEnd',
-    conjugated: 'conjugated',
-    name: 'name',
-    shortName: 'shortName',
-    type: 'type'
-} as const;
-
-export function isInterfaceEnd(item: unknown): item is InterfaceEnd {
-    return reflection.isInstance(item, InterfaceEnd.$type);
 }
 
 export type Literal = string;
@@ -480,42 +1053,141 @@ export function isLiteral(item: unknown): item is Literal {
     return (typeof item === 'string' && (/[0-9]+(\.[0-9]+)?/.test(item) || /"(\\.|[^"\\\r\n])*"/.test(item) || /[_a-zA-Z][\w_]*/.test(item)));
 }
 
-export interface MessageUsage extends langium.AstNode {
-    readonly $container: ActionDef | ActionUsage;
+export type Member = Element | PackageDecl;
+
+export const Member = {
+    $type: 'Member'
+} as const;
+
+export function isMember(item: unknown): item is Member {
+    return reflection.isInstance(item, Member.$type);
+}
+
+export interface MessageUsage extends Element {
     readonly $type: 'MessageUsage';
+    aliases: Array<AliasMember>;
+    annotations: Array<AnnotatingElement>;
+    crosses: Array<FeatureChain>;
+    exposes: Array<Expose>;
+    imports: Array<ImportDecl>;
+    isDefault: boolean;
+    isInitial: boolean;
+    members: Array<Member>;
+    multiplicities: Array<Multiplicity>;
     name?: Name;
-    payload?: langium.Reference<AttributeDef>;
+    payload?: langium.Reference<Definition>;
+    payloadMultiplicity?: Multiplicity;
+    payloadName?: Name;
+    redefines: Array<FeatureChain>;
+    references: Array<FeatureChain>;
     shortName?: Name;
     source: ConnectorEnd;
+    subsets: Array<FeatureChain>;
     target: ConnectorEnd;
-    then: boolean;
+    types: Array<TypeName>;
+    value?: Literal;
 }
 
 export const MessageUsage = {
     $type: 'MessageUsage',
+    aliases: 'aliases',
+    annotations: 'annotations',
+    crosses: 'crosses',
+    direction: 'direction',
+    exposes: 'exposes',
+    imports: 'imports',
+    isAbstract: 'isAbstract',
+    isConstant: 'isConstant',
+    isDefault: 'isDefault',
+    isDerived: 'isDerived',
+    isEnd: 'isEnd',
+    isIndividual: 'isIndividual',
+    isInitial: 'isInitial',
+    isReference: 'isReference',
+    isVariant: 'isVariant',
+    isVariation: 'isVariation',
+    members: 'members',
+    multiplicities: 'multiplicities',
     name: 'name',
     payload: 'payload',
+    payloadMultiplicity: 'payloadMultiplicity',
+    payloadName: 'payloadName',
+    portionKind: 'portionKind',
+    prefixMetadata: 'prefixMetadata',
+    redefines: 'redefines',
+    references: 'references',
     shortName: 'shortName',
     source: 'source',
+    subsets: 'subsets',
     target: 'target',
-    then: 'then'
+    then: 'then',
+    types: 'types',
+    value: 'value',
+    visibility: 'visibility'
 } as const;
 
 export function isMessageUsage(item: unknown): item is MessageUsage {
     return reflection.isInstance(item, MessageUsage.$type);
 }
 
+export interface MetadataUsage extends Element {
+    readonly $type: 'MetadataUsage';
+    about: Array<QualifiedName>;
+    aliases: Array<AliasMember>;
+    annotations: Array<AnnotatingElement>;
+    exposes: Array<Expose>;
+    imports: Array<ImportDecl>;
+    members: Array<Member>;
+    name?: Name;
+    shortName?: Name;
+    type: QualifiedName;
+}
+
+export const MetadataUsage = {
+    $type: 'MetadataUsage',
+    about: 'about',
+    aliases: 'aliases',
+    annotations: 'annotations',
+    direction: 'direction',
+    exposes: 'exposes',
+    imports: 'imports',
+    isAbstract: 'isAbstract',
+    isConstant: 'isConstant',
+    isDerived: 'isDerived',
+    isEnd: 'isEnd',
+    isIndividual: 'isIndividual',
+    isReference: 'isReference',
+    isVariant: 'isVariant',
+    isVariation: 'isVariation',
+    members: 'members',
+    name: 'name',
+    portionKind: 'portionKind',
+    prefixMetadata: 'prefixMetadata',
+    shortName: 'shortName',
+    then: 'then',
+    type: 'type',
+    visibility: 'visibility'
+} as const;
+
+export function isMetadataUsage(item: unknown): item is MetadataUsage {
+    return reflection.isInstance(item, MetadataUsage.$type);
+}
+
 export interface Model extends langium.AstNode {
     readonly $type: 'Model';
+    aliases: Array<AliasMember>;
     annotations: Array<AnnotatingElement>;
     imports: Array<ImportDecl>;
+    members: Array<Element>;
     packages: Array<PackageDecl>;
 }
 
 export const Model = {
     $type: 'Model',
+    aliases: 'aliases',
     annotations: 'annotations',
     imports: 'imports',
+    members: 'members',
     packages: 'packages'
 } as const;
 
@@ -524,10 +1196,10 @@ export function isModel(item: unknown): item is Model {
 }
 
 export interface Multiplicity extends langium.AstNode {
-    readonly $container: PartUsage;
+    readonly $container: ActionUsage | ActorUsage | AllocationUsage | AttributeUsage | BindingUsage | ConnectionUsage | ConnectorEnd | DefaultUsage | FlowUsage | IncludeUsage | MessageUsage | OtherUsage | PartUsage | PerformUsage | PortUsage | SatisfyUsage | SubjectUsage | UseCaseUsage | ViewUsage;
     readonly $type: 'Multiplicity';
-    lower: string;
-    upper?: UpperBound;
+    lower: MultiplicityBound;
+    upper?: MultiplicityBound;
 }
 
 export const Multiplicity = {
@@ -540,156 +1212,426 @@ export function isMultiplicity(item: unknown): item is Multiplicity {
     return reflection.isInstance(item, Multiplicity.$type);
 }
 
+export type MultiplicityBound = '*' | QualifiedName | string;
+
+export function isMultiplicityBound(item: unknown): item is MultiplicityBound {
+    return isQualifiedName(item) || item === '*' || (typeof item === 'string' && (/[0-9]+(\.[0-9]+)?/.test(item)));
+}
+
 export type Name = string;
 
 export function isName(item: unknown): item is Name {
     return (typeof item === 'string' && (/[_a-zA-Z][\w_]*/.test(item) || /'(\\.|[^'\\\r\n])*'/.test(item)));
 }
 
+export interface OtherDefinition extends Element {
+    readonly $type: 'OtherDefinition';
+    aliases: Array<AliasMember>;
+    annotations: Array<AnnotatingElement>;
+    exposes: Array<Expose>;
+    imports: Array<ImportDecl>;
+    kind?: DefinitionKind;
+    members: Array<Member>;
+    name?: Name;
+    shortName?: Name;
+    supertypes: Array<QualifiedName>;
+}
+
+export const OtherDefinition = {
+    $type: 'OtherDefinition',
+    aliases: 'aliases',
+    annotations: 'annotations',
+    direction: 'direction',
+    exposes: 'exposes',
+    imports: 'imports',
+    isAbstract: 'isAbstract',
+    isConstant: 'isConstant',
+    isDerived: 'isDerived',
+    isEnd: 'isEnd',
+    isIndividual: 'isIndividual',
+    isReference: 'isReference',
+    isVariant: 'isVariant',
+    isVariation: 'isVariation',
+    kind: 'kind',
+    members: 'members',
+    name: 'name',
+    portionKind: 'portionKind',
+    prefixMetadata: 'prefixMetadata',
+    shortName: 'shortName',
+    supertypes: 'supertypes',
+    then: 'then',
+    visibility: 'visibility'
+} as const;
+
+export function isOtherDefinition(item: unknown): item is OtherDefinition {
+    return reflection.isInstance(item, OtherDefinition.$type);
+}
+
+export interface OtherUsage extends Element {
+    readonly $type: 'OtherUsage';
+    aliases: Array<AliasMember>;
+    annotations: Array<AnnotatingElement>;
+    crosses: Array<FeatureChain>;
+    exposes: Array<Expose>;
+    imports: Array<ImportDecl>;
+    isDefault: boolean;
+    isInitial: boolean;
+    kind: 'assert' | 'event' | 'exhibit' | 'frame' | 'objective' | 'render' | 'stakeholder' | 'verify' | UsageKind;
+    members: Array<Member>;
+    multiplicities: Array<Multiplicity>;
+    name?: Name;
+    redefines: Array<FeatureChain>;
+    references: Array<FeatureChain>;
+    shortName?: Name;
+    subsets: Array<FeatureChain>;
+    types: Array<TypeName>;
+    value?: Literal;
+}
+
+export const OtherUsage = {
+    $type: 'OtherUsage',
+    aliases: 'aliases',
+    annotations: 'annotations',
+    crosses: 'crosses',
+    direction: 'direction',
+    exposes: 'exposes',
+    imports: 'imports',
+    isAbstract: 'isAbstract',
+    isConstant: 'isConstant',
+    isDefault: 'isDefault',
+    isDerived: 'isDerived',
+    isEnd: 'isEnd',
+    isIndividual: 'isIndividual',
+    isInitial: 'isInitial',
+    isReference: 'isReference',
+    isVariant: 'isVariant',
+    isVariation: 'isVariation',
+    kind: 'kind',
+    members: 'members',
+    multiplicities: 'multiplicities',
+    name: 'name',
+    portionKind: 'portionKind',
+    prefixMetadata: 'prefixMetadata',
+    redefines: 'redefines',
+    references: 'references',
+    shortName: 'shortName',
+    subsets: 'subsets',
+    then: 'then',
+    types: 'types',
+    value: 'value',
+    visibility: 'visibility'
+} as const;
+
+export function isOtherUsage(item: unknown): item is OtherUsage {
+    return reflection.isInstance(item, OtherUsage.$type);
+}
+
 export interface PackageDecl extends langium.AstNode {
-    readonly $container: Model | PackageDecl;
+    readonly $container: ActionDef | ActionUsage | ActorUsage | AllocationUsage | AttributeDef | AttributeUsage | BindingUsage | ConnectionUsage | DefaultUsage | FlowUsage | IncludeUsage | InterfaceDef | MessageUsage | MetadataUsage | Model | OtherDefinition | OtherUsage | PackageDecl | PartDef | PartUsage | PerformUsage | PortDef | PortUsage | SatisfyUsage | SubjectUsage | UseCaseDef | UseCaseUsage | ViewUsage;
     readonly $type: 'PackageDecl';
     aliases: Array<AliasMember>;
     annotations: Array<AnnotatingElement>;
+    exposes: Array<Expose>;
     imports: Array<ImportDecl>;
     isLibrary: boolean;
     isStandard: boolean;
-    members: Array<PackageMember>;
-    name: Name;
+    members: Array<Member>;
+    name?: Name;
+    prefixMetadata: Array<PrefixMetadata>;
     shortName?: Name;
+    visibility?: Visibility;
 }
 
 export const PackageDecl = {
     $type: 'PackageDecl',
     aliases: 'aliases',
     annotations: 'annotations',
+    exposes: 'exposes',
     imports: 'imports',
     isLibrary: 'isLibrary',
     isStandard: 'isStandard',
     members: 'members',
     name: 'name',
-    shortName: 'shortName'
+    prefixMetadata: 'prefixMetadata',
+    shortName: 'shortName',
+    visibility: 'visibility'
 } as const;
 
 export function isPackageDecl(item: unknown): item is PackageDecl {
     return reflection.isInstance(item, PackageDecl.$type);
 }
 
-export type PackageMember = ActionDef | ActionUsage | AllocationUsage | AttributeDef | ConnectionUsage | InterfaceDef | PackageDecl | PartDef | PartUsage | PortDef | RequirementDef | RequirementUsage | SatisfyUsage | UseCaseDef | UseCaseUsage | ViewUsage;
-
-export const PackageMember = {
-    $type: 'PackageMember'
-} as const;
-
-export function isPackageMember(item: unknown): item is PackageMember {
-    return reflection.isInstance(item, PackageMember.$type);
-}
-
-export interface PartDef extends langium.AstNode {
-    readonly $container: PackageDecl;
+export interface PartDef extends Element {
     readonly $type: 'PartDef';
+    aliases: Array<AliasMember>;
     annotations: Array<AnnotatingElement>;
-    members: Array<UsageMember>;
-    name: Name;
+    exposes: Array<Expose>;
+    imports: Array<ImportDecl>;
+    members: Array<Member>;
+    name?: Name;
     shortName?: Name;
-    supertypes: Array<langium.Reference<PartDef>>;
+    supertypes: Array<langium.Reference<Definition>>;
 }
 
 export const PartDef = {
     $type: 'PartDef',
+    aliases: 'aliases',
     annotations: 'annotations',
+    direction: 'direction',
+    exposes: 'exposes',
+    imports: 'imports',
+    isAbstract: 'isAbstract',
+    isConstant: 'isConstant',
+    isDerived: 'isDerived',
+    isEnd: 'isEnd',
+    isIndividual: 'isIndividual',
+    isReference: 'isReference',
+    isVariant: 'isVariant',
+    isVariation: 'isVariation',
     members: 'members',
     name: 'name',
+    portionKind: 'portionKind',
+    prefixMetadata: 'prefixMetadata',
     shortName: 'shortName',
-    supertypes: 'supertypes'
+    supertypes: 'supertypes',
+    then: 'then',
+    visibility: 'visibility'
 } as const;
 
 export function isPartDef(item: unknown): item is PartDef {
     return reflection.isInstance(item, PartDef.$type);
 }
 
-export interface PartUsage extends langium.AstNode {
-    readonly $container: ActionDef | ActionUsage | PackageDecl | PartDef | PartUsage;
+export interface PartUsage extends Element {
     readonly $type: 'PartUsage';
+    aliases: Array<AliasMember>;
     annotations: Array<AnnotatingElement>;
-    members: Array<UsageMember>;
-    multiplicity?: Multiplicity;
-    name: Name;
+    crosses: Array<FeatureChain>;
+    exposes: Array<Expose>;
+    imports: Array<ImportDecl>;
+    isDefault: boolean;
+    isInitial: boolean;
+    members: Array<Member>;
+    multiplicities: Array<Multiplicity>;
+    name?: Name;
+    redefines: Array<FeatureChain>;
+    references: Array<FeatureChain>;
     shortName?: Name;
-    type?: langium.Reference<PartDef>;
+    subsets: Array<FeatureChain>;
+    type?: langium.Reference<Definition>;
+    types: Array<TypeName>;
+    value?: Literal;
 }
 
 export const PartUsage = {
     $type: 'PartUsage',
+    aliases: 'aliases',
     annotations: 'annotations',
+    crosses: 'crosses',
+    direction: 'direction',
+    exposes: 'exposes',
+    imports: 'imports',
+    isAbstract: 'isAbstract',
+    isConstant: 'isConstant',
+    isDefault: 'isDefault',
+    isDerived: 'isDerived',
+    isEnd: 'isEnd',
+    isIndividual: 'isIndividual',
+    isInitial: 'isInitial',
+    isReference: 'isReference',
+    isVariant: 'isVariant',
+    isVariation: 'isVariation',
     members: 'members',
-    multiplicity: 'multiplicity',
+    multiplicities: 'multiplicities',
     name: 'name',
+    portionKind: 'portionKind',
+    prefixMetadata: 'prefixMetadata',
+    redefines: 'redefines',
+    references: 'references',
     shortName: 'shortName',
-    type: 'type'
+    subsets: 'subsets',
+    then: 'then',
+    type: 'type',
+    types: 'types',
+    value: 'value',
+    visibility: 'visibility'
 } as const;
 
 export function isPartUsage(item: unknown): item is PartUsage {
     return reflection.isInstance(item, PartUsage.$type);
 }
 
-export interface PerformUsage extends langium.AstNode {
-    readonly $container: PartDef | PartUsage;
+export interface PerformUsage extends Element {
     readonly $type: 'PerformUsage';
-    target: ConnectorEnd;
+    aliases: Array<AliasMember>;
+    annotations: Array<AnnotatingElement>;
+    crosses: Array<FeatureChain>;
+    exposes: Array<Expose>;
+    imports: Array<ImportDecl>;
+    isDefault: boolean;
+    isInitial: boolean;
+    members: Array<Member>;
+    multiplicities: Array<Multiplicity>;
+    name?: Name;
+    redefines: Array<FeatureChain>;
+    references: Array<FeatureChain>;
+    shortName?: Name;
+    subsets: Array<FeatureChain>;
+    target?: ConnectorEnd;
+    types: Array<TypeName>;
+    value?: Literal;
 }
 
 export const PerformUsage = {
     $type: 'PerformUsage',
-    target: 'target'
+    aliases: 'aliases',
+    annotations: 'annotations',
+    crosses: 'crosses',
+    direction: 'direction',
+    exposes: 'exposes',
+    imports: 'imports',
+    isAbstract: 'isAbstract',
+    isConstant: 'isConstant',
+    isDefault: 'isDefault',
+    isDerived: 'isDerived',
+    isEnd: 'isEnd',
+    isIndividual: 'isIndividual',
+    isInitial: 'isInitial',
+    isReference: 'isReference',
+    isVariant: 'isVariant',
+    isVariation: 'isVariation',
+    members: 'members',
+    multiplicities: 'multiplicities',
+    name: 'name',
+    portionKind: 'portionKind',
+    prefixMetadata: 'prefixMetadata',
+    redefines: 'redefines',
+    references: 'references',
+    shortName: 'shortName',
+    subsets: 'subsets',
+    target: 'target',
+    then: 'then',
+    types: 'types',
+    value: 'value',
+    visibility: 'visibility'
 } as const;
 
 export function isPerformUsage(item: unknown): item is PerformUsage {
     return reflection.isInstance(item, PerformUsage.$type);
 }
 
-export interface PortDef extends langium.AstNode {
-    readonly $container: PackageDecl;
+export interface PortDef extends Element {
     readonly $type: 'PortDef';
+    aliases: Array<AliasMember>;
     annotations: Array<AnnotatingElement>;
-    members: Array<AttributeUsage>;
-    name: Name;
+    exposes: Array<Expose>;
+    imports: Array<ImportDecl>;
+    members: Array<Member>;
+    name?: Name;
     shortName?: Name;
     supertypes: Array<langium.Reference<PortDef>>;
 }
 
 export const PortDef = {
     $type: 'PortDef',
+    aliases: 'aliases',
     annotations: 'annotations',
+    direction: 'direction',
+    exposes: 'exposes',
+    imports: 'imports',
+    isAbstract: 'isAbstract',
+    isConstant: 'isConstant',
+    isDerived: 'isDerived',
+    isEnd: 'isEnd',
+    isIndividual: 'isIndividual',
+    isReference: 'isReference',
+    isVariant: 'isVariant',
+    isVariation: 'isVariation',
     members: 'members',
     name: 'name',
+    portionKind: 'portionKind',
+    prefixMetadata: 'prefixMetadata',
     shortName: 'shortName',
-    supertypes: 'supertypes'
+    supertypes: 'supertypes',
+    then: 'then',
+    visibility: 'visibility'
 } as const;
 
 export function isPortDef(item: unknown): item is PortDef {
     return reflection.isInstance(item, PortDef.$type);
 }
 
-export interface PortUsage extends langium.AstNode {
-    readonly $container: PartDef | PartUsage;
+export type PortionKind = 'snapshot' | 'timeslice';
+
+export function isPortionKind(item: unknown): item is PortionKind {
+    return item === 'snapshot' || item === 'timeslice';
+}
+
+export interface PortUsage extends Element {
     readonly $type: 'PortUsage';
+    aliases: Array<AliasMember>;
+    annotations: Array<AnnotatingElement>;
     conjugated: boolean;
-    name: Name;
+    crosses: Array<FeatureChain>;
+    exposes: Array<Expose>;
+    imports: Array<ImportDecl>;
+    isDefault: boolean;
+    isInitial: boolean;
+    members: Array<Member>;
+    multiplicities: Array<Multiplicity>;
+    name?: Name;
+    redefines: Array<FeatureChain>;
+    references: Array<FeatureChain>;
     shortName?: Name;
+    subsets: Array<FeatureChain>;
     type?: langium.Reference<PortDef>;
+    types: Array<TypeName>;
+    value?: Literal;
 }
 
 export const PortUsage = {
     $type: 'PortUsage',
+    aliases: 'aliases',
+    annotations: 'annotations',
     conjugated: 'conjugated',
+    crosses: 'crosses',
+    direction: 'direction',
+    exposes: 'exposes',
+    imports: 'imports',
+    isAbstract: 'isAbstract',
+    isConstant: 'isConstant',
+    isDefault: 'isDefault',
+    isDerived: 'isDerived',
+    isEnd: 'isEnd',
+    isIndividual: 'isIndividual',
+    isInitial: 'isInitial',
+    isReference: 'isReference',
+    isVariant: 'isVariant',
+    isVariation: 'isVariation',
+    members: 'members',
+    multiplicities: 'multiplicities',
     name: 'name',
+    portionKind: 'portionKind',
+    prefixMetadata: 'prefixMetadata',
+    redefines: 'redefines',
+    references: 'references',
     shortName: 'shortName',
-    type: 'type'
+    subsets: 'subsets',
+    then: 'then',
+    type: 'type',
+    types: 'types',
+    value: 'value',
+    visibility: 'visibility'
 } as const;
 
 export function isPortUsage(item: unknown): item is PortUsage {
     return reflection.isInstance(item, PortUsage.$type);
+}
+
+export type PrefixMetadata = string;
+
+export function isPrefixMetadata(item: unknown): item is PrefixMetadata {
+    return typeof item === 'string';
 }
 
 export type QualifiedName = string;
@@ -698,90 +1640,122 @@ export function isQualifiedName(item: unknown): item is QualifiedName {
     return typeof item === 'string';
 }
 
-export interface RequirementDef extends langium.AstNode {
-    readonly $container: PackageDecl;
-    readonly $type: 'RequirementDef';
-    annotations: Array<AnnotatingElement>;
-    members: Array<RequirementMember>;
-    name: Name;
-    shortName?: Name;
-}
-
-export const RequirementDef = {
-    $type: 'RequirementDef',
-    annotations: 'annotations',
-    members: 'members',
-    name: 'name',
-    shortName: 'shortName'
-} as const;
-
-export function isRequirementDef(item: unknown): item is RequirementDef {
-    return reflection.isInstance(item, RequirementDef.$type);
-}
-
-export type RequirementMember = AttributeUsage | SubjectUsage;
-
-export const RequirementMember = {
-    $type: 'RequirementMember'
-} as const;
-
-export function isRequirementMember(item: unknown): item is RequirementMember {
-    return reflection.isInstance(item, RequirementMember.$type);
-}
-
-export interface RequirementUsage extends langium.AstNode {
-    readonly $container: PackageDecl | PartDef | PartUsage;
-    readonly $type: 'RequirementUsage';
-    annotations: Array<AnnotatingElement>;
-    members: Array<RequirementMember>;
-    name: Name;
-    shortName?: Name;
-    type?: langium.Reference<RequirementDef>;
-}
-
-export const RequirementUsage = {
-    $type: 'RequirementUsage',
-    annotations: 'annotations',
-    members: 'members',
-    name: 'name',
-    shortName: 'shortName',
-    type: 'type'
-} as const;
-
-export function isRequirementUsage(item: unknown): item is RequirementUsage {
-    return reflection.isInstance(item, RequirementUsage.$type);
-}
-
-export interface SatisfyUsage extends langium.AstNode {
-    readonly $container: PackageDecl | PartDef | PartUsage;
+export interface SatisfyUsage extends Element {
     readonly $type: 'SatisfyUsage';
-    requirement: langium.Reference<RequirementUsage>;
-    satisfier: langium.Reference<PartUsage>;
+    aliases: Array<AliasMember>;
+    annotations: Array<AnnotatingElement>;
+    crosses: Array<FeatureChain>;
+    exposes: Array<Expose>;
+    imports: Array<ImportDecl>;
+    isDefault: boolean;
+    isInitial: boolean;
+    members: Array<Member>;
+    multiplicities: Array<Multiplicity>;
+    name?: Name;
+    negated: boolean;
+    redefines: Array<FeatureChain>;
+    references: Array<FeatureChain>;
+    requirement?: FeatureChain;
+    satisfier?: FeatureChain;
+    shortName?: Name;
+    subsets: Array<FeatureChain>;
+    types: Array<TypeName>;
+    value?: Literal;
 }
 
 export const SatisfyUsage = {
     $type: 'SatisfyUsage',
+    aliases: 'aliases',
+    annotations: 'annotations',
+    crosses: 'crosses',
+    direction: 'direction',
+    exposes: 'exposes',
+    imports: 'imports',
+    isAbstract: 'isAbstract',
+    isConstant: 'isConstant',
+    isDefault: 'isDefault',
+    isDerived: 'isDerived',
+    isEnd: 'isEnd',
+    isIndividual: 'isIndividual',
+    isInitial: 'isInitial',
+    isReference: 'isReference',
+    isVariant: 'isVariant',
+    isVariation: 'isVariation',
+    members: 'members',
+    multiplicities: 'multiplicities',
+    name: 'name',
+    negated: 'negated',
+    portionKind: 'portionKind',
+    prefixMetadata: 'prefixMetadata',
+    redefines: 'redefines',
+    references: 'references',
     requirement: 'requirement',
-    satisfier: 'satisfier'
+    satisfier: 'satisfier',
+    shortName: 'shortName',
+    subsets: 'subsets',
+    then: 'then',
+    types: 'types',
+    value: 'value',
+    visibility: 'visibility'
 } as const;
 
 export function isSatisfyUsage(item: unknown): item is SatisfyUsage {
     return reflection.isInstance(item, SatisfyUsage.$type);
 }
 
-export interface SubjectUsage extends langium.AstNode {
-    readonly $container: RequirementDef | RequirementUsage | UseCaseDef | UseCaseUsage;
+export interface SubjectUsage extends Element {
     readonly $type: 'SubjectUsage';
-    name: Name;
+    aliases: Array<AliasMember>;
+    annotations: Array<AnnotatingElement>;
+    crosses: Array<FeatureChain>;
+    exposes: Array<Expose>;
+    imports: Array<ImportDecl>;
+    isDefault: boolean;
+    isInitial: boolean;
+    members: Array<Member>;
+    multiplicities: Array<Multiplicity>;
+    name?: Name;
+    redefines: Array<FeatureChain>;
+    references: Array<FeatureChain>;
     shortName?: Name;
-    type?: langium.Reference<PartDef>;
+    subsets: Array<FeatureChain>;
+    type?: langium.Reference<Definition>;
+    types: Array<TypeName>;
+    value?: Literal;
 }
 
 export const SubjectUsage = {
     $type: 'SubjectUsage',
+    aliases: 'aliases',
+    annotations: 'annotations',
+    crosses: 'crosses',
+    direction: 'direction',
+    exposes: 'exposes',
+    imports: 'imports',
+    isAbstract: 'isAbstract',
+    isConstant: 'isConstant',
+    isDefault: 'isDefault',
+    isDerived: 'isDerived',
+    isEnd: 'isEnd',
+    isIndividual: 'isIndividual',
+    isInitial: 'isInitial',
+    isReference: 'isReference',
+    isVariant: 'isVariant',
+    isVariation: 'isVariation',
+    members: 'members',
+    multiplicities: 'multiplicities',
     name: 'name',
+    portionKind: 'portionKind',
+    prefixMetadata: 'prefixMetadata',
+    redefines: 'redefines',
+    references: 'references',
     shortName: 'shortName',
-    type: 'type'
+    subsets: 'subsets',
+    then: 'then',
+    type: 'type',
+    types: 'types',
+    value: 'value',
+    visibility: 'visibility'
 } as const;
 
 export function isSubjectUsage(item: unknown): item is SubjectUsage {
@@ -789,7 +1763,7 @@ export function isSubjectUsage(item: unknown): item is SubjectUsage {
 }
 
 export interface TextualRepresentation extends langium.AstNode {
-    readonly $container: ActionDef | ActionUsage | AliasMember | AttributeDef | ImportDecl | InterfaceDef | Model | PackageDecl | PartDef | PartUsage | PortDef | RequirementDef | RequirementUsage | UseCaseDef | UseCaseUsage | ViewUsage;
+    readonly $container: ActionDef | ActionUsage | ActorUsage | AliasMember | AllocationUsage | AttributeDef | AttributeUsage | BindingUsage | ConnectionUsage | DefaultUsage | Dependency | Expose | FlowUsage | ImportDecl | IncludeUsage | InterfaceDef | MessageUsage | MetadataUsage | Model | OtherDefinition | OtherUsage | PackageDecl | PartDef | PartUsage | PerformUsage | PortDef | PortUsage | SatisfyUsage | SubjectUsage | UseCaseDef | UseCaseUsage | ViewUsage;
     readonly $type: 'TextualRepresentation';
     body: string;
     language: string;
@@ -809,93 +1783,171 @@ export function isTextualRepresentation(item: unknown): item is TextualRepresent
     return reflection.isInstance(item, TextualRepresentation.$type);
 }
 
-export type UpperBound = '*' | string;
+export type TypeName = string;
 
-export function isUpperBound(item: unknown): item is UpperBound {
-    return item === '*' || (typeof item === 'string' && (/[0-9]+(\.[0-9]+)?/.test(item)));
+export function isTypeName(item: unknown): item is TypeName {
+    return typeof item === 'string';
 }
 
-export type UsageMember = ActionUsage | AllocationUsage | AttributeUsage | ConnectionUsage | PartUsage | PerformUsage | PortUsage | RequirementUsage | SatisfyUsage;
+export type UsageKind = 'analysis' | 'calc' | 'case' | 'concern' | 'constraint' | 'enum' | 'item' | 'occurrence' | 'rendering' | 'requirement' | 'state' | 'verification' | 'viewpoint';
 
-export const UsageMember = {
-    $type: 'UsageMember'
-} as const;
-
-export function isUsageMember(item: unknown): item is UsageMember {
-    return reflection.isInstance(item, UsageMember.$type);
+export function isUsageKind(item: unknown): item is UsageKind {
+    return item === 'item' || item === 'occurrence' || item === 'enum' || item === 'calc' || item === 'constraint' || item === 'state' || item === 'requirement' || item === 'concern' || item === 'case' || item === 'analysis' || item === 'verification' || item === 'viewpoint' || item === 'rendering';
 }
 
-export interface UseCaseDef extends langium.AstNode {
-    readonly $container: PackageDecl;
+export interface UseCaseDef extends Element {
     readonly $type: 'UseCaseDef';
+    aliases: Array<AliasMember>;
     annotations: Array<AnnotatingElement>;
-    members: Array<UseCaseMember>;
-    name: Name;
+    exposes: Array<Expose>;
+    imports: Array<ImportDecl>;
+    members: Array<Member>;
+    name?: Name;
     shortName?: Name;
+    supertypes: Array<QualifiedName>;
 }
 
 export const UseCaseDef = {
     $type: 'UseCaseDef',
+    aliases: 'aliases',
     annotations: 'annotations',
+    direction: 'direction',
+    exposes: 'exposes',
+    imports: 'imports',
+    isAbstract: 'isAbstract',
+    isConstant: 'isConstant',
+    isDerived: 'isDerived',
+    isEnd: 'isEnd',
+    isIndividual: 'isIndividual',
+    isReference: 'isReference',
+    isVariant: 'isVariant',
+    isVariation: 'isVariation',
     members: 'members',
     name: 'name',
-    shortName: 'shortName'
+    portionKind: 'portionKind',
+    prefixMetadata: 'prefixMetadata',
+    shortName: 'shortName',
+    supertypes: 'supertypes',
+    then: 'then',
+    visibility: 'visibility'
 } as const;
 
 export function isUseCaseDef(item: unknown): item is UseCaseDef {
     return reflection.isInstance(item, UseCaseDef.$type);
 }
 
-export type UseCaseMember = ActorUsage | AttributeUsage | IncludeUsage | SubjectUsage;
-
-export const UseCaseMember = {
-    $type: 'UseCaseMember'
-} as const;
-
-export function isUseCaseMember(item: unknown): item is UseCaseMember {
-    return reflection.isInstance(item, UseCaseMember.$type);
-}
-
-export interface UseCaseUsage extends langium.AstNode {
-    readonly $container: PackageDecl;
+export interface UseCaseUsage extends Element {
     readonly $type: 'UseCaseUsage';
+    aliases: Array<AliasMember>;
     annotations: Array<AnnotatingElement>;
-    members: Array<UseCaseMember>;
-    name: Name;
+    crosses: Array<FeatureChain>;
+    exposes: Array<Expose>;
+    imports: Array<ImportDecl>;
+    isDefault: boolean;
+    isInitial: boolean;
+    members: Array<Member>;
+    multiplicities: Array<Multiplicity>;
+    name?: Name;
+    redefines: Array<FeatureChain>;
+    references: Array<FeatureChain>;
     shortName?: Name;
+    subsets: Array<FeatureChain>;
     type?: langium.Reference<UseCaseDef>;
+    types: Array<TypeName>;
+    value?: Literal;
 }
 
 export const UseCaseUsage = {
     $type: 'UseCaseUsage',
+    aliases: 'aliases',
     annotations: 'annotations',
+    crosses: 'crosses',
+    direction: 'direction',
+    exposes: 'exposes',
+    imports: 'imports',
+    isAbstract: 'isAbstract',
+    isConstant: 'isConstant',
+    isDefault: 'isDefault',
+    isDerived: 'isDerived',
+    isEnd: 'isEnd',
+    isIndividual: 'isIndividual',
+    isInitial: 'isInitial',
+    isReference: 'isReference',
+    isVariant: 'isVariant',
+    isVariation: 'isVariation',
     members: 'members',
+    multiplicities: 'multiplicities',
     name: 'name',
+    portionKind: 'portionKind',
+    prefixMetadata: 'prefixMetadata',
+    redefines: 'redefines',
+    references: 'references',
     shortName: 'shortName',
-    type: 'type'
+    subsets: 'subsets',
+    then: 'then',
+    type: 'type',
+    types: 'types',
+    value: 'value',
+    visibility: 'visibility'
 } as const;
 
 export function isUseCaseUsage(item: unknown): item is UseCaseUsage {
     return reflection.isInstance(item, UseCaseUsage.$type);
 }
 
-export interface ViewUsage extends langium.AstNode {
-    readonly $container: PackageDecl;
+export interface ViewUsage extends Element {
     readonly $type: 'ViewUsage';
+    aliases: Array<AliasMember>;
     annotations: Array<AnnotatingElement>;
-    definition: QualifiedName;
+    crosses: Array<FeatureChain>;
+    definition?: QualifiedName;
     exposes: Array<Expose>;
-    name: Name;
+    imports: Array<ImportDecl>;
+    isDefault: boolean;
+    isInitial: boolean;
+    members: Array<Member>;
+    multiplicities: Array<Multiplicity>;
+    name?: Name;
+    redefines: Array<FeatureChain>;
+    references: Array<FeatureChain>;
     shortName?: Name;
+    subsets: Array<FeatureChain>;
+    types: Array<TypeName>;
+    value?: Literal;
 }
 
 export const ViewUsage = {
     $type: 'ViewUsage',
+    aliases: 'aliases',
     annotations: 'annotations',
+    crosses: 'crosses',
     definition: 'definition',
+    direction: 'direction',
     exposes: 'exposes',
+    imports: 'imports',
+    isAbstract: 'isAbstract',
+    isConstant: 'isConstant',
+    isDefault: 'isDefault',
+    isDerived: 'isDerived',
+    isEnd: 'isEnd',
+    isIndividual: 'isIndividual',
+    isInitial: 'isInitial',
+    isReference: 'isReference',
+    isVariant: 'isVariant',
+    isVariation: 'isVariation',
+    members: 'members',
+    multiplicities: 'multiplicities',
     name: 'name',
-    shortName: 'shortName'
+    portionKind: 'portionKind',
+    prefixMetadata: 'prefixMetadata',
+    redefines: 'redefines',
+    references: 'references',
+    shortName: 'shortName',
+    subsets: 'subsets',
+    then: 'then',
+    types: 'types',
+    value: 'value',
+    visibility: 'visibility'
 } as const;
 
 export function isViewUsage(item: unknown): item is ViewUsage {
@@ -910,7 +1962,6 @@ export function isVisibility(item: unknown): item is Visibility {
 
 export type SysmlAstType = {
     ActionDef: ActionDef
-    ActionMember: ActionMember
     ActionUsage: ActionUsage
     ActorUsage: ActorUsage
     AliasMember: AliasMember
@@ -918,37 +1969,38 @@ export type SysmlAstType = {
     AnnotatingElement: AnnotatingElement
     AttributeDef: AttributeDef
     AttributeUsage: AttributeUsage
+    BindingUsage: BindingUsage
     Comment: Comment
     ConnectionUsage: ConnectionUsage
     ConnectorEnd: ConnectorEnd
+    DefaultUsage: DefaultUsage
+    Definition: Definition
+    Dependency: Dependency
     Documentation: Documentation
     Element: Element
-    Exposable: Exposable
     Expose: Expose
     Feature: Feature
+    FlowUsage: FlowUsage
     ImportDecl: ImportDecl
     IncludeUsage: IncludeUsage
     InterfaceDef: InterfaceDef
-    InterfaceEnd: InterfaceEnd
+    Member: Member
     MessageUsage: MessageUsage
+    MetadataUsage: MetadataUsage
     Model: Model
     Multiplicity: Multiplicity
+    OtherDefinition: OtherDefinition
+    OtherUsage: OtherUsage
     PackageDecl: PackageDecl
-    PackageMember: PackageMember
     PartDef: PartDef
     PartUsage: PartUsage
     PerformUsage: PerformUsage
     PortDef: PortDef
     PortUsage: PortUsage
-    RequirementDef: RequirementDef
-    RequirementMember: RequirementMember
-    RequirementUsage: RequirementUsage
     SatisfyUsage: SatisfyUsage
     SubjectUsage: SubjectUsage
     TextualRepresentation: TextualRepresentation
-    UsageMember: UsageMember
     UseCaseDef: UseCaseDef
-    UseCaseMember: UseCaseMember
     UseCaseUsage: UseCaseUsage
     ViewUsage: ViewUsage
 }
@@ -958,9 +2010,68 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
         ActionDef: {
             name: ActionDef.$type,
             properties: {
+                aliases: {
+                    name: ActionDef.aliases,
+                    defaultValue: [],
+                    optional: true
+                },
                 annotations: {
                     name: ActionDef.annotations,
                     defaultValue: [],
+                    optional: true
+                },
+                direction: {
+                    name: ActionDef.direction,
+                    optional: true
+                },
+                exposes: {
+                    name: ActionDef.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                imports: {
+                    name: ActionDef.imports,
+                    defaultValue: [],
+                    optional: true
+                },
+                isAbstract: {
+                    name: ActionDef.isAbstract,
+                    defaultValue: false,
+                    optional: true
+                },
+                isConstant: {
+                    name: ActionDef.isConstant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDerived: {
+                    name: ActionDef.isDerived,
+                    defaultValue: false,
+                    optional: true
+                },
+                isEnd: {
+                    name: ActionDef.isEnd,
+                    defaultValue: false,
+                    optional: true
+                },
+                isIndividual: {
+                    name: ActionDef.isIndividual,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReference: {
+                    name: ActionDef.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariant: {
+                    name: ActionDef.isVariant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariation: {
+                    name: ActionDef.isVariation,
+                    defaultValue: false,
                     optional: true
                 },
                 members: {
@@ -969,27 +2080,119 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     optional: true
                 },
                 name: {
-                    name: ActionDef.name
+                    name: ActionDef.name,
+                    optional: true
+                },
+                portionKind: {
+                    name: ActionDef.portionKind,
+                    optional: true
+                },
+                prefixMetadata: {
+                    name: ActionDef.prefixMetadata,
+                    defaultValue: [],
+                    optional: true
                 },
                 shortName: {
                     name: ActionDef.shortName,
                     optional: true
+                },
+                supertypes: {
+                    name: ActionDef.supertypes,
+                    defaultValue: [],
+                    optional: true
+                },
+                then: {
+                    name: ActionDef.then,
+                    defaultValue: false,
+                    optional: true
+                },
+                visibility: {
+                    name: ActionDef.visibility,
+                    optional: true
                 }
             },
-            superTypes: [Element.$type, Exposable.$type, PackageMember.$type]
-        },
-        ActionMember: {
-            name: ActionMember.$type,
-            properties: {
-            },
-            superTypes: []
+            superTypes: [Element.$type, Definition.$type]
         },
         ActionUsage: {
             name: ActionUsage.$type,
             properties: {
+                aliases: {
+                    name: ActionUsage.aliases,
+                    defaultValue: [],
+                    optional: true
+                },
                 annotations: {
                     name: ActionUsage.annotations,
                     defaultValue: [],
+                    optional: true
+                },
+                crosses: {
+                    name: ActionUsage.crosses,
+                    defaultValue: [],
+                    optional: true
+                },
+                direction: {
+                    name: ActionUsage.direction,
+                    optional: true
+                },
+                exposes: {
+                    name: ActionUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                imports: {
+                    name: ActionUsage.imports,
+                    defaultValue: [],
+                    optional: true
+                },
+                isAbstract: {
+                    name: ActionUsage.isAbstract,
+                    defaultValue: false,
+                    optional: true
+                },
+                isConstant: {
+                    name: ActionUsage.isConstant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDefault: {
+                    name: ActionUsage.isDefault,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDerived: {
+                    name: ActionUsage.isDerived,
+                    defaultValue: false,
+                    optional: true
+                },
+                isEnd: {
+                    name: ActionUsage.isEnd,
+                    defaultValue: false,
+                    optional: true
+                },
+                isIndividual: {
+                    name: ActionUsage.isIndividual,
+                    defaultValue: false,
+                    optional: true
+                },
+                isInitial: {
+                    name: ActionUsage.isInitial,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReference: {
+                    name: ActionUsage.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariant: {
+                    name: ActionUsage.isVariant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariation: {
+                    name: ActionUsage.isVariation,
+                    defaultValue: false,
                     optional: true
                 },
                 members: {
@@ -997,38 +2200,218 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: [],
                     optional: true
                 },
+                multiplicities: {
+                    name: ActionUsage.multiplicities,
+                    defaultValue: [],
+                    optional: true
+                },
                 name: {
-                    name: ActionUsage.name
+                    name: ActionUsage.name,
+                    optional: true
+                },
+                portionKind: {
+                    name: ActionUsage.portionKind,
+                    optional: true
+                },
+                prefixMetadata: {
+                    name: ActionUsage.prefixMetadata,
+                    defaultValue: [],
+                    optional: true
+                },
+                redefines: {
+                    name: ActionUsage.redefines,
+                    defaultValue: [],
+                    optional: true
+                },
+                references: {
+                    name: ActionUsage.references,
+                    defaultValue: [],
+                    optional: true
                 },
                 shortName: {
                     name: ActionUsage.shortName,
+                    optional: true
+                },
+                subsets: {
+                    name: ActionUsage.subsets,
+                    defaultValue: [],
+                    optional: true
+                },
+                then: {
+                    name: ActionUsage.then,
+                    defaultValue: false,
                     optional: true
                 },
                 type: {
                     name: ActionUsage.type,
                     referenceType: ActionDef.$type,
                     optional: true
+                },
+                types: {
+                    name: ActionUsage.types,
+                    defaultValue: [],
+                    optional: true
+                },
+                value: {
+                    name: ActionUsage.value,
+                    optional: true
+                },
+                visibility: {
+                    name: ActionUsage.visibility,
+                    optional: true
                 }
             },
-            superTypes: [ActionMember.$type, Element.$type, Feature.$type, PackageMember.$type, UsageMember.$type]
+            superTypes: [Element.$type, Feature.$type]
         },
         ActorUsage: {
             name: ActorUsage.$type,
             properties: {
+                aliases: {
+                    name: ActorUsage.aliases,
+                    defaultValue: [],
+                    optional: true
+                },
+                annotations: {
+                    name: ActorUsage.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
+                crosses: {
+                    name: ActorUsage.crosses,
+                    defaultValue: [],
+                    optional: true
+                },
+                direction: {
+                    name: ActorUsage.direction,
+                    optional: true
+                },
+                exposes: {
+                    name: ActorUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                imports: {
+                    name: ActorUsage.imports,
+                    defaultValue: [],
+                    optional: true
+                },
+                isAbstract: {
+                    name: ActorUsage.isAbstract,
+                    defaultValue: false,
+                    optional: true
+                },
+                isConstant: {
+                    name: ActorUsage.isConstant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDefault: {
+                    name: ActorUsage.isDefault,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDerived: {
+                    name: ActorUsage.isDerived,
+                    defaultValue: false,
+                    optional: true
+                },
+                isEnd: {
+                    name: ActorUsage.isEnd,
+                    defaultValue: false,
+                    optional: true
+                },
+                isIndividual: {
+                    name: ActorUsage.isIndividual,
+                    defaultValue: false,
+                    optional: true
+                },
+                isInitial: {
+                    name: ActorUsage.isInitial,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReference: {
+                    name: ActorUsage.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariant: {
+                    name: ActorUsage.isVariant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariation: {
+                    name: ActorUsage.isVariation,
+                    defaultValue: false,
+                    optional: true
+                },
+                members: {
+                    name: ActorUsage.members,
+                    defaultValue: [],
+                    optional: true
+                },
+                multiplicities: {
+                    name: ActorUsage.multiplicities,
+                    defaultValue: [],
+                    optional: true
+                },
                 name: {
-                    name: ActorUsage.name
+                    name: ActorUsage.name,
+                    optional: true
+                },
+                portionKind: {
+                    name: ActorUsage.portionKind,
+                    optional: true
+                },
+                prefixMetadata: {
+                    name: ActorUsage.prefixMetadata,
+                    defaultValue: [],
+                    optional: true
+                },
+                redefines: {
+                    name: ActorUsage.redefines,
+                    defaultValue: [],
+                    optional: true
+                },
+                references: {
+                    name: ActorUsage.references,
+                    defaultValue: [],
+                    optional: true
                 },
                 shortName: {
                     name: ActorUsage.shortName,
                     optional: true
                 },
+                subsets: {
+                    name: ActorUsage.subsets,
+                    defaultValue: [],
+                    optional: true
+                },
+                then: {
+                    name: ActorUsage.then,
+                    defaultValue: false,
+                    optional: true
+                },
                 type: {
                     name: ActorUsage.type,
-                    referenceType: PartDef.$type,
+                    referenceType: Definition.$type,
+                    optional: true
+                },
+                types: {
+                    name: ActorUsage.types,
+                    defaultValue: [],
+                    optional: true
+                },
+                value: {
+                    name: ActorUsage.value,
+                    optional: true
+                },
+                visibility: {
+                    name: ActorUsage.visibility,
                     optional: true
                 }
             },
-            superTypes: [UseCaseMember.$type]
+            superTypes: [Element.$type, Feature.$type]
         },
         AliasMember: {
             name: AliasMember.$type,
@@ -1048,6 +2431,10 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 },
                 target: {
                     name: AliasMember.target
+                },
+                visibility: {
+                    name: AliasMember.visibility,
+                    optional: true
                 }
             },
             superTypes: []
@@ -1055,8 +2442,111 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
         AllocationUsage: {
             name: AllocationUsage.$type,
             properties: {
+                aliases: {
+                    name: AllocationUsage.aliases,
+                    defaultValue: [],
+                    optional: true
+                },
+                annotations: {
+                    name: AllocationUsage.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
+                crosses: {
+                    name: AllocationUsage.crosses,
+                    defaultValue: [],
+                    optional: true
+                },
+                direction: {
+                    name: AllocationUsage.direction,
+                    optional: true
+                },
+                ends: {
+                    name: AllocationUsage.ends,
+                    defaultValue: [],
+                    optional: true
+                },
+                exposes: {
+                    name: AllocationUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                imports: {
+                    name: AllocationUsage.imports,
+                    defaultValue: [],
+                    optional: true
+                },
+                isAbstract: {
+                    name: AllocationUsage.isAbstract,
+                    defaultValue: false,
+                    optional: true
+                },
+                isConstant: {
+                    name: AllocationUsage.isConstant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDerived: {
+                    name: AllocationUsage.isDerived,
+                    defaultValue: false,
+                    optional: true
+                },
+                isEnd: {
+                    name: AllocationUsage.isEnd,
+                    defaultValue: false,
+                    optional: true
+                },
+                isIndividual: {
+                    name: AllocationUsage.isIndividual,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReference: {
+                    name: AllocationUsage.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariant: {
+                    name: AllocationUsage.isVariant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariation: {
+                    name: AllocationUsage.isVariation,
+                    defaultValue: false,
+                    optional: true
+                },
+                members: {
+                    name: AllocationUsage.members,
+                    defaultValue: [],
+                    optional: true
+                },
+                multiplicities: {
+                    name: AllocationUsage.multiplicities,
+                    defaultValue: [],
+                    optional: true
+                },
                 name: {
                     name: AllocationUsage.name,
+                    optional: true
+                },
+                portionKind: {
+                    name: AllocationUsage.portionKind,
+                    optional: true
+                },
+                prefixMetadata: {
+                    name: AllocationUsage.prefixMetadata,
+                    defaultValue: [],
+                    optional: true
+                },
+                redefines: {
+                    name: AllocationUsage.redefines,
+                    defaultValue: [],
+                    optional: true
+                },
+                references: {
+                    name: AllocationUsage.references,
+                    defaultValue: [],
                     optional: true
                 },
                 shortName: {
@@ -1064,13 +2554,34 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     optional: true
                 },
                 source: {
-                    name: AllocationUsage.source
+                    name: AllocationUsage.source,
+                    optional: true
+                },
+                subsets: {
+                    name: AllocationUsage.subsets,
+                    defaultValue: [],
+                    optional: true
                 },
                 target: {
-                    name: AllocationUsage.target
+                    name: AllocationUsage.target,
+                    optional: true
+                },
+                then: {
+                    name: AllocationUsage.then,
+                    defaultValue: false,
+                    optional: true
+                },
+                types: {
+                    name: AllocationUsage.types,
+                    defaultValue: [],
+                    optional: true
+                },
+                visibility: {
+                    name: AllocationUsage.visibility,
+                    optional: true
                 }
             },
-            superTypes: [PackageMember.$type, UsageMember.$type]
+            superTypes: [Element.$type]
         },
         AnnotatingElement: {
             name: AnnotatingElement.$type,
@@ -1081,9 +2592,68 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
         AttributeDef: {
             name: AttributeDef.$type,
             properties: {
+                aliases: {
+                    name: AttributeDef.aliases,
+                    defaultValue: [],
+                    optional: true
+                },
                 annotations: {
                     name: AttributeDef.annotations,
                     defaultValue: [],
+                    optional: true
+                },
+                direction: {
+                    name: AttributeDef.direction,
+                    optional: true
+                },
+                exposes: {
+                    name: AttributeDef.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                imports: {
+                    name: AttributeDef.imports,
+                    defaultValue: [],
+                    optional: true
+                },
+                isAbstract: {
+                    name: AttributeDef.isAbstract,
+                    defaultValue: false,
+                    optional: true
+                },
+                isConstant: {
+                    name: AttributeDef.isConstant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDerived: {
+                    name: AttributeDef.isDerived,
+                    defaultValue: false,
+                    optional: true
+                },
+                isEnd: {
+                    name: AttributeDef.isEnd,
+                    defaultValue: false,
+                    optional: true
+                },
+                isIndividual: {
+                    name: AttributeDef.isIndividual,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReference: {
+                    name: AttributeDef.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariant: {
+                    name: AttributeDef.isVariant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariation: {
+                    name: AttributeDef.isVariation,
+                    defaultValue: false,
                     optional: true
                 },
                 members: {
@@ -1092,39 +2662,324 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     optional: true
                 },
                 name: {
-                    name: AttributeDef.name
+                    name: AttributeDef.name,
+                    optional: true
+                },
+                portionKind: {
+                    name: AttributeDef.portionKind,
+                    optional: true
+                },
+                prefixMetadata: {
+                    name: AttributeDef.prefixMetadata,
+                    defaultValue: [],
+                    optional: true
                 },
                 shortName: {
                     name: AttributeDef.shortName,
                     optional: true
+                },
+                supertypes: {
+                    name: AttributeDef.supertypes,
+                    defaultValue: [],
+                    optional: true
+                },
+                then: {
+                    name: AttributeDef.then,
+                    defaultValue: false,
+                    optional: true
+                },
+                visibility: {
+                    name: AttributeDef.visibility,
+                    optional: true
                 }
             },
-            superTypes: [Element.$type, PackageMember.$type]
+            superTypes: [Element.$type, Definition.$type]
         },
         AttributeUsage: {
             name: AttributeUsage.$type,
             properties: {
+                aliases: {
+                    name: AttributeUsage.aliases,
+                    defaultValue: [],
+                    optional: true
+                },
+                annotations: {
+                    name: AttributeUsage.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
+                crosses: {
+                    name: AttributeUsage.crosses,
+                    defaultValue: [],
+                    optional: true
+                },
                 direction: {
                     name: AttributeUsage.direction,
                     optional: true
                 },
+                exposes: {
+                    name: AttributeUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                imports: {
+                    name: AttributeUsage.imports,
+                    defaultValue: [],
+                    optional: true
+                },
+                isAbstract: {
+                    name: AttributeUsage.isAbstract,
+                    defaultValue: false,
+                    optional: true
+                },
+                isConstant: {
+                    name: AttributeUsage.isConstant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDefault: {
+                    name: AttributeUsage.isDefault,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDerived: {
+                    name: AttributeUsage.isDerived,
+                    defaultValue: false,
+                    optional: true
+                },
+                isEnd: {
+                    name: AttributeUsage.isEnd,
+                    defaultValue: false,
+                    optional: true
+                },
+                isIndividual: {
+                    name: AttributeUsage.isIndividual,
+                    defaultValue: false,
+                    optional: true
+                },
+                isInitial: {
+                    name: AttributeUsage.isInitial,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReference: {
+                    name: AttributeUsage.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariant: {
+                    name: AttributeUsage.isVariant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariation: {
+                    name: AttributeUsage.isVariation,
+                    defaultValue: false,
+                    optional: true
+                },
+                members: {
+                    name: AttributeUsage.members,
+                    defaultValue: [],
+                    optional: true
+                },
+                multiplicities: {
+                    name: AttributeUsage.multiplicities,
+                    defaultValue: [],
+                    optional: true
+                },
                 name: {
-                    name: AttributeUsage.name
+                    name: AttributeUsage.name,
+                    optional: true
+                },
+                portionKind: {
+                    name: AttributeUsage.portionKind,
+                    optional: true
+                },
+                prefixMetadata: {
+                    name: AttributeUsage.prefixMetadata,
+                    defaultValue: [],
+                    optional: true
+                },
+                redefines: {
+                    name: AttributeUsage.redefines,
+                    defaultValue: [],
+                    optional: true
+                },
+                references: {
+                    name: AttributeUsage.references,
+                    defaultValue: [],
+                    optional: true
                 },
                 shortName: {
                     name: AttributeUsage.shortName,
+                    optional: true
+                },
+                subsets: {
+                    name: AttributeUsage.subsets,
+                    defaultValue: [],
+                    optional: true
+                },
+                then: {
+                    name: AttributeUsage.then,
+                    defaultValue: false,
                     optional: true
                 },
                 type: {
                     name: AttributeUsage.type,
                     optional: true
                 },
+                types: {
+                    name: AttributeUsage.types,
+                    defaultValue: [],
+                    optional: true
+                },
                 value: {
                     name: AttributeUsage.value,
                     optional: true
+                },
+                visibility: {
+                    name: AttributeUsage.visibility,
+                    optional: true
                 }
             },
-            superTypes: [ActionMember.$type, Element.$type, Feature.$type, RequirementMember.$type, UsageMember.$type, UseCaseMember.$type]
+            superTypes: [Element.$type, Feature.$type]
+        },
+        BindingUsage: {
+            name: BindingUsage.$type,
+            properties: {
+                aliases: {
+                    name: BindingUsage.aliases,
+                    defaultValue: [],
+                    optional: true
+                },
+                annotations: {
+                    name: BindingUsage.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
+                crosses: {
+                    name: BindingUsage.crosses,
+                    defaultValue: [],
+                    optional: true
+                },
+                direction: {
+                    name: BindingUsage.direction,
+                    optional: true
+                },
+                exposes: {
+                    name: BindingUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                imports: {
+                    name: BindingUsage.imports,
+                    defaultValue: [],
+                    optional: true
+                },
+                isAbstract: {
+                    name: BindingUsage.isAbstract,
+                    defaultValue: false,
+                    optional: true
+                },
+                isConstant: {
+                    name: BindingUsage.isConstant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDerived: {
+                    name: BindingUsage.isDerived,
+                    defaultValue: false,
+                    optional: true
+                },
+                isEnd: {
+                    name: BindingUsage.isEnd,
+                    defaultValue: false,
+                    optional: true
+                },
+                isIndividual: {
+                    name: BindingUsage.isIndividual,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReference: {
+                    name: BindingUsage.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariant: {
+                    name: BindingUsage.isVariant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariation: {
+                    name: BindingUsage.isVariation,
+                    defaultValue: false,
+                    optional: true
+                },
+                left: {
+                    name: BindingUsage.left
+                },
+                members: {
+                    name: BindingUsage.members,
+                    defaultValue: [],
+                    optional: true
+                },
+                multiplicities: {
+                    name: BindingUsage.multiplicities,
+                    defaultValue: [],
+                    optional: true
+                },
+                name: {
+                    name: BindingUsage.name,
+                    optional: true
+                },
+                portionKind: {
+                    name: BindingUsage.portionKind,
+                    optional: true
+                },
+                prefixMetadata: {
+                    name: BindingUsage.prefixMetadata,
+                    defaultValue: [],
+                    optional: true
+                },
+                redefines: {
+                    name: BindingUsage.redefines,
+                    defaultValue: [],
+                    optional: true
+                },
+                references: {
+                    name: BindingUsage.references,
+                    defaultValue: [],
+                    optional: true
+                },
+                right: {
+                    name: BindingUsage.right
+                },
+                shortName: {
+                    name: BindingUsage.shortName,
+                    optional: true
+                },
+                subsets: {
+                    name: BindingUsage.subsets,
+                    defaultValue: [],
+                    optional: true
+                },
+                then: {
+                    name: BindingUsage.then,
+                    defaultValue: false,
+                    optional: true
+                },
+                types: {
+                    name: BindingUsage.types,
+                    defaultValue: [],
+                    optional: true
+                },
+                visibility: {
+                    name: BindingUsage.visibility,
+                    optional: true
+                }
+            },
+            superTypes: [Element.$type]
         },
         Comment: {
             name: Comment.$type,
@@ -1155,8 +3010,125 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
         ConnectionUsage: {
             name: ConnectionUsage.$type,
             properties: {
+                aliases: {
+                    name: ConnectionUsage.aliases,
+                    defaultValue: [],
+                    optional: true
+                },
+                annotations: {
+                    name: ConnectionUsage.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
+                crosses: {
+                    name: ConnectionUsage.crosses,
+                    defaultValue: [],
+                    optional: true
+                },
+                direction: {
+                    name: ConnectionUsage.direction,
+                    optional: true
+                },
+                ends: {
+                    name: ConnectionUsage.ends,
+                    defaultValue: [],
+                    optional: true
+                },
+                exposes: {
+                    name: ConnectionUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                imports: {
+                    name: ConnectionUsage.imports,
+                    defaultValue: [],
+                    optional: true
+                },
+                isAbstract: {
+                    name: ConnectionUsage.isAbstract,
+                    defaultValue: false,
+                    optional: true
+                },
+                isConstant: {
+                    name: ConnectionUsage.isConstant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDefault: {
+                    name: ConnectionUsage.isDefault,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDerived: {
+                    name: ConnectionUsage.isDerived,
+                    defaultValue: false,
+                    optional: true
+                },
+                isEnd: {
+                    name: ConnectionUsage.isEnd,
+                    defaultValue: false,
+                    optional: true
+                },
+                isIndividual: {
+                    name: ConnectionUsage.isIndividual,
+                    defaultValue: false,
+                    optional: true
+                },
+                isInitial: {
+                    name: ConnectionUsage.isInitial,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReference: {
+                    name: ConnectionUsage.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariant: {
+                    name: ConnectionUsage.isVariant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariation: {
+                    name: ConnectionUsage.isVariation,
+                    defaultValue: false,
+                    optional: true
+                },
+                kind: {
+                    name: ConnectionUsage.kind,
+                    optional: true
+                },
+                members: {
+                    name: ConnectionUsage.members,
+                    defaultValue: [],
+                    optional: true
+                },
+                multiplicities: {
+                    name: ConnectionUsage.multiplicities,
+                    defaultValue: [],
+                    optional: true
+                },
                 name: {
                     name: ConnectionUsage.name,
+                    optional: true
+                },
+                portionKind: {
+                    name: ConnectionUsage.portionKind,
+                    optional: true
+                },
+                prefixMetadata: {
+                    name: ConnectionUsage.prefixMetadata,
+                    defaultValue: [],
+                    optional: true
+                },
+                redefines: {
+                    name: ConnectionUsage.redefines,
+                    defaultValue: [],
+                    optional: true
+                },
+                references: {
+                    name: ConnectionUsage.references,
+                    defaultValue: [],
                     optional: true
                 },
                 shortName: {
@@ -1164,22 +3136,55 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     optional: true
                 },
                 source: {
-                    name: ConnectionUsage.source
+                    name: ConnectionUsage.source,
+                    optional: true
+                },
+                subsets: {
+                    name: ConnectionUsage.subsets,
+                    defaultValue: [],
+                    optional: true
                 },
                 target: {
-                    name: ConnectionUsage.target
+                    name: ConnectionUsage.target,
+                    optional: true
+                },
+                then: {
+                    name: ConnectionUsage.then,
+                    defaultValue: false,
+                    optional: true
                 },
                 type: {
                     name: ConnectionUsage.type,
-                    referenceType: InterfaceDef.$type,
+                    referenceType: Definition.$type,
+                    optional: true
+                },
+                types: {
+                    name: ConnectionUsage.types,
+                    defaultValue: [],
+                    optional: true
+                },
+                value: {
+                    name: ConnectionUsage.value,
+                    optional: true
+                },
+                visibility: {
+                    name: ConnectionUsage.visibility,
                     optional: true
                 }
             },
-            superTypes: [PackageMember.$type, UsageMember.$type]
+            superTypes: [Element.$type]
         },
         ConnectorEnd: {
             name: ConnectorEnd.$type,
             properties: {
+                endName: {
+                    name: ConnectorEnd.endName,
+                    optional: true
+                },
+                multiplicity: {
+                    name: ConnectorEnd.multiplicity,
+                    optional: true
+                },
                 segments: {
                     name: ConnectorEnd.segments,
                     defaultValue: [],
@@ -1187,6 +3192,246 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 }
             },
             superTypes: []
+        },
+        DefaultUsage: {
+            name: DefaultUsage.$type,
+            properties: {
+                aliases: {
+                    name: DefaultUsage.aliases,
+                    defaultValue: [],
+                    optional: true
+                },
+                annotations: {
+                    name: DefaultUsage.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
+                crosses: {
+                    name: DefaultUsage.crosses,
+                    defaultValue: [],
+                    optional: true
+                },
+                direction: {
+                    name: DefaultUsage.direction,
+                    optional: true
+                },
+                exposes: {
+                    name: DefaultUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                imports: {
+                    name: DefaultUsage.imports,
+                    defaultValue: [],
+                    optional: true
+                },
+                isAbstract: {
+                    name: DefaultUsage.isAbstract,
+                    defaultValue: false,
+                    optional: true
+                },
+                isConstant: {
+                    name: DefaultUsage.isConstant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDefault: {
+                    name: DefaultUsage.isDefault,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDerived: {
+                    name: DefaultUsage.isDerived,
+                    defaultValue: false,
+                    optional: true
+                },
+                isEnd: {
+                    name: DefaultUsage.isEnd,
+                    defaultValue: false,
+                    optional: true
+                },
+                isIndividual: {
+                    name: DefaultUsage.isIndividual,
+                    defaultValue: false,
+                    optional: true
+                },
+                isInitial: {
+                    name: DefaultUsage.isInitial,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReference: {
+                    name: DefaultUsage.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariant: {
+                    name: DefaultUsage.isVariant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariation: {
+                    name: DefaultUsage.isVariation,
+                    defaultValue: false,
+                    optional: true
+                },
+                members: {
+                    name: DefaultUsage.members,
+                    defaultValue: [],
+                    optional: true
+                },
+                multiplicities: {
+                    name: DefaultUsage.multiplicities,
+                    defaultValue: [],
+                    optional: true
+                },
+                name: {
+                    name: DefaultUsage.name,
+                    optional: true
+                },
+                portionKind: {
+                    name: DefaultUsage.portionKind,
+                    optional: true
+                },
+                prefixMetadata: {
+                    name: DefaultUsage.prefixMetadata,
+                    defaultValue: [],
+                    optional: true
+                },
+                redefines: {
+                    name: DefaultUsage.redefines,
+                    defaultValue: [],
+                    optional: true
+                },
+                references: {
+                    name: DefaultUsage.references,
+                    defaultValue: [],
+                    optional: true
+                },
+                shortName: {
+                    name: DefaultUsage.shortName,
+                    optional: true
+                },
+                subsets: {
+                    name: DefaultUsage.subsets,
+                    defaultValue: [],
+                    optional: true
+                },
+                then: {
+                    name: DefaultUsage.then,
+                    defaultValue: false,
+                    optional: true
+                },
+                types: {
+                    name: DefaultUsage.types,
+                    defaultValue: [],
+                    optional: true
+                },
+                value: {
+                    name: DefaultUsage.value,
+                    optional: true
+                },
+                visibility: {
+                    name: DefaultUsage.visibility,
+                    optional: true
+                }
+            },
+            superTypes: [Element.$type, Feature.$type]
+        },
+        Definition: {
+            name: Definition.$type,
+            properties: {
+            },
+            superTypes: []
+        },
+        Dependency: {
+            name: Dependency.$type,
+            properties: {
+                annotations: {
+                    name: Dependency.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
+                clients: {
+                    name: Dependency.clients,
+                    defaultValue: []
+                },
+                direction: {
+                    name: Dependency.direction,
+                    optional: true
+                },
+                isAbstract: {
+                    name: Dependency.isAbstract,
+                    defaultValue: false,
+                    optional: true
+                },
+                isConstant: {
+                    name: Dependency.isConstant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDerived: {
+                    name: Dependency.isDerived,
+                    defaultValue: false,
+                    optional: true
+                },
+                isEnd: {
+                    name: Dependency.isEnd,
+                    defaultValue: false,
+                    optional: true
+                },
+                isIndividual: {
+                    name: Dependency.isIndividual,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReference: {
+                    name: Dependency.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariant: {
+                    name: Dependency.isVariant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariation: {
+                    name: Dependency.isVariation,
+                    defaultValue: false,
+                    optional: true
+                },
+                name: {
+                    name: Dependency.name,
+                    optional: true
+                },
+                portionKind: {
+                    name: Dependency.portionKind,
+                    optional: true
+                },
+                prefixMetadata: {
+                    name: Dependency.prefixMetadata,
+                    defaultValue: [],
+                    optional: true
+                },
+                shortName: {
+                    name: Dependency.shortName,
+                    optional: true
+                },
+                suppliers: {
+                    name: Dependency.suppliers,
+                    defaultValue: []
+                },
+                then: {
+                    name: Dependency.then,
+                    defaultValue: false,
+                    optional: true
+                },
+                visibility: {
+                    name: Dependency.visibility,
+                    optional: true
+                }
+            },
+            superTypes: [Element.$type]
         },
         Documentation: {
             name: Documentation.$type,
@@ -1212,21 +3457,96 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
         Element: {
             name: Element.$type,
             properties: {
+                direction: {
+                    name: Element.direction,
+                    optional: true
+                },
+                isAbstract: {
+                    name: Element.isAbstract,
+                    defaultValue: false,
+                    optional: true
+                },
+                isConstant: {
+                    name: Element.isConstant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDerived: {
+                    name: Element.isDerived,
+                    defaultValue: false,
+                    optional: true
+                },
+                isEnd: {
+                    name: Element.isEnd,
+                    defaultValue: false,
+                    optional: true
+                },
+                isIndividual: {
+                    name: Element.isIndividual,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReference: {
+                    name: Element.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariant: {
+                    name: Element.isVariant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariation: {
+                    name: Element.isVariation,
+                    defaultValue: false,
+                    optional: true
+                },
+                portionKind: {
+                    name: Element.portionKind,
+                    optional: true
+                },
+                prefixMetadata: {
+                    name: Element.prefixMetadata,
+                    defaultValue: [],
+                    optional: true
+                },
+                then: {
+                    name: Element.then,
+                    defaultValue: false,
+                    optional: true
+                },
+                visibility: {
+                    name: Element.visibility,
+                    optional: true
+                }
             },
-            superTypes: []
-        },
-        Exposable: {
-            name: Exposable.$type,
-            properties: {
-            },
-            superTypes: []
+            superTypes: [Member.$type]
         },
         Expose: {
             name: Expose.$type,
             properties: {
+                annotations: {
+                    name: Expose.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
                 element: {
                     name: Expose.element,
-                    referenceType: Exposable.$type
+                    referenceType: Member.$type
+                },
+                recursive: {
+                    name: Expose.recursive,
+                    defaultValue: false,
+                    optional: true
+                },
+                visibility: {
+                    name: Expose.visibility,
+                    optional: true
+                },
+                wildcard: {
+                    name: Expose.wildcard,
+                    defaultValue: false,
+                    optional: true
                 }
             },
             superTypes: []
@@ -1236,6 +3556,174 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
             properties: {
             },
             superTypes: []
+        },
+        FlowUsage: {
+            name: FlowUsage.$type,
+            properties: {
+                aliases: {
+                    name: FlowUsage.aliases,
+                    defaultValue: [],
+                    optional: true
+                },
+                annotations: {
+                    name: FlowUsage.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
+                crosses: {
+                    name: FlowUsage.crosses,
+                    defaultValue: [],
+                    optional: true
+                },
+                direction: {
+                    name: FlowUsage.direction,
+                    optional: true
+                },
+                exposes: {
+                    name: FlowUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                imports: {
+                    name: FlowUsage.imports,
+                    defaultValue: [],
+                    optional: true
+                },
+                isAbstract: {
+                    name: FlowUsage.isAbstract,
+                    defaultValue: false,
+                    optional: true
+                },
+                isConstant: {
+                    name: FlowUsage.isConstant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDefault: {
+                    name: FlowUsage.isDefault,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDerived: {
+                    name: FlowUsage.isDerived,
+                    defaultValue: false,
+                    optional: true
+                },
+                isEnd: {
+                    name: FlowUsage.isEnd,
+                    defaultValue: false,
+                    optional: true
+                },
+                isIndividual: {
+                    name: FlowUsage.isIndividual,
+                    defaultValue: false,
+                    optional: true
+                },
+                isInitial: {
+                    name: FlowUsage.isInitial,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReference: {
+                    name: FlowUsage.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariant: {
+                    name: FlowUsage.isVariant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariation: {
+                    name: FlowUsage.isVariation,
+                    defaultValue: false,
+                    optional: true
+                },
+                members: {
+                    name: FlowUsage.members,
+                    defaultValue: [],
+                    optional: true
+                },
+                multiplicities: {
+                    name: FlowUsage.multiplicities,
+                    defaultValue: [],
+                    optional: true
+                },
+                name: {
+                    name: FlowUsage.name,
+                    optional: true
+                },
+                payload: {
+                    name: FlowUsage.payload,
+                    optional: true
+                },
+                payloadMultiplicity: {
+                    name: FlowUsage.payloadMultiplicity,
+                    optional: true
+                },
+                payloadName: {
+                    name: FlowUsage.payloadName,
+                    optional: true
+                },
+                portionKind: {
+                    name: FlowUsage.portionKind,
+                    optional: true
+                },
+                prefixMetadata: {
+                    name: FlowUsage.prefixMetadata,
+                    defaultValue: [],
+                    optional: true
+                },
+                redefines: {
+                    name: FlowUsage.redefines,
+                    defaultValue: [],
+                    optional: true
+                },
+                references: {
+                    name: FlowUsage.references,
+                    defaultValue: [],
+                    optional: true
+                },
+                shortName: {
+                    name: FlowUsage.shortName,
+                    optional: true
+                },
+                source: {
+                    name: FlowUsage.source
+                },
+                subsets: {
+                    name: FlowUsage.subsets,
+                    defaultValue: [],
+                    optional: true
+                },
+                succession: {
+                    name: FlowUsage.succession,
+                    defaultValue: false,
+                    optional: true
+                },
+                target: {
+                    name: FlowUsage.target
+                },
+                then: {
+                    name: FlowUsage.then,
+                    defaultValue: false,
+                    optional: true
+                },
+                types: {
+                    name: FlowUsage.types,
+                    defaultValue: [],
+                    optional: true
+                },
+                value: {
+                    name: FlowUsage.value,
+                    optional: true
+                },
+                visibility: {
+                    name: FlowUsage.visibility,
+                    optional: true
+                }
+            },
+            superTypes: [Element.$type]
         },
         ImportDecl: {
             name: ImportDecl.$type,
@@ -1257,7 +3745,7 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 },
                 target: {
                     name: ImportDecl.target,
-                    referenceType: Element.$type
+                    referenceType: Member.$type
                 },
                 visibility: {
                     name: ImportDecl.visibility
@@ -1273,24 +3761,190 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
         IncludeUsage: {
             name: IncludeUsage.$type,
             properties: {
+                aliases: {
+                    name: IncludeUsage.aliases,
+                    defaultValue: [],
+                    optional: true
+                },
+                annotations: {
+                    name: IncludeUsage.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
+                crosses: {
+                    name: IncludeUsage.crosses,
+                    defaultValue: [],
+                    optional: true
+                },
+                direction: {
+                    name: IncludeUsage.direction,
+                    optional: true
+                },
+                exposes: {
+                    name: IncludeUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                imports: {
+                    name: IncludeUsage.imports,
+                    defaultValue: [],
+                    optional: true
+                },
+                isAbstract: {
+                    name: IncludeUsage.isAbstract,
+                    defaultValue: false,
+                    optional: true
+                },
+                isConstant: {
+                    name: IncludeUsage.isConstant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDerived: {
+                    name: IncludeUsage.isDerived,
+                    defaultValue: false,
+                    optional: true
+                },
+                isEnd: {
+                    name: IncludeUsage.isEnd,
+                    defaultValue: false,
+                    optional: true
+                },
+                isIndividual: {
+                    name: IncludeUsage.isIndividual,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReference: {
+                    name: IncludeUsage.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariant: {
+                    name: IncludeUsage.isVariant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariation: {
+                    name: IncludeUsage.isVariation,
+                    defaultValue: false,
+                    optional: true
+                },
+                members: {
+                    name: IncludeUsage.members,
+                    defaultValue: [],
+                    optional: true
+                },
+                multiplicities: {
+                    name: IncludeUsage.multiplicities,
+                    defaultValue: [],
+                    optional: true
+                },
+                portionKind: {
+                    name: IncludeUsage.portionKind,
+                    optional: true
+                },
+                prefixMetadata: {
+                    name: IncludeUsage.prefixMetadata,
+                    defaultValue: [],
+                    optional: true
+                },
+                redefines: {
+                    name: IncludeUsage.redefines,
+                    defaultValue: [],
+                    optional: true
+                },
+                references: {
+                    name: IncludeUsage.references,
+                    defaultValue: [],
+                    optional: true
+                },
+                subsets: {
+                    name: IncludeUsage.subsets,
+                    defaultValue: [],
+                    optional: true
+                },
                 target: {
                     name: IncludeUsage.target,
                     referenceType: UseCaseUsage.$type
+                },
+                then: {
+                    name: IncludeUsage.then,
+                    defaultValue: false,
+                    optional: true
+                },
+                visibility: {
+                    name: IncludeUsage.visibility,
+                    optional: true
                 }
             },
-            superTypes: [UseCaseMember.$type]
+            superTypes: [Element.$type]
         },
         InterfaceDef: {
             name: InterfaceDef.$type,
             properties: {
+                aliases: {
+                    name: InterfaceDef.aliases,
+                    defaultValue: [],
+                    optional: true
+                },
                 annotations: {
                     name: InterfaceDef.annotations,
                     defaultValue: [],
                     optional: true
                 },
-                ends: {
-                    name: InterfaceDef.ends,
+                direction: {
+                    name: InterfaceDef.direction,
+                    optional: true
+                },
+                exposes: {
+                    name: InterfaceDef.exposes,
                     defaultValue: [],
+                    optional: true
+                },
+                imports: {
+                    name: InterfaceDef.imports,
+                    defaultValue: [],
+                    optional: true
+                },
+                isAbstract: {
+                    name: InterfaceDef.isAbstract,
+                    defaultValue: false,
+                    optional: true
+                },
+                isConstant: {
+                    name: InterfaceDef.isConstant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDerived: {
+                    name: InterfaceDef.isDerived,
+                    defaultValue: false,
+                    optional: true
+                },
+                isEnd: {
+                    name: InterfaceDef.isEnd,
+                    defaultValue: false,
+                    optional: true
+                },
+                isIndividual: {
+                    name: InterfaceDef.isIndividual,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReference: {
+                    name: InterfaceDef.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariant: {
+                    name: InterfaceDef.isVariant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariation: {
+                    name: InterfaceDef.isVariation,
+                    defaultValue: false,
                     optional: true
                 },
                 members: {
@@ -1299,47 +3953,171 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     optional: true
                 },
                 name: {
-                    name: InterfaceDef.name
+                    name: InterfaceDef.name,
+                    optional: true
+                },
+                portionKind: {
+                    name: InterfaceDef.portionKind,
+                    optional: true
+                },
+                prefixMetadata: {
+                    name: InterfaceDef.prefixMetadata,
+                    defaultValue: [],
+                    optional: true
                 },
                 shortName: {
                     name: InterfaceDef.shortName,
                     optional: true
-                }
-            },
-            superTypes: [Element.$type, PackageMember.$type]
-        },
-        InterfaceEnd: {
-            name: InterfaceEnd.$type,
-            properties: {
-                conjugated: {
-                    name: InterfaceEnd.conjugated,
+                },
+                supertypes: {
+                    name: InterfaceDef.supertypes,
+                    defaultValue: [],
+                    optional: true
+                },
+                then: {
+                    name: InterfaceDef.then,
                     defaultValue: false,
                     optional: true
                 },
-                name: {
-                    name: InterfaceEnd.name
-                },
-                shortName: {
-                    name: InterfaceEnd.shortName,
+                visibility: {
+                    name: InterfaceDef.visibility,
                     optional: true
-                },
-                type: {
-                    name: InterfaceEnd.type,
-                    referenceType: PortDef.$type
                 }
             },
-            superTypes: [Feature.$type]
+            superTypes: [Element.$type, Definition.$type]
+        },
+        Member: {
+            name: Member.$type,
+            properties: {
+            },
+            superTypes: []
         },
         MessageUsage: {
             name: MessageUsage.$type,
             properties: {
+                aliases: {
+                    name: MessageUsage.aliases,
+                    defaultValue: [],
+                    optional: true
+                },
+                annotations: {
+                    name: MessageUsage.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
+                crosses: {
+                    name: MessageUsage.crosses,
+                    defaultValue: [],
+                    optional: true
+                },
+                direction: {
+                    name: MessageUsage.direction,
+                    optional: true
+                },
+                exposes: {
+                    name: MessageUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                imports: {
+                    name: MessageUsage.imports,
+                    defaultValue: [],
+                    optional: true
+                },
+                isAbstract: {
+                    name: MessageUsage.isAbstract,
+                    defaultValue: false,
+                    optional: true
+                },
+                isConstant: {
+                    name: MessageUsage.isConstant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDefault: {
+                    name: MessageUsage.isDefault,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDerived: {
+                    name: MessageUsage.isDerived,
+                    defaultValue: false,
+                    optional: true
+                },
+                isEnd: {
+                    name: MessageUsage.isEnd,
+                    defaultValue: false,
+                    optional: true
+                },
+                isIndividual: {
+                    name: MessageUsage.isIndividual,
+                    defaultValue: false,
+                    optional: true
+                },
+                isInitial: {
+                    name: MessageUsage.isInitial,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReference: {
+                    name: MessageUsage.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariant: {
+                    name: MessageUsage.isVariant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariation: {
+                    name: MessageUsage.isVariation,
+                    defaultValue: false,
+                    optional: true
+                },
+                members: {
+                    name: MessageUsage.members,
+                    defaultValue: [],
+                    optional: true
+                },
+                multiplicities: {
+                    name: MessageUsage.multiplicities,
+                    defaultValue: [],
+                    optional: true
+                },
                 name: {
                     name: MessageUsage.name,
                     optional: true
                 },
                 payload: {
                     name: MessageUsage.payload,
-                    referenceType: AttributeDef.$type,
+                    referenceType: Definition.$type,
+                    optional: true
+                },
+                payloadMultiplicity: {
+                    name: MessageUsage.payloadMultiplicity,
+                    optional: true
+                },
+                payloadName: {
+                    name: MessageUsage.payloadName,
+                    optional: true
+                },
+                portionKind: {
+                    name: MessageUsage.portionKind,
+                    optional: true
+                },
+                prefixMetadata: {
+                    name: MessageUsage.prefixMetadata,
+                    defaultValue: [],
+                    optional: true
+                },
+                redefines: {
+                    name: MessageUsage.redefines,
+                    defaultValue: [],
+                    optional: true
+                },
+                references: {
+                    name: MessageUsage.references,
+                    defaultValue: [],
                     optional: true
                 },
                 shortName: {
@@ -1349,6 +4127,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 source: {
                     name: MessageUsage.source
                 },
+                subsets: {
+                    name: MessageUsage.subsets,
+                    defaultValue: [],
+                    optional: true
+                },
                 target: {
                     name: MessageUsage.target
                 },
@@ -1356,13 +4139,140 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     name: MessageUsage.then,
                     defaultValue: false,
                     optional: true
+                },
+                types: {
+                    name: MessageUsage.types,
+                    defaultValue: [],
+                    optional: true
+                },
+                value: {
+                    name: MessageUsage.value,
+                    optional: true
+                },
+                visibility: {
+                    name: MessageUsage.visibility,
+                    optional: true
                 }
             },
-            superTypes: [ActionMember.$type]
+            superTypes: [Element.$type]
+        },
+        MetadataUsage: {
+            name: MetadataUsage.$type,
+            properties: {
+                about: {
+                    name: MetadataUsage.about,
+                    defaultValue: [],
+                    optional: true
+                },
+                aliases: {
+                    name: MetadataUsage.aliases,
+                    defaultValue: [],
+                    optional: true
+                },
+                annotations: {
+                    name: MetadataUsage.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
+                direction: {
+                    name: MetadataUsage.direction,
+                    optional: true
+                },
+                exposes: {
+                    name: MetadataUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                imports: {
+                    name: MetadataUsage.imports,
+                    defaultValue: [],
+                    optional: true
+                },
+                isAbstract: {
+                    name: MetadataUsage.isAbstract,
+                    defaultValue: false,
+                    optional: true
+                },
+                isConstant: {
+                    name: MetadataUsage.isConstant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDerived: {
+                    name: MetadataUsage.isDerived,
+                    defaultValue: false,
+                    optional: true
+                },
+                isEnd: {
+                    name: MetadataUsage.isEnd,
+                    defaultValue: false,
+                    optional: true
+                },
+                isIndividual: {
+                    name: MetadataUsage.isIndividual,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReference: {
+                    name: MetadataUsage.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariant: {
+                    name: MetadataUsage.isVariant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariation: {
+                    name: MetadataUsage.isVariation,
+                    defaultValue: false,
+                    optional: true
+                },
+                members: {
+                    name: MetadataUsage.members,
+                    defaultValue: [],
+                    optional: true
+                },
+                name: {
+                    name: MetadataUsage.name,
+                    optional: true
+                },
+                portionKind: {
+                    name: MetadataUsage.portionKind,
+                    optional: true
+                },
+                prefixMetadata: {
+                    name: MetadataUsage.prefixMetadata,
+                    defaultValue: [],
+                    optional: true
+                },
+                shortName: {
+                    name: MetadataUsage.shortName,
+                    optional: true
+                },
+                then: {
+                    name: MetadataUsage.then,
+                    defaultValue: false,
+                    optional: true
+                },
+                type: {
+                    name: MetadataUsage.type
+                },
+                visibility: {
+                    name: MetadataUsage.visibility,
+                    optional: true
+                }
+            },
+            superTypes: [Element.$type]
         },
         Model: {
             name: Model.$type,
             properties: {
+                aliases: {
+                    name: Model.aliases,
+                    defaultValue: [],
+                    optional: true
+                },
                 annotations: {
                     name: Model.annotations,
                     defaultValue: [],
@@ -1370,6 +4280,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 },
                 imports: {
                     name: Model.imports,
+                    defaultValue: [],
+                    optional: true
+                },
+                members: {
+                    name: Model.members,
                     defaultValue: [],
                     optional: true
                 },
@@ -1394,6 +4309,264 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
             },
             superTypes: []
         },
+        OtherDefinition: {
+            name: OtherDefinition.$type,
+            properties: {
+                aliases: {
+                    name: OtherDefinition.aliases,
+                    defaultValue: [],
+                    optional: true
+                },
+                annotations: {
+                    name: OtherDefinition.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
+                direction: {
+                    name: OtherDefinition.direction,
+                    optional: true
+                },
+                exposes: {
+                    name: OtherDefinition.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                imports: {
+                    name: OtherDefinition.imports,
+                    defaultValue: [],
+                    optional: true
+                },
+                isAbstract: {
+                    name: OtherDefinition.isAbstract,
+                    defaultValue: false,
+                    optional: true
+                },
+                isConstant: {
+                    name: OtherDefinition.isConstant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDerived: {
+                    name: OtherDefinition.isDerived,
+                    defaultValue: false,
+                    optional: true
+                },
+                isEnd: {
+                    name: OtherDefinition.isEnd,
+                    defaultValue: false,
+                    optional: true
+                },
+                isIndividual: {
+                    name: OtherDefinition.isIndividual,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReference: {
+                    name: OtherDefinition.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariant: {
+                    name: OtherDefinition.isVariant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariation: {
+                    name: OtherDefinition.isVariation,
+                    defaultValue: false,
+                    optional: true
+                },
+                kind: {
+                    name: OtherDefinition.kind,
+                    optional: true
+                },
+                members: {
+                    name: OtherDefinition.members,
+                    defaultValue: [],
+                    optional: true
+                },
+                name: {
+                    name: OtherDefinition.name,
+                    optional: true
+                },
+                portionKind: {
+                    name: OtherDefinition.portionKind,
+                    optional: true
+                },
+                prefixMetadata: {
+                    name: OtherDefinition.prefixMetadata,
+                    defaultValue: [],
+                    optional: true
+                },
+                shortName: {
+                    name: OtherDefinition.shortName,
+                    optional: true
+                },
+                supertypes: {
+                    name: OtherDefinition.supertypes,
+                    defaultValue: [],
+                    optional: true
+                },
+                then: {
+                    name: OtherDefinition.then,
+                    defaultValue: false,
+                    optional: true
+                },
+                visibility: {
+                    name: OtherDefinition.visibility,
+                    optional: true
+                }
+            },
+            superTypes: [Element.$type, Definition.$type]
+        },
+        OtherUsage: {
+            name: OtherUsage.$type,
+            properties: {
+                aliases: {
+                    name: OtherUsage.aliases,
+                    defaultValue: [],
+                    optional: true
+                },
+                annotations: {
+                    name: OtherUsage.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
+                crosses: {
+                    name: OtherUsage.crosses,
+                    defaultValue: [],
+                    optional: true
+                },
+                direction: {
+                    name: OtherUsage.direction,
+                    optional: true
+                },
+                exposes: {
+                    name: OtherUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                imports: {
+                    name: OtherUsage.imports,
+                    defaultValue: [],
+                    optional: true
+                },
+                isAbstract: {
+                    name: OtherUsage.isAbstract,
+                    defaultValue: false,
+                    optional: true
+                },
+                isConstant: {
+                    name: OtherUsage.isConstant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDefault: {
+                    name: OtherUsage.isDefault,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDerived: {
+                    name: OtherUsage.isDerived,
+                    defaultValue: false,
+                    optional: true
+                },
+                isEnd: {
+                    name: OtherUsage.isEnd,
+                    defaultValue: false,
+                    optional: true
+                },
+                isIndividual: {
+                    name: OtherUsage.isIndividual,
+                    defaultValue: false,
+                    optional: true
+                },
+                isInitial: {
+                    name: OtherUsage.isInitial,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReference: {
+                    name: OtherUsage.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariant: {
+                    name: OtherUsage.isVariant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariation: {
+                    name: OtherUsage.isVariation,
+                    defaultValue: false,
+                    optional: true
+                },
+                kind: {
+                    name: OtherUsage.kind
+                },
+                members: {
+                    name: OtherUsage.members,
+                    defaultValue: [],
+                    optional: true
+                },
+                multiplicities: {
+                    name: OtherUsage.multiplicities,
+                    defaultValue: [],
+                    optional: true
+                },
+                name: {
+                    name: OtherUsage.name,
+                    optional: true
+                },
+                portionKind: {
+                    name: OtherUsage.portionKind,
+                    optional: true
+                },
+                prefixMetadata: {
+                    name: OtherUsage.prefixMetadata,
+                    defaultValue: [],
+                    optional: true
+                },
+                redefines: {
+                    name: OtherUsage.redefines,
+                    defaultValue: [],
+                    optional: true
+                },
+                references: {
+                    name: OtherUsage.references,
+                    defaultValue: [],
+                    optional: true
+                },
+                shortName: {
+                    name: OtherUsage.shortName,
+                    optional: true
+                },
+                subsets: {
+                    name: OtherUsage.subsets,
+                    defaultValue: [],
+                    optional: true
+                },
+                then: {
+                    name: OtherUsage.then,
+                    defaultValue: false,
+                    optional: true
+                },
+                types: {
+                    name: OtherUsage.types,
+                    defaultValue: [],
+                    optional: true
+                },
+                value: {
+                    name: OtherUsage.value,
+                    optional: true
+                },
+                visibility: {
+                    name: OtherUsage.visibility,
+                    optional: true
+                }
+            },
+            superTypes: [Element.$type, Feature.$type]
+        },
         PackageDecl: {
             name: PackageDecl.$type,
             properties: {
@@ -1404,6 +4577,11 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 },
                 annotations: {
                     name: PackageDecl.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
+                exposes: {
+                    name: PackageDecl.exposes,
                     defaultValue: [],
                     optional: true
                 },
@@ -1428,27 +4606,90 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     optional: true
                 },
                 name: {
-                    name: PackageDecl.name
+                    name: PackageDecl.name,
+                    optional: true
+                },
+                prefixMetadata: {
+                    name: PackageDecl.prefixMetadata,
+                    defaultValue: [],
+                    optional: true
                 },
                 shortName: {
                     name: PackageDecl.shortName,
                     optional: true
+                },
+                visibility: {
+                    name: PackageDecl.visibility,
+                    optional: true
                 }
             },
-            superTypes: [Element.$type, Exposable.$type, PackageMember.$type]
-        },
-        PackageMember: {
-            name: PackageMember.$type,
-            properties: {
-            },
-            superTypes: []
+            superTypes: [Member.$type]
         },
         PartDef: {
             name: PartDef.$type,
             properties: {
+                aliases: {
+                    name: PartDef.aliases,
+                    defaultValue: [],
+                    optional: true
+                },
                 annotations: {
                     name: PartDef.annotations,
                     defaultValue: [],
+                    optional: true
+                },
+                direction: {
+                    name: PartDef.direction,
+                    optional: true
+                },
+                exposes: {
+                    name: PartDef.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                imports: {
+                    name: PartDef.imports,
+                    defaultValue: [],
+                    optional: true
+                },
+                isAbstract: {
+                    name: PartDef.isAbstract,
+                    defaultValue: false,
+                    optional: true
+                },
+                isConstant: {
+                    name: PartDef.isConstant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDerived: {
+                    name: PartDef.isDerived,
+                    defaultValue: false,
+                    optional: true
+                },
+                isEnd: {
+                    name: PartDef.isEnd,
+                    defaultValue: false,
+                    optional: true
+                },
+                isIndividual: {
+                    name: PartDef.isIndividual,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReference: {
+                    name: PartDef.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariant: {
+                    name: PartDef.isVariant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariation: {
+                    name: PartDef.isVariation,
+                    defaultValue: false,
                     optional: true
                 },
                 members: {
@@ -1457,7 +4698,17 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     optional: true
                 },
                 name: {
-                    name: PartDef.name
+                    name: PartDef.name,
+                    optional: true
+                },
+                portionKind: {
+                    name: PartDef.portionKind,
+                    optional: true
+                },
+                prefixMetadata: {
+                    name: PartDef.prefixMetadata,
+                    defaultValue: [],
+                    optional: true
                 },
                 shortName: {
                     name: PartDef.shortName,
@@ -1466,18 +4717,101 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 supertypes: {
                     name: PartDef.supertypes,
                     defaultValue: [],
-                    referenceType: PartDef.$type,
+                    referenceType: Definition.$type,
+                    optional: true
+                },
+                then: {
+                    name: PartDef.then,
+                    defaultValue: false,
+                    optional: true
+                },
+                visibility: {
+                    name: PartDef.visibility,
                     optional: true
                 }
             },
-            superTypes: [Element.$type, PackageMember.$type]
+            superTypes: [Element.$type, Definition.$type]
         },
         PartUsage: {
             name: PartUsage.$type,
             properties: {
+                aliases: {
+                    name: PartUsage.aliases,
+                    defaultValue: [],
+                    optional: true
+                },
                 annotations: {
                     name: PartUsage.annotations,
                     defaultValue: [],
+                    optional: true
+                },
+                crosses: {
+                    name: PartUsage.crosses,
+                    defaultValue: [],
+                    optional: true
+                },
+                direction: {
+                    name: PartUsage.direction,
+                    optional: true
+                },
+                exposes: {
+                    name: PartUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                imports: {
+                    name: PartUsage.imports,
+                    defaultValue: [],
+                    optional: true
+                },
+                isAbstract: {
+                    name: PartUsage.isAbstract,
+                    defaultValue: false,
+                    optional: true
+                },
+                isConstant: {
+                    name: PartUsage.isConstant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDefault: {
+                    name: PartUsage.isDefault,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDerived: {
+                    name: PartUsage.isDerived,
+                    defaultValue: false,
+                    optional: true
+                },
+                isEnd: {
+                    name: PartUsage.isEnd,
+                    defaultValue: false,
+                    optional: true
+                },
+                isIndividual: {
+                    name: PartUsage.isIndividual,
+                    defaultValue: false,
+                    optional: true
+                },
+                isInitial: {
+                    name: PartUsage.isInitial,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReference: {
+                    name: PartUsage.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariant: {
+                    name: PartUsage.isVariant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariation: {
+                    name: PartUsage.isVariation,
+                    defaultValue: false,
                     optional: true
                 },
                 members: {
@@ -1485,40 +4819,283 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: [],
                     optional: true
                 },
-                multiplicity: {
-                    name: PartUsage.multiplicity,
+                multiplicities: {
+                    name: PartUsage.multiplicities,
+                    defaultValue: [],
                     optional: true
                 },
                 name: {
-                    name: PartUsage.name
+                    name: PartUsage.name,
+                    optional: true
+                },
+                portionKind: {
+                    name: PartUsage.portionKind,
+                    optional: true
+                },
+                prefixMetadata: {
+                    name: PartUsage.prefixMetadata,
+                    defaultValue: [],
+                    optional: true
+                },
+                redefines: {
+                    name: PartUsage.redefines,
+                    defaultValue: [],
+                    optional: true
+                },
+                references: {
+                    name: PartUsage.references,
+                    defaultValue: [],
+                    optional: true
                 },
                 shortName: {
                     name: PartUsage.shortName,
                     optional: true
                 },
+                subsets: {
+                    name: PartUsage.subsets,
+                    defaultValue: [],
+                    optional: true
+                },
+                then: {
+                    name: PartUsage.then,
+                    defaultValue: false,
+                    optional: true
+                },
                 type: {
                     name: PartUsage.type,
-                    referenceType: PartDef.$type,
+                    referenceType: Definition.$type,
+                    optional: true
+                },
+                types: {
+                    name: PartUsage.types,
+                    defaultValue: [],
+                    optional: true
+                },
+                value: {
+                    name: PartUsage.value,
+                    optional: true
+                },
+                visibility: {
+                    name: PartUsage.visibility,
                     optional: true
                 }
             },
-            superTypes: [ActionMember.$type, Element.$type, Exposable.$type, Feature.$type, PackageMember.$type, UsageMember.$type]
+            superTypes: [Element.$type, Feature.$type]
         },
         PerformUsage: {
             name: PerformUsage.$type,
             properties: {
+                aliases: {
+                    name: PerformUsage.aliases,
+                    defaultValue: [],
+                    optional: true
+                },
+                annotations: {
+                    name: PerformUsage.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
+                crosses: {
+                    name: PerformUsage.crosses,
+                    defaultValue: [],
+                    optional: true
+                },
+                direction: {
+                    name: PerformUsage.direction,
+                    optional: true
+                },
+                exposes: {
+                    name: PerformUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                imports: {
+                    name: PerformUsage.imports,
+                    defaultValue: [],
+                    optional: true
+                },
+                isAbstract: {
+                    name: PerformUsage.isAbstract,
+                    defaultValue: false,
+                    optional: true
+                },
+                isConstant: {
+                    name: PerformUsage.isConstant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDefault: {
+                    name: PerformUsage.isDefault,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDerived: {
+                    name: PerformUsage.isDerived,
+                    defaultValue: false,
+                    optional: true
+                },
+                isEnd: {
+                    name: PerformUsage.isEnd,
+                    defaultValue: false,
+                    optional: true
+                },
+                isIndividual: {
+                    name: PerformUsage.isIndividual,
+                    defaultValue: false,
+                    optional: true
+                },
+                isInitial: {
+                    name: PerformUsage.isInitial,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReference: {
+                    name: PerformUsage.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariant: {
+                    name: PerformUsage.isVariant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariation: {
+                    name: PerformUsage.isVariation,
+                    defaultValue: false,
+                    optional: true
+                },
+                members: {
+                    name: PerformUsage.members,
+                    defaultValue: [],
+                    optional: true
+                },
+                multiplicities: {
+                    name: PerformUsage.multiplicities,
+                    defaultValue: [],
+                    optional: true
+                },
+                name: {
+                    name: PerformUsage.name,
+                    optional: true
+                },
+                portionKind: {
+                    name: PerformUsage.portionKind,
+                    optional: true
+                },
+                prefixMetadata: {
+                    name: PerformUsage.prefixMetadata,
+                    defaultValue: [],
+                    optional: true
+                },
+                redefines: {
+                    name: PerformUsage.redefines,
+                    defaultValue: [],
+                    optional: true
+                },
+                references: {
+                    name: PerformUsage.references,
+                    defaultValue: [],
+                    optional: true
+                },
+                shortName: {
+                    name: PerformUsage.shortName,
+                    optional: true
+                },
+                subsets: {
+                    name: PerformUsage.subsets,
+                    defaultValue: [],
+                    optional: true
+                },
                 target: {
-                    name: PerformUsage.target
+                    name: PerformUsage.target,
+                    optional: true
+                },
+                then: {
+                    name: PerformUsage.then,
+                    defaultValue: false,
+                    optional: true
+                },
+                types: {
+                    name: PerformUsage.types,
+                    defaultValue: [],
+                    optional: true
+                },
+                value: {
+                    name: PerformUsage.value,
+                    optional: true
+                },
+                visibility: {
+                    name: PerformUsage.visibility,
+                    optional: true
                 }
             },
-            superTypes: [UsageMember.$type]
+            superTypes: [Element.$type, Feature.$type]
         },
         PortDef: {
             name: PortDef.$type,
             properties: {
+                aliases: {
+                    name: PortDef.aliases,
+                    defaultValue: [],
+                    optional: true
+                },
                 annotations: {
                     name: PortDef.annotations,
                     defaultValue: [],
+                    optional: true
+                },
+                direction: {
+                    name: PortDef.direction,
+                    optional: true
+                },
+                exposes: {
+                    name: PortDef.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                imports: {
+                    name: PortDef.imports,
+                    defaultValue: [],
+                    optional: true
+                },
+                isAbstract: {
+                    name: PortDef.isAbstract,
+                    defaultValue: false,
+                    optional: true
+                },
+                isConstant: {
+                    name: PortDef.isConstant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDerived: {
+                    name: PortDef.isDerived,
+                    defaultValue: false,
+                    optional: true
+                },
+                isEnd: {
+                    name: PortDef.isEnd,
+                    defaultValue: false,
+                    optional: true
+                },
+                isIndividual: {
+                    name: PortDef.isIndividual,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReference: {
+                    name: PortDef.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariant: {
+                    name: PortDef.isVariant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariation: {
+                    name: PortDef.isVariation,
+                    defaultValue: false,
                     optional: true
                 },
                 members: {
@@ -1527,7 +5104,17 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     optional: true
                 },
                 name: {
-                    name: PortDef.name
+                    name: PortDef.name,
+                    optional: true
+                },
+                portionKind: {
+                    name: PortDef.portionKind,
+                    optional: true
+                },
+                prefixMetadata: {
+                    name: PortDef.prefixMetadata,
+                    defaultValue: [],
+                    optional: true
                 },
                 shortName: {
                     name: PortDef.shortName,
@@ -1538,121 +5125,481 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: [],
                     referenceType: PortDef.$type,
                     optional: true
+                },
+                then: {
+                    name: PortDef.then,
+                    defaultValue: false,
+                    optional: true
+                },
+                visibility: {
+                    name: PortDef.visibility,
+                    optional: true
                 }
             },
-            superTypes: [Element.$type, PackageMember.$type]
+            superTypes: [Element.$type, Definition.$type]
         },
         PortUsage: {
             name: PortUsage.$type,
             properties: {
+                aliases: {
+                    name: PortUsage.aliases,
+                    defaultValue: [],
+                    optional: true
+                },
+                annotations: {
+                    name: PortUsage.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
                 conjugated: {
                     name: PortUsage.conjugated,
                     defaultValue: false,
                     optional: true
                 },
+                crosses: {
+                    name: PortUsage.crosses,
+                    defaultValue: [],
+                    optional: true
+                },
+                direction: {
+                    name: PortUsage.direction,
+                    optional: true
+                },
+                exposes: {
+                    name: PortUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                imports: {
+                    name: PortUsage.imports,
+                    defaultValue: [],
+                    optional: true
+                },
+                isAbstract: {
+                    name: PortUsage.isAbstract,
+                    defaultValue: false,
+                    optional: true
+                },
+                isConstant: {
+                    name: PortUsage.isConstant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDefault: {
+                    name: PortUsage.isDefault,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDerived: {
+                    name: PortUsage.isDerived,
+                    defaultValue: false,
+                    optional: true
+                },
+                isEnd: {
+                    name: PortUsage.isEnd,
+                    defaultValue: false,
+                    optional: true
+                },
+                isIndividual: {
+                    name: PortUsage.isIndividual,
+                    defaultValue: false,
+                    optional: true
+                },
+                isInitial: {
+                    name: PortUsage.isInitial,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReference: {
+                    name: PortUsage.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariant: {
+                    name: PortUsage.isVariant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariation: {
+                    name: PortUsage.isVariation,
+                    defaultValue: false,
+                    optional: true
+                },
+                members: {
+                    name: PortUsage.members,
+                    defaultValue: [],
+                    optional: true
+                },
+                multiplicities: {
+                    name: PortUsage.multiplicities,
+                    defaultValue: [],
+                    optional: true
+                },
                 name: {
-                    name: PortUsage.name
+                    name: PortUsage.name,
+                    optional: true
+                },
+                portionKind: {
+                    name: PortUsage.portionKind,
+                    optional: true
+                },
+                prefixMetadata: {
+                    name: PortUsage.prefixMetadata,
+                    defaultValue: [],
+                    optional: true
+                },
+                redefines: {
+                    name: PortUsage.redefines,
+                    defaultValue: [],
+                    optional: true
+                },
+                references: {
+                    name: PortUsage.references,
+                    defaultValue: [],
+                    optional: true
                 },
                 shortName: {
                     name: PortUsage.shortName,
+                    optional: true
+                },
+                subsets: {
+                    name: PortUsage.subsets,
+                    defaultValue: [],
+                    optional: true
+                },
+                then: {
+                    name: PortUsage.then,
+                    defaultValue: false,
                     optional: true
                 },
                 type: {
                     name: PortUsage.type,
                     referenceType: PortDef.$type,
                     optional: true
-                }
-            },
-            superTypes: [Element.$type, Feature.$type, UsageMember.$type]
-        },
-        RequirementDef: {
-            name: RequirementDef.$type,
-            properties: {
-                annotations: {
-                    name: RequirementDef.annotations,
+                },
+                types: {
+                    name: PortUsage.types,
                     defaultValue: [],
                     optional: true
                 },
-                members: {
-                    name: RequirementDef.members,
-                    defaultValue: [],
+                value: {
+                    name: PortUsage.value,
                     optional: true
                 },
-                name: {
-                    name: RequirementDef.name
-                },
-                shortName: {
-                    name: RequirementDef.shortName,
+                visibility: {
+                    name: PortUsage.visibility,
                     optional: true
                 }
             },
-            superTypes: [Element.$type, PackageMember.$type]
-        },
-        RequirementMember: {
-            name: RequirementMember.$type,
-            properties: {
-            },
-            superTypes: []
-        },
-        RequirementUsage: {
-            name: RequirementUsage.$type,
-            properties: {
-                annotations: {
-                    name: RequirementUsage.annotations,
-                    defaultValue: [],
-                    optional: true
-                },
-                members: {
-                    name: RequirementUsage.members,
-                    defaultValue: [],
-                    optional: true
-                },
-                name: {
-                    name: RequirementUsage.name
-                },
-                shortName: {
-                    name: RequirementUsage.shortName,
-                    optional: true
-                },
-                type: {
-                    name: RequirementUsage.type,
-                    referenceType: RequirementDef.$type,
-                    optional: true
-                }
-            },
-            superTypes: [Element.$type, PackageMember.$type, UsageMember.$type]
+            superTypes: [Element.$type, Feature.$type]
         },
         SatisfyUsage: {
             name: SatisfyUsage.$type,
             properties: {
+                aliases: {
+                    name: SatisfyUsage.aliases,
+                    defaultValue: [],
+                    optional: true
+                },
+                annotations: {
+                    name: SatisfyUsage.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
+                crosses: {
+                    name: SatisfyUsage.crosses,
+                    defaultValue: [],
+                    optional: true
+                },
+                direction: {
+                    name: SatisfyUsage.direction,
+                    optional: true
+                },
+                exposes: {
+                    name: SatisfyUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                imports: {
+                    name: SatisfyUsage.imports,
+                    defaultValue: [],
+                    optional: true
+                },
+                isAbstract: {
+                    name: SatisfyUsage.isAbstract,
+                    defaultValue: false,
+                    optional: true
+                },
+                isConstant: {
+                    name: SatisfyUsage.isConstant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDefault: {
+                    name: SatisfyUsage.isDefault,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDerived: {
+                    name: SatisfyUsage.isDerived,
+                    defaultValue: false,
+                    optional: true
+                },
+                isEnd: {
+                    name: SatisfyUsage.isEnd,
+                    defaultValue: false,
+                    optional: true
+                },
+                isIndividual: {
+                    name: SatisfyUsage.isIndividual,
+                    defaultValue: false,
+                    optional: true
+                },
+                isInitial: {
+                    name: SatisfyUsage.isInitial,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReference: {
+                    name: SatisfyUsage.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariant: {
+                    name: SatisfyUsage.isVariant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariation: {
+                    name: SatisfyUsage.isVariation,
+                    defaultValue: false,
+                    optional: true
+                },
+                members: {
+                    name: SatisfyUsage.members,
+                    defaultValue: [],
+                    optional: true
+                },
+                multiplicities: {
+                    name: SatisfyUsage.multiplicities,
+                    defaultValue: [],
+                    optional: true
+                },
+                name: {
+                    name: SatisfyUsage.name,
+                    optional: true
+                },
+                negated: {
+                    name: SatisfyUsage.negated,
+                    defaultValue: false,
+                    optional: true
+                },
+                portionKind: {
+                    name: SatisfyUsage.portionKind,
+                    optional: true
+                },
+                prefixMetadata: {
+                    name: SatisfyUsage.prefixMetadata,
+                    defaultValue: [],
+                    optional: true
+                },
+                redefines: {
+                    name: SatisfyUsage.redefines,
+                    defaultValue: [],
+                    optional: true
+                },
+                references: {
+                    name: SatisfyUsage.references,
+                    defaultValue: [],
+                    optional: true
+                },
                 requirement: {
                     name: SatisfyUsage.requirement,
-                    referenceType: RequirementUsage.$type
+                    optional: true
                 },
                 satisfier: {
                     name: SatisfyUsage.satisfier,
-                    referenceType: PartUsage.$type
+                    optional: true
+                },
+                shortName: {
+                    name: SatisfyUsage.shortName,
+                    optional: true
+                },
+                subsets: {
+                    name: SatisfyUsage.subsets,
+                    defaultValue: [],
+                    optional: true
+                },
+                then: {
+                    name: SatisfyUsage.then,
+                    defaultValue: false,
+                    optional: true
+                },
+                types: {
+                    name: SatisfyUsage.types,
+                    defaultValue: [],
+                    optional: true
+                },
+                value: {
+                    name: SatisfyUsage.value,
+                    optional: true
+                },
+                visibility: {
+                    name: SatisfyUsage.visibility,
+                    optional: true
                 }
             },
-            superTypes: [PackageMember.$type, UsageMember.$type]
+            superTypes: [Element.$type]
         },
         SubjectUsage: {
             name: SubjectUsage.$type,
             properties: {
+                aliases: {
+                    name: SubjectUsage.aliases,
+                    defaultValue: [],
+                    optional: true
+                },
+                annotations: {
+                    name: SubjectUsage.annotations,
+                    defaultValue: [],
+                    optional: true
+                },
+                crosses: {
+                    name: SubjectUsage.crosses,
+                    defaultValue: [],
+                    optional: true
+                },
+                direction: {
+                    name: SubjectUsage.direction,
+                    optional: true
+                },
+                exposes: {
+                    name: SubjectUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                imports: {
+                    name: SubjectUsage.imports,
+                    defaultValue: [],
+                    optional: true
+                },
+                isAbstract: {
+                    name: SubjectUsage.isAbstract,
+                    defaultValue: false,
+                    optional: true
+                },
+                isConstant: {
+                    name: SubjectUsage.isConstant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDefault: {
+                    name: SubjectUsage.isDefault,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDerived: {
+                    name: SubjectUsage.isDerived,
+                    defaultValue: false,
+                    optional: true
+                },
+                isEnd: {
+                    name: SubjectUsage.isEnd,
+                    defaultValue: false,
+                    optional: true
+                },
+                isIndividual: {
+                    name: SubjectUsage.isIndividual,
+                    defaultValue: false,
+                    optional: true
+                },
+                isInitial: {
+                    name: SubjectUsage.isInitial,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReference: {
+                    name: SubjectUsage.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariant: {
+                    name: SubjectUsage.isVariant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariation: {
+                    name: SubjectUsage.isVariation,
+                    defaultValue: false,
+                    optional: true
+                },
+                members: {
+                    name: SubjectUsage.members,
+                    defaultValue: [],
+                    optional: true
+                },
+                multiplicities: {
+                    name: SubjectUsage.multiplicities,
+                    defaultValue: [],
+                    optional: true
+                },
                 name: {
-                    name: SubjectUsage.name
+                    name: SubjectUsage.name,
+                    optional: true
+                },
+                portionKind: {
+                    name: SubjectUsage.portionKind,
+                    optional: true
+                },
+                prefixMetadata: {
+                    name: SubjectUsage.prefixMetadata,
+                    defaultValue: [],
+                    optional: true
+                },
+                redefines: {
+                    name: SubjectUsage.redefines,
+                    defaultValue: [],
+                    optional: true
+                },
+                references: {
+                    name: SubjectUsage.references,
+                    defaultValue: [],
+                    optional: true
                 },
                 shortName: {
                     name: SubjectUsage.shortName,
                     optional: true
                 },
+                subsets: {
+                    name: SubjectUsage.subsets,
+                    defaultValue: [],
+                    optional: true
+                },
+                then: {
+                    name: SubjectUsage.then,
+                    defaultValue: false,
+                    optional: true
+                },
                 type: {
                     name: SubjectUsage.type,
-                    referenceType: PartDef.$type,
+                    referenceType: Definition.$type,
+                    optional: true
+                },
+                types: {
+                    name: SubjectUsage.types,
+                    defaultValue: [],
+                    optional: true
+                },
+                value: {
+                    name: SubjectUsage.value,
+                    optional: true
+                },
+                visibility: {
+                    name: SubjectUsage.visibility,
                     optional: true
                 }
             },
-            superTypes: [Feature.$type, RequirementMember.$type, UseCaseMember.$type]
+            superTypes: [Element.$type, Feature.$type]
         },
         TextualRepresentation: {
             name: TextualRepresentation.$type,
@@ -1674,18 +5621,71 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
             },
             superTypes: [AnnotatingElement.$type]
         },
-        UsageMember: {
-            name: UsageMember.$type,
-            properties: {
-            },
-            superTypes: []
-        },
         UseCaseDef: {
             name: UseCaseDef.$type,
             properties: {
+                aliases: {
+                    name: UseCaseDef.aliases,
+                    defaultValue: [],
+                    optional: true
+                },
                 annotations: {
                     name: UseCaseDef.annotations,
                     defaultValue: [],
+                    optional: true
+                },
+                direction: {
+                    name: UseCaseDef.direction,
+                    optional: true
+                },
+                exposes: {
+                    name: UseCaseDef.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                imports: {
+                    name: UseCaseDef.imports,
+                    defaultValue: [],
+                    optional: true
+                },
+                isAbstract: {
+                    name: UseCaseDef.isAbstract,
+                    defaultValue: false,
+                    optional: true
+                },
+                isConstant: {
+                    name: UseCaseDef.isConstant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDerived: {
+                    name: UseCaseDef.isDerived,
+                    defaultValue: false,
+                    optional: true
+                },
+                isEnd: {
+                    name: UseCaseDef.isEnd,
+                    defaultValue: false,
+                    optional: true
+                },
+                isIndividual: {
+                    name: UseCaseDef.isIndividual,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReference: {
+                    name: UseCaseDef.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariant: {
+                    name: UseCaseDef.isVariant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariation: {
+                    name: UseCaseDef.isVariation,
+                    defaultValue: false,
                     optional: true
                 },
                 members: {
@@ -1694,27 +5694,119 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     optional: true
                 },
                 name: {
-                    name: UseCaseDef.name
+                    name: UseCaseDef.name,
+                    optional: true
+                },
+                portionKind: {
+                    name: UseCaseDef.portionKind,
+                    optional: true
+                },
+                prefixMetadata: {
+                    name: UseCaseDef.prefixMetadata,
+                    defaultValue: [],
+                    optional: true
                 },
                 shortName: {
                     name: UseCaseDef.shortName,
                     optional: true
+                },
+                supertypes: {
+                    name: UseCaseDef.supertypes,
+                    defaultValue: [],
+                    optional: true
+                },
+                then: {
+                    name: UseCaseDef.then,
+                    defaultValue: false,
+                    optional: true
+                },
+                visibility: {
+                    name: UseCaseDef.visibility,
+                    optional: true
                 }
             },
-            superTypes: [Element.$type, PackageMember.$type]
-        },
-        UseCaseMember: {
-            name: UseCaseMember.$type,
-            properties: {
-            },
-            superTypes: []
+            superTypes: [Element.$type, Definition.$type]
         },
         UseCaseUsage: {
             name: UseCaseUsage.$type,
             properties: {
+                aliases: {
+                    name: UseCaseUsage.aliases,
+                    defaultValue: [],
+                    optional: true
+                },
                 annotations: {
                     name: UseCaseUsage.annotations,
                     defaultValue: [],
+                    optional: true
+                },
+                crosses: {
+                    name: UseCaseUsage.crosses,
+                    defaultValue: [],
+                    optional: true
+                },
+                direction: {
+                    name: UseCaseUsage.direction,
+                    optional: true
+                },
+                exposes: {
+                    name: UseCaseUsage.exposes,
+                    defaultValue: [],
+                    optional: true
+                },
+                imports: {
+                    name: UseCaseUsage.imports,
+                    defaultValue: [],
+                    optional: true
+                },
+                isAbstract: {
+                    name: UseCaseUsage.isAbstract,
+                    defaultValue: false,
+                    optional: true
+                },
+                isConstant: {
+                    name: UseCaseUsage.isConstant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDefault: {
+                    name: UseCaseUsage.isDefault,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDerived: {
+                    name: UseCaseUsage.isDerived,
+                    defaultValue: false,
+                    optional: true
+                },
+                isEnd: {
+                    name: UseCaseUsage.isEnd,
+                    defaultValue: false,
+                    optional: true
+                },
+                isIndividual: {
+                    name: UseCaseUsage.isIndividual,
+                    defaultValue: false,
+                    optional: true
+                },
+                isInitial: {
+                    name: UseCaseUsage.isInitial,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReference: {
+                    name: UseCaseUsage.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariant: {
+                    name: UseCaseUsage.isVariant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariation: {
+                    name: UseCaseUsage.isVariation,
+                    defaultValue: false,
                     optional: true
                 },
                 members: {
@@ -1722,46 +5814,217 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                     defaultValue: [],
                     optional: true
                 },
+                multiplicities: {
+                    name: UseCaseUsage.multiplicities,
+                    defaultValue: [],
+                    optional: true
+                },
                 name: {
-                    name: UseCaseUsage.name
+                    name: UseCaseUsage.name,
+                    optional: true
+                },
+                portionKind: {
+                    name: UseCaseUsage.portionKind,
+                    optional: true
+                },
+                prefixMetadata: {
+                    name: UseCaseUsage.prefixMetadata,
+                    defaultValue: [],
+                    optional: true
+                },
+                redefines: {
+                    name: UseCaseUsage.redefines,
+                    defaultValue: [],
+                    optional: true
+                },
+                references: {
+                    name: UseCaseUsage.references,
+                    defaultValue: [],
+                    optional: true
                 },
                 shortName: {
                     name: UseCaseUsage.shortName,
+                    optional: true
+                },
+                subsets: {
+                    name: UseCaseUsage.subsets,
+                    defaultValue: [],
+                    optional: true
+                },
+                then: {
+                    name: UseCaseUsage.then,
+                    defaultValue: false,
                     optional: true
                 },
                 type: {
                     name: UseCaseUsage.type,
                     referenceType: UseCaseDef.$type,
                     optional: true
+                },
+                types: {
+                    name: UseCaseUsage.types,
+                    defaultValue: [],
+                    optional: true
+                },
+                value: {
+                    name: UseCaseUsage.value,
+                    optional: true
+                },
+                visibility: {
+                    name: UseCaseUsage.visibility,
+                    optional: true
                 }
             },
-            superTypes: [Element.$type, Feature.$type, PackageMember.$type]
+            superTypes: [Element.$type, Feature.$type]
         },
         ViewUsage: {
             name: ViewUsage.$type,
             properties: {
+                aliases: {
+                    name: ViewUsage.aliases,
+                    defaultValue: [],
+                    optional: true
+                },
                 annotations: {
                     name: ViewUsage.annotations,
                     defaultValue: [],
                     optional: true
                 },
+                crosses: {
+                    name: ViewUsage.crosses,
+                    defaultValue: [],
+                    optional: true
+                },
                 definition: {
-                    name: ViewUsage.definition
+                    name: ViewUsage.definition,
+                    optional: true
+                },
+                direction: {
+                    name: ViewUsage.direction,
+                    optional: true
                 },
                 exposes: {
                     name: ViewUsage.exposes,
                     defaultValue: [],
                     optional: true
                 },
+                imports: {
+                    name: ViewUsage.imports,
+                    defaultValue: [],
+                    optional: true
+                },
+                isAbstract: {
+                    name: ViewUsage.isAbstract,
+                    defaultValue: false,
+                    optional: true
+                },
+                isConstant: {
+                    name: ViewUsage.isConstant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDefault: {
+                    name: ViewUsage.isDefault,
+                    defaultValue: false,
+                    optional: true
+                },
+                isDerived: {
+                    name: ViewUsage.isDerived,
+                    defaultValue: false,
+                    optional: true
+                },
+                isEnd: {
+                    name: ViewUsage.isEnd,
+                    defaultValue: false,
+                    optional: true
+                },
+                isIndividual: {
+                    name: ViewUsage.isIndividual,
+                    defaultValue: false,
+                    optional: true
+                },
+                isInitial: {
+                    name: ViewUsage.isInitial,
+                    defaultValue: false,
+                    optional: true
+                },
+                isReference: {
+                    name: ViewUsage.isReference,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariant: {
+                    name: ViewUsage.isVariant,
+                    defaultValue: false,
+                    optional: true
+                },
+                isVariation: {
+                    name: ViewUsage.isVariation,
+                    defaultValue: false,
+                    optional: true
+                },
+                members: {
+                    name: ViewUsage.members,
+                    defaultValue: [],
+                    optional: true
+                },
+                multiplicities: {
+                    name: ViewUsage.multiplicities,
+                    defaultValue: [],
+                    optional: true
+                },
                 name: {
-                    name: ViewUsage.name
+                    name: ViewUsage.name,
+                    optional: true
+                },
+                portionKind: {
+                    name: ViewUsage.portionKind,
+                    optional: true
+                },
+                prefixMetadata: {
+                    name: ViewUsage.prefixMetadata,
+                    defaultValue: [],
+                    optional: true
+                },
+                redefines: {
+                    name: ViewUsage.redefines,
+                    defaultValue: [],
+                    optional: true
+                },
+                references: {
+                    name: ViewUsage.references,
+                    defaultValue: [],
+                    optional: true
                 },
                 shortName: {
                     name: ViewUsage.shortName,
                     optional: true
+                },
+                subsets: {
+                    name: ViewUsage.subsets,
+                    defaultValue: [],
+                    optional: true
+                },
+                then: {
+                    name: ViewUsage.then,
+                    defaultValue: false,
+                    optional: true
+                },
+                types: {
+                    name: ViewUsage.types,
+                    defaultValue: [],
+                    optional: true
+                },
+                value: {
+                    name: ViewUsage.value,
+                    optional: true
+                },
+                visibility: {
+                    name: ViewUsage.visibility,
+                    optional: true
                 }
             },
-            superTypes: [Element.$type, PackageMember.$type]
+            superTypes: [Element.$type]
         }
     } as const satisfies langium.AstMetaData
 }

@@ -1,6 +1,6 @@
 import { AstUtils } from 'langium';
 import { isActorUsage, isMessageUsage } from '../generated/ast.js';
-import type { Exposable, MessageUsage, Model, PartDef, PartUsage } from '../generated/ast.js';
+import type { Definition, Member, MessageUsage, Model, PartUsage } from '../generated/ast.js';
 import { qualifiedName } from '../model/graph.js';
 import { endPart, partLabel } from './connector-ends.js';
 
@@ -37,7 +37,7 @@ function messageLabel(message: MessageUsage): string {
  * its human participant without giving it a software type — or when it is
  * typed by a part def that a use case in the loaded model casts as an actor.
  */
-function isPerson(part: PartUsage, actorTypes: Set<PartDef>): boolean {
+function isPerson(part: PartUsage, actorTypes: Set<Definition>): boolean {
     return !part.type || (part.type.ref !== undefined && actorTypes.has(part.type.ref));
 }
 
@@ -46,12 +46,12 @@ function isPerson(part: PartUsage, actorTypes: Set<PartDef>): boolean {
  * appearance; messages keep document order (`then` is explicit notation for
  * the same ordering).
  */
-export function extractSequenceModel(exposed: Exposable[], model: Model): SequenceModel {
+export function extractSequenceModel(exposed: Member[], model: Model): SequenceModel {
     const lifelines = new Map<string, SequenceLifeline>();
     const messages: SequenceMessage[] = [];
     // A part typed by a use case's actor, in any loaded file, is a person.
     const actorTypes = new Set(
-        AstUtils.streamAllContents(model).filter(isActorUsage).map(a => a.type?.ref).filter((d): d is PartDef => !!d)
+        AstUtils.streamAllContents(model).filter(isActorUsage).map(a => a.type?.ref).filter((d): d is Definition => !!d)
     );
 
     for (const node of exposed.flatMap(e => [...AstUtils.streamAllContents(e)])) {

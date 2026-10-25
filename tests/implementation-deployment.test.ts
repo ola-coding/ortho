@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { parseHelper } from 'langium/test';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
 import { isAllocationUsage } from '../src/generated/ast.js';
-import type { Exposable, Model, PackageDecl } from '../src/generated/ast.js';
+import type { Member, Model, PackageDecl } from '../src/generated/ast.js';
 import { extractImplementationGraph } from '../src/diagrams/implementation.js';
 import { extractDeploymentGraph } from '../src/diagrams/deployment.js';
 import { layoutGraph, NODE_DEPTH } from '../src/layout/elk-layout.js';
@@ -13,7 +13,7 @@ import { renderSvg } from '../src/render/svg-renderer.js';
 import { measureText } from '../src/render/text-metrics.js';
 
 /** Exposes the whole test model, as a view of all of it would. */
-const everything = (model: Model): [Exposable[], Model] => [model.packages, model];
+const everything = (model: Model): [Member[], Model] => [model.packages, model];
 
 const services = createSysmlServices();
 const parse = parseHelper<Model>(services.Sysml);
@@ -34,8 +34,8 @@ describe('allocation grammar', () => {
         ) as PackageDecl;
         const allocations = software.members.filter(isAllocationUsage);
         expect(allocations).toHaveLength(4);
-        expect(allocations[0].source.segments.map(s => s.ref?.name)).toEqual(['flightStack', 'attitudeControl']);
-        expect(allocations[0].target.segments[0].ref?.name).toBe('fc');
+        expect(allocations[0].source!.segments.map(s => s.ref?.name)).toEqual(['flightStack', 'attitudeControl']);
+        expect(allocations[0].target!.segments[0].ref?.name).toBe('fc');
     });
 });
 

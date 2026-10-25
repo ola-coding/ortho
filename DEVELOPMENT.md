@@ -42,12 +42,21 @@ standard library's, imports nothing (`sysml-document-validator.ts`). A
 feature chain continues with dots, each segment a feature of the previous
 one's type, inherited members included.
 
+**Grammar** (`grammar/sysml.langium`). What the views draw has alternatives
+of its own, close to the spec's; every other definition and usage shares one
+of three, which keep what they name as written. All of them sit in one rule,
+`Element`: its prefix is read once and the keyword after it picks the
+alternative, which keeps choosing among them cheap, also on a broken file.
+Error recovery is off, so a file stops at its first syntax error; recovering
+from one made a single broken file take seconds.
+
 **Conformance** (`src/parser/sysml-validator.ts`). The grammar enforces what
 it can. After linking, the validator checks the rules it cannot, all listed
 in [LANGUAGE.md](LANGUAGE.md): no reserved word as a name, chains that start
 at a usage, and a use case's subject before its actors — each found by running
-the examples through the OMG pilot implementation — and a view that is one
-ortho draws, exposing what that view can show.
+the examples through the OMG pilot implementation. Whether ortho can draw a
+view is asked only when one is rendered (`whyUndrawable`), since a model may
+declare any view.
 
 ## Layout and rendering
 
@@ -210,7 +219,7 @@ In priority order:
   models in OMG's release should load, as `tests/omg-models.test.ts` counts.
   Existing parsers were tried first: `sysml-v2-lsp` offers no parser API, and
   OpenSysML's does not expose what the views draw. So ortho's grammar grows
-  from the spec's: names and comments are done; definitions and usages,
+  from the spec's: names, comments, definitions and usages are done;
   expressions, behaviour and the rest follow.
 - [ ] **Render every view a model declares**, one SVG per `view`:
   `ortho render model/ -o diagrams/`. The first-file rule and the README's

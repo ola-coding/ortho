@@ -3,13 +3,13 @@ import type { AstNode } from 'langium';
 import {
     isActionDef, isAllocationUsage, isPackageDecl, isPartUsage, isUseCaseDef, isUseCaseUsage, isViewUsage
 } from '../generated/ast.js';
-import type { Exposable, ViewUsage } from '../generated/ast.js';
+import type { Member, ViewUsage } from '../generated/ast.js';
 
 /** The standard view definitions ortho draws (§9.2.20), and what each may expose. */
 export const STANDARD_VIEWS = {
-    GeneralView: (e: Exposable) => isPackageDecl(e) || isActionDef(e),
-    InterconnectionView: (e: Exposable) => isPartUsage(e),
-    SequenceView: (e: Exposable) => isActionDef(e)
+    GeneralView: (e: Member) => isPackageDecl(e) || isActionDef(e),
+    InterconnectionView: (e: Member) => isPartUsage(e),
+    SequenceView: (e: Member) => isActionDef(e)
 };
 
 export type StandardView = keyof typeof STANDARD_VIEWS;
@@ -17,11 +17,33 @@ export type StandardView = keyof typeof STANDARD_VIEWS;
 export type DiagramKind = 'use-case' | 'logical' | 'implementation' | 'physical' | 'deployment' | 'process';
 
 export function standardView(view: ViewUsage): StandardView | undefined {
-    return view.definition in STANDARD_VIEWS ? view.definition as StandardView : undefined;
+    const name = view.definition?.split('::').pop();
+    return name && name in STANDARD_VIEWS ? name as StandardView : undefined;
 }
 
-export function exposedElements(view: ViewUsage): Exposable[] {
-    return view.exposes.map(e => e.element.ref).filter((e): e is Exposable => e !== undefined);
+const EXPOSES: Record<StandardView, string> = {
+    GeneralView: 'packages or action definitions',
+    InterconnectionView: 'parts',
+    SequenceView: 'an action definition'
+};
+
+/**
+ * Why ortho cannot draw a view, or nothing when it can. A model may declare
+ * any view; only rendering one other than these fails.
+ */
+export function whyUndrawable(view: ViewUsage): string | undefined {
+    const definition = standardView(view);
+    if (!definition) {
+        return `ortho draws a GeneralView, an InterconnectionView or a SequenceView, not '${view.definition ?? ''}'.`;
+    }
+    const article = definition.startsWith('I') ? 'An' : 'A';
+    return exposedElements(view).some(e => !STANDARD_VIEWS[definition](e))
+        ? `${article} ${definition} exposes ${EXPOSES[definition]}.`
+        : undefined;
+}
+
+export function exposedElements(view: ViewUsage): Member[] {
+    return view.exposes.map(e => e.element.ref).filter((e): e is Member => e !== undefined);
 }
 
 /** The views a file declares. */
@@ -29,9 +51,9 @@ export function declaredViews(root: AstNode): ViewUsage[] {
     return AstUtils.streamAllContents(root).filter(isViewUsage).toArray();
 }
 
-/** A diagram's heading is its view's name (§7.26.5). */
+/** A diagram's heading is its view's name (§7.26.5), or for a view without one its definition's. */
 export function viewHeading(view: ViewUsage): string {
-    return view.name;
+    return view.name ?? view.definition ?? '';
 }
 
 /**

@@ -1,5 +1,5 @@
 import { isActionDef, isActionUsage } from '../generated/ast.js';
-import type { ActionDef, ActionUsage, Exposable } from '../generated/ast.js';
+import type { ActionDef, ActionUsage, Member } from '../generated/ast.js';
 import type { DiagramGraph, GraphEdge, GraphNode } from '../model/graph.js';
 import { qualifiedName } from '../model/graph.js';
 import { exposedMembers } from '../model/packages.js';
@@ -12,10 +12,10 @@ function functionNode(fn: Function_): GraphNode {
         id: qualifiedName(fn),
         shape: 'rounded',
         stereotype: '',
-        name: fn.name,
+        name: fn.name ?? '',
         compartments: [],
         ports: [],
-        width: Math.max(110, measureText(fn.name, 12) + 34),
+        width: Math.max(110, measureText(fn.name ?? '', 12) + 34),
         height: 40
     };
 }
@@ -36,7 +36,7 @@ function childFunctions(fn: Function_): ActionUsage[] {
  * `perform` chain starts from, and the tree it names is already drawn from
  * its definition. Drawing it too would double the diagram.
  */
-export function extractLogicalGraph(exposed: Exposable[]): DiagramGraph {
+export function extractLogicalGraph(exposed: Member[]): DiagramGraph {
     const nodes: GraphNode[] = [];
     const edges: GraphEdge[] = [];
     const seen = new Set<string>();

@@ -2,7 +2,7 @@ import {
     isActorUsage, isIncludeUsage, isSubjectUsage, isUseCaseDef, isUseCaseUsage
 } from '../generated/ast.js';
 import type {
-    ActorUsage, Exposable, IncludeUsage, SubjectUsage, UseCaseDef, UseCaseMember, UseCaseUsage
+    ActorUsage, Member, IncludeUsage, SubjectUsage, UseCaseDef, UseCaseUsage
 } from '../generated/ast.js';
 import type { DiagramGraph, GraphEdge, GraphNode } from '../model/graph.js';
 import { qualifiedName } from '../model/graph.js';
@@ -12,8 +12,8 @@ import { measureText } from '../render/text-metrics.js';
 type UseCase = UseCaseDef | UseCaseUsage;
 
 /** Own members plus, for a typed usage, the members inherited from its def. */
-function effectiveMembers(useCase: UseCase): UseCaseMember[] {
-    const members: UseCaseMember[] = [...useCase.members];
+function effectiveMembers(useCase: UseCase): Member[] {
+    const members: Member[] = [...useCase.members];
     if (isUseCaseUsage(useCase) && useCase.type?.ref) {
         members.push(...useCase.type.ref.members);
     }
@@ -21,7 +21,7 @@ function effectiveMembers(useCase: UseCase): UseCaseMember[] {
 }
 
 function ellipseNode(useCase: UseCase): GraphNode {
-    const name = useCase.name;
+    const name = useCase.name ?? '';
     return {
         id: qualifiedName(useCase),
         shape: 'ellipse',
@@ -47,7 +47,7 @@ function actorNode(id: string, label: string): GraphNode {
     };
 }
 
-export function extractUseCaseGraph(exposed: Exposable[]): DiagramGraph {
+export function extractUseCaseGraph(exposed: Member[]): DiagramGraph {
     const useCases = exposedMembers(exposed).filter((m): m is UseCase => isUseCaseDef(m) || isUseCaseUsage(m));
 
     // A def represented by usages is not shown itself.
@@ -70,7 +70,7 @@ export function extractUseCaseGraph(exposed: Exposable[]): DiagramGraph {
     // use case only — someone the system acts on, not a user of it — is a
     // secondary actor, drawn on the right. The distinction needs at least one
     // actor to come through a def; otherwise every actor is primary.
-    const actorKey = (actor: ActorUsage): string => (actor.type?.ref ? qualifiedName(actor.type.ref) : actor.name);
+    const actorKey = (actor: ActorUsage): string => (actor.type?.ref ? qualifiedName(actor.type.ref) : actor.name ?? '');
     const onDef = new Set<string>();
     for (const useCase of useCases) {
         if (isUseCaseDef(useCase)) {
@@ -111,7 +111,7 @@ export function extractUseCaseGraph(exposed: Exposable[]): DiagramGraph {
 
         for (const actor of members.filter(isActorUsage)) {
             const key = actorKey(actor);
-            const label = actor.type?.ref?.name ?? actor.type?.$refText ?? actor.name;
+            const label = actor.type?.ref?.name ?? actor.type?.$refText ?? actor.name ?? '';
             let actorGraphNode = actorNodes.get(key);
             if (!actorGraphNode) {
                 actorGraphNode = actorNode(`actor:${key}`, label);

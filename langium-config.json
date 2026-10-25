@@ -4,7 +4,8 @@
     {
       "id": "sysml",
       "grammar": "grammar/sysml.langium",
-      "fileExtensions": [".sysml"]
+      "fileExtensions": [".sysml"],
+      "chevrotainParserConfig": { "recoveryEnabled": false }
     }
   ],
   "out": "src/generated"

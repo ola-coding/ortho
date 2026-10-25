@@ -5,7 +5,7 @@ import { createSysmlServices } from './parser/sysml-module.js';
 import { parseSysmlFiles } from './parser/parse.js';
 import type { DiagramTitle } from './render/svg-renderer.js';
 import { renderView } from './pipeline.js';
-import { declaredViews, viewHeading } from './model/views.js';
+import { declaredViews, viewHeading, whyUndrawable } from './model/views.js';
 import { getTheme, themes } from './render/theme.js';
 
 interface ExpandedInput {
@@ -61,12 +61,28 @@ program
         }
 
         const services = createSysmlServices();
-        const { model, documents } = await parseSysmlFiles(services.Sysml, uniqueFiles);
+        let parsed: Awaited<ReturnType<typeof parseSysmlFiles>>;
+        try {
+            parsed = await parseSysmlFiles(services.Sysml, uniqueFiles);
+        } catch (error) {
+            // A model that does not load is reported, not a crash.
+            console.error(error instanceof Error ? error.message : String(error));
+            process.exitCode = 1;
+            return;
+        }
+        const { model, documents } = parsed;
 
         const views = declaredViews(documents[0].parseResult.value);
         if (views.length !== 1) {
             console.error(`${uniqueFiles[0]} declares ${views.length === 0 ? 'no view' : `${views.length} views`}; `
                 + 'ortho renders the one view its first file declares.');
+            process.exitCode = 1;
+            return;
+        }
+
+        const undrawable = whyUndrawable(views[0]);
+        if (undrawable) {
+            console.error(`${uniqueFiles[0]}: ${undrawable}`);
             process.exitCode = 1;
             return;
         }
