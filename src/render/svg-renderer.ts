@@ -192,7 +192,7 @@ function renderBoxNode(n: LaidOutNode, t: Theme): string {
 
     for (const port of n.ports) {
         parts.push(`<rect x="${x + port.x}" y="${y + port.y}" width="${PORT_SIZE}" height="${PORT_SIZE}"
-          fill="${t.markerFill}" stroke="${t.stroke}" stroke-width="1.25" />`);
+          fill="${t.portFill}" stroke="${t.stroke}" stroke-width="1.25" />`);
     }
 
     return `\n    <g>${parts.join('\n      ')}</g>`;
@@ -305,43 +305,21 @@ function renderEdge(e: LaidOutEdge, nodeById: Map<string, LaidOutNode>, t: Theme
     }
 
     const pointsAttr = points.map(p => `${p.x + PAD_X},${p.y + PAD_TOP}`).join(' ');
-    let markers = '';
-    let dash = '';
-    switch (e.kind) {
-        case 'specialization':
-            // Layout edges run super → sub, so the triangle sits at the start.
-            markers = ` marker-start="url(#triangle)"`;
-            break;
-        case 'composition':
-            markers = ` marker-start="url(#diamond)"`;
-            break;
-        case 'satisfy':
-        case 'include':
-        case 'import':
-        case 'allocate':
-        case 'typing':
-            markers = ` marker-end="url(#openArrow)"`;
-            dash = ` stroke-dasharray="6 4"`;
-            break;
-        case 'connection':
-        case 'association':
-        // Capability-tree branches: a plain line, no arrowhead. Direction is
-        // carried by the layout (parents above children), not by a marker.
-        case 'decomposition':
-            break;
-    }
+    // «include» and «import» are dashed, with an open arrowhead and their
+    // keyword. Every other line is plain: a connection, a use case's line, or
+    // a capability-tree branch, whose direction the layout carries.
+    const keyworded = e.kind === 'include' || e.kind === 'import';
+    const dash = keyworded ? ` stroke-dasharray="6 4"` : '';
+    const markers = keyworded ? ` marker-end="url(#openArrow)"` : '';
     let svg = `\n    <polyline points="${pointsAttr}" fill="none" stroke="${t.stroke}" stroke-width="1.25"${dash}${markers} />`;
     if (e.label) {
-        // Relationship-keyword labels render as stereotypes; a user-given name
-        // (e.g. a named allocation) renders plainly, like a role name.
-        const stereotyped = ['satisfy', 'include', 'import', 'typing'].includes(e.kind)
-            || (e.kind === 'allocate' && e.label === 'allocate');
-        const label = stereotyped ? `&#171;${escapeXml(e.label)}&#187;` : escapeXml(e.label);
+        // A keyword gets guillemets; a name, such as a connection's
+        // interface, does not.
+        const label = keyworded ? `&#171;${escapeXml(e.label)}&#187;` : escapeXml(e.label);
         // A label ELK placed is centred in the box ELK reserved for it. Any
-        // other sits just above the line's midpoint — or, for a composition,
-        // near the part end, as EA places role names.
+        // other sits just above the line's midpoint.
         const box = e.labelBox;
-        const midpoint = pointAtFraction(points, e.kind === 'composition' ? 0.82 : 0.5);
+        const midpoint = pointAtFraction(points, 0.5);
         const textX = (box ? box.x + box.width / 2 : midpoint.x) + PAD_X;
         const textY = box ? box.y + box.height / 2 + 3 + PAD_TOP : midpoint.y + PAD_TOP - 5;
         svg += `\n    <text x="${textX}" y="${textY}" text-anchor="middle" font-size="9"
@@ -363,14 +341,6 @@ export function renderSvg(diagram: LaidOutDiagram, title: DiagramTitle, t: Theme
      viewBox="0 0 ${width} ${height}" font-family="${FONT}">
   <title>${escapeXml(`${title.heading} (generated from ${title.source})`)}</title>
   <defs>${t.defs}
-    <marker id="triangle" markerWidth="14" markerHeight="12" refX="12" refY="5"
-            orient="auto-start-reverse" markerUnits="userSpaceOnUse">
-      <path d="M0,0 L12,5 L0,10 z" fill="${t.markerFill}" stroke="${t.boxStroke}" stroke-width="1.25" />
-    </marker>
-    <marker id="diamond" markerWidth="18" markerHeight="12" refX="15" refY="5"
-            orient="auto-start-reverse" markerUnits="userSpaceOnUse">
-      <path d="M1,5 L8,1 L15,5 L8,9 z" fill="${t.stroke}" stroke="${t.boxStroke}" />
-    </marker>
     <marker id="openArrow" markerWidth="12" markerHeight="12" refX="10" refY="5"
             orient="auto" markerUnits="userSpaceOnUse">
       <path d="M0,0 L10,5 L0,10" fill="none" stroke="${t.boxStroke}" stroke-width="1.25" />

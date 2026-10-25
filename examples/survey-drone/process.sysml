@@ -2,8 +2,7 @@
 //
 // The operator marks the area in the app, the route planner onboard turns it
 // into survey legs, and once approved the flight firmware flies them in Auto
-// mode while video and progress stream back, then returns and lands. One
-// scenario per file, because the view renders every message it can see — the
+// mode while video and progress stream back, then returns and lands. The
 // obstacle-avoidance deviation is a scenario of its own, not a branch of this
 // one.
 //

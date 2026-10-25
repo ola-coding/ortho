@@ -35,8 +35,8 @@ export interface Theme {
     halo: string;
     /** The process view's activation bar, on a lifeline. */
     activationFill: string;
-    /** A hollow arrowhead, and a port on a box's border. */
-    markerFill: string;
+    /** A port on a box's border. */
+    portFill: string;
     /** The actor's head, filled so the figure reads at a distance. */
     actorFill: string;
     /** Rounded corners, in px; 0 for square. */
@@ -69,7 +69,7 @@ export const lightTheme: Theme = {
     provenanceText: '#8a8a86',
     halo: 'white',
     activationFill: '#f1f1e4',
-    markerFill: 'white',
+    portFill: 'white',
     actorFill: '#fdfdf6',
     boxRadius: 0,
     gloss: false,
@@ -98,7 +98,7 @@ export const darkGlassTheme: Theme = {
     provenanceText: '#6E828E',
     halo: '#10161C',
     activationFill: 'url(#glass)',
-    markerFill: '#1B242C',
+    portFill: '#1B242C',
     actorFill: '#C3D5E0',
     boxRadius: 5,
     gloss: true,

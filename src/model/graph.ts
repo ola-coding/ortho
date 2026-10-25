@@ -41,10 +41,7 @@ export interface GraphNode {
     height: number;
 }
 
-export type EdgeKind =
-    'specialization' | 'composition' | 'connection' | 'satisfy'
-    | 'association' | 'include' | 'import' | 'allocate' | 'typing'
-    | 'decomposition';
+export type EdgeKind = 'connection' | 'association' | 'include' | 'import' | 'decomposition';
 
 export interface GraphEdge {
     id: string;

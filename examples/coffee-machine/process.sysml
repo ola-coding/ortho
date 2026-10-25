@@ -1,6 +1,5 @@
 // Process view: one scenario — the software making a cappuccino.
 //
-// One scenario per file, because the view renders every message it can see.
 // The lifelines are the software modules from implementation.sysml, so that
 // file is rendered alongside this one.
 package MakeCappuccinoScenario {

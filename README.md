@@ -83,9 +83,6 @@ For example:
 ortho render physical.sysml logical.sysml -o physical-view.svg
 ```
 
-The process view draws every message it is given, so keep one scenario per
-file.
-
 ## Options
 
 ```text

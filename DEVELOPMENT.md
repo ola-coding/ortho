@@ -106,8 +106,6 @@ ortho draws, exposing what that view can show.
   fixed before a theme is consulted, and a test asserts both themes place
   everything alike. A theme adds nothing it does not paint, so the light
   diagrams stay byte-for-byte stable.
-- The renderer still draws generalization and composition markers, though no
-  view uses them now.
 
 ## One model file per view
 
@@ -199,6 +197,30 @@ In priority order:
   names the heading and exposes the content; `-d` is gone.
 - [x] **Imports that make names visible:** `Pkg::*` and `Pkg::Element`, public
   ones passed on; the examples rely on them.
+- [ ] **Read standard SysML v2.** Load any valid model, draw what the six
+  views need and ignore the rest. Today 2 of the 252 example, training and
+  validation models in OMG's SysML-v2-Release parse; most stop at a quoted
+  name, `doc`, `item`, `ref`, a unit or `:>` on a usage. The goal: all of them
+  load, checked in CI. Before choosing, try both extending our grammar and
+  building on an existing parser (`sysml-v2-lsp` or `@openmbee/opensysml-wasm`).
+- [ ] **Render every view a model declares**, one SVG per `view`:
+  `ortho render model/ -o diagrams/`. The first-file rule and the README's
+  file lists go.
+- [ ] **Follow SysML v2's graphical notation**, as a valid view must: rounded
+  corners for usages and square for definitions, and allocation as a
+  compartment on each host, as *perform actions* are, rather than software
+  nested in 3D boxes. To decide: use cases as «use case» boxes or ellipses,
+  and «part» or «action» keywords on boxes.
 - [ ] **Prepare for NPX.** Publish ortho on npm, so it runs without the repo.
   First clean up `package.json`, the README and whatever else publishing
-  needs. The name `ortho` is taken on npm.
+  needs. The name `ortho` is taken on npm, so publish under a scope, such as
+  `@ola-coding/ortho`.
+- [ ] **A `--watch` option** that renders again on every save, so an editor's
+  SVG preview shows the diagram beside the text.
+- [ ] **Requirements on the parts that satisfy them**, in a compartment like
+  *perform actions* rather than a seventh view.
+- [ ] **Item flows on the physical view** (`flow`): what passes between ports,
+  not only that they connect.
+
+Not planned: graphical editing, simulation, collaboration servers and AI
+generation. That is where the commercial tools compete.
