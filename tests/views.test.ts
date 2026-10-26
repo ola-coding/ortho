@@ -48,7 +48,7 @@ describe('views', () => {
         // The scenario nests actions too, but the function view does not expose it.
         expect(extractLogicalGraph(exposedElements(functions)).nodes.map(n => n.name))
             .toEqual(['Operate', 'start', 'stop']);
-        expect(extractSequenceModel(exposedElements(sequence), model).messages.map(m => m.label))
+        expect(extractSequenceModel(exposedElements(sequence)).messages.map(m => m.label))
             .toEqual(['ping']);
     });
 

@@ -5,12 +5,12 @@ import { describe, expect, it } from 'vitest';
 import { parseHelper } from 'langium/test';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
 import { isActionDef, isMessageUsage } from '../src/generated/ast.js';
-import type { Member, Model } from '../src/generated/ast.js';
+import type { Model } from '../src/generated/ast.js';
 import { extractSequenceModel } from '../src/diagrams/sequence.js';
 import { renderSequenceSvg } from '../src/render/sequence-renderer.js';
 
 /** Exposes the whole test model, as a view of all of it would. */
-const everything = (model: Model): [Member[], Model] => [model.packages, model];
+const everything = (model: Model) => model.packages;
 
 const services = createSysmlServices();
 const parse = parseHelper<Model>(services.Sysml);
@@ -61,7 +61,7 @@ describe('action and message grammar', () => {
 
 describe('sequence extraction and rendering', () => {
     it('orders lifelines by first appearance and keeps message order', async () => {
-        const sequence = extractSequenceModel(...everything(await parseExample()));
+        const sequence = extractSequenceModel(everything(await parseExample()));
         expect(sequence.lifelines.map(l => l.label)).toEqual([
             'pilot : Pilot', 'fc : FlightControllerSw', 'nav : NavigationSw', 'motors : MotorControl'
         ]);
@@ -73,15 +73,15 @@ describe('sequence extraction and rendering', () => {
     });
 
     it('renders lifelines, messages and a self-loop to SVG', async () => {
-        const sequence = extractSequenceModel(...everything(await parseExample()));
+        const sequence = extractSequenceModel(everything(await parseExample()));
         const svg = renderSequenceSvg(sequence, { heading: 'Process View — DroneProcess', source: 'examples/phase4-sequence.sysml' });
         expect(svg).toContain('stroke-dasharray="4 4"'); // lifelines
         expect(svg).toContain('marker-end="url(#msgArrow)"');
         expect(svg).toContain('cmdTakeOff of TakeOffCommand');
         expect(svg).toContain('<polyline'); // self-message loop
-        // Rounded «part» heads and no activation bars (§8.2.3.9): the only
-        // other rectangles are the page and the frame.
-        const heads = sequence.lifelines.filter(l => !l.actor).length;
+        // A rounded «part» head on every lifeline and no activation bars
+        // (§8.2.3.9): the only other rectangles are the page and the frame.
+        const heads = sequence.lifelines.length;
         expect(svg.match(/&#171;part&#187;/g)).toHaveLength(heads);
         expect(svg.match(/<rect /g)).toHaveLength(heads + 2);
         // messages appear top-to-bottom in document order
@@ -102,11 +102,11 @@ describe('sequence extraction and rendering', () => {
                 }
             }
         `);
-        const sequence = extractSequenceModel(...everything(document.parseResult.value));
+        const sequence = extractSequenceModel(everything(document.parseResult.value));
         expect(sequence.messages.map(m => m.label)).toEqual(['buy of Order', 'Order', 'ack', '«message»']);
     });
 
-    it('draws an untyped lifeline as a person', async () => {
+    it('heads every lifeline with a «part» box, a person too', async () => {
         const document = await parseOk(`
             package P {
                 part def Server;
@@ -117,12 +117,12 @@ describe('sequence extraction and rendering', () => {
                 }
             }
         `);
-        const sequence = extractSequenceModel(...everything(document.parseResult.value));
-        expect(sequence.lifelines.map(l => [l.label, l.actor])).toEqual([
-            ['client', true],
-            ['server : Server', false]
-        ]);
+        const sequence = extractSequenceModel(everything(document.parseResult.value));
+        expect(sequence.lifelines.map(l => l.label)).toEqual(['client', 'server : Server']);
         const svg = renderSequenceSvg(sequence, { heading: 'Process view — P', source: 'inline' });
-        expect(svg).toContain('<circle'); // the stick figure's head
+        // A stick figure is for a use case's actor (§8.2.3.21); a lifeline's
+        // head is a part (§8.2.3.9).
+        expect(svg.match(/&#171;part&#187;/g)).toHaveLength(2);
+        expect(svg).not.toContain('<circle');
     });
 });

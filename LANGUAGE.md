@@ -365,8 +365,7 @@ package Scenario {
 
 | You write | The view draws |
 |---|---|
-| `part name : Def;` in the scenario's `action def` | a lifeline headed by a «part» box, once a message names it, in order of first appearance |
-| an untyped `part`, or one typed as an actor in a loaded use case | a lifeline headed by a stick figure |
+| `part name : Def;`, or a person's untyped `part name;`, in the scenario's `action def` | a lifeline headed by a «part» box, once a message names it, in order of first appearance |
 | `message name from a to b;` | an arrow from `a` to `b`, in document order |
 | `message name of Payload from a to b;` | the same arrow, labelled `name of Payload` |
 | `attribute def Payload;` | nothing. It types a payload. |

@@ -228,8 +228,7 @@ In priority order:
 - [x] **Follow SysML v2's graphical notation**, as a valid view must: square
   definitions and rounded usages under their keywords, the «view» frame,
   «use case» boxes with a «subject», ownership diamonds, hosts that list what
-  is allocated to them, and messages without activation bars. A person stays
-  a stick figure in the process view.
+  is allocated to them, and messages without activation bars.
 - [ ] **Prepare for NPX.** Publish ortho on npm, so it runs without the repo.
   First clean up `package.json`, the README and whatever else publishing
   needs. The name `ortho` is taken on npm, so publish under a scope, such as

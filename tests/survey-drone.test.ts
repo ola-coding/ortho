@@ -243,10 +243,10 @@ describe('survey drone example model', () => {
     });
 
     it('process view: a survey mission, uploaded over the MAVLink mission protocol', async () => {
-        const sequence = extractSequenceModel(...await viewSet('process.sysml', 'implementation.sysml', 'logical.sysml'));
+        const sequence = extractSequenceModel((await viewSet('process.sysml', 'implementation.sysml', 'logical.sysml'))[0]);
         expect(sequence.lifelines).toHaveLength(7);
-        // The operator is untyped in the model: a person, drawn as a stick figure.
-        expect(sequence.lifelines.filter(l => l.actor).map(l => l.label)).toEqual(['operator']);
+        // The operator starts it: a person, untyped in the model.
+        expect(sequence.lifelines[0].label).toBe('operator');
         expect(sequence.messages[0].label).toBe('markArea');
 
         // The upload handshake runs in MAVLink's own order, vehicle-driven.

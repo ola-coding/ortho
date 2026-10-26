@@ -58,8 +58,8 @@ const renderers: Record<DiagramKind, Renderer> = {
     'implementation': graphDiagram(extractImplementationGraph, { direction: 'DOWN', gridLeaves: true }),
     'physical': graphDiagram(extractPhysicalGraph, { direction: 'DOWN' }),
     'deployment': graphDiagram(extractDeploymentGraph, { algorithm: 'rectpacking' }),
-    'process': async (exposed, model, title, theme) => {
-        const sequence = extractSequenceModel(exposed, model);
+    'process': async (exposed, _model, title, theme) => {
+        const sequence = extractSequenceModel(exposed);
         return {
             svg: renderSequenceSvg(sequence, title, theme),
             summary: `${sequence.lifelines.length} lifeline(s), ${sequence.messages.length} message(s)`

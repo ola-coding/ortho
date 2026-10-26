@@ -104,10 +104,10 @@ its member, and software is not a computer's.
 
 How the software modules interact at run time, in one scenario.
 
-Drawn as a sequence diagram: a lifeline per module, headed by a «part» box,
-or by a stick figure for a person, as on the use case view, where SysML v2
-would draw a «part» box too. Messages are arrows from lifeline to lifeline, in
-order from top to bottom, labelled as declared: `name of Payload`.
+Drawn as a sequence diagram: a lifeline per participant, a person or a
+module, each headed by a «part» box. Messages are arrows from lifeline to
+lifeline, in order from top to bottom, labelled as declared: `name of
+Payload`.
 
 ## References
 

@@ -190,7 +190,7 @@ describe('coffee machine example model', () => {
     });
 
     it('process view: one press produces a cappuccino', async () => {
-        const sequence = extractSequenceModel(...await viewSet('process.sysml', 'implementation.sysml', 'logical.sysml'));
+        const sequence = extractSequenceModel((await viewSet('process.sysml', 'implementation.sysml', 'logical.sysml'))[0]);
         expect(sequence.lifelines.map(l => l.label)).toEqual([
             'user',
             'ui : UiApp',
@@ -199,8 +199,6 @@ describe('coffee machine example model', () => {
             'brew : BrewController',
             'milk : MilkController'
         ]);
-        // The user is untyped in the model: a person, drawn as a stick figure.
-        expect(sequence.lifelines.filter(l => l.actor).map(l => l.label)).toEqual(['user']);
         expect(sequence.messages[0].label).toBe('selectCappuccino');
         expect(sequence.messages.at(-1)!.label).toBe('beverageReady');
     });
