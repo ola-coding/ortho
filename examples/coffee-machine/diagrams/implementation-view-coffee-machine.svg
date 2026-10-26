@@ -6,6 +6,10 @@
             orient="auto" markerUnits="userSpaceOnUse">
       <path d="M0,0 L10,5 L0,10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
     </marker>
+    <marker id="diamond" markerWidth="12" markerHeight="8" refX="0" refY="4"
+            orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,4 L6,0 L12,4 L6,8 z" fill="#2b2b2b" />
+    </marker>
   </defs>
   <rect x="0" y="0" width="655.3340000000001" height="647" fill="white" />
   <rect x="8" y="8" width="639.3340000000001" height="631" rx="10" ry="10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
@@ -16,16 +20,16 @@
         fill="none" stroke="#2b2b2b" stroke-width="1.25" />
   <text x="639.3340000000001" y="635" text-anchor="end" font-size="9" fill="#8a8a86">examples/coffee-machine/implementation.sysml</text>
   
-    <g><rect x="36" y="60" width="66.453" height="12"
+    <g><rect x="36" y="60" width="62.453" height="18"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="36" y="72" width="583.3340000000001" height="533"
+      <rect x="36" y="78" width="583.3340000000001" height="527"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="46" y="87" font-size="11" font-weight="600" fill="#1a1a1a">Software</text></g>
-    <g><rect x="61" y="376" width="59.105" height="12"
+      <text x="44" y="73" font-size="11" font-weight="600" fill="#1a1a1a">Software</text></g>
+    <g><rect x="61" y="376" width="55.105" height="18"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="61" y="388" width="533.3340000000001" height="192"
+      <rect x="61" y="394" width="533.3340000000001" height="186"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="71" y="403" font-size="11" font-weight="600" fill="#1a1a1a">Control</text></g>
+      <text x="69" y="389" font-size="11" font-weight="600" fill="#1a1a1a">Control</text></g>
     <g><rect x="86" y="421" width="120" height="134"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
       <text x="146" y="434" text-anchor="middle"
@@ -84,11 +88,11 @@
           font-size="9" fill="#555555">ports</text>
       <text x="457.334" y="529"
           font-size="11" fill="#1a1a1a">milk : MilkApi</text></g>
-    <g><rect x="137.788" y="105" width="79.89500000000001" height="12"
+    <g><rect x="137.788" y="105" width="75.89500000000001" height="18"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="137.788" y="117" width="379.75800000000004" height="207"
+      <rect x="137.788" y="123" width="379.75800000000004" height="201"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="147.788" y="132" font-size="11" font-weight="600" fill="#1a1a1a">Application</text></g>
+      <text x="145.788" y="118" font-size="11" font-weight="600" fill="#1a1a1a">Application</text></g>
     <g><rect x="162.788" y="150" width="169.758" height="149"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
       <text x="247.66700000000003" y="163" text-anchor="middle"

@@ -6,6 +6,10 @@
             orient="auto" markerUnits="userSpaceOnUse">
       <path d="M0,0 L10,5 L0,10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
     </marker>
+    <marker id="diamond" markerWidth="12" markerHeight="8" refX="0" refY="4"
+            orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,4 L6,0 L12,4 L6,8 z" fill="#2b2b2b" />
+    </marker>
   </defs>
   <rect x="0" y="0" width="1013.1126666666667" height="812" fill="white" />
   <rect x="8" y="8" width="997.1126666666667" height="796" rx="10" ry="10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />

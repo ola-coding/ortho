@@ -54,16 +54,20 @@ describe('logical diagram extraction', () => {
         expect(graph.edges.every(e => e.label === undefined)).toBe(true);
     });
 
-    it('renders to SVG with no arrowheads on any branch', async () => {
+    it('renders each branch with a filled diamond at its parent, and no arrowhead', async () => {
         const graph = extractLogicalGraph((await parseExample()).packages);
-        const svg = renderSvg(
-            layoutTree(graph),
-            { heading: 'Logical view — DroneFunctions', source: 'fixtures/logical.sysml' }
-        );
-        expect(svg).toContain('<svg');
+        const laidOut = layoutTree(graph);
+        const svg = renderSvg(laidOut, { heading: 'Logical view — DroneFunctions', source: 'fixtures/logical.sysml' });
         expect(svg).toContain(`rx="${USAGE_RADIUS}"`);
+        // A function is owned by its parent (§8.2.3.6): the diamond sits where
+        // every branch leaves it, so siblings share one.
+        expect(svg.match(/marker-start="url\(#diamond\)"/g)).toHaveLength(graph.edges.length);
         expect(svg).not.toContain('marker-end');
-        expect(svg).not.toContain('marker-start');
+        const start = (targetId: string) => laidOut.edges.find(e => e.targetId === targetId)!.points[0];
+        for (const parentId of new Set(graph.edges.map(e => e.sourceId))) {
+            const children = graph.edges.filter(e => e.sourceId === parentId).map(e => e.targetId);
+            expect(new Set(children.map(c => JSON.stringify(start(c)))).size, parentId).toBe(1);
+        }
     });
 
     it('lays the tree out as a work-breakdown chart', async () => {

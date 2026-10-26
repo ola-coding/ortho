@@ -74,6 +74,14 @@ function packageNode(pkg: PackageDecl): GraphNode {
     };
 }
 
+/**
+ * An import's keyword (§8.2.3.5): «import» for one element, «import»* for a
+ * namespace's members, «import»** for its members' members too.
+ */
+function importLabel(imp: ImportDecl): string {
+    return imp.recursive ? '«import»**' : imp.wildcard ? '«import»*' : '«import»';
+}
+
 /** The package an import points at: `Pkg::Element` imports from `Pkg`. */
 function importedPackage(imp: ImportDecl): PackageDecl | undefined {
     const target = imp.target?.ref;
@@ -105,7 +113,7 @@ export function extractImplementationGraph(exposed: Member[]): DiagramGraph {
                     kind: 'import',
                     sourceId,
                     targetId,
-                    label: 'import'
+                    label: importLabel(imp)
                 });
             }
         }

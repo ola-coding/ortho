@@ -58,6 +58,7 @@ export interface GraphEdge {
     targetId: string;
     sourcePortId?: string;
     targetPortId?: string;
+    /** Drawn beside the line as written: a keyword with its guillemets, «include». */
     label?: string;
 }
 

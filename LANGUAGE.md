@@ -167,7 +167,7 @@ package Functions {
 | You write | The view draws |
 |---|---|
 | `action def Name { ... }` in a package | the root of a tree, an «action def» box |
-| `action name;` or `action name { ... }` nested in another | an «action» box under its parent |
+| `action name;` or `action name { ... }` nested in another | an «action» box under its parent, which owns it: a filled diamond at the parent's end |
 | `action name : Def;` in a package | nothing. It is the usage a `perform` chain starts from. |
 
 Name no component in this file, and end it with one usage of its tree.
@@ -215,7 +215,7 @@ package Functions {
 |---|---|
 | `package Name { ... }` | a package box, nested inside its parent package |
 | `part def Name;` in a package | a module, a «part def» box, inside its package |
-| `private import Pkg::*;` (or `Pkg::Element`) | an «import» dependency on `Pkg` |
+| `private import Pkg::*;` (or `Pkg::Element`, `Pkg::**`) | a dashed arrow to `Pkg`: «import»* (or «import», «import»**) |
 | `part sw { part x : Module; ... }` in a package | nothing. The deployment view allocates from it. |
 | `perform Functions::use.branch.leaf;` in a module | a line in its *perform actions* compartment |
 | `port api : SomeApi;` in a module | a line in its *ports* compartment: an API it offers |

@@ -372,7 +372,7 @@ export function straightenEdges(diagram: LaidOutDiagram): LaidOutDiagram {
                 return edge;
             }
             const [p, q] = edge.points;
-            const width = edge.labelBox?.width ?? measureText(`«${edge.label}»`, LABEL_FONT) + 4;
+            const width = edge.labelBox?.width ?? measureText(edge.label, LABEL_FONT) + 4;
             return { ...edge, labelBox: labelBeside(p, q, width, busy, segments(edge)) };
         })
     };

@@ -57,6 +57,8 @@ describe('implementation diagram extraction', () => {
             'DroneSystem::Software -> DroneSystem::Physical'
         ]);
         expect(graph.edges.every(e => e.kind === 'import')).toBe(true);
+        // Each imports a package's members, `Pkg::*` (§8.2.3.5).
+        expect(graph.edges.every(e => e.label === '«import»*')).toBe(true);
     });
 
     it('draws the modules a package declares inside it, and no instances', async () => {
@@ -166,7 +168,7 @@ describe('deployment diagram extraction', () => {
 
         const title = { heading: 'Implementation view — DroneSystem', source: 'fixtures/deployment.sysml' };
         const implementationSvg = renderSvg(await layoutGraph(extractImplementationGraph(model.packages)), title);
-        expect(implementationSvg).toContain('&#171;import&#187;');
+        expect(implementationSvg).toContain('&#171;import&#187;*');
 
         const deploymentSvg = renderSvg(
             await layoutGraph(extractDeploymentGraph(...everything(model))),

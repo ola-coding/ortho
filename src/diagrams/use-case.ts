@@ -154,7 +154,7 @@ export function extractUseCaseGraph(exposed: Member[]): DiagramGraph {
                     kind: 'include',
                     sourceId: node.id,
                     targetId: target.id,
-                    label: 'include'
+                    label: '«include»'
                 });
             }
         }

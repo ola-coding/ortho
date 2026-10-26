@@ -25,7 +25,9 @@ export function escapeXml(text: string): string {
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
+        .replace(/"/g, '&quot;')
+        .replace(/«/g, '&#171;')
+        .replace(/»/g, '&#187;');
 }
 
 /**
@@ -131,21 +133,26 @@ function renderActorNode(n: LaidOutNode, t: Theme): string {
     </g>`;
 }
 
+/**
+ * A package (§8.2.3.5): a tabbed box. One holding others carries its name in
+ * its tab, above what it holds; one holding nothing drawn carries it inside,
+ * under an empty tab.
+ */
 function renderPackageNode(n: LaidOutNode, t: Theme): string {
     const x = n.x + PAD_X;
     const y = n.y + PAD_TOP;
-    const tabWidth = Math.max(46, Math.min(90, measureText(n.name, 11, 'bold') + 20));
-    // EA convention: container packages carry their name in the tab area,
-    // leaf packages center it in the body.
+    const tab = n.hasChildren
+        ? { width: measureText(n.name, 11, 'bold') + 16, height: 18 }
+        : { width: Math.max(46, Math.min(90, measureText(n.name, 11, 'bold') + 20)), height: 12 };
     const name = n.hasChildren
-        ? `<text x="${x + 10}" y="${y + 27}" font-size="11" font-weight="600" fill="${t.text}">${escapeXml(n.name)}</text>`
+        ? `<text x="${x + 8}" y="${y + 13}" font-size="11" font-weight="600" fill="${t.text}">${escapeXml(n.name)}</text>`
         : `<text x="${x + n.width / 2}" y="${y + 12 + (n.height - 12) / 2 + 4}" text-anchor="middle"
           font-size="12" font-weight="600" fill="${t.text}">${escapeXml(n.name)}</text>`;
     return `
-    <g><rect x="${x}" y="${y}" width="${tabWidth}" height="12"
+    <g><rect x="${x}" y="${y}" width="${tab.width}" height="${tab.height}"
           fill="${t.fill}" stroke="${t.boxStroke}" stroke-width="1.25" />
-      <rect x="${x}" y="${y + 12}" width="${n.width}" height="${n.height - 12}"
-          fill="${t.fill}" stroke="${t.boxStroke}" stroke-width="1.25" />${glossOver(t, x, y + 12, n.width, n.height - 12, 0)}
+      <rect x="${x}" y="${y + tab.height}" width="${n.width}" height="${n.height - tab.height}"
+          fill="${t.fill}" stroke="${t.boxStroke}" stroke-width="1.25" />${glossOver(t, x, y + tab.height, n.width, n.height - tab.height, 0)}
       ${name}</g>`;
 }
 
@@ -260,17 +267,16 @@ function renderEdge(e: LaidOutEdge, t: Theme): string {
     const points = e.points;
     const pointsAttr = points.map(p => `${p.x + PAD_X},${p.y + PAD_TOP}`).join(' ');
     // «include» and «import» carry an open arrowhead and their keyword; an
-    // «import» is dashed (§8.2.3.5), an «include» solid (§8.2.3.25). Every
-    // other line is plain: a connection, a use case's line, or a branch of
-    // the function tree, whose direction the layout carries.
-    const keyworded = e.kind === 'include' || e.kind === 'import';
+    // «import» is dashed (§8.2.3.5), an «include» solid (§8.2.3.25). A branch
+    // of the function tree is owned by its parent: a filled diamond at the
+    // parent's end (§8.2.3.6). Every other line is plain: a connection, or a
+    // use case's line.
     const dash = e.kind === 'import' ? ` stroke-dasharray="6 4"` : '';
-    const markers = keyworded ? ` marker-end="url(#openArrow)"` : '';
+    const markers = e.kind === 'include' || e.kind === 'import' ? ` marker-end="url(#openArrow)"`
+        : e.kind === 'decomposition' ? ` marker-start="url(#diamond)"` : '';
     let svg = `\n    <polyline points="${pointsAttr}" fill="none" stroke="${t.stroke}" stroke-width="1.25"${dash}${markers} />`;
     if (e.label) {
-        // A keyword gets guillemets; a name, such as a connection's
-        // interface, does not.
-        const label = keyworded ? `&#171;${escapeXml(e.label)}&#187;` : escapeXml(e.label);
+        const label = escapeXml(e.label);
         // A label ELK placed is centred in the box ELK reserved for it. Any
         // other sits just above the line's midpoint.
         const box = e.labelBox;
@@ -298,6 +304,10 @@ export function renderSvg(diagram: LaidOutDiagram, title: DiagramTitle, t: Theme
     <marker id="openArrow" markerWidth="12" markerHeight="12" refX="10" refY="5"
             orient="auto" markerUnits="userSpaceOnUse">
       <path d="M0,0 L10,5 L0,10" fill="none" stroke="${t.boxStroke}" stroke-width="1.25" />
+    </marker>
+    <marker id="diamond" markerWidth="12" markerHeight="8" refX="0" refY="4"
+            orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,4 L6,0 L12,4 L6,8 z" fill="${t.stroke}" />
     </marker>
   </defs>
   ${t.page ? `<rect x="0" y="0" width="${width}" height="${height}" fill="${t.page}" />` : ''}${renderFrame(width, height, title, t)}

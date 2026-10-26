@@ -256,8 +256,7 @@ export async function layoutGraph(graph: DiagramGraph, options: LayoutOptions = 
                 ? [{
                     id: `${e.id}@label`,
                     text: e.label,
-                    // A keyword is drawn with its guillemets; size it so.
-                    width: measureText(e.kind === 'connection' ? e.label : `«${e.label}»`, EDGE_LABEL_FONT) + 4,
+                    width: measureText(e.label, EDGE_LABEL_FONT) + 4,
                     height: EDGE_LABEL_HEIGHT
                 }]
                 : undefined

@@ -61,8 +61,8 @@ the Implementation and Physical views name their functions themselves. A
 function nothing performs is a gap.
 
 Drawn as a work-breakdown chart: one box per function, the root an «action
-def» and the rest «action»s, each parent above its children on a single stem,
-with no arrowheads. The lowest level of
+def» and the rest «action»s, each parent above its children on a single stem.
+The stem leaves the parent at a filled diamond, since the parent owns them. The lowest level of
 a branch is listed vertically, so a broad tree keeps a page's proportions.
 
 ## Implementation view
@@ -70,8 +70,9 @@ a branch is listed vertically, so a broad tree keeps a page's proportions.
 The static structure of the software: modules, and the dependencies between
 their packages. Run-time behaviour belongs to Process, hardware to Physical.
 
-Packages are tabbed rectangles, nested, holding their modules. An «import»
-arrow points at a package depended upon. A module's box lists the functions
+Packages are tabbed rectangles, named in their tab, nested, holding their
+modules. A dashed «import» arrow points at a package depended upon, «import»*
+where `Pkg::*` imports its members. A module's box lists the functions
 it realizes (*perform actions*) and its API (*ports*: what it offers, and,
 conjugated with `~`, what it needs). No lines join modules: where they
 publish and subscribe rather than call, a line would claim a coupling that
