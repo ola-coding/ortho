@@ -12,18 +12,13 @@ const HEAD_HEIGHT = 36;
 /** A stick figure and the name beneath it. */
 const ACTOR_HEIGHT = 74;
 const MESSAGE_STEP = 40;
-const SELF_LOOP_WIDTH = 44;
-const BAR_WIDTH = 8;
-
-interface Activation {
-    lifelineId: string;
-    fromY: number;
-    toY: number;
-}
+const SELF_LOOP_WIDTH = 40;
 
 /**
  * Sequence layout is deterministic (lifelines across the top, messages in
  * order down the page), so this renderer does its own layout instead of ELK.
+ * A message runs from lifeline to lifeline (§8.2.3.9): SysML v2 draws no
+ * activation bars.
  */
 export function renderSequenceSvg(model: SequenceModel, title: DiagramTitle, t: Theme = lightTheme): string {
     const heads = model.lifelines.map(l => ({
@@ -84,20 +79,6 @@ export function renderSequenceSvg(model: SequenceModel, title: DiagramTitle, t: 
     // Lifelines end clear of the frame's corner compartment.
     const height = lifelineBottom + 34;
 
-    // Activation bars: a lifeline is active from a message's arrival until the
-    // next message it sends (heuristic; good enough until fragments exist).
-    const activations: Activation[] = [];
-    model.messages.forEach((message, i) => {
-        const y = firstMessageY + i * MESSAGE_STEP;
-        if (message.sourceId === message.targetId) {
-            activations.push({ lifelineId: message.targetId, fromY: y, toY: y + 24 });
-            return;
-        }
-        const next = model.messages.findIndex((m, j) => j > i && m.sourceId === message.targetId);
-        const toY = next >= 0 ? firstMessageY + next * MESSAGE_STEP : y + 24;
-        activations.push({ lifelineId: message.targetId, fromY: y, toY });
-    });
-
     const parts: string[] = [];
 
     for (const head of heads) {
@@ -131,33 +112,22 @@ export function renderSequenceSvg(model: SequenceModel, title: DiagramTitle, t: 
           stroke="${t.stroke}" stroke-width="1" stroke-dasharray="4 4" /></g>`);
     }
 
-    for (const activation of activations) {
-        const cx = centers.get(activation.lifelineId)!;
-        parts.push(`
-    <rect x="${cx - BAR_WIDTH / 2}" y="${activation.fromY}" width="${BAR_WIDTH}" height="${activation.toY - activation.fromY}"
-          fill="${t.activationFill}" stroke="${t.boxStroke}" stroke-width="1" />`);
-    }
-
     model.messages.forEach((message, i) => {
         const y = firstMessageY + i * MESSAGE_STEP;
         const sourceX = centers.get(message.sourceId)!;
         const targetX = centers.get(message.targetId)!;
         const label = escapeXml(message.label);
         if (message.sourceId === message.targetId) {
-            const right = sourceX + BAR_WIDTH / 2 + SELF_LOOP_WIDTH - BAR_WIDTH;
+            const right = sourceX + SELF_LOOP_WIDTH;
             parts.push(`
-    <g><polyline points="${sourceX + BAR_WIDTH / 2},${y} ${right},${y} ${right},${y + 16} ${sourceX + BAR_WIDTH / 2 + 4},${y + 16}"
+    <g><polyline points="${sourceX},${y} ${right},${y} ${right},${y + 16} ${sourceX},${y + 16}"
           fill="none" stroke="${t.stroke}" stroke-width="1.25" marker-end="url(#msgArrow)" />
       <text x="${right + 6}" y="${y + 12}" font-size="10" fill="${t.text}">${label}</text></g>`);
         } else {
-            // Arrows meet the edge of the activation bar, not the lifeline.
-            const direction = Math.sign(targetX - sourceX);
-            const x1 = sourceX + direction * (BAR_WIDTH / 2);
-            const x2 = targetX - direction * (BAR_WIDTH / 2);
             parts.push(`
-    <g><line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}"
+    <g><line x1="${sourceX}" y1="${y}" x2="${targetX}" y2="${y}"
           stroke="${t.stroke}" stroke-width="1.25" marker-end="url(#msgArrow)" />
-      <text x="${(x1 + x2) / 2}" y="${y - 6}" text-anchor="middle" font-size="10"
+      <text x="${(sourceX + targetX) / 2}" y="${y - 6}" text-anchor="middle" font-size="10"
           fill="${t.text}" paint-order="stroke" stroke="${t.halo}" stroke-width="3">${label}</text></g>`);
         }
     });
@@ -166,9 +136,9 @@ export function renderSequenceSvg(model: SequenceModel, title: DiagramTitle, t: 
      viewBox="0 0 ${width} ${height}" font-family="${FONT}">
   <title>${escapeXml(titleText(title))}</title>
   <defs>${t.defs}
-    <marker id="msgArrow" markerWidth="12" markerHeight="10" refX="10" refY="4" orient="auto"
+    <marker id="msgArrow" markerWidth="13" markerHeight="11" refX="11" refY="5" orient="auto"
             markerUnits="userSpaceOnUse">
-      <path d="M0,0 L10,4 L0,8 z" fill="${t.stroke}" />
+      <path d="M1,1 L11,5 L1,9 z" fill="${t.halo}" stroke="${t.stroke}" stroke-width="1.25" />
     </marker>
   </defs>
   ${t.page ? `<rect x="0" y="0" width="${width}" height="${height}" fill="${t.page}" />` : ''}${renderFrame(width, height, title, t)}

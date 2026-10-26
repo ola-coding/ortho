@@ -66,7 +66,7 @@ describe('sequence extraction and rendering', () => {
             'pilot : Pilot', 'fc : FlightControllerSw', 'nav : NavigationSw', 'motors : MotorControl'
         ]);
         expect(sequence.messages.map(m => m.label)).toEqual([
-            'cmdTakeOff : TakeOffCommand', 'planRoute', 'computePath', 'waypoints', 'motorSetpoints', 'telemetry'
+            'cmdTakeOff of TakeOffCommand', 'planRoute', 'computePath', 'waypoints', 'motorSetpoints', 'telemetry'
         ]);
         const self = sequence.messages[2];
         expect(self.sourceId).toBe(self.targetId);
@@ -77,10 +77,33 @@ describe('sequence extraction and rendering', () => {
         const svg = renderSequenceSvg(sequence, { heading: 'Process View — DroneProcess', source: 'examples/phase4-sequence.sysml' });
         expect(svg).toContain('stroke-dasharray="4 4"'); // lifelines
         expect(svg).toContain('marker-end="url(#msgArrow)"');
-        expect(svg).toContain('cmdTakeOff : TakeOffCommand');
+        expect(svg).toContain('cmdTakeOff of TakeOffCommand');
         expect(svg).toContain('<polyline'); // self-message loop
+        // Rounded «part» heads and no activation bars (§8.2.3.9): the only
+        // other rectangles are the page and the frame.
+        const heads = sequence.lifelines.filter(l => !l.actor).length;
+        expect(svg.match(/&#171;part&#187;/g)).toHaveLength(heads);
+        expect(svg.match(/<rect /g)).toHaveLength(heads + 2);
         // messages appear top-to-bottom in document order
         expect(svg.indexOf('planRoute')).toBeLessThan(svg.indexOf('telemetry'));
+    });
+
+    it('labels a message as declared: name of payload, either alone, or «message»', async () => {
+        const document = await parseOk(`
+            package P {
+                attribute def Order;
+                action def Shop {
+                    part client;
+                    part server;
+                    message buy of Order from client to server;
+                    then message of Order from client to server;
+                    then message ack from server to client;
+                    then message from server to client;
+                }
+            }
+        `);
+        const sequence = extractSequenceModel(...everything(document.parseResult.value));
+        expect(sequence.messages.map(m => m.label)).toEqual(['buy of Order', 'Order', 'ack', '«message»']);
     });
 
     it('draws an untyped lifeline as a person', async () => {

@@ -27,10 +27,11 @@ export interface Theme {
     edgeLabel: string;
     /** The source path in the frame's corner. */
     provenanceText: string;
-    /** Painted behind a label so a line cannot strike through it. */
+    /**
+     * Painted behind a label so a line cannot strike through it, and inside
+     * a message's hollow arrowhead.
+     */
     halo: string;
-    /** The process view's activation bar, on a lifeline. */
-    activationFill: string;
     /** A port on a box's border. */
     portFill: string;
     /** The actor's head, filled so the figure reads at a distance. */
@@ -60,7 +61,6 @@ export const lightTheme: Theme = {
     edgeLabel: '#555555',
     provenanceText: '#8a8a86',
     halo: 'white',
-    activationFill: '#f1f1e4',
     portFill: 'white',
     actorFill: '#fdfdf6',
     gloss: false,
@@ -86,7 +86,6 @@ export const darkGlassTheme: Theme = {
     edgeLabel: '#6FC7D6',
     provenanceText: '#6E828E',
     halo: '#10161C',
-    activationFill: 'url(#glass)',
     portFill: '#1B242C',
     actorFill: '#C3D5E0',
     gloss: true,

@@ -252,8 +252,8 @@ describe('survey drone example model', () => {
         // The upload handshake runs in MAVLink's own order, vehicle-driven.
         const labels = sequence.messages.map(m => m.label);
         const handshake = [
-            'missionCount : MissionCount', 'requestItem : MissionRequestInt',
-            'missionItem : MissionItemInt', 'missionAck : MissionAck'
+            'missionCount of MissionCount', 'requestItem of MissionRequestInt',
+            'missionItem of MissionItemInt', 'missionAck of MissionAck'
         ];
         const positions = handshake.map(l => labels.indexOf(l));
         expect(positions.every(i => i >= 0)).toBe(true);

@@ -22,14 +22,15 @@ export interface SequenceModel {
     messages: SequenceMessage[];
 }
 
+/**
+ * A message as declared (§8.2.3.16): `name of Payload`, its name or its
+ * payload alone, or «message» for one with neither. The payload is as
+ * written, so a qualified name stays qualified.
+ */
 function messageLabel(message: MessageUsage): string {
     const name = message.name ?? '';
-    if (message.payload) {
-        // The payload as written, so a qualified name stays qualified.
-        const payload = message.payload.$refText;
-        return name ? `${name} : ${payload}` : payload;
-    }
-    return name || 'message';
+    const payload = message.payload?.$refText;
+    return payload ? (name ? `${name} of ${payload}` : payload) : name || '«message»';
 }
 
 /**

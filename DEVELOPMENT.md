@@ -109,9 +109,8 @@ declare any view.
   ELK reserves room for them; port labels are painted after every edge.
   Keywords get guillemets; names do not.
 - **Sequence diagrams bypass ELK** (`src/render/sequence-renderer.ts`): gaps
-  between lifelines widen only where a label needs it, and an activation runs
-  from a message's arrival until that lifeline next sends — a heuristic that
-  suits linear scenarios.
+  between lifelines widen only where a label needs it. A message runs from
+  lifeline to lifeline, since SysML v2 draws no activation bars.
 - **The frame** is SysML v2's: its tab reads «view» name : Definition, and
   the file that declares the view sits in its bottom-right compartment, so a
   diagram names its source. Boxes get their corners and keyword from what
@@ -226,11 +225,11 @@ In priority order:
   not expose what the views draw.
 - [x] **Render every view a model declares**, each to an SVG named after it:
   `ortho render models -o diagrams`. The first-file rule and `-t` are gone.
-- [ ] **Follow SysML v2's graphical notation**, as a valid view must: rounded
-  corners for usages and square for definitions, and allocation as a
-  compartment on each host, as *perform actions* are, rather than software
-  nested in 3D boxes. To decide: use cases as «use case» boxes or ellipses,
-  and «part» or «action» keywords on boxes.
+- [x] **Follow SysML v2's graphical notation**, as a valid view must: square
+  definitions and rounded usages under their keywords, the «view» frame,
+  «use case» boxes with a «subject», ownership diamonds, hosts that list what
+  is allocated to them, and messages without activation bars. A person stays
+  a stick figure in the process view.
 - [ ] **Prepare for NPX.** Publish ortho on npm, so it runs without the repo.
   First clean up `package.json`, the README and whatever else publishing
   needs. The name `ortho` is taken on npm, so publish under a scope, such as
