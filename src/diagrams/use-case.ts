@@ -5,9 +5,10 @@ import type {
     ActorUsage, Member, IncludeUsage, SubjectUsage, UseCaseDef, UseCaseUsage
 } from '../generated/ast.js';
 import type { DiagramGraph, GraphEdge, GraphNode } from '../model/graph.js';
-import { qualifiedName } from '../model/graph.js';
+import { boxOf, qualifiedName } from '../model/graph.js';
 import { exposedMembers } from '../model/packages.js';
 import { measureText } from '../render/text-metrics.js';
+import { boxSize, usageLabel } from './connector-ends.js';
 
 type UseCase = UseCaseDef | UseCaseUsage;
 
@@ -20,17 +21,32 @@ function effectiveMembers(useCase: UseCase): Member[] {
     return members;
 }
 
-function ellipseNode(useCase: UseCase): GraphNode {
-    const name = useCase.name ?? '';
+/** A «use case» box, named as declared, or a «use case def» one. */
+function useCaseNode(useCase: UseCase): GraphNode {
+    const name = isUseCaseUsage(useCase) ? usageLabel(useCase) : useCase.name ?? '';
+    const { shape, keyword } = boxOf(useCase);
     return {
         id: qualifiedName(useCase),
-        shape: 'ellipse',
-        keyword: '',
+        shape,
+        keyword,
         name,
         compartments: [],
         ports: [],
-        width: Math.max(100, measureText(name, 12) + 56),
-        height: 50
+        ...boxSize(name, [], 110, 40, keyword)
+    };
+}
+
+/** The «subject» box, drawn once however many use cases share it. */
+function subjectNode(subject: SubjectUsage, label: string): GraphNode {
+    const { shape, keyword } = boxOf(subject);
+    return {
+        id: `subject:${label}`,
+        shape,
+        keyword,
+        name: label,
+        compartments: [],
+        ports: [],
+        ...boxSize(label, [], 110, 40, keyword)
     };
 }
 
@@ -47,6 +63,11 @@ function actorNode(id: string, label: string): GraphNode {
     };
 }
 
+/**
+ * The use case view (§8.2.3.25): «use case» boxes, the «subject» and the
+ * actors each joined to their use cases by a plain line (§8.2.3.21), and an
+ * «include» arrow to each included use case.
+ */
 export function extractUseCaseGraph(exposed: Member[]): DiagramGraph {
     const useCases = exposedMembers(exposed).filter((m): m is UseCase => isUseCaseDef(m) || isUseCaseUsage(m));
 
@@ -55,15 +76,24 @@ export function extractUseCaseGraph(exposed: Member[]): DiagramGraph {
         useCases.filter(isUseCaseUsage).map(u => u.type?.ref).filter((d): d is UseCaseDef => !!d)
     );
     const rendered = useCases.filter(uc => !(isUseCaseDef(uc) && typedDefs.has(uc)));
-    const ellipseByUseCase = new Map<UseCase, GraphNode>(rendered.map(uc => [uc, ellipseNode(uc)]));
+    const boxByUseCase = new Map<UseCase, GraphNode>(rendered.map(uc => [uc, useCaseNode(uc)]));
 
-    // Group use cases into system boundaries by subject type.
-    const rootNodes: GraphNode[] = [];
-    const boundaries = new Map<string, GraphNode>();
+    const nodes: GraphNode[] = [...boxByUseCase.values()];
+    const subjects = new Map<string, GraphNode>();
     const actorNodes = new Map<string, GraphNode>();
     const edges: GraphEdge[] = [];
-    const associationSeen = new Set<string>();
+    const joined = new Set<string>();
     let edgeCounter = 0;
+
+    // A line has no direction and is drawn without an arrowhead; the edge's
+    // direction only tells the layout which side of the use cases its other
+    // end belongs on.
+    const join = (sourceId: string, targetId: string): void => {
+        if (!joined.has(`${sourceId}->${targetId}`)) {
+            joined.add(`${sourceId}->${targetId}`);
+            edges.push({ id: `e${edgeCounter++}`, kind: 'association', sourceId, targetId });
+        }
+    };
 
     // An actor declared on a use case def, and so shared by every use case of
     // that kind, is a primary actor, drawn on the left. One added on a single
@@ -81,69 +111,43 @@ export function extractUseCaseGraph(exposed: Member[]): DiagramGraph {
     }
     const isSecondary = (key: string): boolean => onDef.size > 0 && !onDef.has(key);
 
-    for (const [useCase, node] of ellipseByUseCase) {
+    for (const [useCase, node] of boxByUseCase) {
         const members = effectiveMembers(useCase);
+        // The subject stands on the right, across the use cases from the
+        // primary actors.
         const subject = members.find(isSubjectUsage);
-        const subjectLabel = subject
-            ? subject.type?.ref?.name ?? subject.type?.$refText ?? subject.name
-            : undefined;
-        if (subjectLabel) {
-            let boundary = boundaries.get(subjectLabel);
-            if (!boundary) {
-                boundary = {
-                    id: `boundary:${subjectLabel}`,
-                    shape: 'boundary',
-                    keyword: '',
-                    name: subjectLabel,
-                    compartments: [],
-                    ports: [],
-                    children: [],
-                    width: 0,
-                    height: 0
-                };
-                boundaries.set(subjectLabel, boundary);
-                rootNodes.push(boundary);
+        if (subject) {
+            const label = usageLabel(subject);
+            let subjectBox = subjects.get(label);
+            if (!subjectBox) {
+                subjectBox = subjectNode(subject, label);
+                subjects.set(label, subjectBox);
+                nodes.push(subjectBox);
             }
-            boundary.children!.push(node);
-        } else {
-            rootNodes.push(node);
+            join(node.id, subjectBox.id);
         }
 
         for (const actor of members.filter(isActorUsage)) {
             const key = actorKey(actor);
-            const label = actor.type?.ref?.name ?? actor.type?.$refText ?? actor.name ?? '';
             let actorGraphNode = actorNodes.get(key);
             if (!actorGraphNode) {
-                actorGraphNode = actorNode(`actor:${key}`, label);
+                actorGraphNode = actorNode(`actor:${key}`, usageLabel(actor));
                 actorNodes.set(key, actorGraphNode);
-                rootNodes.push(actorGraphNode);
+                nodes.push(actorGraphNode);
             }
-            const pairKey = `${actorGraphNode.id}->${node.id}`;
-            if (!associationSeen.has(pairKey)) {
-                associationSeen.add(pairKey);
-                // An association has no direction and is drawn without an
-                // arrowhead; the edge's direction only tells the layout which
-                // side of the use cases the actor belongs on.
-                const secondary = isSecondary(key);
-                edges.push({
-                    id: `e${edgeCounter++}`,
-                    kind: 'association',
-                    sourceId: secondary ? node.id : actorGraphNode.id,
-                    targetId: secondary ? actorGraphNode.id : node.id
-                });
+            if (isSecondary(key)) {
+                join(node.id, actorGraphNode.id);
+            } else {
+                join(actorGraphNode.id, node.id);
             }
         }
     }
 
     // Include edges. The target is always a usage: SysML v2 includes a use
     // case, not a kind of use case.
-    for (const [useCase, node] of ellipseByUseCase) {
+    for (const [useCase, node] of boxByUseCase) {
         for (const include of effectiveMembers(useCase).filter(isIncludeUsage)) {
-            // `include x` names the use case; `include use case x` declares one,
-            // drawn as the use case of that name.
-            const included = include.target?.segments.at(-1)?.ref
-                ?? [...ellipseByUseCase.keys()].find(u => isUseCaseUsage(u) && include.useCase && u.name === include.name);
-            const target = isUseCaseUsage(included) ? ellipseByUseCase.get(included) : undefined;
+            const target = includedBox(include, boxByUseCase);
             if (target && target !== node) {
                 edges.push({
                     id: `e${edgeCounter++}`,
@@ -156,5 +160,15 @@ export function extractUseCaseGraph(exposed: Member[]): DiagramGraph {
         }
     }
 
-    return { nodes: rootNodes, edges };
+    return { nodes, edges };
+}
+
+/**
+ * The box an include points at: `include x` names the use case, and
+ * `include use case x` declares one, drawn as the use case of that name.
+ */
+function includedBox(include: IncludeUsage, boxByUseCase: Map<UseCase, GraphNode>): GraphNode | undefined {
+    const included = include.target?.segments.at(-1)?.ref
+        ?? [...boxByUseCase.keys()].find(u => isUseCaseUsage(u) && include.useCase && u.name === include.name);
+    return isUseCaseUsage(included) ? boxByUseCase.get(included) : undefined;
 }

@@ -42,11 +42,11 @@ declares it.
 
 How the system is used, and by whom — nothing about how it works.
 
-Use cases are ellipses inside a rectangle named for the subject. Actors are
-stick figures outside it: primary actors, declared on a use case definition,
-on the left; secondary ones, added on a single use case, on the right.
-Associations are plain straight lines, and an «include» is a dashed arrow to
-the included use case.
+Use cases are «use case» boxes. Actors are stick figures: primary actors,
+declared on a use case definition, on the left; secondary ones, added on a
+single use case, on the right. The subject is a «subject» box on the right,
+joined to each of its use cases as an actor is. These lines are plain and
+straight, and an «include» is a solid arrow to the included use case.
 
 ## Logical view
 

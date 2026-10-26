@@ -24,8 +24,8 @@ export const NODE_DEPTH = 12;
 export interface LayoutOptions {
     direction?: 'DOWN' | 'RIGHT';
     /**
-     * `STRAIGHT` draws each line between ellipses and actors as one segment
-     * wherever that clears every other shape (the use case view; see
+     * `STRAIGHT` draws each line between use cases, subjects and actors as one
+     * segment wherever that clears every other shape (the use case view; see
      * straight-edges.ts). ELK still places the shapes, routing with `POLYLINE`
      * for the lines that cannot be straight.
      */

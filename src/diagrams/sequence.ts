@@ -2,7 +2,7 @@ import { AstUtils } from 'langium';
 import { isActorUsage, isMessageUsage } from '../generated/ast.js';
 import type { Definition, Member, MessageUsage, Model, PartUsage } from '../generated/ast.js';
 import { qualifiedName } from '../model/graph.js';
-import { endPart, partLabel } from './connector-ends.js';
+import { endPart, usageLabel } from './connector-ends.js';
 
 export interface SequenceLifeline {
     id: string;
@@ -66,7 +66,7 @@ export function extractSequenceModel(exposed: Member[], model: Model): SequenceM
         for (const part of [source, target]) {
             const id = qualifiedName(part);
             if (!lifelines.has(id)) {
-                lifelines.set(id, { id, label: partLabel(part), actor: isPerson(part, actorTypes) });
+                lifelines.set(id, { id, label: usageLabel(part), actor: isPerson(part, actorTypes) });
             }
         }
         messages.push({

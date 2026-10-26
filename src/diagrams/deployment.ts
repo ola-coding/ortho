@@ -3,13 +3,13 @@ import { isAllocationUsage, isPartDef, isPartUsage } from '../generated/ast.js';
 import type { AllocationUsage, Definition, Member, Model, PartDef, PartUsage } from '../generated/ast.js';
 import type { DiagramGraph, GraphNode } from '../model/graph.js';
 import { boxOf, qualifiedName } from '../model/graph.js';
-import { boxSize, endPart, partLabel } from './connector-ends.js';
+import { boxSize, endPart, usageLabel } from './connector-ends.js';
 import { measureText } from '../render/text-metrics.js';
 import { NODE_DEPTH } from '../layout/elk-layout.js';
 
 /** A deployed program, a «part». */
 function softwareNode(usage: PartUsage): GraphNode {
-    const name = partLabel(usage);
+    const name = usageLabel(usage);
     const { shape, keyword } = boxOf(usage);
     return {
         id: qualifiedName(usage),
@@ -23,7 +23,7 @@ function softwareNode(usage: PartUsage): GraphNode {
 }
 
 function hostNode(usage: PartUsage): GraphNode {
-    const name = partLabel(usage);
+    const name = usageLabel(usage);
     return {
         id: qualifiedName(usage),
         shape: 'node3d',
@@ -44,7 +44,7 @@ function hostNode(usage: PartUsage): GraphNode {
  * device's one usage, or its definition when it has none or several.
  */
 function deviceFrame(id: string, device: PartDef | PartUsage): GraphNode {
-    const name = isPartUsage(device) ? partLabel(device) : device.name ?? '';
+    const name = isPartUsage(device) ? usageLabel(device) : device.name ?? '';
     const { shape, keyword } = boxOf(device);
     return {
         id,

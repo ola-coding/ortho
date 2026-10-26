@@ -57,15 +57,18 @@ describe('coffee machine example model', () => {
         }
     });
 
-    it('use case view: three beverages and a service task under one boundary', async () => {
+    it('use case view: two drinks and a service task, all of the one machine', async () => {
         const graph = extractUseCaseGraph((await viewSet('use-case.sysml'))[0]);
-        const boundaries = graph.nodes.filter(n => n.shape === 'boundary');
-        expect(boundaries.map(b => b.name)).toEqual(['CoffeeMachine']);
-        expect(boundaries[0].children!.map(c => c.name).sort())
-            .toEqual(['descale', 'makeCappuccino', 'makeEspresso']);
+        expect(graph.nodes.filter(n => n.keyword === 'use case').map(n => n.name).sort()).toEqual([
+            'descale : ServiceMachine', 'makeCappuccino : OperateMachine', 'makeEspresso : OperateMachine'
+        ]);
+        // Both use case defs name the machine as their subject: one box, a line to each.
+        const subjects = graph.nodes.filter(n => n.keyword === 'subject');
+        expect(subjects.map(n => n.name)).toEqual(['CoffeeMachine']);
+        expect(graph.edges.filter(e => e.targetId === subjects[0].id)).toHaveLength(3);
 
         expect(graph.nodes.filter(n => n.shape === 'actor').map(n => n.name).sort())
-            .toEqual(['User']);
+            .toEqual(['user : User']);
 
         const includes = graph.edges.filter(e => e.kind === 'include');
         expect(includes).toHaveLength(1);

@@ -1,7 +1,7 @@
 import type { LaidOutDiagram, LaidOutEdge, LaidOutNode } from '../layout/elk-layout.js';
 import { NODE_DEPTH, PORT_LABEL_FONT, PORT_SIZE } from '../layout/elk-layout.js';
 import {
-    BOX_HEADER_HEIGHT, COMPARTMENT_LINE_HEIGHT, COMPARTMENT_PADDING, COMPARTMENT_TITLE_HEIGHT
+    BOX_HEADER_HEIGHT, COMPARTMENT_LINE_HEIGHT, COMPARTMENT_PADDING, COMPARTMENT_TITLE_HEIGHT, USAGE_RADIUS
 } from '../model/graph.js';
 import { measureText } from './text-metrics.js';
 import type { Theme } from './theme.js';
@@ -13,8 +13,6 @@ export const PAD_TOP = 48;
 const PAD_BOTTOM = 30;
 export const FONT = 'Arial, Helvetica, Segoe UI, sans-serif';
 
-/** A usage's corners; a definition's are square (§8.2.3.6). */
-export const USAGE_RADIUS = 10;
 /** A port is a usage too, at a port's size. */
 const PORT_RADIUS = 2;
 
@@ -88,9 +86,7 @@ export function titleText(title: DiagramTitle): string {
 
 function renderNode(n: LaidOutNode, t: Theme): string {
     switch (n.shape) {
-        case 'ellipse': return renderEllipseNode(n, t);
         case 'actor': return renderActorNode(n, t);
-        case 'boundary': return renderBoundaryNode(n, t);
         case 'package': return renderPackageNode(n, t);
         case 'node3d': return renderNode3dNode(n, t);
         case 'definition':
@@ -120,16 +116,6 @@ function renderNode3dNode(n: LaidOutNode, t: Theme): string {
           font-size="12" font-weight="600" fill="${t.text}">${escapeXml(n.name)}</text></g>`;
 }
 
-function renderEllipseNode(n: LaidOutNode, t: Theme): string {
-    const cx = n.x + PAD_X + n.width / 2;
-    const cy = n.y + PAD_TOP + n.height / 2;
-    return `
-    <g><ellipse cx="${cx}" cy="${cy}" rx="${n.width / 2}" ry="${n.height / 2}"${liftAttr(t)}
-          fill="${t.fill}" stroke="${t.boxStroke}" stroke-width="1.25" />
-      <text x="${cx}" y="${cy + 4}" text-anchor="middle"
-          font-size="12" fill="${t.text}">${escapeXml(n.name)}</text></g>`;
-}
-
 function renderActorNode(n: LaidOutNode, t: Theme): string {
     const cx = n.x + PAD_X + n.width / 2;
     const top = n.y + PAD_TOP;
@@ -143,16 +129,6 @@ function renderActorNode(n: LaidOutNode, t: Theme): string {
       <text x="${cx}" y="${top + 68}" text-anchor="middle" stroke="none"
           font-size="11" fill="${t.text}">${escapeXml(n.name)}</text>
     </g>`;
-}
-
-function renderBoundaryNode(n: LaidOutNode, t: Theme): string {
-    const x = n.x + PAD_X;
-    const y = n.y + PAD_TOP;
-    return `
-    <g><rect x="${x}" y="${y}" width="${n.width}" height="${n.height}"
-          fill="${t.boundaryFill}" stroke="${t.boxStroke}" stroke-width="1.25" />${glossOver(t, x, y, n.width, n.height, 0)}
-      <text x="${x + n.width / 2}" y="${y + 20}" text-anchor="middle"
-          font-size="12" font-weight="600" fill="${t.text}">${escapeXml(n.name)}</text></g>`;
 }
 
 function renderPackageNode(n: LaidOutNode, t: Theme): string {
@@ -277,73 +253,18 @@ function pointAtFraction(points: Array<{ x: number; y: number }>, fraction: numb
     return points[points.length - 1];
 }
 
-/**
- * ELK attaches edges to the node's bounding box; for ellipse nodes, extend the
- * terminal segment until it meets the ellipse curve.
- */
-function clipEndpointToEllipse(points: Array<{ x: number; y: number }>, node: LaidOutNode, atStart: boolean): void {
-    if (points.length < 2) {
-        return;
-    }
-    const index = atStart ? 0 : points.length - 1;
-    const neighbour = atStart ? 1 : points.length - 2;
-    const p = points[index];
-    const q = points[neighbour];
-    const rx = node.width / 2;
-    const ry = node.height / 2;
-    const cx = node.x + rx;
-    const cy = node.y + ry;
-    const dx = p.x - q.x;
-    const dy = p.y - q.y;
-    if (dx === 0 && dy === 0) {
-        return;
-    }
-    const ex = (p.x - cx) / rx;
-    const ey = (p.y - cy) / ry;
-    const fx = dx / rx;
-    const fy = dy / ry;
-    const a = fx * fx + fy * fy;
-    const b = 2 * (ex * fx + ey * fy);
-    const c = ex * ex + ey * ey - 1;
-    // Already on (or numerically inside) the curve — e.g. a bbox endpoint at
-    // the ellipse's axis extremes — must not clip to the far intersection.
-    if (c <= 1e-3) {
-        return;
-    }
-    const disc = b * b - 4 * a * c;
-    if (a === 0 || disc < 0) {
-        return;
-    }
-    const sqrt = Math.sqrt(disc);
-    const t = [(-b - sqrt) / (2 * a), (-b + sqrt) / (2 * a)].filter(v => v >= 0).sort((u, v) => u - v)[0];
-    // Bbox-to-curve adjustments are small; larger jumps mean the geometry is
-    // not the expected case, so leave the point alone.
-    if (t === undefined || t * Math.hypot(dx, dy) > Math.max(rx, ry)) {
-        return;
-    }
-    points[index] = { x: p.x + dx * t, y: p.y + dy * t };
-}
-
-function renderEdge(e: LaidOutEdge, nodeById: Map<string, LaidOutNode>, t: Theme): string {
+function renderEdge(e: LaidOutEdge, t: Theme): string {
     if (e.points.length < 2) {
         return '';
     }
-    const points = e.points.map(p => ({ ...p }));
-    const sourceNode = nodeById.get(e.sourceId);
-    const targetNode = nodeById.get(e.targetId);
-    if (sourceNode?.shape === 'ellipse') {
-        clipEndpointToEllipse(points, sourceNode, true);
-    }
-    if (targetNode?.shape === 'ellipse') {
-        clipEndpointToEllipse(points, targetNode, false);
-    }
-
+    const points = e.points;
     const pointsAttr = points.map(p => `${p.x + PAD_X},${p.y + PAD_TOP}`).join(' ');
-    // «include» and «import» are dashed, with an open arrowhead and their
-    // keyword. Every other line is plain: a connection, a use case's line, or
-    // a capability-tree branch, whose direction the layout carries.
+    // «include» and «import» carry an open arrowhead and their keyword; an
+    // «import» is dashed (§8.2.3.5), an «include» solid (§8.2.3.25). Every
+    // other line is plain: a connection, a use case's line, or a branch of
+    // the function tree, whose direction the layout carries.
     const keyworded = e.kind === 'include' || e.kind === 'import';
-    const dash = keyworded ? ` stroke-dasharray="6 4"` : '';
+    const dash = e.kind === 'import' ? ` stroke-dasharray="6 4"` : '';
     const markers = keyworded ? ` marker-end="url(#openArrow)"` : '';
     let svg = `\n    <polyline points="${pointsAttr}" fill="none" stroke="${t.stroke}" stroke-width="1.25"${dash}${markers} />`;
     if (e.label) {
@@ -365,10 +286,9 @@ function renderEdge(e: LaidOutEdge, nodeById: Map<string, LaidOutNode>, t: Theme
 export function renderSvg(diagram: LaidOutDiagram, title: DiagramTitle, t: Theme = lightTheme): string {
     const width = diagram.width + PAD_X * 2;
     const height = diagram.height + PAD_TOP + PAD_BOTTOM;
-    const nodeById = new Map(diagram.nodes.map(n => [n.id, n]));
 
     const nodeElements = diagram.nodes.map(n => renderNode(n, t)).join('');
-    const edgeElements = diagram.edges.map(e => renderEdge(e, nodeById, t)).join('');
+    const edgeElements = diagram.edges.map(e => renderEdge(e, t)).join('');
     const portLabelElements = diagram.nodes.map(n => renderPortLabels(n, t)).join('');
 
     return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"

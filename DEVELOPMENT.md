@@ -92,17 +92,14 @@ declare any view.
   across for 27 functions.
 - **Use case lines are straight** (`src/layout/straight-edges.ts`). ELK places
   the shapes, then each line is redrawn as one segment. Its end slides round
-  an ellipse 7.5° at a time until the line clears every shape by 4 px; lines
-  meet an actor in the order they leave it, so they never cross there. When
-  no sliding helps, the actor moves along its column, 4 px at a time, up to
-  60 px, or further only to avoid crossing a line already drawn. Lines
-  between use cases go first, since nudging cannot move them;
-  a line nothing clears keeps ELK's route. A secondary actor's edge is
-  reversed only as a layering hint.
-- **Ellipse clipping.** ELK ends edges at bounding boxes, so the last segment
-  is extended to the curve. A point already on or inside the ellipse is not
-  clipped, since floating point would pick the far intersection, and the
-  adjustment is capped at one radius.
+  a box's outline, rounded corners included, 7.5° at a time until the line
+  clears every shape by 4 px; lines meet an actor in the order they leave it,
+  so they never cross there. When no sliding helps, the actor moves along its
+  column, 4 px at a time, up to 60 px, or further only to avoid crossing a
+  line already drawn. Lines between boxes go first, since nudging cannot move
+  them; a line nothing clears keeps ELK's route. The direction of an edge to
+  a secondary actor or the subject is only a layering hint, putting it on the
+  right.
 - **Realization and APIs are compartments.** An edge from a function to its
   realizer would need both on one diagram — a seventh view — so the part's
   box lists them instead; `paddingOf` adds the compartments' height so nested

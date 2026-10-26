@@ -5,7 +5,7 @@ import type {
 } from '../generated/ast.js';
 import type { Compartment, DiagramGraph, GraphEdge, GraphNode } from '../model/graph.js';
 import { boxOf, effectiveName, qualifiedName } from '../model/graph.js';
-import { boxSize, partLabel, performCompartments } from './connector-ends.js';
+import { boxSize, usageLabel, performCompartments } from './connector-ends.js';
 
 const HEADER_HEIGHT = 40;
 const MIN_WIDTH = 110;
@@ -66,7 +66,7 @@ function effectiveMembers<T extends Member>(
 
 /** A «part» box: `name : Type [n]`, its ports, and what it performs. */
 function partBox(id: string, part: PartUsage, type: Definition | undefined): GraphNode {
-    const name = `${partLabel(part)}${multiplicityText(part.multiplicities[0])}`;
+    const name = `${usageLabel(part)}${multiplicityText(part.multiplicities[0])}`;
     const performs = performsOf(type, part.members);
     const { shape, keyword } = boxOf(part);
     return {

@@ -140,10 +140,10 @@ package UseCases {
 
 | You write | The view draws |
 |---|---|
-| `use case name : Def;` | an ellipse. A `use case def` is drawn itself only when no usage is typed by it. |
-| `subject Name;` in a use case (def) | the system boundary, labelled with the subject's type, or its name when untyped |
-| `actor name : Type;` | a stick figure: primary on a `use case def`, secondary on a single use case |
-| `include use case name;` (or `include name;`) | a dashed «include» arrow. The target is a use case usage, never a definition. |
+| `use case name : Def;` | a «use case» box, `name : Def`. A `use case def` is drawn itself, as a «use case def» box, only when no usage is typed by it. |
+| `subject Name;` in a use case (def) | a «subject» box, joined by a line to each use case it is the subject of |
+| `actor name : Type;` | a stick figure, `name : Type`: primary on a `use case def`, secondary on a single use case |
+| `include use case name;` (or `include name;`) | a solid «include» arrow. The target is a use case usage, never a definition. |
 
 The subject is a use case's first parameter, so a use case that declares an
 actor states its `subject` first, as `descale` does.

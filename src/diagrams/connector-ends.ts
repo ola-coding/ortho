@@ -1,3 +1,4 @@
+import type { AstNode } from 'langium';
 import { isPartUsage, isPerformUsage, isPortUsage } from '../generated/ast.js';
 import type { ConnectorEnd, Member, PartUsage, PerformUsage } from '../generated/ast.js';
 import type { Compartment } from '../model/graph.js';
@@ -21,9 +22,11 @@ export function endPart(end: ConnectorEnd | undefined): PartUsage | undefined {
     return undefined;
 }
 
-export function partLabel(part: PartUsage): string {
-    const type = part.type ? ` : ${part.type.ref?.name ?? part.type.$refText}` : '';
-    return `${effectiveName(part) ?? ''}${type}`;
+/** A usage as declared (§8.2.3.6): `name : Type`, or its name or `: Type` alone. */
+export function usageLabel(usage: AstNode & { type?: { ref?: { name?: string }; $refText: string } }): string {
+    const name = effectiveName(usage) ?? '';
+    const type = usage.type && (usage.type.ref?.name ?? usage.type.$refText);
+    return type === undefined ? name : name ? `${name} : ${type}` : `: ${type}`;
 }
 
 /**

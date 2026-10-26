@@ -14,7 +14,7 @@ const services = createSysmlServices();
 const parse = parseHelper<Model>(services.Sysml);
 const title = { heading: 'Use case view — DroneUseCases', definition: 'GeneralView', source: 'fixtures/use-case.sysml' };
 
-/** The use case view: a boundary, ellipses, an actor and «include» labels. */
+/** The use case view: «use case» boxes, a «subject», an actor and «include» labels. */
 async function render(theme = lightTheme): Promise<string> {
     const text = await readFile(resolve(dirname(fileURLToPath(import.meta.url)), 'fixtures/use-case.sysml'), 'utf-8');
     const document = await parse(text, { validation: true });

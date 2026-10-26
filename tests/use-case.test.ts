@@ -60,25 +60,33 @@ describe('use case grammar', () => {
 });
 
 describe('use-case diagram extraction', () => {
-    it('builds boundary, ellipses, deduplicated actors and edges', async () => {
+    it('builds use cases, one subject, deduplicated actors and edges', async () => {
         const graph = extractUseCaseGraph((await parseExample()).packages);
 
-        const boundary = graph.nodes.find(n => n.shape === 'boundary')!;
-        expect(boundary.name).toBe('Drone');
-        expect(boundary.children!.map(c => c.name).sort()).toEqual(
-            ['avoidObstacles', 'capturePhotos', 'flyMission', 'returnToHome']
+        // Each use case is a «use case» box, named as declared; the FlyMission
+        // def is represented by its usage, not shown itself.
+        const useCases = graph.nodes.filter(n => n.keyword === 'use case');
+        expect(useCases.every(n => n.shape === 'usage')).toBe(true);
+        expect(useCases.map(n => n.name).sort()).toEqual(
+            ['avoidObstacles', 'capturePhotos', 'flyMission : FlyMission', 'returnToHome']
         );
-
-        // FlyMission def is represented by its usage, not shown itself
         expect(graph.nodes.some(n => n.name === 'FlyMission')).toBe(false);
+
+        // Four use cases declare the same subject: one «subject» box, joined to each.
+        const subjects = graph.nodes.filter(n => n.keyword === 'subject');
+        expect(subjects.map(n => n.name)).toEqual(['drone : Drone']);
+        expect(graph.edges.filter(e => e.targetId === subjects[0].id).map(e => e.sourceId).sort())
+            .toEqual(useCases.map(n => n.id).sort());
 
         const actors = graph.nodes.filter(n => n.shape === 'actor');
         expect(actors).toHaveLength(1);
-        expect(actors[0].name).toBe('Pilot');
+        expect(actors[0].name).toBe('pilot : Pilot');
 
-        const associations = graph.edges.filter(e => e.kind === 'association');
-        expect(associations).toHaveLength(3); // flyMission (inherited), returnToHome, capturePhotos
-        expect(associations.every(e => e.sourceId === actors[0].id)).toBe(true);
+        // The pilot's lines: flyMission (inherited), returnToHome, capturePhotos.
+        const lines = graph.edges.filter(e => e.kind === 'association' && e.sourceId === actors[0].id);
+        expect(lines.map(e => e.targetId).sort()).toEqual([
+            'DroneUseCases::capturePhotos', 'DroneUseCases::flyMission', 'DroneUseCases::returnToHome'
+        ]);
 
         const includes = graph.edges.filter(e => e.kind === 'include');
         expect(includes.map(e => e.targetId).sort()).toEqual(
@@ -86,27 +94,30 @@ describe('use-case diagram extraction', () => {
         );
     });
 
-    it('lays out hierarchically and renders actors, ellipses and «include»', async () => {
+    it('lays out the actor, the use cases and the subject left to right, and renders them', async () => {
         const graph = extractUseCaseGraph((await parseExample()).packages);
         const laidOut = await layoutGraph(graph, { direction: 'RIGHT' });
 
-        const boundary = laidOut.nodes.find(n => n.shape === 'boundary')!;
-        const ellipses = laidOut.nodes.filter(n => n.shape === 'ellipse');
-        expect(ellipses).toHaveLength(4);
-        for (const e of ellipses) {
-            expect(e.x).toBeGreaterThanOrEqual(boundary.x);
-            expect(e.y).toBeGreaterThanOrEqual(boundary.y);
-            expect(e.x + e.width).toBeLessThanOrEqual(boundary.x + boundary.width + 0.5);
-            expect(e.y + e.height).toBeLessThanOrEqual(boundary.y + boundary.height + 0.5);
+        const actor = laidOut.nodes.find(n => n.shape === 'actor')!;
+        const subject = laidOut.nodes.find(n => n.keyword === 'subject')!;
+        const useCases = laidOut.nodes.filter(n => n.keyword === 'use case');
+        expect(useCases).toHaveLength(4);
+        for (const useCase of useCases) {
+            expect(actor.x + actor.width).toBeLessThanOrEqual(useCase.x);
+            expect(useCase.x + useCase.width).toBeLessThanOrEqual(subject.x);
         }
 
         const svg = renderSvg(laidOut, { heading: 'Scenarios — DroneUseCases', source: 'examples/phase2-usecases.sysml' });
-        expect(svg).toContain('<ellipse');
+        expect(svg).toContain('&#171;use case&#187;');
+        expect(svg).toContain('&#171;subject&#187;');
         expect(svg).toContain('<circle'); // actor head
+        // An «include» is a solid arrow (§8.2.3.25).
         expect(svg).toContain('&#171;include&#187;');
+        expect(svg).toContain('marker-end="url(#openArrow)"');
+        expect(svg).not.toContain('stroke-dasharray');
     });
 
-    it('stands a primary actor left of the boundary and a secondary one right', async () => {
+    it('stands a primary actor left of the use cases and a secondary one right', async () => {
         // The customer comes with every order, so it is declared on the def:
         // primary. The courier joins one use case only: secondary.
         const document = await parseOk(`
@@ -129,13 +140,13 @@ describe('use-case diagram extraction', () => {
             extractUseCaseGraph(document.parseResult.value.packages), { direction: 'RIGHT', edgeRouting: 'STRAIGHT' }
         );
         const byName = (name: string) => laidOut.nodes.find(n => n.name === name)!;
-        const boundary = laidOut.nodes.find(n => n.shape === 'boundary')!;
-        const customer = byName('Customer');
-        const courier = byName('Courier');
+        const useCases = laidOut.nodes.filter(n => n.keyword === 'use case');
+        const customer = byName('customer : Customer');
+        const courier = byName('courier : Courier');
         expect(laidOut.nodes.filter(n => n.shape === 'actor')).toHaveLength(2);
 
-        expect(customer.x + customer.width).toBeLessThanOrEqual(boundary.x);
-        expect(courier.x).toBeGreaterThanOrEqual(boundary.x + boundary.width);
+        expect(customer.x + customer.width).toBeLessThanOrEqual(Math.min(...useCases.map(n => n.x)));
+        expect(courier.x).toBeGreaterThanOrEqual(Math.max(...useCases.map(n => n.x + n.width)));
 
         // Each actor is joined to its own use cases and no others; the
         // customer's come through the def, deliver's included.
@@ -147,30 +158,35 @@ describe('use-case diagram extraction', () => {
         expect(joined(courier.id)).toEqual(['Shop::deliver']);
     });
 
-    it('draws every line straight, clear of every use case it does not join', async () => {
+    it('draws every line straight, from outline to outline, clear of every box it does not join', async () => {
         const examples = resolve(dirname(fileURLToPath(import.meta.url)), '../examples');
+        type Box = { x: number; y: number; width: number; height: number };
+        const inside = (x: number, y: number, n: Box, by = 0) =>
+            x > n.x - by && x < n.x + n.width + by && y > n.y - by && y < n.y + n.height + by;
         for (const example of ['survey-drone', 'coffee-machine']) {
             const { model } = await parseSysmlFiles(
                 createSysmlServices().Sysml, [resolve(examples, example, 'use-case.sysml')]
             );
             const laidOut = await layoutGraph(extractUseCaseGraph(model.packages), { direction: 'RIGHT', edgeRouting: 'STRAIGHT' });
-            const ellipses = laidOut.nodes.filter(n => n.shape === 'ellipse');
+            const boxes = laidOut.nodes.filter(n => n.shape === 'usage' || n.shape === 'definition');
             for (const edge of laidOut.edges) {
                 const line = `${example}: ${edge.sourceId} -> ${edge.targetId}`;
                 expect(edge.points, line).toHaveLength(2);
                 const [p, q] = edge.points;
-                for (const n of ellipses.filter(e => e.id !== edge.sourceId && e.id !== edge.targetId)) {
-                    // Sampled along the line: how far inside the ellipse it
-                    // reaches, where 1 is on the outline.
-                    const rx = n.width / 2;
-                    const ry = n.height / 2;
-                    let nearest = Infinity;
+                // An end on a box lies on its outline: within its bounds, and
+                // no deeper than a rounded corner's arc.
+                for (const [end, id] of [[p, edge.sourceId], [q, edge.targetId]] as const) {
+                    const box = boxes.find(n => n.id === id);
+                    if (box) {
+                        expect(inside(end.x, end.y, box, 0.5) && !inside(end.x, end.y, box, -3.5), `${line} ends off ${box.name}`).toBe(true);
+                    }
+                }
+                for (const n of boxes.filter(b => b.id !== edge.sourceId && b.id !== edge.targetId)) {
                     for (let i = 0; i <= 200; i++) {
                         const x = p.x + (q.x - p.x) * i / 200;
                         const y = p.y + (q.y - p.y) * i / 200;
-                        nearest = Math.min(nearest, ((x - n.x - rx) / rx) ** 2 + ((y - n.y - ry) / ry) ** 2);
+                        expect(inside(x, y, n), `${line} crosses ${n.name}`).toBe(false);
                     }
-                    expect(nearest, `${line} crosses ${n.name}`).toBeGreaterThan(1);
                 }
             }
         }

@@ -6,9 +6,10 @@ import { parseHelper } from 'langium/test';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
 import type { Model } from '../src/generated/ast.js';
 import type { DiagramGraph, GraphEdge, GraphNode } from '../src/model/graph.js';
+import { USAGE_RADIUS } from '../src/model/graph.js';
 import { extractLogicalGraph } from '../src/diagrams/logical.js';
 import { layoutTree } from '../src/layout/tree-layout.js';
-import { renderSvg, USAGE_RADIUS } from '../src/render/svg-renderer.js';
+import { renderSvg } from '../src/render/svg-renderer.js';
 
 const services = createSysmlServices();
 const parse = parseHelper<Model>(services.Sysml);

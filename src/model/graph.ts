@@ -5,7 +5,7 @@ import { isDefinition } from '../generated/ast.js';
  * How a node is drawn. A definition is a box with square corners and a usage
  * one with rounded corners (§8.2.3.6); the rest have shapes of their own.
  */
-export type NodeShape = 'definition' | 'usage' | 'ellipse' | 'actor' | 'boundary' | 'package' | 'node3d';
+export type NodeShape = 'definition' | 'usage' | 'actor' | 'package' | 'node3d';
 
 export interface Compartment {
     /** Drawn small and grey above the lines, as the spec labels a compartment. */
@@ -15,6 +15,8 @@ export interface Compartment {
 
 /** Box metrics shared by the renderer, the layouter and the extractors. */
 export const BOX_HEADER_HEIGHT = 32;
+/** A usage's corners; a definition's are square (§8.2.3.6). */
+export const USAGE_RADIUS = 10;
 export const COMPARTMENT_LINE_HEIGHT = 15;
 export const COMPARTMENT_TITLE_HEIGHT = 13;
 export const COMPARTMENT_PADDING = 8;
@@ -41,7 +43,7 @@ export interface GraphNode {
     name: string;
     compartments: Compartment[];
     ports: GraphPort[];
-    /** Nested nodes (system boundary contents); sized by the layouter, not the extractor. */
+    /** Nested nodes, such as the parts of an assembly; sized by the layouter, not the extractor. */
     children?: GraphNode[];
     width: number;
     height: number;

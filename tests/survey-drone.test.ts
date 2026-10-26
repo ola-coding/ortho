@@ -58,13 +58,14 @@ describe('survey drone example model', () => {
 
     it('use case view: one operator, three use cases, surveying includes both', async () => {
         const graph = extractUseCaseGraph((await viewSet('use-case.sysml'))[0]);
-        const boundaries = graph.nodes.filter(n => n.shape === 'boundary');
-        expect(boundaries.map(b => b.name)).toEqual(['SurveyDroneSystem']);
-        expect(boundaries[0].children!.map(c => c.name).sort()).toEqual([
-            'followProgress', 'planSurvey', 'surveyArea'
+        expect(graph.nodes.filter(n => n.keyword === 'use case').map(n => n.name).sort()).toEqual([
+            'followProgress : SurveyTask', 'planSurvey : SurveyTask', 'surveyArea : SurveyTask'
         ]);
+        const subjects = graph.nodes.filter(n => n.keyword === 'subject');
+        expect(subjects.map(n => n.name)).toEqual(['SurveyDroneSystem']);
+        expect(graph.edges.filter(e => e.targetId === subjects[0].id)).toHaveLength(3);
 
-        expect(graph.nodes.filter(n => n.shape === 'actor').map(n => n.name)).toEqual(['Operator']);
+        expect(graph.nodes.filter(n => n.shape === 'actor').map(n => n.name)).toEqual(['operator : Operator']);
 
         const includes = graph.edges.filter(e => e.kind === 'include');
         expect(includes.map(e => e.targetId).sort())

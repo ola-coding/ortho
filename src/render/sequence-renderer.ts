@@ -1,5 +1,6 @@
 import type { SequenceModel } from '../diagrams/sequence.js';
-import { escapeXml, renderFrame, titleText, FONT, PAD_X, PAD_TOP, USAGE_RADIUS } from './svg-renderer.js';
+import { USAGE_RADIUS } from '../model/graph.js';
+import { escapeXml, renderFrame, titleText, FONT, PAD_X, PAD_TOP } from './svg-renderer.js';
 import type { DiagramTitle } from './svg-renderer.js';
 import { measureText } from './text-metrics.js';
 import type { Theme } from './theme.js';

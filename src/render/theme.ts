@@ -15,8 +15,6 @@ export interface Theme {
     fill: string;
     /** A box that holds other boxes, tinted apart from its contents. */
     containerFill: string;
-    /** The use case view's system boundary. */
-    boundaryFill: string;
     /** The two side faces of a deployment-view host. */
     node3dFill: string;
     /** Every line between boxes, and the arrowheads on them. */
@@ -57,7 +55,6 @@ export const lightTheme: Theme = {
     page: 'white',
     fill: '#fdfdf6',
     containerFill: '#f6f6ec',
-    boundaryFill: '#fbfbf1',
     node3dFill: '#f0f0e6',
     stroke: '#2b2b2b',
     boxStroke: '#2b2b2b',
@@ -85,7 +82,6 @@ export const darkGlassTheme: Theme = {
     page: null,
     fill: 'url(#glass)',
     containerFill: 'url(#glassDeep)',
-    boundaryFill: 'url(#glassDeep)',
     node3dFill: 'url(#glassDeep)',
     stroke: '#A9C2D1',
     boxStroke: '#C3D5E0',
