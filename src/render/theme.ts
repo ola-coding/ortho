@@ -40,7 +40,7 @@ export interface Theme {
     gloss: boolean;
     /** A soft shadow under a box, lifting it off the page. */
     shadow: boolean;
-    /** The diagram frame, its heading pentagon and the provenance line. */
+    /** The diagram frame: its border, the tab naming the view, and the source file in its corner. */
     frame: boolean;
     /** Gradients and filters the theme's fills refer to. */
     defs: string;
@@ -72,7 +72,7 @@ export const lightTheme: Theme = {
 /**
  * Slides: no page, glass boxes lifted off whatever is behind them, and one
  * accent so a diagram is not wholly grey. The frame goes with the page — a
- * slide has its own title, and the pentagon would only repeat it.
+ * slide has its own title, and the frame's tab would only repeat it.
  */
 export const darkGlassTheme: Theme = {
     name: 'dark-glass',

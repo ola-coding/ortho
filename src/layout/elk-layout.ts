@@ -263,7 +263,7 @@ export async function layoutGraph(graph: DiagramGraph, options: LayoutOptions = 
     const graphEdgeById = new Map(graph.edges.map(e => [e.id, e]));
 
     // Flatten the hierarchy to absolute coordinates, parents before children,
-    // so paint order keeps boundary boxes behind their contents.
+    // so paint order keeps containers behind their contents.
     const nodes: LaidOutNode[] = [];
     const flatten = (children: ElkNode[] | undefined, offsetX: number, offsetY: number) => {
         for (const c of children ?? []) {
