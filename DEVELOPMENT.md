@@ -74,8 +74,6 @@ declare any view.
 - **Containers fit their contents and their name.** Deployment,
   implementation and physical nest boxes rather than drawing edges. A
   container gets its name's width as a minimum and centres narrower contents.
-  `node3d` pads its top and right by `NODE_DEPTH`, since its depth edge is
-  drawn inside its bounds.
 - **Deployment is packed, not layered.** With no edges, ELK's `layered` put
   every box in one row and `box` reorders by size, so the view uses
   `rectpacking`, one level at a time, since packing cannot lay out a
@@ -100,11 +98,13 @@ declare any view.
   them; a line nothing clears keeps ELK's route. The direction of an edge to
   a secondary actor or the subject is only a layering hint, putting it on the
   right.
-- **Realization and APIs are compartments.** An edge from a function to its
-  realizer would need both on one diagram — a seventh view — so the part's
-  box lists them instead; `paddingOf` adds the compartments' height so nested
-  parts start below them. A module's API is a *ports* compartment too: a
-  square on the border is for a port a wire lands on.
+- **Realization, APIs and allocation are compartments.** An edge from a
+  function to its realizer would need both on one diagram — a seventh view —
+  so the part's box lists them instead; `paddingOf` adds the compartments'
+  height so nested parts start below them. A module's API is a *ports*
+  compartment too: a square on the border is for a port a wire lands on. A
+  host lists what is allocated to it in its *relationships* compartment,
+  since software drawn inside it would be its member.
 - **Labels** for ports, wires, «include» and «import» are real ELK labels, so
   ELK reserves room for them; port labels are painted after every edge.
   Keywords get guillemets; names do not.

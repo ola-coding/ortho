@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1245.572" height="960"
-     viewBox="0 0 1245.572 960" font-family="Arial, Helvetica, Segoe UI, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="766.028" height="526"
+     viewBox="0 0 766.028 526" font-family="Arial, Helvetica, Segoe UI, sans-serif">
   <title>Deployment view — Survey Drone (generated from examples/survey-drone/deployment.sysml)</title>
   <defs>
     <marker id="openArrow" markerWidth="12" markerHeight="12" refX="10" refY="5"
@@ -11,200 +11,110 @@
       <path d="M0,4 L6,0 L12,4 L6,8 z" fill="#2b2b2b" />
     </marker>
   </defs>
-  <rect x="0" y="0" width="1245.572" height="960" fill="white" />
-  <rect x="8" y="8" width="1229.572" height="944" rx="10" ry="10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+  <rect x="0" y="0" width="766.028" height="526" fill="white" />
+  <rect x="8" y="8" width="750.028" height="510" rx="10" ry="10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
   <path d="M8,30 L8,18 A10,10 0 0 1 18,8 L313.525,8 L313.525,22 A8,8 0 0 1 305.525,30 Z"
         fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
   <text x="18" y="23" font-size="11" fill="#1a1a1a"><tspan fill="#555555">&#171;view&#187;</tspan><tspan font-weight="600"> Deployment view — Survey Drone</tspan> : GeneralView</text>
-  <path d="M1053.524,952 L1053.524,943 A6,6 0 0 1 1059.524,937 L1237.572,937"
+  <path d="M573.98,518 L573.98,509 A6,6 0 0 1 579.98,503 L758.028,503"
         fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-  <text x="1229.572" y="948" text-anchor="end" font-size="9" fill="#8a8a86">examples/survey-drone/deployment.sysml</text>
+  <text x="750.028" y="514" text-anchor="end" font-size="9" fill="#8a8a86">examples/survey-drone/deployment.sysml</text>
   
-    <g><rect x="39" y="63" width="1167.572" height="852" rx="10" ry="10"
+    <g><rect x="39" y="63" width="688.028" height="418" rx="10" ry="10"
           fill="#f6f6ec" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="622.786" y="76" text-anchor="middle"
+      <text x="383.014" y="76" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="622.786" y="89" text-anchor="middle"
+      <text x="383.014" y="89" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">system : SurveyDroneSystem</text></g>
-    <g><rect x="64" y="108" width="1117.572" height="507" rx="10" ry="10"
+    <g><rect x="64" y="108" width="407.34000000000003" height="348" rx="10" ry="10"
           fill="#f6f6ec" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="622.786" y="121" text-anchor="middle"
+      <text x="267.67" y="121" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="622.786" y="134" text-anchor="middle"
+      <text x="267.67" y="134" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">drone : SurveyDrone</text></g>
-    <g><polygon points="89,165 101,153 509.108,153 497.108,165"
-          fill="#f0f0e6" stroke="#2b2b2b" stroke-width="1.25" />
-      <polygon points="497.108,165 509.108,153 509.108,450 497.108,462"
-          fill="#f0f0e6" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="89" y="165" width="408.108" height="297"
+    <g><rect x="89" y="153" width="150" height="158" rx="10" ry="10"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="293.054" y="185" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">fc : ControlComputer</text></g>
-    <g><rect x="109" y="210" width="180.04" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="199.01999999999998" y="227" text-anchor="middle"
+      <text x="164" y="166" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="199.01999999999998" y="240" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">mission : MissionExecutor</text></g>
-    <g><rect x="109" y="274" width="177.364" height="40" rx="10" ry="10"
+      <text x="164" y="179" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">fc : ControlComputer</text>
+      <line x1="89" y1="185" x2="239" y2="185"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="97" y="196"
+          font-size="9" fill="#555555">relationships</text>
+      <text x="97" y="210"
+          font-size="11" fill="#1a1a1a">allocated sw.mission</text>
+      <text x="97" y="225"
+          font-size="11" fill="#1a1a1a">allocated sw.estimator</text>
+      <text x="97" y="240"
+          font-size="11" fill="#1a1a1a">allocated sw.control</text>
+      <text x="97" y="255"
+          font-size="11" fill="#1a1a1a">allocated sw.sensors</text>
+      <text x="97" y="270"
+          font-size="11" fill="#1a1a1a">allocated sw.mavlink</text>
+      <text x="97" y="285"
+          font-size="11" fill="#1a1a1a">allocated sw.hal</text>
+      <text x="97" y="300"
+          font-size="11" fill="#1a1a1a">allocated sw.rtos</text></g>
+    <g><rect x="263" y="153" width="183.34" height="278" rx="10" ry="10"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="197.68200000000002" y="291" text-anchor="middle"
+      <text x="354.67" y="166" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="197.68200000000002" y="304" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">estimator : StateEstimator</text></g>
-    <g><rect x="310.36400000000003" y="274" width="154.66" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="387.694" y="291" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="387.694" y="304" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">control : FlightControl</text></g>
-    <g><rect x="109" y="338" width="166.72" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="192.36" y="355" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="192.36" y="368" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">sensors : SensorDrivers</text></g>
-    <g><rect x="299.72" y="338" width="177.388" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="388.41400000000004" y="355" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="388.41400000000004" y="368" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">mavlink : MavlinkInterface</text></g>
-    <g><rect x="109" y="402" width="177.364" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="197.68200000000002" y="419" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="197.68200000000002" y="432" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">hal : HardwareAbstraction</text></g>
-    <g><rect x="310.36400000000003" y="402" width="152.03199999999998" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="386.38" y="419" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="386.38" y="432" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">rtos : RealTimeKernel</text></g>
-    <g><polygon points="533.108,165 545.108,153 1156.572,153 1144.572,165"
-          fill="#f0f0e6" stroke="#2b2b2b" stroke-width="1.25" />
-      <polygon points="1144.572,165 1156.572,153 1156.572,578 1144.572,590"
-          fill="#f0f0e6" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="533.108" y="165" width="611.4639999999999" height="425"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="838.8399999999999" y="185" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">companion : GpuComputer</text></g>
-    <g><rect x="553.108" y="210" width="160.024" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="633.1199999999999" y="227" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="633.1199999999999" y="240" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">planner : RoutePlanner</text></g>
-    <g><rect x="737.1320000000001" y="210" width="208.732" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="841.498" y="227" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="841.498" y="240" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">avoidance : ObstacleAvoidance</text></g>
-    <g><rect x="969.864" y="210" width="154.708" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1047.218" y="227" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="1047.218" y="240" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">video : VideoStreamer</text></g>
-    <g><rect x="553.108" y="274" width="154.684" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="630.4499999999999" y="291" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="630.4499999999999" y="304" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">fusion : SensorFusion</text></g>
-    <g><rect x="731.792" y="274" width="139.336" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="801.46" y="291" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="801.46" y="304" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">world : WorldModel</text></g>
-    <g><rect x="895.1279999999999" y="274" width="173.368" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="981.8119999999999" y="291" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="981.8119999999999" y="304" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">diagnostics : Diagnostics</text></g>
-    <g><rect x="553.108" y="338" width="142.012" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="624.1139999999999" y="355" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="624.1139999999999" y="368" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">logger : DataLogger</text></g>
-    <g><rect x="719.12" y="338" width="148" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="793.12" y="355" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="793.12" y="368" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">zenoh : ZenohRouter</text></g>
-    <g><rect x="891.12" y="338" width="157.36" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="969.8" y="355" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="969.8" y="368" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">bridge : MavlinkBridge</text></g>
-    <g><rect x="553.108" y="402" width="158.044" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="632.13" y="419" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="632.13" y="432" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">gstreamer : GStreamer</text></g>
-    <g><rect x="735.152" y="402" width="193.36" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="831.8320000000001" y="419" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="831.8320000000001" y="432" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">airTunnel : WireGuardTunnel</text></g>
-    <g><rect x="553.108" y="466" width="186.676" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="646.4459999999999" y="483" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="646.4459999999999" y="496" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">runtime : ContainerRuntime</text></g>
-    <g><rect x="763.784" y="466" width="151.336" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="839.452" y="483" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="839.452" y="496" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">ota : OtaUpdateAgent</text></g>
-    <g><rect x="939.12" y="466" width="143.356" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1010.798" y="483" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="1010.798" y="496" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">linux : MinimalLinux</text></g>
-    <g><rect x="553.108" y="530" width="172.024" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="639.1199999999999" y="547" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="639.1199999999999" y="560" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">secureBoot : SecureBoot</text></g>
-    <g><rect x="64" y="639" width="322.012" height="251" rx="10" ry="10"
+      <text x="354.67" y="179" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">companion : GpuComputer</text>
+      <line x1="263" y1="185" x2="446.34000000000003" y2="185"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="271" y="196"
+          font-size="9" fill="#555555">relationships</text>
+      <text x="271" y="210"
+          font-size="11" fill="#1a1a1a">allocated sw.planner</text>
+      <text x="271" y="225"
+          font-size="11" fill="#1a1a1a">allocated sw.avoidance</text>
+      <text x="271" y="240"
+          font-size="11" fill="#1a1a1a">allocated sw.video</text>
+      <text x="271" y="255"
+          font-size="11" fill="#1a1a1a">allocated sw.fusion</text>
+      <text x="271" y="270"
+          font-size="11" fill="#1a1a1a">allocated sw.world</text>
+      <text x="271" y="285"
+          font-size="11" fill="#1a1a1a">allocated sw.diagnostics</text>
+      <text x="271" y="300"
+          font-size="11" fill="#1a1a1a">allocated sw.logger</text>
+      <text x="271" y="315"
+          font-size="11" fill="#1a1a1a">allocated sw.zenoh</text>
+      <text x="271" y="330"
+          font-size="11" fill="#1a1a1a">allocated sw.bridge</text>
+      <text x="271" y="345"
+          font-size="11" fill="#1a1a1a">allocated sw.gstreamer</text>
+      <text x="271" y="360"
+          font-size="11" fill="#1a1a1a">allocated sw.airTunnel</text>
+      <text x="271" y="375"
+          font-size="11" fill="#1a1a1a">allocated sw.runtime</text>
+      <text x="271" y="390"
+          font-size="11" fill="#1a1a1a">allocated sw.ota</text>
+      <text x="271" y="405"
+          font-size="11" fill="#1a1a1a">allocated sw.linux</text>
+      <text x="271" y="420"
+          font-size="11" fill="#1a1a1a">allocated sw.secureBoot</text></g>
+    <g><rect x="495.34000000000003" y="108" width="206.688" height="153" rx="10" ry="10"
           fill="#f6f6ec" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="225.006" y="652" text-anchor="middle"
+      <text x="598.684" y="121" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="225.006" y="665" text-anchor="middle"
+      <text x="598.684" y="134" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">ground : GroundStation</text></g>
-    <g><polygon points="89,696 101,684 361.012,684 349.012,696"
-          fill="#f0f0e6" stroke="#2b2b2b" stroke-width="1.25" />
-      <polygon points="349.012,696 361.012,684 361.012,853 349.012,865"
-          fill="#f0f0e6" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="89" y="696" width="260.012" height="169"
+    <g><rect x="520.34" y="153" width="156.688" height="83" rx="10" ry="10"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="219.006" y="716" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">tablet : OperatorTablet</text></g>
-    <g><rect x="109" y="741" width="144.04000000000002" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="181.02" y="758" text-anchor="middle"
+      <text x="598.684" y="166" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="181.02" y="771" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">app : SurveyPlanner</text></g>
-    <g><rect x="109" y="805" width="220.012" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="219.006" y="822" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="219.006" y="835" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">groundTunnel : WireGuardTunnel</text></g>
+      <text x="598.684" y="179" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">tablet : OperatorTablet</text>
+      <line x1="520.34" y1="185" x2="677.028" y2="185"
+          stroke="#2b2b2b" stroke-width="1" />
+      <text x="528.34" y="196"
+          font-size="9" fill="#555555">relationships</text>
+      <text x="528.34" y="210"
+          font-size="11" fill="#1a1a1a">allocated sw.app</text>
+      <text x="528.34" y="225"
+          font-size="11" fill="#1a1a1a">allocated sw.groundTunnel</text></g>
   
 </svg>

@@ -8,7 +8,7 @@ import { isAllocationUsage } from '../src/generated/ast.js';
 import type { Member, Model, PackageDecl } from '../src/generated/ast.js';
 import { extractImplementationGraph } from '../src/diagrams/implementation.js';
 import { extractDeploymentGraph } from '../src/diagrams/deployment.js';
-import { layoutGraph, NODE_DEPTH } from '../src/layout/elk-layout.js';
+import { layoutGraph } from '../src/layout/elk-layout.js';
 import { renderSvg } from '../src/render/svg-renderer.js';
 import { measureText } from '../src/render/text-metrics.js';
 
@@ -114,26 +114,43 @@ describe('module APIs on the implementation view', () => {
 });
 
 describe('deployment diagram extraction', () => {
-    it('nests software inside its host instead of drawing allocation edges', async () => {
+    it('lists what each host runs in its relationships compartment, and draws no edges', async () => {
         const graph = extractDeploymentGraph(...everything(await parseExample()));
         expect(graph.edges).toHaveLength(0);
 
-        const hosts = graph.nodes.map(n => n.name).sort();
-        expect(hosts).toEqual(['cc : CompanionComputer', 'fc : FlightController']);
-        expect(graph.nodes.every(n => n.shape === 'node3d')).toBe(true);
+        expect(graph.nodes.map(n => n.name).sort()).toEqual(['cc : CompanionComputer', 'fc : FlightController']);
+        expect(graph.nodes.every(n => n.shape === 'usage' && n.keyword === 'part')).toBe(true);
+        // Nothing is drawn inside a host: software is not its member.
+        expect(graph.nodes.every(n => !n.children)).toBe(true);
 
-        const byHost = Object.fromEntries(
-            graph.nodes.map(n => [n.name, n.children!.map(c => c.name).sort()])
-        );
-        expect(byHost['fc : FlightController']).toEqual(['attitudeControl', 'telemetry']);
-        expect(byHost['cc : CompanionComputer']).toEqual(['navigation', 'perception']);
+        const runs = Object.fromEntries(graph.nodes.map(n => [n.name, n.compartments]));
+        expect(runs['fc : FlightController']).toEqual([{
+            title: 'relationships',
+            lines: ['allocated flightStack.attitudeControl', 'allocated flightStack.telemetry']
+        }]);
+        expect(runs['cc : CompanionComputer']).toEqual([{
+            title: 'relationships',
+            lines: ['allocated flightStack.navigation', 'allocated flightStack.perception']
+        }]);
     });
 
-    it('places every allocated software part exactly once', async () => {
-        const graph = extractDeploymentGraph(...everything(await parseExample()));
-        const placed = graph.nodes.flatMap(n => n.children!.map(c => c.id));
-        expect(new Set(placed).size).toBe(placed.length);
-        expect(placed).toHaveLength(4);
+    it('lists a program allocated to two hosts on both, once each', async () => {
+        const document = await parse(`
+            package S {
+                part def Computer;
+                part a : Computer;
+                part b : Computer;
+                part sw { part logger; }
+                allocate sw.logger to a;
+                allocate sw.logger to b;
+                allocate sw.logger to a;
+            }
+        `, { validation: true });
+        const graph = extractDeploymentGraph(...everything(document.parseResult.value));
+        expect(graph.nodes.map(n => [n.name, n.compartments[0].lines])).toEqual([
+            ['a : Computer', ['allocated sw.logger']],
+            ['b : Computer', ['allocated sw.logger']]
+        ]);
     });
 
     it('keeps a name wider than the contents inside its box', async () => {
@@ -150,17 +167,15 @@ describe('deployment diagram extraction', () => {
         `, { validation: true });
         const laidOut = await layoutGraph(extractDeploymentGraph(...everything(document.parseResult.value)), { algorithm: 'rectpacking' });
 
-        const host = laidOut.nodes.find(n => n.shape === 'node3d')!;
+        const host = laidOut.nodes.find(n => n.name === 'flightControllerComputerWithALongName : Computer')!;
         const frame = laidOut.nodes.find(n => n.name === 'bay : ElectronicsBayWithAVeryLongName')!;
-        const software = laidOut.nodes.find(n => n.name === 'a')!;
         for (const box of [host, frame]) {
             expect(box.width).toBeGreaterThan(measureText(box.name, 12, 'bold'));
         }
-        // The host sits inside its device, and the program centres under the
-        // host's name rather than hugging its left side.
-        expect(host.x + host.width).toBeLessThanOrEqual(frame.x + frame.width);
-        const hostFace = host.width - NODE_DEPTH;
-        expect(Math.abs(software.x + software.width / 2 - (host.x + hostFace / 2))).toBeLessThan(NODE_DEPTH);
+        // The host sits inside its device, as the part it is.
+        expect(host.x).toBeGreaterThan(frame.x);
+        expect(host.x + host.width).toBeLessThan(frame.x + frame.width);
+        expect(host.compartments[0].lines).toEqual(['allocated sw.a']);
     });
 
     it('renders both diagrams end-to-end', async () => {
@@ -174,9 +189,10 @@ describe('deployment diagram extraction', () => {
             await layoutGraph(extractDeploymentGraph(...everything(model))),
             { ...title, heading: 'Deployment view — DroneSystem' }
         );
-        // Hosts are solids, and nothing on this view is an arrow.
-        expect(deploymentSvg).toContain('<polygon');
+        // Hosts list what they run, and nothing on this view is an arrow.
         expect(deploymentSvg).toContain('fc : FlightController');
+        expect(deploymentSvg).toContain('>relationships</text>');
+        expect(deploymentSvg).toContain('>allocated flightStack.attitudeControl</text>');
         expect(deploymentSvg).not.toContain('marker-end');
     });
 });

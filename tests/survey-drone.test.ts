@@ -176,7 +176,7 @@ describe('survey drone example model', () => {
         }));
 
         // The air-to-ground link is the one connection typed by an interface.
-        expect(graph.edges.filter(e => e.label === 'RadioLink')).toEqual([
+        expect(graph.edges.filter(e => e.label === ': RadioLink')).toEqual([
             expect.objectContaining({
                 sourcePortId: 'Hardware::system.drone#rfLink',
                 targetPortId: 'Hardware::system.ground#rfLink'
@@ -210,34 +210,34 @@ describe('survey drone example model', () => {
         ]);
         expect(system.children!.map(c => c.id)).toContain('device:Hardware::GroundStation');
 
+        // A host is a «part» listing what is allocated to it.
         const hosts: typeof graph.nodes = [];
         const walk = (nodes: typeof graph.nodes): void => nodes.forEach(n => {
-            if (n.shape === 'node3d') {
+            if (n.compartments.some(c => c.title === 'relationships')) {
                 hosts.push(n);
             }
             walk(n.children ?? []);
         });
         walk(graph.nodes);
         expect(hosts).toHaveLength(3);
-        // Every box inside a host is a deployed program, a «part».
-        expect(hosts.flatMap(h => h.children!).every(c => c.keyword === 'part')).toBe(true);
+        expect(hosts.every(h => h.keyword === 'part')).toBe(true);
 
         // The flight computer runs the firmware and nothing else — no
         // container, no router, not a line of the Linux stack.
         const fc = hosts.find(n => n.id === 'Hardware::SurveyDrone::fc')!;
-        expect(fc.children!.map(c => c.name).sort()).toEqual([
-            'control : FlightControl',
-            'estimator : StateEstimator',
-            'hal : HardwareAbstraction',
-            'mavlink : MavlinkInterface',
-            'mission : MissionExecutor',
-            'rtos : RealTimeKernel',
-            'sensors : SensorDrivers'
+        expect(fc.compartments[0].lines).toEqual([
+            'allocated sw.mission',
+            'allocated sw.estimator',
+            'allocated sw.control',
+            'allocated sw.sensors',
+            'allocated sw.mavlink',
+            'allocated sw.hal',
+            'allocated sw.rtos'
         ]);
 
         // A module missing from this view would be a program with nowhere to
         // run, so the count is the whole of implementation.sysml's `sw`.
-        const placed = hosts.flatMap(n => n.children!.map(c => c.name));
+        const placed = hosts.flatMap(n => n.compartments.flatMap(c => c.lines));
         expect(placed).toHaveLength(24);
         expect(new Set(placed).size).toBe(24);
     });

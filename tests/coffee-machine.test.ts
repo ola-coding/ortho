@@ -142,7 +142,7 @@ describe('coffee machine example model', () => {
         // Interface defs label their connection rather than becoming a box.
         expect(names.some(n => n.includes('ControlLink'))).toBe(false);
         expect(graph.edges).toHaveLength(14);
-        expect(graph.edges.filter(e => e.kind === 'connection' && e.label === 'ControlLink')).toHaveLength(6);
+        expect(graph.edges.filter(e => e.kind === 'connection' && e.label === ': ControlLink')).toHaveLength(6);
     });
 
     it('realization: every function is performed by something, and some parts by nothing', async () => {
@@ -183,8 +183,8 @@ describe('coffee machine example model', () => {
             'Hardware::CoffeeMachine::controller',
             'Hardware::CoffeeMachine::display'
         ]);
-        expect(hosts.every(h => h.shape === 'node3d')).toBe(true);
-        const placed = hosts.flatMap(n => n.children!.map(c => c.name));
+        expect(hosts.every(h => h.keyword === 'part')).toBe(true);
+        const placed = hosts.flatMap(n => n.compartments.flatMap(c => c.lines));
         expect(placed).toHaveLength(5);
         expect(new Set(placed).size).toBe(5);
     });

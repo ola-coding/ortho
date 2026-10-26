@@ -18,9 +18,6 @@ const PORT_LABEL_HEIGHT = 11;
 const EDGE_LABEL_FONT = 9;
 const EDGE_LABEL_HEIGHT = 12;
 
-/** Depth of the three-dimensional edge on a Deployment-view hardware node. */
-export const NODE_DEPTH = 12;
-
 export interface LayoutOptions {
     direction?: 'DOWN' | 'RIGHT';
     /**
@@ -107,15 +104,11 @@ interface Conversion {
 
 /**
  * Room round a container's contents. The extra at the top leaves room for its
- * title; a 3-D node also has to clear its depth edge, drawn inside its bounds.
+ * title, and its own compartments sit under the title, so its contents start
+ * below them.
  */
 function paddingOf(n: GraphNode): { top: number; left: number; bottom: number; right: number } {
-    // A container's own compartments sit under its title, so its contents
-    // start below them.
-    const top = 45 + compartmentsHeight(n.compartments);
-    return n.shape === 'node3d'
-        ? { top: top + NODE_DEPTH, left: 20, bottom: 20, right: 20 + NODE_DEPTH }
-        : { top, left: 25, bottom: 25, right: 25 };
+    return { top: 45 + compartmentsHeight(n.compartments), left: 25, bottom: 25, right: 25 };
 }
 
 /**

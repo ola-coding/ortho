@@ -5,7 +5,7 @@ import { isDefinition } from '../generated/ast.js';
  * How a node is drawn. A definition is a box with square corners and a usage
  * one with rounded corners (§8.2.3.6); the rest have shapes of their own.
  */
-export type NodeShape = 'definition' | 'usage' | 'actor' | 'package' | 'node3d';
+export type NodeShape = 'definition' | 'usage' | 'actor' | 'package';
 
 export interface Compartment {
     /** Drawn small and grey above the lines, as the spec labels a compartment. */

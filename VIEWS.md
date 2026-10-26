@@ -87,7 +87,7 @@ part.
 Drawn as an internal block diagram. Each part is a box headed `name : Type`,
 nested in the part that contains it, so a type fitted twice is two boxes.
 Ports are small squares on the border; connections are plain lines from port
-to port, labelled with their interface where they have one. A part lists the
+to port, labelled as declared, `: Interface` where they have one. A part lists the
 functions it realizes. Attribute values are not drawn.
 
 ## Deployment view
@@ -95,9 +95,10 @@ functions it realizes. Attribute values are not drawn.
 Which hardware runs which software — the only view whose subject is a
 relation, between elements of Implementation and Physical.
 
-Drawn by containment, not arrows: each computer is a three-dimensional box
-with the software it runs inside, in a frame for the device it is fitted in.
-A computer with nothing inside runs nothing.
+Each computer is a «part» box listing what is allocated to it, `allocated
+sw.recipes`, in its *relationships* compartment, inside the device it is
+fitted in. Nothing is drawn inside a computer: a box drawn inside another is
+its member, and software is not a computer's.
 
 ## Process view
 

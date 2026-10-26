@@ -251,8 +251,8 @@
     <polyline points="680.9901666666667,195 680.9901666666667,239" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
     <polyline points="680.9901666666667,289 680.9901666666667,342" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
     <polyline points="536.6951666666666,1190 536.6951666666666,1212 680.9901666666667,1212 680.9901666666667,342" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <text x="656.9831666666666" y="383" text-anchor="middle" font-size="9"
-          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">RadioLink</text>
+    <text x="654.4811666666667" y="383" text-anchor="middle" font-size="9"
+          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">: RadioLink</text>
   
     <text x="542.6951666666666" y="1200" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">rfLink</text>
     <text x="332.6775" y="1073" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">motorArms</text>

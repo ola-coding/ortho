@@ -1,5 +1,5 @@
 import type { LaidOutDiagram, LaidOutEdge, LaidOutNode } from '../layout/elk-layout.js';
-import { NODE_DEPTH, PORT_LABEL_FONT, PORT_SIZE } from '../layout/elk-layout.js';
+import { PORT_LABEL_FONT, PORT_SIZE } from '../layout/elk-layout.js';
 import {
     BOX_HEADER_HEIGHT, COMPARTMENT_LINE_HEIGHT, COMPARTMENT_PADDING, COMPARTMENT_TITLE_HEIGHT, USAGE_RADIUS
 } from '../model/graph.js';
@@ -90,32 +90,9 @@ function renderNode(n: LaidOutNode, t: Theme): string {
     switch (n.shape) {
         case 'actor': return renderActorNode(n, t);
         case 'package': return renderPackageNode(n, t);
-        case 'node3d': return renderNode3dNode(n, t);
         case 'definition':
         case 'usage': return renderBoxNode(n, t);
     }
-}
-
-/**
- * Deployment view: a hardware host. The depth edge is drawn *inside* the node's
- * box, so the front face is inset by NODE_DEPTH at the top and right and the
- * whole solid still fits the bounds ELK allocated.
- */
-function renderNode3dNode(n: LaidOutNode, t: Theme): string {
-    const x = n.x + PAD_X;
-    const y = n.y + PAD_TOP;
-    const w = n.width;
-    const h = n.height;
-    const d = NODE_DEPTH;
-    return `
-    <g><polygon points="${x},${y + d} ${x + d},${y} ${x + w},${y} ${x + w - d},${y + d}"
-          fill="${t.node3dFill}" stroke="${t.boxStroke}" stroke-width="1.25" />
-      <polygon points="${x + w - d},${y + d} ${x + w},${y} ${x + w},${y + h - d} ${x + w - d},${y + h}"
-          fill="${t.node3dFill}" stroke="${t.boxStroke}" stroke-width="1.25" />
-      <rect x="${x}" y="${y + d}" width="${w - d}" height="${h - d}"
-          fill="${t.fill}" stroke="${t.boxStroke}" stroke-width="1.25" />${glossOver(t, x, y + d, w - d, h - d, 0)}
-      <text x="${x + (w - d) / 2}" y="${y + d + 20}" text-anchor="middle"
-          font-size="12" font-weight="600" fill="${t.text}">${escapeXml(n.name)}</text></g>`;
 }
 
 function renderActorNode(n: LaidOutNode, t: Theme): string {

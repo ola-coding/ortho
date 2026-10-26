@@ -290,7 +290,7 @@ package Hardware {
 | the `part` the view exposes | the top-level box |
 | `port name : PortDef;` | a port on the box's edge. `~PortDef` conjugates it. |
 | `connect a.p to b.q;` | a line between the two ports (or parts) |
-| `connection : Interface connect a.p to b.q;` (optionally named) | the same line, labelled with the interface |
+| `connection : Interface connect a.p to b.q;` (optionally named) | the same line, labelled as declared: `: Interface` |
 | `interface def` with its `end`s, `port def` | nothing. They type ports and connections. |
 | `attribute name : Type = value;` | nothing |
 | `perform Functions::use.branch.leaf;` in a part or its definition | a line in its *perform actions* compartment |
@@ -334,10 +334,10 @@ package Deployment {
 
 | You write | The view draws |
 |---|---|
-| `allocate software to host;` | the software inside the host, a three-dimensional box |
+| `allocate software to host;` | a «part» box for the host, listing `allocated software` in its *relationships* compartment |
 | `allocation name allocate ... to ...;` | the same; the name is not drawn |
 
-Software allocated to two hosts is drawn in the first only.
+Software allocated to two hosts is listed on both.
 
 ## Process view
 

@@ -179,8 +179,9 @@ export function extractPhysicalGraph(exposed: Member[]): DiagramGraph {
             targetId: target.nodeId,
             sourcePortId: source.portId,
             targetPortId: target.portId,
-            // A typed connection carries its interface name on the line.
-            label: connection.type?.ref?.name ?? connection.name
+            // A connection is labelled as declared (§8.2.3.13): `: Interface`
+            // for an unnamed typed one.
+            label: usageLabel(connection) || undefined
         });
     }
 
