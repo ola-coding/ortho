@@ -1,12 +1,13 @@
 import type { SequenceModel } from '../diagrams/sequence.js';
-import { escapeXml, renderFrame, FONT, PAD_X, PAD_TOP } from './svg-renderer.js';
+import { escapeXml, renderFrame, titleText, FONT, PAD_X, PAD_TOP, USAGE_RADIUS } from './svg-renderer.js';
 import type { DiagramTitle } from './svg-renderer.js';
 import { measureText } from './text-metrics.js';
 import type { Theme } from './theme.js';
 import { glossOver, liftAttr, lightTheme, radiusAttrs } from './theme.js';
 
 
-const HEAD_HEIGHT = 34;
+/** A lifeline's head: a part, «part» above its name (§8.2.3.9). */
+const HEAD_HEIGHT = 36;
 /** A stick figure and the name beneath it. */
 const ACTOR_HEIGHT = 74;
 const MESSAGE_STEP = 40;
@@ -79,7 +80,8 @@ export function renderSequenceSvg(model: SequenceModel, title: DiagramTitle, t: 
     const firstMessageY = headTop + headsHeight + 36;
     const lifelineBottom = firstMessageY + model.messages.length * MESSAGE_STEP;
     const width = contentRight + PAD_X;
-    const height = lifelineBottom + 28;
+    // Lifelines end clear of the frame's corner compartment.
+    const height = lifelineBottom + 34;
 
     // Activation bars: a lifeline is active from a message's arrival until the
     // next message it sends (heuristic; good enough until fragments exist).
@@ -118,9 +120,11 @@ export function renderSequenceSvg(model: SequenceModel, title: DiagramTitle, t: 
         }
         const boxTop = headTop + headsHeight - HEAD_HEIGHT;
         parts.push(`
-    <g><rect x="${cx - head.width / 2}" y="${boxTop}" width="${head.width}" height="${HEAD_HEIGHT}"${radiusAttrs(t)}${liftAttr(t)}
-          fill="${t.fill}" stroke="${t.boxStroke}" stroke-width="1.25" />${glossOver(t, cx - head.width / 2, boxTop, head.width, HEAD_HEIGHT)}
-      <text x="${cx}" y="${boxTop + HEAD_HEIGHT / 2 + 4}" text-anchor="middle"
+    <g><rect x="${cx - head.width / 2}" y="${boxTop}" width="${head.width}" height="${HEAD_HEIGHT}"${radiusAttrs(USAGE_RADIUS)}${liftAttr(t)}
+          fill="${t.fill}" stroke="${t.boxStroke}" stroke-width="1.25" />${glossOver(t, cx - head.width / 2, boxTop, head.width, HEAD_HEIGHT, USAGE_RADIUS)}
+      <text x="${cx}" y="${boxTop + 15}" text-anchor="middle"
+          font-size="9" fill="${t.keyword}">&#171;part&#187;</text>
+      <text x="${cx}" y="${boxTop + 28}" text-anchor="middle"
           font-size="12" font-weight="600" fill="${t.text}">${escapeXml(head.label)}</text>
       <line x1="${cx}" y1="${boxTop + HEAD_HEIGHT}" x2="${cx}" y2="${lifelineBottom}"
           stroke="${t.stroke}" stroke-width="1" stroke-dasharray="4 4" /></g>`);
@@ -159,7 +163,7 @@ export function renderSequenceSvg(model: SequenceModel, title: DiagramTitle, t: 
 
     return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"
      viewBox="0 0 ${width} ${height}" font-family="${FONT}">
-  <title>${escapeXml(`${title.heading} (generated from ${title.source})`)}</title>
+  <title>${escapeXml(titleText(title))}</title>
   <defs>${t.defs}
     <marker id="msgArrow" markerWidth="12" markerHeight="10" refX="10" refY="4" orient="auto"
             markerUnits="userSpaceOnUse">

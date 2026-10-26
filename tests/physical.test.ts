@@ -47,11 +47,11 @@ describe('physical diagram extraction', () => {
         expect(quadcopter.children![0].ports.map(p => p.label).sort()).toEqual(['motorCtrl', 'powerIn']);
     });
 
-    it('shows no attributes, stereotypes or type-level edges', async () => {
+    it('draws every box as a «part», with no attributes or type-level edges', async () => {
         const graph = extractPhysicalGraph(exposedByView(await parseExample()));
         for (const node of allNodes(graph.nodes)) {
             expect(node.compartments, node.name).toEqual([]);
-            expect(node.stereotype, node.name).toBe('');
+            expect([node.shape, node.keyword], node.name).toEqual(['usage', 'part']);
         }
         expect(graph.edges.every(e => e.kind === 'connection')).toBe(true);
     });

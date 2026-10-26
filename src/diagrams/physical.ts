@@ -4,9 +4,8 @@ import type {
     ConnectionUsage, ConnectorEnd, Definition, Member, Multiplicity, PartUsage, PortUsage
 } from '../generated/ast.js';
 import type { Compartment, DiagramGraph, GraphEdge, GraphNode } from '../model/graph.js';
-import { effectiveName, qualifiedName } from '../model/graph.js';
+import { boxOf, effectiveName, qualifiedName } from '../model/graph.js';
 import { boxSize, partLabel, performCompartments } from './connector-ends.js';
-import { measureText } from '../render/text-metrics.js';
 
 const HEADER_HEIGHT = 40;
 const MIN_WIDTH = 110;
@@ -65,15 +64,19 @@ function effectiveMembers<T extends Member>(
     return uniqueByName([...own, ...inherited]);
 }
 
-function partBox(id: string, name: string, ports: PortUsage[], performs: Compartment[] = []): GraphNode {
+/** A «part» box: `name : Type [n]`, its ports, and what it performs. */
+function partBox(id: string, part: PartUsage, type: Definition | undefined): GraphNode {
+    const name = `${partLabel(part)}${multiplicityText(part.multiplicities[0])}`;
+    const performs = performsOf(type, part.members);
+    const { shape, keyword } = boxOf(part);
     return {
         id,
-        shape: 'box',
-        stereotype: '',
+        shape,
+        keyword,
         name,
         compartments: performs,
-        ports: ports.map(p => ({ id: `${id}#${effectiveName(p) ?? ''}`, label: effectiveName(p) ?? '' })),
-        ...boxSize(name, performs, MIN_WIDTH, HEADER_HEIGHT)
+        ports: portsOf(type, part.members).map(p => ({ id: `${id}#${effectiveName(p) ?? ''}`, label: effectiveName(p) ?? '' })),
+        ...boxSize(name, performs, MIN_WIDTH, HEADER_HEIGHT, keyword)
     };
 }
 
@@ -96,16 +99,7 @@ function expand(owner: Instance, type: Definition | undefined, body: Member[], p
     for (const part of parts) {
         const partType = part.type?.ref;
         const id = `${owner.node!.id}.${effectiveName(part) ?? ''}`;
-        const child: Instance = {
-            node: partBox(
-                id,
-                `${partLabel(part)}${multiplicityText(part.multiplicities[0])}`,
-                portsOf(partType, part.members),
-                performsOf(partType, part.members)
-            ),
-            usage: part,
-            children: new Map()
-        };
+        const child: Instance = { node: partBox(id, part, partType), usage: part, children: new Map() };
         owner.children.set(effectiveName(part) ?? '', child);
         (owner.node!.children ??= []).push(child.node!);
         if (partType && path.has(partType)) {
@@ -166,16 +160,7 @@ export function extractPhysicalGraph(exposed: Member[]): DiagramGraph {
     const pending: Pending[] = [];
     for (const usage of exposed.filter(isPartUsage)) {
         const type = usage.type?.ref;
-        const root: Instance = {
-            node: partBox(
-                qualifiedName(usage),
-                `${partLabel(usage)}${multiplicityText(usage.multiplicities[0])}`,
-                portsOf(type, usage.members),
-                performsOf(type, usage.members)
-            ),
-            usage,
-            children: new Map()
-        };
+        const root: Instance = { node: partBox(qualifiedName(usage), usage, type), usage, children: new Map() };
         expand(root, type, usage.members, type ? new Set([type]) : new Set(), pending);
         nodes.push(root.node!);
     }

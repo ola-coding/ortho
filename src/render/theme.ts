@@ -25,8 +25,8 @@ export interface Theme {
     boxStroke: string;
     /** Names. */
     text: string;
-    /** Stereotypes and compartment titles. */
-    stereotype: string;
+    /** Keywords and compartment titles. */
+    keyword: string;
     /** «include», an interface on a wire: the one colour that is not grey. */
     edgeLabel: string;
     /** The source path in the frame's corner. */
@@ -39,8 +39,6 @@ export interface Theme {
     portFill: string;
     /** The actor's head, filled so the figure reads at a distance. */
     actorFill: string;
-    /** Rounded corners, in px; 0 for square. */
-    boxRadius: number;
     /** A highlight across the top of a box, which is what reads as glass. */
     gloss: boolean;
     /** A soft shadow under a box, lifting it off the page. */
@@ -64,14 +62,13 @@ export const lightTheme: Theme = {
     stroke: '#2b2b2b',
     boxStroke: '#2b2b2b',
     text: '#1a1a1a',
-    stereotype: '#555555',
+    keyword: '#555555',
     edgeLabel: '#555555',
     provenanceText: '#8a8a86',
     halo: 'white',
     activationFill: '#f1f1e4',
     portFill: 'white',
     actorFill: '#fdfdf6',
-    boxRadius: 0,
     gloss: false,
     shadow: false,
     frame: true,
@@ -93,14 +90,13 @@ export const darkGlassTheme: Theme = {
     stroke: '#A9C2D1',
     boxStroke: '#C3D5E0',
     text: '#E8EEF2',
-    stereotype: '#9FB3BF',
+    keyword: '#9FB3BF',
     edgeLabel: '#6FC7D6',
     provenanceText: '#6E828E',
     halo: '#10161C',
     activationFill: 'url(#glass)',
     portFill: '#1B242C',
     actorFill: '#C3D5E0',
-    boxRadius: 5,
     gloss: true,
     shadow: true,
     frame: false,
@@ -131,8 +127,8 @@ export function getTheme(name: string): Theme | undefined {
     return themes[name as ThemeName];
 }
 
-/** `rx`/`ry` for a box, empty when the theme draws square corners. */
-export function radiusAttrs(t: Theme, radius = t.boxRadius): string {
+/** `rx`/`ry` for a box, empty for square corners. */
+export function radiusAttrs(radius: number): string {
     return radius > 0 ? ` rx="${radius}" ry="${radius}"` : '';
 }
 
@@ -145,14 +141,13 @@ export function liftAttr(t: Theme): string {
  * The gloss over the top of a box: a short gradient inset from its border, so
  * the light stops short of the outline rather than washing it out.
  */
-export function glossOver(t: Theme, x: number, y: number, width: number, height: number): string {
+export function glossOver(t: Theme, x: number, y: number, width: number, height: number, radius: number): string {
     if (!t.gloss) {
         return '';
     }
     const inset = 0.75;
     const top = Math.min(height * 0.55, 26);
-    const radius = Math.max(t.boxRadius - 1, 0);
     return `
-      <rect x="${x + inset}" y="${y + inset}" width="${width - inset * 2}" height="${top}"${radiusAttrs(t, radius)}
+      <rect x="${x + inset}" y="${y + inset}" width="${width - inset * 2}" height="${top}"${radiusAttrs(Math.max(radius - 1, 0))}
           fill="url(#gloss)" />`;
 }

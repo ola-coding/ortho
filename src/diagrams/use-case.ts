@@ -25,7 +25,7 @@ function ellipseNode(useCase: UseCase): GraphNode {
     return {
         id: qualifiedName(useCase),
         shape: 'ellipse',
-        stereotype: '',
+        keyword: '',
         name,
         compartments: [],
         ports: [],
@@ -38,7 +38,7 @@ function actorNode(id: string, label: string): GraphNode {
     return {
         id,
         shape: 'actor',
-        stereotype: '',
+        keyword: '',
         name: label,
         compartments: [],
         ports: [],
@@ -93,7 +93,7 @@ export function extractUseCaseGraph(exposed: Member[]): DiagramGraph {
                 boundary = {
                     id: `boundary:${subjectLabel}`,
                     shape: 'boundary',
-                    stereotype: '',
+                    keyword: '',
                     name: subjectLabel,
                     compartments: [],
                     ports: [],

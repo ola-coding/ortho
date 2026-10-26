@@ -8,7 +8,7 @@ import type { Model } from '../src/generated/ast.js';
 import type { DiagramGraph, GraphEdge, GraphNode } from '../src/model/graph.js';
 import { extractLogicalGraph } from '../src/diagrams/logical.js';
 import { layoutTree } from '../src/layout/tree-layout.js';
-import { renderSvg } from '../src/render/svg-renderer.js';
+import { renderSvg, USAGE_RADIUS } from '../src/render/svg-renderer.js';
 
 const services = createSysmlServices();
 const parse = parseHelper<Model>(services.Sysml);
@@ -22,9 +22,11 @@ async function parseExample(): Promise<Model> {
 }
 
 describe('logical diagram extraction', () => {
-    it('produces one rounded node per function', async () => {
+    it('produces one box per function: «action def» for the root, «action» below it', async () => {
         const graph = extractLogicalGraph((await parseExample()).packages);
-        expect(graph.nodes.every(n => n.shape === 'rounded')).toBe(true);
+        const [root, ...functions] = graph.nodes;
+        expect([root.name, root.shape, root.keyword]).toEqual(['OperateDrone', 'definition', 'action def']);
+        expect(functions.every(n => n.shape === 'usage' && n.keyword === 'action')).toBe(true);
         expect(graph.nodes.map(n => n.name)).toContain('OperateDrone');
         expect(graph.nodes.map(n => n.name)).toContain('generateThrust');
         expect(graph.nodes.map(n => n.name)).toContain('holdAltitude');
@@ -58,7 +60,7 @@ describe('logical diagram extraction', () => {
             { heading: 'Logical view — DroneFunctions', source: 'fixtures/logical.sysml' }
         );
         expect(svg).toContain('<svg');
-        expect(svg).toContain('rx="11"');
+        expect(svg).toContain(`rx="${USAGE_RADIUS}"`);
         expect(svg).not.toContain('marker-end');
         expect(svg).not.toContain('marker-start');
     });
@@ -112,7 +114,7 @@ describe('logical diagram extraction', () => {
 
     describe('where the stem lands', () => {
         const box = (id: string, width: number): GraphNode =>
-            ({ id, shape: 'rounded', stereotype: '', name: id, compartments: [], ports: [], width, height: 40 });
+            ({ id, shape: 'usage', keyword: 'action', name: id, compartments: [], ports: [], width, height: 40 });
         const decompose = (parent: string, child: string): GraphEdge =>
             ({ id: `${parent}-${child}`, kind: 'decomposition', sourceId: parent, targetId: child });
 

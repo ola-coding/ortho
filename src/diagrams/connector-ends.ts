@@ -41,16 +41,16 @@ function performedName(perform: PerformUsage): string {
     return last?.ref?.name ?? last?.$refText ?? effectiveName(perform) ?? '';
 }
 
-/** A box's size once its compartments have to fit inside it. */
+/** A box's size once its keyword, name and compartments have to fit inside it. */
 export function boxSize(
-    name: string, compartments: Compartment[], minWidth: number, plainHeight: number
+    name: string, compartments: Compartment[], minWidth: number, plainHeight: number, keyword = ''
 ): { width: number; height: number } {
     const lineWidths = compartments.flatMap(c => [
         ...(c.title ? [measureText(c.title, 9) + 16] : []),
         ...c.lines.map(line => measureText(line, 11) + 16)
     ]);
     return {
-        width: Math.max(minWidth, measureText(name, 12, 'bold') + 28, ...lineWidths),
+        width: Math.max(minWidth, measureText(name, 12, 'bold') + 28, measureText(`«${keyword}»`, 9) + 28, ...lineWidths),
         height: compartments.length > 0
             ? BOX_HEADER_HEIGHT + compartmentsHeight(compartments)
             : plainHeight

@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1344.67" height="1146"
-     viewBox="0 0 1344.67 1146" font-family="Arial, Helvetica, Segoe UI, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="1344.67" height="1152"
+     viewBox="0 0 1344.67 1152" font-family="Arial, Helvetica, Segoe UI, sans-serif">
   <title>Process view — Survey Drone (generated from examples/survey-drone/process.sysml)</title>
   <defs>
     <marker id="msgArrow" markerWidth="12" markerHeight="10" refX="10" refY="4" orient="auto"
@@ -7,12 +7,14 @@
       <path d="M0,0 L10,4 L0,8 z" fill="#2b2b2b" />
     </marker>
   </defs>
-  <rect x="0" y="0" width="1344.67" height="1146" fill="white" />
-  <rect x="8" y="8" width="1328.67" height="1130" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-  <path d="M8,8 L8,30 L179.945,30 L189.945,21 L189.945,8 Z"
+  <rect x="0" y="0" width="1344.67" height="1152" fill="white" />
+  <rect x="8" y="8" width="1328.67" height="1136" rx="10" ry="10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+  <path d="M8,30 L8,18 A10,10 0 0 1 18,8 L303.779,8 L303.779,22 A8,8 0 0 1 295.779,30 Z"
         fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
-  <text x="16" y="23" font-size="11" font-weight="600" fill="#1a1a1a">Process view — Survey Drone</text>
-  <text x="1330.67" y="1132" text-anchor="end" font-size="9" fill="#8a8a86">examples/survey-drone/process.sysml</text>
+  <text x="18" y="23" font-size="11" fill="#1a1a1a"><tspan fill="#555555">&#171;view&#187;</tspan><tspan font-weight="600"> Process view — Survey Drone</tspan> : SequenceView</text>
+  <path d="M1167.634,1144 L1167.634,1135 A6,6 0 0 1 1173.634,1129 L1336.67,1129"
+        fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+  <text x="1328.67" y="1140" text-anchor="end" font-size="9" fill="#8a8a86">examples/survey-drone/process.sysml</text>
   
     <g><g stroke="#2b2b2b" stroke-width="1.5" fill="none">
         <circle cx="56.336" cy="57" r="8" fill="#fdfdf6" />
@@ -24,39 +26,51 @@
           font-size="12" font-weight="600" fill="#1a1a1a">operator</text>
       <line x1="56.336" y1="122" x2="56.336" y2="1118"
           stroke="#2b2b2b" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g><rect x="118.672" y="88" width="140.04000000000002" height="34"
+    <g><rect x="118.672" y="86" width="140.04000000000002" height="36" rx="10" ry="10"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="188.692" y="109" text-anchor="middle"
+      <text x="188.692" y="101" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part&#187;</text>
+      <text x="188.692" y="114" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">app : SurveyPlanner</text>
       <line x1="188.692" y1="122" x2="188.692" y2="1118"
           stroke="#2b2b2b" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g><rect x="292.96" y="88" width="156.024" height="34"
+    <g><rect x="292.96" y="86" width="156.024" height="36" rx="10" ry="10"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="370.972" y="109" text-anchor="middle"
+      <text x="370.972" y="101" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part&#187;</text>
+      <text x="370.972" y="114" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">planner : RoutePlanner</text>
       <line x1="370.972" y1="122" x2="370.972" y2="1118"
           stroke="#2b2b2b" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g><rect x="530.1220000000001" y="88" width="153.36" height="34"
+    <g><rect x="530.1220000000001" y="86" width="153.36" height="36" rx="10" ry="10"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="606.802" y="109" text-anchor="middle"
+      <text x="606.802" y="101" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part&#187;</text>
+      <text x="606.802" y="114" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">bridge : MavlinkBridge</text>
       <line x1="606.802" y1="122" x2="606.802" y2="1118"
           stroke="#2b2b2b" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g><rect x="713.498" y="88" width="173.388" height="34"
+    <g><rect x="713.498" y="86" width="173.388" height="36" rx="10" ry="10"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="800.192" y="109" text-anchor="middle"
+      <text x="800.192" y="101" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part&#187;</text>
+      <text x="800.192" y="114" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">mavlink : MavlinkInterface</text>
       <line x1="800.192" y1="122" x2="800.192" y2="1118"
           stroke="#2b2b2b" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g><rect x="943.3520000000001" y="88" width="176.04" height="34"
+    <g><rect x="943.3520000000001" y="86" width="176.04" height="36" rx="10" ry="10"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1031.372" y="109" text-anchor="middle"
+      <text x="1031.372" y="101" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part&#187;</text>
+      <text x="1031.372" y="114" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">mission : MissionExecutor</text>
       <line x1="1031.372" y1="122" x2="1031.372" y2="1118"
           stroke="#2b2b2b" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g><rect x="1169.962" y="88" width="150.708" height="34"
+    <g><rect x="1169.962" y="86" width="150.708" height="36" rx="10" ry="10"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1245.316" y="109" text-anchor="middle"
+      <text x="1245.316" y="101" text-anchor="middle"
+          font-size="9" fill="#555555">&#171;part&#187;</text>
+      <text x="1245.316" y="114" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">video : VideoStreamer</text>
       <line x1="1245.316" y1="122" x2="1245.316" y2="1118"
           stroke="#2b2b2b" stroke-width="1" stroke-dasharray="4 4" /></g>

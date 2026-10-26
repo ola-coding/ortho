@@ -80,7 +80,7 @@ the model; no view draws them.
 A model declares its views (§7.26), and ortho draws each: a `view` typed by
 one of the standard view definitions, exposing what the diagram shows. Its
 name is the diagram's heading (§7.26.5), in single quotes unless it is a plain
-name.
+name: the frame's tab reads «view» name : Definition (§8.2.3.26).
 ortho matches the definition by name rather than loading the standard library, so
 import `StandardViewDefinitions` for other tools.
 
@@ -166,8 +166,8 @@ package Functions {
 
 | You write | The view draws |
 |---|---|
-| `action def Name { ... }` in a package | the root of a tree |
-| `action name;` or `action name { ... }` nested in another | a box under its parent |
+| `action def Name { ... }` in a package | the root of a tree, an «action def» box |
+| `action name;` or `action name { ... }` nested in another | an «action» box under its parent |
 | `action name : Def;` in a package | nothing. It is the usage a `perform` chain starts from. |
 
 Name no component in this file, and end it with one usage of its tree.
@@ -214,7 +214,7 @@ package Functions {
 | You write | The view draws |
 |---|---|
 | `package Name { ... }` | a package box, nested inside its parent package |
-| `part def Name;` in a package | a module inside its package |
+| `part def Name;` in a package | a module, a «part def» box, inside its package |
 | `private import Pkg::*;` (or `Pkg::Element`) | an «import» dependency on `Pkg` |
 | `part sw { part x : Module; ... }` in a package | nothing. The deployment view allocates from it. |
 | `perform Functions::use.branch.leaf;` in a module | a line in its *perform actions* compartment |
@@ -286,7 +286,7 @@ package Hardware {
 
 | You write | The view draws |
 |---|---|
-| `part name : Def [n];` | a box, `name : Def [n]`, with the parts of `Def` nested inside |
+| `part name : Def [n];` | a «part» box, `name : Def [n]`, with the parts of `Def` nested inside |
 | the `part` the view exposes | the top-level box |
 | `port name : PortDef;` | a port on the box's edge. `~PortDef` conjugates it. |
 | `connect a.p to b.q;` | a line between the two ports (or parts) |
@@ -365,7 +365,7 @@ package Scenario {
 
 | You write | The view draws |
 |---|---|
-| `part name : Def;` in the scenario's `action def` | a lifeline, once a message names it, in order of first appearance |
+| `part name : Def;` in the scenario's `action def` | a lifeline headed by a «part» box, once a message names it, in order of first appearance |
 | an untyped `part`, or one typed as an actor in a loaded use case | a lifeline headed by a stick figure |
 | `message name from a to b;` | an arrow from `a` to `b`, in document order |
 | `message name of Payload from a to b;` | the same arrow, labelled `name : Payload` |

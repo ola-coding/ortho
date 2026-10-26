@@ -218,8 +218,8 @@ describe('survey drone example model', () => {
         });
         walk(graph.nodes);
         expect(hosts).toHaveLength(3);
-        // Every box inside a host is a deployed program, so none carries a tag.
-        expect(hosts.flatMap(h => h.children!).every(c => c.stereotype === '')).toBe(true);
+        // Every box inside a host is a deployed program, a «part».
+        expect(hosts.flatMap(h => h.children!).every(c => c.keyword === 'part')).toBe(true);
 
         // The flight computer runs the firmware and nothing else — no
         // container, no router, not a line of the Linux stack.

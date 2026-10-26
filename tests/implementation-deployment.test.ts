@@ -64,8 +64,8 @@ describe('implementation diagram extraction', () => {
         const physical = graph.nodes[0].children!.find(c => c.name === 'Physical')!;
         // `fc` and `cc` are package-level part usages — instances, not modules.
         expect(physical.children!.map(c => c.name).sort()).toEqual(['CompanionComputer', 'FlightController']);
-        // A module box carries its name alone — no stereotype line.
-        expect(physical.children!.every(c => c.stereotype === '')).toBe(true);
+        // A module is a definition: a square box headed «part def».
+        expect(physical.children!.every(c => c.shape === 'definition' && c.keyword === 'part def')).toBe(true);
     });
 });
 

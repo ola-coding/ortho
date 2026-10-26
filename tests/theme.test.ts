@@ -12,7 +12,7 @@ import { darkGlassTheme, getTheme, lightTheme } from '../src/render/theme.js';
 
 const services = createSysmlServices();
 const parse = parseHelper<Model>(services.Sysml);
-const title = { heading: 'Use case view — DroneUseCases', source: 'fixtures/use-case.sysml' };
+const title = { heading: 'Use case view — DroneUseCases', definition: 'GeneralView', source: 'fixtures/use-case.sysml' };
 
 /** The use case view: a boundary, ellipses, an actor and «include» labels. */
 async function render(theme = lightTheme): Promise<string> {
@@ -28,7 +28,8 @@ describe('themes', () => {
     it('paints the light theme on paper, inside a frame', async () => {
         const svg = await render();
         expect(svg).toContain('fill="white"');
-        expect(svg).toContain(title.heading);
+        // The frame's tab names the view and its definition (§8.2.3.26).
+        expect(svg).toContain(`&#171;view&#187;</tspan><tspan font-weight="600"> ${title.heading}</tspan> : GeneralView`);
         expect(svg).toContain(title.source);
         expect(svg).toContain('fill="#fdfdf6"');
         expect(svg).not.toContain('url(#glass)');
@@ -42,7 +43,7 @@ describe('themes', () => {
         expect(svg).not.toContain('fill="white"');
         // No frame and no corner text: the slide has its own title. The
         // <title> element keeps both, so the file still names its source.
-        expect(svg).not.toMatch(/<path d="M8,8 L8,30/);
+        expect(svg).not.toContain('&#171;view&#187;');
         expect(svg).not.toMatch(new RegExp(`<text[^>]*>${title.source}`));
         expect(svg).toContain(`<title>${title.heading} (generated from ${title.source})</title>`);
 

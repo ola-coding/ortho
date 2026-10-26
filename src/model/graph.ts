@@ -1,6 +1,11 @@
 import type { AstNode } from 'langium';
+import { isDefinition } from '../generated/ast.js';
 
-export type NodeShape = 'box' | 'ellipse' | 'actor' | 'boundary' | 'package' | 'rounded' | 'node3d';
+/**
+ * How a node is drawn. A definition is a box with square corners and a usage
+ * one with rounded corners (§8.2.3.6); the rest have shapes of their own.
+ */
+export type NodeShape = 'definition' | 'usage' | 'ellipse' | 'actor' | 'boundary' | 'package' | 'node3d';
 
 export interface Compartment {
     /** Drawn small and grey above the lines, as the spec labels a compartment. */
@@ -31,7 +36,8 @@ export interface GraphPort {
 export interface GraphNode {
     id: string;
     shape: NodeShape;
-    stereotype: string;
+    /** The keyword drawn above the name, such as `part def`; empty for none. */
+    keyword: string;
     name: string;
     compartments: Compartment[];
     ports: GraphPort[];
@@ -56,6 +62,22 @@ export interface GraphEdge {
 export interface DiagramGraph {
     nodes: GraphNode[];
     edges: GraphEdge[];
+}
+
+/** The keyword of each element a view draws as a box (§8.2.3). */
+const KEYWORDS: Record<string, string> = {
+    PartDef: 'part def',
+    PartUsage: 'part',
+    ActionDef: 'action def',
+    ActionUsage: 'action',
+    UseCaseDef: 'use case def',
+    UseCaseUsage: 'use case',
+    SubjectUsage: 'subject'
+};
+
+/** How SysML v2 draws an element as a box: its corners, and the keyword above its name. */
+export function boxOf(element: AstNode): { shape: 'definition' | 'usage'; keyword: string } {
+    return { shape: isDefinition(element) ? 'definition' : 'usage', keyword: KEYWORDS[element.$type] ?? '' };
 }
 
 /**

@@ -2,23 +2,23 @@ import { AstUtils } from 'langium';
 import { isAllocationUsage, isPartDef, isPartUsage } from '../generated/ast.js';
 import type { AllocationUsage, Definition, Member, Model, PartDef, PartUsage } from '../generated/ast.js';
 import type { DiagramGraph, GraphNode } from '../model/graph.js';
-import { qualifiedName } from '../model/graph.js';
-import { endPart, partLabel } from './connector-ends.js';
+import { boxOf, qualifiedName } from '../model/graph.js';
+import { boxSize, endPart, partLabel } from './connector-ends.js';
 import { measureText } from '../render/text-metrics.js';
 import { NODE_DEPTH } from '../layout/elk-layout.js';
 
-/** A deployed program: a plain box, since everything inside a host is one. */
+/** A deployed program, a «part». */
 function softwareNode(usage: PartUsage): GraphNode {
     const name = partLabel(usage);
+    const { shape, keyword } = boxOf(usage);
     return {
         id: qualifiedName(usage),
-        shape: 'box',
-        stereotype: '',
+        shape,
+        keyword,
         name,
         compartments: [],
         ports: [],
-        width: Math.max(120, measureText(name, 12, 'bold') + 30),
-        height: 40
+        ...boxSize(name, [], 120, 40, keyword)
     };
 }
 
@@ -27,7 +27,7 @@ function hostNode(usage: PartUsage): GraphNode {
     return {
         id: qualifiedName(usage),
         shape: 'node3d',
-        stereotype: '',
+        keyword: '',
         name,
         compartments: [],
         ports: [],
@@ -39,12 +39,17 @@ function hostNode(usage: PartUsage): GraphNode {
     };
 }
 
-/** A physical device the hosts are fitted in, drawn as an assembly frame. */
-function deviceFrame(id: string, name: string): GraphNode {
+/**
+ * A physical device the hosts are fitted in, drawn as an assembly frame: the
+ * device's one usage, or its definition when it has none or several.
+ */
+function deviceFrame(id: string, device: PartDef | PartUsage): GraphNode {
+    const name = isPartUsage(device) ? partLabel(device) : device.name ?? '';
+    const { shape, keyword } = boxOf(device);
     return {
         id,
-        shape: 'box',
-        stereotype: '',
+        shape,
+        keyword,
         name,
         compartments: [],
         ports: [],
@@ -92,7 +97,7 @@ export function extractDeploymentGraph(exposed: Member[], model: Model): Diagram
             return existing;
         }
         const uses = usagesOf.get(def) ?? [];
-        const frame = deviceFrame(`device:${qualifiedName(def)}`, uses.length === 1 ? partLabel(uses[0]) : def.name ?? '');
+        const frame = deviceFrame(`device:${qualifiedName(def)}`, uses.length === 1 ? uses[0] : def);
         frames.set(def, frame);
         const owner = uses.length === 1 ? uses[0].$container : undefined;
         if (isPartDef(owner) && !path.has(owner)) {

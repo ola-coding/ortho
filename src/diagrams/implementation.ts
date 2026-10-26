@@ -2,7 +2,7 @@ import { AstUtils } from 'langium';
 import { isPackageDecl, isPartDef, isPartUsage, isPortUsage } from '../generated/ast.js';
 import type { Member, ImportDecl, PackageDecl, PartDef } from '../generated/ast.js';
 import type { Compartment, DiagramGraph, GraphEdge, GraphNode } from '../model/graph.js';
-import { qualifiedName } from '../model/graph.js';
+import { boxOf, qualifiedName } from '../model/graph.js';
 import { boxSize, performCompartments } from './connector-ends.js';
 import { collectPackages } from '../model/packages.js';
 import { measureText } from '../render/text-metrics.js';
@@ -23,14 +23,15 @@ function portsCompartment(def: PartDef): Compartment[] {
 
 function moduleNode(def: PartDef): GraphNode {
     const compartments = [...performCompartments(def.members), ...portsCompartment(def)];
+    const { shape, keyword } = boxOf(def);
     return {
         id: qualifiedName(def),
-        shape: 'box',
-        stereotype: '',
+        shape,
+        keyword,
         name: def.name ?? '',
         compartments,
         ports: [],
-        ...boxSize(def.name ?? '', compartments, 120, 40)
+        ...boxSize(def.name ?? '', compartments, 120, 40, keyword)
     };
 }
 
@@ -63,7 +64,7 @@ function packageNode(pkg: PackageDecl): GraphNode {
     return {
         id: qualifiedName(pkg),
         shape: 'package',
-        stereotype: '',
+        keyword: '',
         name: pkg.name ?? '',
         compartments: [],
         ports: [],

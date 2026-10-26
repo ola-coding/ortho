@@ -1,22 +1,23 @@
 import { isActionDef, isActionUsage } from '../generated/ast.js';
 import type { ActionDef, ActionUsage, Member } from '../generated/ast.js';
 import type { DiagramGraph, GraphEdge, GraphNode } from '../model/graph.js';
-import { qualifiedName } from '../model/graph.js';
+import { boxOf, qualifiedName } from '../model/graph.js';
 import { exposedMembers } from '../model/packages.js';
-import { measureText } from '../render/text-metrics.js';
+import { boxSize } from './connector-ends.js';
 
 type Function_ = ActionDef | ActionUsage;
 
+/** «action def» for the root of a tree, «action» for the functions in it. */
 function functionNode(fn: Function_): GraphNode {
+    const { shape, keyword } = boxOf(fn);
     return {
         id: qualifiedName(fn),
-        shape: 'rounded',
-        stereotype: '',
+        shape,
+        keyword,
         name: fn.name ?? '',
         compartments: [],
         ports: [],
-        width: Math.max(110, measureText(fn.name ?? '', 12) + 34),
-        height: 40
+        ...boxSize(fn.name ?? '', [], 110, 40, keyword)
     };
 }
 

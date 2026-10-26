@@ -9,8 +9,14 @@ import { glossOver, liftAttr, lightTheme, radiusAttrs } from './theme.js';
 
 export const PAD_X = 24;
 export const PAD_TOP = 48;
-const PAD_BOTTOM = 24;
+/** Room below the drawing, clear of the frame's corner compartment. */
+const PAD_BOTTOM = 30;
 export const FONT = 'Arial, Helvetica, Segoe UI, sans-serif';
+
+/** A usage's corners; a definition's are square (§8.2.3.6). */
+export const USAGE_RADIUS = 10;
+/** A port is a usage too, at a port's size. */
+const PORT_RADIUS = 2;
 
 // Must match the extractor's sizing constants.
 const HEADER_HEIGHT = BOX_HEADER_HEIGHT;
@@ -25,27 +31,59 @@ export function escapeXml(text: string): string {
 }
 
 /**
- * Diagram identity: the view heading shown in the frame pentagon, and the
- * source model file shown as provenance in the frame's bottom-right corner
+ * What the frame says: the view's name and definition in its tab, and the
+ * model file that declares the view in its bottom-right corner
  * (everything-as-code: every SVG names the file that generated it).
  */
 export interface DiagramTitle {
+    /** The view's name; empty for an unnamed view. */
     heading: string;
+    /** Its view definition, as written: `GeneralView`. */
+    definition?: string;
     source: string;
 }
 
-/** Diagram frame: border, pentagon heading top-left, provenance bottom-right. */
+/** The frame's inset from the page, and its corners: a view is a usage. */
+const FRAME_INSET = 8;
+const FRAME_RADIUS = 10;
+const TAB_HEIGHT = 22;
+const TAB_RADIUS = 8;
+const INFO_HEIGHT = 15;
+const INFO_RADIUS = 6;
+
+/**
+ * The view frame (§8.2.3.26): a rounded border, a tab in its top-left corner
+ * reading `«view» name : Definition`, and an info compartment in its
+ * bottom-right corner holding the source file.
+ */
 export function renderFrame(width: number, height: number, title: DiagramTitle, t: Theme): string {
     if (!t.frame) {
         return '';
     }
-    const headingWidth = measureText(title.heading, 11, 'bold') + 28;
+    const left = FRAME_INSET;
+    const top = FRAME_INSET;
+    const right = width - FRAME_INSET;
+    const bottom = height - FRAME_INSET;
+    const name = title.heading ? ` ${title.heading}` : '';
+    const definition = title.definition ? ` : ${title.definition}` : '';
+    const tabRight = left + 22 + measureText('«view»', 11) + measureText(name, 11, 'bold') + measureText(definition, 11);
+    const tabBottom = top + TAB_HEIGHT;
+    const infoLeft = right - measureText(title.source, 9) - 16;
+    const infoTop = bottom - INFO_HEIGHT;
+    const line = `stroke="${t.boxStroke}" stroke-width="1.25"`;
     return `
-  <rect x="8" y="8" width="${width - 16}" height="${height - 16}" fill="none" stroke="${t.boxStroke}" stroke-width="1.25" />
-  <path d="M8,8 L8,30 L${8 + headingWidth - 10},30 L${8 + headingWidth},21 L${8 + headingWidth},8 Z"
-        fill="#f4f4ea" stroke="${t.boxStroke}" stroke-width="1.25" />
-  <text x="16" y="23" font-size="11" font-weight="600" fill="${t.text}">${escapeXml(title.heading)}</text>
-  <text x="${width - 14}" y="${height - 14}" text-anchor="end" font-size="9" fill="${t.provenanceText}">${escapeXml(title.source)}</text>`;
+  <rect x="${left}" y="${top}" width="${right - left}" height="${bottom - top}"${radiusAttrs(FRAME_RADIUS)} fill="none" ${line} />
+  <path d="M${left},${tabBottom} L${left},${top + FRAME_RADIUS} A${FRAME_RADIUS},${FRAME_RADIUS} 0 0 1 ${left + FRAME_RADIUS},${top} L${tabRight},${top} L${tabRight},${tabBottom - TAB_RADIUS} A${TAB_RADIUS},${TAB_RADIUS} 0 0 1 ${tabRight - TAB_RADIUS},${tabBottom} Z"
+        fill="#f4f4ea" ${line} />
+  <text x="${left + 10}" y="${top + 15}" font-size="11" fill="${t.text}"><tspan fill="${t.keyword}">&#171;view&#187;</tspan><tspan font-weight="600">${escapeXml(name)}</tspan>${escapeXml(definition)}</text>
+  <path d="M${infoLeft},${bottom} L${infoLeft},${infoTop + INFO_RADIUS} A${INFO_RADIUS},${INFO_RADIUS} 0 0 1 ${infoLeft + INFO_RADIUS},${infoTop} L${right},${infoTop}"
+        fill="none" ${line} />
+  <text x="${right - 8}" y="${bottom - 4}" text-anchor="end" font-size="9" fill="${t.provenanceText}">${escapeXml(title.source)}</text>`;
+}
+
+/** The SVG's `<title>`: the view, and the file it was generated from. */
+export function titleText(title: DiagramTitle): string {
+    return `${title.heading || title.definition || ''} (generated from ${title.source})`;
 }
 
 function renderNode(n: LaidOutNode, t: Theme): string {
@@ -54,21 +92,10 @@ function renderNode(n: LaidOutNode, t: Theme): string {
         case 'actor': return renderActorNode(n, t);
         case 'boundary': return renderBoundaryNode(n, t);
         case 'package': return renderPackageNode(n, t);
-        case 'rounded': return renderRoundedNode(n, t);
         case 'node3d': return renderNode3dNode(n, t);
-        case 'box': return renderBoxNode(n, t);
+        case 'definition':
+        case 'usage': return renderBoxNode(n, t);
     }
-}
-
-/** Logical view: one function, drawn as a leaf of the capability tree. */
-function renderRoundedNode(n: LaidOutNode, t: Theme): string {
-    const x = n.x + PAD_X;
-    const y = n.y + PAD_TOP;
-    return `
-    <g><rect x="${x}" y="${y}" width="${n.width}" height="${n.height}" rx="11" ry="11"${liftAttr(t)}
-          fill="${t.fill}" stroke="${t.boxStroke}" stroke-width="1.25" />${glossOver(t, x, y, n.width, n.height)}
-      <text x="${x + n.width / 2}" y="${y + n.height / 2 + 4}" text-anchor="middle"
-          font-size="12" fill="${t.text}">${escapeXml(n.name)}</text></g>`;
 }
 
 /**
@@ -87,8 +114,8 @@ function renderNode3dNode(n: LaidOutNode, t: Theme): string {
           fill="${t.node3dFill}" stroke="${t.boxStroke}" stroke-width="1.25" />
       <polygon points="${x + w - d},${y + d} ${x + w},${y} ${x + w},${y + h - d} ${x + w - d},${y + h}"
           fill="${t.node3dFill}" stroke="${t.boxStroke}" stroke-width="1.25" />
-      <rect x="${x}" y="${y + d}" width="${w - d}" height="${h - d}"${radiusAttrs(t)}
-          fill="${t.fill}" stroke="${t.boxStroke}" stroke-width="1.25" />${glossOver(t, x, y + d, w - d, h - d)}
+      <rect x="${x}" y="${y + d}" width="${w - d}" height="${h - d}"
+          fill="${t.fill}" stroke="${t.boxStroke}" stroke-width="1.25" />${glossOver(t, x, y + d, w - d, h - d, 0)}
       <text x="${x + (w - d) / 2}" y="${y + d + 20}" text-anchor="middle"
           font-size="12" font-weight="600" fill="${t.text}">${escapeXml(n.name)}</text></g>`;
 }
@@ -122,8 +149,8 @@ function renderBoundaryNode(n: LaidOutNode, t: Theme): string {
     const x = n.x + PAD_X;
     const y = n.y + PAD_TOP;
     return `
-    <g><rect x="${x}" y="${y}" width="${n.width}" height="${n.height}"${radiusAttrs(t)}
-          fill="${t.boundaryFill}" stroke="${t.boxStroke}" stroke-width="1.25" />${glossOver(t, x, y, n.width, n.height)}
+    <g><rect x="${x}" y="${y}" width="${n.width}" height="${n.height}"
+          fill="${t.boundaryFill}" stroke="${t.boxStroke}" stroke-width="1.25" />${glossOver(t, x, y, n.width, n.height, 0)}
       <text x="${x + n.width / 2}" y="${y + 20}" text-anchor="middle"
           font-size="12" font-weight="600" fill="${t.text}">${escapeXml(n.name)}</text></g>`;
 }
@@ -141,34 +168,41 @@ function renderPackageNode(n: LaidOutNode, t: Theme): string {
     return `
     <g><rect x="${x}" y="${y}" width="${tabWidth}" height="12"
           fill="${t.fill}" stroke="${t.boxStroke}" stroke-width="1.25" />
-      <rect x="${x}" y="${y + 12}" width="${n.width}" height="${n.height - 12}"${radiusAttrs(t)}
-          fill="${t.fill}" stroke="${t.boxStroke}" stroke-width="1.25" />${glossOver(t, x, y + 12, n.width, n.height - 12)}
+      <rect x="${x}" y="${y + 12}" width="${n.width}" height="${n.height - 12}"
+          fill="${t.fill}" stroke="${t.boxStroke}" stroke-width="1.25" />${glossOver(t, x, y + 12, n.width, n.height - 12, 0)}
       ${name}</g>`;
 }
 
+/**
+ * A definition or a usage: a box with square or rounded corners, its keyword
+ * above its name, compartments below and ports on its border.
+ */
 function renderBoxNode(n: LaidOutNode, t: Theme): string {
     const x = n.x + PAD_X;
     const y = n.y + PAD_TOP;
+    const radius = n.shape === 'usage' ? USAGE_RADIUS : 0;
     const parts: string[] = [];
 
     // A box that contains other boxes (an assembly on the Physical view) takes
     // a slightly deeper tint, so nesting reads before any border is traced.
-    parts.push(`<rect x="${x}" y="${y}" width="${n.width}" height="${n.height}"${radiusAttrs(t)}${liftAttr(t)}
+    parts.push(`<rect x="${x}" y="${y}" width="${n.width}" height="${n.height}"${radiusAttrs(radius)}${liftAttr(t)}
           fill="${n.hasChildren ? t.containerFill : t.fill}" stroke="${t.boxStroke}" stroke-width="1.25" />`);
-    const gloss = glossOver(t, x, y, n.width, n.height).trim();
+    const gloss = glossOver(t, x, y, n.width, n.height, radius).trim();
     if (gloss) {
         parts.push(gloss);
     }
 
-    // An unstereotyped box (an Implementation-view module, a deployed software
-    // part) centres its name in the header instead of leaving an empty «».
-    if (n.stereotype) {
-        parts.push(`<text x="${x + n.width / 2}" y="${y + 13}" text-anchor="middle"
-          font-size="9" fill="${t.stereotype}">&#171;${escapeXml(n.stereotype)}&#187;</text>`);
-        parts.push(`<text x="${x + n.width / 2}" y="${y + 26}" text-anchor="middle"
+    // The keyword and name are centred in the header, which is the whole box
+    // when it holds nothing else.
+    const header = n.compartments.length > 0 || n.hasChildren ? HEADER_HEIGHT : n.height;
+    const top = y + (header - HEADER_HEIGHT) / 2;
+    if (n.keyword) {
+        parts.push(`<text x="${x + n.width / 2}" y="${top + 13}" text-anchor="middle"
+          font-size="9" fill="${t.keyword}">&#171;${escapeXml(n.keyword)}&#187;</text>`);
+        parts.push(`<text x="${x + n.width / 2}" y="${top + 26}" text-anchor="middle"
           font-size="12" font-weight="600" fill="${t.text}">${escapeXml(n.name)}</text>`);
     } else {
-        parts.push(`<text x="${x + n.width / 2}" y="${y + 21}" text-anchor="middle"
+        parts.push(`<text x="${x + n.width / 2}" y="${top + 21}" text-anchor="middle"
           font-size="12" font-weight="600" fill="${t.text}">${escapeXml(n.name)}</text>`);
     }
 
@@ -179,7 +213,7 @@ function renderBoxNode(n: LaidOutNode, t: Theme): string {
         let linesTop = compartmentTop;
         if (compartment.title) {
             parts.push(`<text x="${x + 8}" y="${compartmentTop + 11}"
-          font-size="9" fill="${t.stereotype}">${escapeXml(compartment.title)}</text>`);
+          font-size="9" fill="${t.keyword}">${escapeXml(compartment.title)}</text>`);
             linesTop += COMPARTMENT_TITLE_HEIGHT;
         }
         compartment.lines.forEach((line, i) => {
@@ -191,7 +225,7 @@ function renderBoxNode(n: LaidOutNode, t: Theme): string {
     }
 
     for (const port of n.ports) {
-        parts.push(`<rect x="${x + port.x}" y="${y + port.y}" width="${PORT_SIZE}" height="${PORT_SIZE}"
+        parts.push(`<rect x="${x + port.x}" y="${y + port.y}" width="${PORT_SIZE}" height="${PORT_SIZE}"${radiusAttrs(PORT_RADIUS)}
           fill="${t.portFill}" stroke="${t.stroke}" stroke-width="1.25" />`);
     }
 
@@ -339,7 +373,7 @@ export function renderSvg(diagram: LaidOutDiagram, title: DiagramTitle, t: Theme
 
     return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"
      viewBox="0 0 ${width} ${height}" font-family="${FONT}">
-  <title>${escapeXml(`${title.heading} (generated from ${title.source})`)}</title>
+  <title>${escapeXml(titleText(title))}</title>
   <defs>${t.defs}
     <marker id="openArrow" markerWidth="12" markerHeight="12" refX="10" refY="5"
             orient="auto" markerUnits="userSpaceOnUse">

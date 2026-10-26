@@ -65,7 +65,7 @@ export interface LaidOutPort {
 export interface LaidOutNode {
     id: string;
     shape: NodeShape;
-    stereotype: string;
+    keyword: string;
     name: string;
     compartments: Compartment[];
     ports: LaidOutPort[];
@@ -281,8 +281,8 @@ export async function layoutGraph(graph: DiagramGraph, options: LayoutOptions = 
             const y = (c.y ?? 0) + offsetY;
             nodes.push({
                 id: c.id,
-                shape: source?.shape ?? 'box',
-                stereotype: source?.stereotype ?? '',
+                shape: source?.shape ?? 'usage',
+                keyword: source?.keyword ?? '',
                 name: source?.name ?? c.id,
                 compartments: source?.compartments ?? [],
                 hasChildren: (source?.children?.length ?? 0) > 0,
@@ -303,7 +303,7 @@ export async function layoutGraph(graph: DiagramGraph, options: LayoutOptions = 
                 nodes.push({
                     id: cell.node.id,
                     shape: cell.node.shape,
-                    stereotype: cell.node.stereotype,
+                    keyword: cell.node.keyword,
                     name: cell.node.name,
                     compartments: cell.node.compartments,
                     ports: [],

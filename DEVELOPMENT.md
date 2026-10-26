@@ -115,8 +115,10 @@ declare any view.
   between lifelines widen only where a label needs it, and an activation runs
   from a message's arrival until that lifeline next sends — a heuristic that
   suits linear scenarios.
-- **Headings** are the view's name, and the file that declares the view is
-  printed small in the corner, so a diagram names its source.
+- **The frame** is SysML v2's: its tab reads «view» name : Definition, and
+  the file that declares the view sits in its bottom-right compartment, so a
+  diagram names its source. Boxes get their corners and keyword from what
+  they draw (`boxOf`): square for a definition, rounded for a usage.
 - **Themes are colour only** (`src/render/theme.ts`). Every coordinate is
   fixed before a theme is consulted, and a test asserts both themes place
   everything alike. A theme adds nothing it does not paint, so the light

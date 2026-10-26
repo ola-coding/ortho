@@ -110,7 +110,8 @@ export async function renderViews(parsed: ParsedModel, theme: Theme = lightTheme
     const rendered: RenderedView[] = [];
     for (const [file, view] of byFile) {
         const source = relative(process.cwd(), AstUtils.getDocument(view).uri.fsPath).replace(/\\/g, '/');
-        rendered.push({ view, file, result: await renderView(view, parsed.model, { heading: viewHeading(view), source }, theme) });
+        const title = { heading: view.name ?? '', definition: view.definition, source };
+        rendered.push({ view, file, result: await renderView(view, parsed.model, title, theme) });
     }
     return { rendered, skipped };
 }

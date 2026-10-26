@@ -32,6 +32,12 @@ flowchart TD
 [LANGUAGE.md](LANGUAGE.md) says what to write for each view;
 [README.md](README.md) how to render it.
 
+Every view is drawn in SysML v2's graphical notation (§8.2.3). A definition
+is a box with square corners and a usage one with rounded corners, each with
+its keyword above its name: «part def», «part», «action». The frame's tab
+names the view and its definition, and its bottom-right corner the file that
+declares it.
+
 ## Use case view
 
 How the system is used, and by whom — nothing about how it works.
@@ -54,8 +60,9 @@ Each function appears once, and names nothing that realizes it: the parts on
 the Implementation and Physical views name their functions themselves. A
 function nothing performs is a gap.
 
-Drawn as a work-breakdown chart: one rounded box per function, each parent
-above its children on a single stem, with no arrowheads. The lowest level of
+Drawn as a work-breakdown chart: one box per function, the root an «action
+def» and the rest «action»s, each parent above its children on a single stem,
+with no arrowheads. The lowest level of
 a branch is listed vertically, so a broad tree keeps a page's proportions.
 
 ## Implementation view

@@ -151,7 +151,7 @@ export function layoutTree(graph: DiagramGraph): LaidOutDiagram {
         nodes.push({
             id: node.id,
             shape: node.shape,
-            stereotype: node.stereotype,
+            keyword: node.keyword,
             name: node.name,
             compartments: node.compartments,
             ports: [],
