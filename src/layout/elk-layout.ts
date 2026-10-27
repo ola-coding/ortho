@@ -3,7 +3,6 @@ import type { ELK, ElkNode, ElkExtendedEdge, ELKConstructorArguments } from 'elk
 import type { Compartment, DiagramGraph, EdgeKind, GraphNode, NodeShape } from '../model/graph.js';
 import { compartmentsHeight } from '../model/graph.js';
 import { measureText } from '../render/text-metrics.js';
-import { straightenEdges } from './straight-edges.js';
 
 const ELK = ElkConstructor as unknown as { new(args?: ELKConstructorArguments): ELK };
 const elk = new ELK();
@@ -19,14 +18,6 @@ const EDGE_LABEL_FONT = 9;
 const EDGE_LABEL_HEIGHT = 12;
 
 export interface LayoutOptions {
-    direction?: 'DOWN' | 'RIGHT';
-    /**
-     * `STRAIGHT` draws each line between use cases, subjects and actors as one
-     * segment wherever that clears every other shape (the use case view; see
-     * straight-edges.ts). ELK still places the shapes, routing with `POLYLINE`
-     * for the lines that cannot be straight.
-     */
-    edgeRouting?: 'ORTHOGONAL' | 'STRAIGHT';
     /**
      * `rectpacking` packs boxes into rows at a page-shaped aspect ratio, level
      * by level, instead of layering them. It is for edge-free views
@@ -227,25 +218,25 @@ export async function layoutGraph(graph: DiagramGraph, options: LayoutOptions = 
                 // relative to the node that contains it.
                 'org.eclipse.elk.json.edgeCoords': 'ROOT',
                 'elk.algorithm': 'layered',
-                'elk.direction': options.direction ?? 'DOWN',
+                'elk.direction': 'DOWN',
                 'elk.hierarchyHandling': 'INCLUDE_CHILDREN',
                 'elk.spacing.nodeNode': '50',
                 'elk.layered.spacing.nodeNodeBetweenLayers': '70',
                 'elk.spacing.edgeNode': '30',
                 'elk.spacing.edgeEdge': '20',
-                'elk.edgeRouting': options.edgeRouting === 'STRAIGHT' ? 'POLYLINE' : 'ORTHOGONAL'
+                'elk.edgeRouting': 'ORTHOGONAL'
             },
         children: graph.nodes.map(n => toElkNode(n, conversion)),
         edges: graph.edges.map(e => ({
             id: e.id,
             sources: [e.sourcePortId ?? e.sourceId],
             targets: [e.targetPortId ?? e.targetId],
-            // Wire labels on the physical view (interface names), «include» on
-            // the use case view and «import» on the implementation view are
-            // real ELK labels, so the layout keeps them clear of boxes and
-            // other lines; a midpoint label lands wherever the route happens to
-            // be busiest, or on the arrowhead of a short edge.
-            labels: e.label && (e.kind === 'connection' || e.kind === 'include' || e.kind === 'import')
+            // Wire labels on the physical view (interface names) and «import»
+            // on the implementation view are real ELK labels, so the layout
+            // keeps them clear of boxes and other lines; a midpoint label lands
+            // wherever the route happens to be busiest, or on the arrowhead of
+            // a short edge.
+            labels: e.label
                 ? [{
                     id: `${e.id}@label`,
                     text: e.label,
@@ -329,11 +320,10 @@ export async function layoutGraph(graph: DiagramGraph, options: LayoutOptions = 
         };
     });
 
-    const laidOut = {
+    return {
         width: result.width ?? 400,
         height: result.height ?? 300,
         nodes,
         edges
     };
-    return options.edgeRouting === 'STRAIGHT' ? straightenEdges(laidOut) : laidOut;
 }

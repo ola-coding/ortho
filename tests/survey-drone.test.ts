@@ -62,7 +62,7 @@ describe('survey drone example model', () => {
             'followProgress : SurveyTask', 'planSurvey : SurveyTask', 'surveyArea : SurveyTask'
         ]);
         const subjects = graph.nodes.filter(n => n.keyword === 'subject');
-        expect(subjects.map(n => n.name)).toEqual(['SurveyDroneSystem']);
+        expect(subjects.map(n => n.name)).toEqual(['system : SurveyDroneSystem']);
         expect(graph.edges.filter(e => e.targetId === subjects[0].id)).toHaveLength(3);
 
         expect(graph.nodes.filter(n => n.shape === 'actor').map(n => n.name)).toEqual(['operator : Operator']);

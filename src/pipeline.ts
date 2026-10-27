@@ -14,6 +14,8 @@ import { extractSequenceModel } from './diagrams/sequence.js';
 import { layoutGraph } from './layout/elk-layout.js';
 import type { LayoutOptions } from './layout/elk-layout.js';
 import { layoutTree } from './layout/tree-layout.js';
+import { layoutUseCases } from './layout/use-case-layout.js';
+import type { LaidOutDiagram } from './layout/elk-layout.js';
 import { renderSvg } from './render/svg-renderer.js';
 import type { DiagramTitle } from './render/svg-renderer.js';
 import { renderSequenceSvg } from './render/sequence-renderer.js';
@@ -28,7 +30,7 @@ export interface RenderResult {
 type Extractor = (exposed: Member[], model: Model) => DiagramGraph;
 type Renderer = (exposed: Member[], model: Model, title: DiagramTitle, theme: Theme) => Promise<RenderResult>;
 
-function graphDiagram(extract: Extractor, layout: LayoutOptions): Renderer {
+function graphDiagram(extract: Extractor, layout: LayoutOptions = {}): Renderer {
     return async (exposed, model, title, theme) => {
         const graph = extract(exposed, model);
         const laidOut = await layoutGraph(graph, layout);
@@ -39,11 +41,11 @@ function graphDiagram(extract: Extractor, layout: LayoutOptions): Renderer {
     };
 }
 
-/** Laid out by ortho itself rather than ELK: a tree's shape is fully determined. */
-function treeDiagram(extract: Extractor): Renderer {
+/** Laid out by ortho itself rather than ELK, where the view's shape is fully determined. */
+function ownLayout(extract: Extractor, layout: (graph: DiagramGraph) => LaidOutDiagram): Renderer {
     return async (exposed, model, title, theme) => {
         const graph = extract(exposed, model);
-        const laidOut = layoutTree(graph);
+        const laidOut = layout(graph);
         return {
             svg: renderSvg(laidOut, title, theme),
             summary: `${laidOut.nodes.length} node(s), ${graph.edges.length} edge(s)`
@@ -53,10 +55,10 @@ function treeDiagram(extract: Extractor): Renderer {
 
 /** The six diagrams, in the order VIEWS.md introduces them. */
 const renderers: Record<DiagramKind, Renderer> = {
-    'use-case': graphDiagram(extractUseCaseGraph, { direction: 'RIGHT', edgeRouting: 'STRAIGHT' }),
-    'logical': treeDiagram(extractLogicalGraph),
-    'implementation': graphDiagram(extractImplementationGraph, { direction: 'DOWN', gridLeaves: true }),
-    'physical': graphDiagram(extractPhysicalGraph, { direction: 'DOWN' }),
+    'use-case': ownLayout(extractUseCaseGraph, layoutUseCases),
+    'logical': ownLayout(extractLogicalGraph, layoutTree),
+    'implementation': graphDiagram(extractImplementationGraph, { gridLeaves: true }),
+    'physical': graphDiagram(extractPhysicalGraph),
     'deployment': graphDiagram(extractDeploymentGraph, { algorithm: 'rectpacking' }),
     'process': async (exposed, _model, title, theme) => {
         const sequence = extractSequenceModel(exposed);

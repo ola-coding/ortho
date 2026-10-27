@@ -117,11 +117,12 @@ What people ask the system for, and who asks (§7.25).
 
 ```sysml
 package UseCases {
+    part def CoffeeMachine;
     part def Operator;
     part def Technician;
 
     use case def OperateMachine {
-        subject CoffeeMachine;
+        subject machine : CoffeeMachine;
         actor operator : Operator;
     }
 
@@ -132,7 +133,7 @@ package UseCases {
     }
 
     use case descale : OperateMachine {
-        subject CoffeeMachine;
+        subject machine;
         actor technician : Technician;
     }
 }
@@ -141,12 +142,15 @@ package UseCases {
 | You write | The view draws |
 |---|---|
 | `use case name : Def;` | a «use case» box, `name : Def`. A `use case def` is drawn itself, as a «use case def» box, only when no usage is typed by it. |
-| `subject Name;` in a use case (def) | a «subject» box, joined by a line to each use case it is the subject of |
-| `actor name : Type;` | a stick figure, `name : Type`: primary on a `use case def`, secondary on a single use case |
-| `include use case name;` (or `include name;`) | a solid «include» arrow. The target is a use case usage, never a definition. |
+| `subject name : System;` in a use case (def) | a «subject» box above the use cases, joined by a line to each it is the subject of |
+| `actor name : Type;` | a stick figure, `name : Type`, below the use cases: primary on a `use case def`, secondary on a single use case and drawn after the primary ones |
+| `include use case name;` (or `include name;`) | a solid «include» arrow to the use case beside it. The target is a use case usage, never a definition. |
 
 The subject is a use case's first parameter, so a use case that declares an
-actor states its `subject` first, as `descale` does.
+actor states its `subject` first, as `descale` does. Restated, it keeps its
+type: `descale`'s `machine` is the same `machine : CoffeeMachine`. Type the
+subject by a part def of its own, the system as a black box, as OMG's models
+do.
 
 ## Logical view
 

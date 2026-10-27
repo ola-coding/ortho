@@ -6,7 +6,7 @@ import { parseHelper } from 'langium/test';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
 import type { Model } from '../src/generated/ast.js';
 import { extractUseCaseGraph } from '../src/diagrams/use-case.js';
-import { layoutGraph } from '../src/layout/elk-layout.js';
+import { layoutUseCases } from '../src/layout/use-case-layout.js';
 import { renderSvg } from '../src/render/svg-renderer.js';
 import { darkGlassTheme, getTheme, lightTheme } from '../src/render/theme.js';
 
@@ -18,9 +18,7 @@ const title = { heading: 'Use case view — DroneUseCases', definition: 'General
 async function render(theme = lightTheme): Promise<string> {
     const text = await readFile(resolve(dirname(fileURLToPath(import.meta.url)), 'fixtures/use-case.sysml'), 'utf-8');
     const document = await parse(text, { validation: true });
-    const laidOut = await layoutGraph(
-        extractUseCaseGraph(document.parseResult.value.packages), { direction: 'RIGHT', edgeRouting: 'STRAIGHT' }
-    );
+    const laidOut = layoutUseCases(extractUseCaseGraph(document.parseResult.value.packages));
     return renderSvg(laidOut, title, theme);
 }
 

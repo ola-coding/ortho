@@ -8,7 +8,7 @@ import { parseSysmlFiles } from '../src/parser/parse.js';
 import { isActorUsage, isIncludeUsage, isUseCaseDef, isUseCaseUsage } from '../src/generated/ast.js';
 import type { Model, UseCaseUsage } from '../src/generated/ast.js';
 import { extractUseCaseGraph } from '../src/diagrams/use-case.js';
-import { layoutGraph } from '../src/layout/elk-layout.js';
+import { layoutUseCases } from '../src/layout/use-case-layout.js';
 import { renderSvg } from '../src/render/svg-renderer.js';
 
 const services = createSysmlServices();
@@ -94,17 +94,18 @@ describe('use-case diagram extraction', () => {
         );
     });
 
-    it('lays out the actor, the use cases and the subject left to right, and renders them', async () => {
+    it('stands the subject above the use cases and the actor below them, and renders them', async () => {
         const graph = extractUseCaseGraph((await parseExample()).packages);
-        const laidOut = await layoutGraph(graph, { direction: 'RIGHT' });
+        const laidOut = layoutUseCases(graph);
 
+        // As OMG draws a use case (§7.25): its subject above it.
         const actor = laidOut.nodes.find(n => n.shape === 'actor')!;
         const subject = laidOut.nodes.find(n => n.keyword === 'subject')!;
         const useCases = laidOut.nodes.filter(n => n.keyword === 'use case');
         expect(useCases).toHaveLength(4);
         for (const useCase of useCases) {
-            expect(actor.x + actor.width).toBeLessThanOrEqual(useCase.x);
-            expect(useCase.x + useCase.width).toBeLessThanOrEqual(subject.x);
+            expect(subject.y + subject.height).toBeLessThan(useCase.y);
+            expect(useCase.y + useCase.height).toBeLessThan(actor.y);
         }
 
         const svg = renderSvg(laidOut, { heading: 'Scenarios — DroneUseCases', source: 'examples/phase2-usecases.sysml' });
@@ -117,7 +118,7 @@ describe('use-case diagram extraction', () => {
         expect(svg).not.toContain('stroke-dasharray');
     });
 
-    it('stands a primary actor left of the use cases and a secondary one right', async () => {
+    it('stands a primary actor before a secondary one, each under its use cases', async () => {
         // The customer comes with every order, so it is declared on the def:
         // primary. The courier joins one use case only: secondary.
         const document = await parseOk(`
@@ -136,17 +137,19 @@ describe('use-case diagram extraction', () => {
                 }
             }
         `);
-        const laidOut = await layoutGraph(
-            extractUseCaseGraph(document.parseResult.value.packages), { direction: 'RIGHT', edgeRouting: 'STRAIGHT' }
-        );
+        const laidOut = layoutUseCases(extractUseCaseGraph(document.parseResult.value.packages));
         const byName = (name: string) => laidOut.nodes.find(n => n.name === name)!;
-        const useCases = laidOut.nodes.filter(n => n.keyword === 'use case');
+        const centre = (n: { x: number; width: number }) => n.x + n.width / 2;
         const customer = byName('customer : Customer');
         const courier = byName('courier : Courier');
         expect(laidOut.nodes.filter(n => n.shape === 'actor')).toHaveLength(2);
 
-        expect(customer.x + customer.width).toBeLessThanOrEqual(Math.min(...useCases.map(n => n.x)));
-        expect(courier.x).toBeGreaterThanOrEqual(Math.max(...useCases.map(n => n.x + n.width)));
+        // The customer centred under its three use cases, the courier after
+        // it, under deliver.
+        const orders = ['browse : Order', 'checkout : Order', 'deliver : Order'].map(byName);
+        expect(centre(customer)).toBeCloseTo(orders.reduce((sum, n) => sum + centre(n), 0) / 3);
+        expect(courier.x).toBeGreaterThan(customer.x + customer.width);
+        expect(centre(courier)).toBeCloseTo(centre(byName('deliver : Order')));
 
         // Each actor is joined to its own use cases and no others; the
         // customer's come through the def, deliver's included.
@@ -158,6 +161,45 @@ describe('use-case diagram extraction', () => {
         expect(joined(courier.id)).toEqual(['Shop::deliver']);
     });
 
+    it('stands each use case between the use cases it includes', async () => {
+        const examples = resolve(dirname(fileURLToPath(import.meta.url)), '../examples');
+        const row = async (example: string) => {
+            const { model } = await parseSysmlFiles(createSysmlServices().Sysml, [resolve(examples, example, 'use-case.sysml')]);
+            return layoutUseCases(extractUseCaseGraph(model.packages)).nodes
+                .filter(n => n.keyword === 'use case')
+                .sort((a, b) => a.x - b.x)
+                .map(n => n.name.split(' : ')[0]);
+        };
+        // Surveying includes planning and following: one on either side.
+        expect(await row('survey-drone')).toEqual(['planSurvey', 'surveyArea', 'followProgress']);
+        expect(await row('coffee-machine')).toEqual(['makeCappuccino', 'makeEspresso', 'descale']);
+    });
+
+    it('draws a subject a use case restates in the box of its def\'s subject', async () => {
+        // A use case adding an actor states its subject first; restated, the
+        // subject keeps its def's type.
+        const document = await parseOk(`
+            package Shop {
+                part def Webshop;
+                part def Customer;
+                part def Courier;
+                use case def Order {
+                    subject shop : Webshop;
+                    actor customer : Customer;
+                }
+                use case browse : Order;
+                use case deliver : Order {
+                    subject shop;
+                    actor courier : Courier;
+                }
+            }
+        `);
+        const graph = extractUseCaseGraph(document.parseResult.value.packages);
+        const subjects = graph.nodes.filter(n => n.keyword === 'subject');
+        expect(subjects.map(n => n.name)).toEqual(['shop : Webshop']);
+        expect(graph.edges.filter(e => e.targetId === subjects[0].id)).toHaveLength(2);
+    });
+
     it('draws every line straight, from outline to outline, clear of every box it does not join', async () => {
         const examples = resolve(dirname(fileURLToPath(import.meta.url)), '../examples');
         type Box = { x: number; y: number; width: number; height: number };
@@ -167,7 +209,7 @@ describe('use-case diagram extraction', () => {
             const { model } = await parseSysmlFiles(
                 createSysmlServices().Sysml, [resolve(examples, example, 'use-case.sysml')]
             );
-            const laidOut = await layoutGraph(extractUseCaseGraph(model.packages), { direction: 'RIGHT', edgeRouting: 'STRAIGHT' });
+            const laidOut = layoutUseCases(extractUseCaseGraph(model.packages));
             const boxes = laidOut.nodes.filter(n => n.shape === 'usage' || n.shape === 'definition');
             for (const edge of laidOut.edges) {
                 const line = `${example}: ${edge.sourceId} -> ${edge.targetId}`;

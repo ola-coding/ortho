@@ -81,7 +81,7 @@ describe('module APIs on the implementation view', () => {
             }
         `, { validation: true });
         const graph = extractImplementationGraph(document.parseResult.value.packages);
-        const laidOut = await layoutGraph(graph, { direction: 'DOWN', gridLeaves: true });
+        const laidOut = await layoutGraph(graph, { gridLeaves: true });
 
         const server = laidOut.nodes.find(n => n.name === 'Server')!;
         const client = laidOut.nodes.find(n => n.name === 'Client')!;
@@ -103,7 +103,7 @@ describe('module APIs on the implementation view', () => {
             }
         `, { validation: true });
         const graph = extractImplementationGraph(document.parseResult.value.packages);
-        const laidOut = await layoutGraph(graph, { direction: 'DOWN', gridLeaves: true });
+        const laidOut = await layoutGraph(graph, { gridLeaves: true });
 
         const pkg = laidOut.nodes.find(n => n.name === 'FirmwareModulesForTheFlightControllerBoard')!;
         const module = laidOut.nodes.find(n => n.name === 'A')!;

@@ -495,9 +495,10 @@ git diff --exit-code diagrams/</div>
             <div class="filename">examples/survey-drone/use-case.sysml</div>
 <pre class="code">
 part def Operator;
+part def SurveyDroneSystem;
 
 use case def SurveyTask {
-    subject SurveyDroneSystem;
+    subject system : SurveyDroneSystem;
     actor operator : Operator;
 }
 

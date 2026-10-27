@@ -5,10 +5,10 @@ import type {
     ActorUsage, Member, IncludeUsage, SubjectUsage, UseCaseDef, UseCaseUsage
 } from '../generated/ast.js';
 import type { DiagramGraph, GraphEdge, GraphNode } from '../model/graph.js';
-import { boxOf, qualifiedName } from '../model/graph.js';
+import { boxOf, effectiveName, qualifiedName } from '../model/graph.js';
 import { exposedMembers } from '../model/packages.js';
 import { measureText } from '../render/text-metrics.js';
-import { boxSize, usageLabel } from './connector-ends.js';
+import { boxSize, declaration, typeName, usageLabel } from './connector-ends.js';
 
 type UseCase = UseCaseDef | UseCaseUsage;
 
@@ -86,8 +86,7 @@ export function extractUseCaseGraph(exposed: Member[]): DiagramGraph {
     let edgeCounter = 0;
 
     // A line has no direction and is drawn without an arrowhead; the edge's
-    // direction only tells the layout which side of the use cases its other
-    // end belongs on.
+    // direction only tells the layout a secondary actor from a primary one.
     const join = (sourceId: string, targetId: string): void => {
         if (!joined.has(`${sourceId}->${targetId}`)) {
             joined.add(`${sourceId}->${targetId}`);
@@ -96,10 +95,10 @@ export function extractUseCaseGraph(exposed: Member[]): DiagramGraph {
     };
 
     // An actor declared on a use case def, and so shared by every use case of
-    // that kind, is a primary actor, drawn on the left. One added on a single
-    // use case only — someone the system acts on, not a user of it — is a
-    // secondary actor, drawn on the right. The distinction needs at least one
-    // actor to come through a def; otherwise every actor is primary.
+    // that kind, is a primary actor. One added on a single use case only —
+    // someone the system acts on, not a user of it — is a secondary actor,
+    // drawn after the primary ones. The distinction needs at least one actor
+    // to come through a def; otherwise every actor is primary.
     const actorKey = (actor: ActorUsage): string => (actor.type?.ref ? qualifiedName(actor.type.ref) : actor.name ?? '');
     const onDef = new Set<string>();
     for (const useCase of useCases) {
@@ -113,14 +112,18 @@ export function extractUseCaseGraph(exposed: Member[]): DiagramGraph {
 
     for (const [useCase, node] of boxByUseCase) {
         const members = effectiveMembers(useCase);
-        // The subject stands on the right, across the use cases from the
-        // primary actors.
-        const subject = members.find(isSubjectUsage);
-        if (subject) {
-            const label = usageLabel(subject);
+        // A use case restating its def's subject, `subject machine;`,
+        // redefines it and keeps its type: both are `machine : CoffeeMachine`,
+        // one box.
+        const declared = members.filter(isSubjectUsage);
+        if (declared.length > 0) {
+            const label = declaration(
+                declared.map(s => effectiveName(s)).find(name => name) ?? '',
+                declared.map(typeName).find(type => type)
+            );
             let subjectBox = subjects.get(label);
             if (!subjectBox) {
-                subjectBox = subjectNode(subject, label);
+                subjectBox = subjectNode(declared[0], label);
                 subjects.set(label, subjectBox);
                 nodes.push(subjectBox);
             }

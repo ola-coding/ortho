@@ -88,16 +88,11 @@ declare any view.
   spread in a row off a bus, the parent over its middle child, or over the
   middle of the row when there is none. ELK put every leaf in one row: 3322 px
   across for 27 functions.
-- **Use case lines are straight** (`src/layout/straight-edges.ts`). ELK places
-  the shapes, then each line is redrawn as one segment. Its end slides round
-  a box's outline, rounded corners included, 7.5° at a time until the line
-  clears every shape by 4 px; lines meet an actor in the order they leave it,
-  so they never cross there. When no sliding helps, the actor moves along its
-  column, 4 px at a time, up to 60 px, or further only to avoid crossing a
-  line already drawn. Lines between boxes go first, since nudging cannot move
-  them; a line nothing clears keeps ELK's route. The direction of an edge to
-  a secondary actor or the subject is only a layering hint, putting it on the
-  right.
+- **The use case view is laid out by ortho** (`src/layout/use-case-layout.ts`)
+  as OMG's examples are drawn: the subject above its use cases and the actors
+  below them, so that neither's lines cross a box, and each use case between
+  the use cases it includes, so that an «include» joins neighbours. ELK,
+  layering left to right, spread the view out with long lines across it.
 - **Realization, APIs and allocation are compartments.** An edge from a
   function to its realizer would need both on one diagram — a seventh view —
   so the part's box lists them instead; `paddingOf` adds the compartments'
@@ -105,8 +100,8 @@ declare any view.
   compartment too: a square on the border is for a port a wire lands on. A
   host lists what is allocated to it in its *relationships* compartment,
   since software drawn inside it would be its member.
-- **Labels** for ports, wires, «include» and «import» are real ELK labels, so
-  ELK reserves room for them; port labels are painted after every edge.
+- **Labels** for ports, wires and «import» are real ELK labels, so ELK
+  reserves room for them; port labels are painted after every edge.
   Keywords get guillemets; names do not.
 - **Sequence diagrams bypass ELK** (`src/render/sequence-renderer.ts`): gaps
   between lifelines widen only where a label needs it. A message runs from

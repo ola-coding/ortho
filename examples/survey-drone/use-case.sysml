@@ -1,16 +1,17 @@
 // Use case view: what an operator asks the system for.
 //
 // One need, in the operator's words: survey a ground area from the air, plan
-// it, and follow its progress while it flies. The subject is untyped: naming
-// the drone, the tablet or the radio would be realization detail, and this
-// view carries none.
+// it, and follow its progress while it flies. The subject is the system as a
+// black box: a part def of its own, naming neither the drone, the tablet nor
+// the radio.
 package UseCases {
     private import StandardViewDefinitions::*;
 
     part def Operator;
+    part def SurveyDroneSystem;
 
     use case def SurveyTask {
-        subject SurveyDroneSystem;
+        subject system : SurveyDroneSystem;
         actor operator : Operator;
     }
 

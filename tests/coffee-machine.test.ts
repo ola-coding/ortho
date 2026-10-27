@@ -64,7 +64,7 @@ describe('coffee machine example model', () => {
         ]);
         // Both use case defs name the machine as their subject: one box, a line to each.
         const subjects = graph.nodes.filter(n => n.keyword === 'subject');
-        expect(subjects.map(n => n.name)).toEqual(['CoffeeMachine']);
+        expect(subjects.map(n => n.name)).toEqual(['machine : CoffeeMachine']);
         expect(graph.edges.filter(e => e.targetId === subjects[0].id)).toHaveLength(3);
 
         expect(graph.nodes.filter(n => n.shape === 'actor').map(n => n.name).sort())

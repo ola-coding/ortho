@@ -42,11 +42,12 @@ declares it.
 
 How the system is used, and by whom — nothing about how it works.
 
-Use cases are «use case» boxes. Actors are stick figures: primary actors,
-declared on a use case definition, on the left; secondary ones, added on a
-single use case, on the right. The subject is a «subject» box on the right,
-joined to each of its use cases as an actor is. These lines are plain and
-straight, and an «include» is a solid arrow to the included use case.
+Drawn as OMG's examples are: the subject, a «subject» box, above its use
+cases, joined to each by a line. The use cases, «use case» boxes, stand in a
+row, each beside the use cases it includes, with a solid «include» arrow
+between them. The actors, stick figures, stand below: first the primary
+ones, declared on a use case definition, then the secondary ones, added on a
+single use case.
 
 ## Logical view
 

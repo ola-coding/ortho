@@ -22,11 +22,21 @@ export function endPart(end: ConnectorEnd | undefined): PartUsage | undefined {
     return undefined;
 }
 
-/** A usage as declared (§8.2.3.6): `name : Type`, or its name or `: Type` alone. */
-export function usageLabel(usage: AstNode & { type?: { ref?: { name?: string }; $refText: string } }): string {
-    const name = effectiveName(usage) ?? '';
-    const type = usage.type && (usage.type.ref?.name ?? usage.type.$refText);
+type Typed = { type?: { ref?: { name?: string }; $refText: string } };
+
+/** The type a usage names, as written. */
+export function typeName(usage: Typed): string | undefined {
+    return usage.type && (usage.type.ref?.name ?? usage.type.$refText);
+}
+
+/** A declaration as written (§8.2.3.6): `name : Type`, or the name or `: Type` alone. */
+export function declaration(name: string, type: string | undefined): string {
     return type === undefined ? name : name ? `${name} : ${type}` : `: ${type}`;
+}
+
+/** A usage as declared: `name : Type`, or its name or `: Type` alone. */
+export function usageLabel(usage: AstNode & Typed): string {
+    return declaration(effectiveName(usage) ?? '', typeName(usage));
 }
 
 /**

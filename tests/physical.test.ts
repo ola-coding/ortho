@@ -113,7 +113,7 @@ describe('physical diagram extraction', () => {
             }
         `, { validation: true });
         const graph = extractPhysicalGraph(exposedByView(document.parseResult.value));
-        const laidOut = await layoutGraph(graph, { direction: 'DOWN' });
+        const laidOut = await layoutGraph(graph);
 
         const housing = laidOut.nodes.find(n => n.name.startsWith('housing'))!;
         const inner = laidOut.nodes.find(n => n.name.startsWith('inner'))!;
