@@ -6,6 +6,7 @@
 // and they live in physical.sysml and implementation.sysml.
 package Functions {
     private import StandardViewDefinitions::*;
+    private import Views::*;
 
     action def MakeBeverage {
 
@@ -68,5 +69,7 @@ package Functions {
     view 'Logical view — Coffee Machine' : GeneralView {
         expose MakeBeverage;
         expose MaintainMachine;
+        // Drawn as a tree: the standard library's tree rendering (§7.26.2).
+        render asTreeDiagram;
     }
 }

@@ -84,9 +84,15 @@ name: the frame's tab reads «view» and the name (§8.2.3.26).
 ortho matches the definition by name rather than loading the standard library, so
 import `StandardViewDefinitions` for other tools.
 
+A view may also name how it is rendered (§7.26.2). The logical view says
+`render asTreeDiagram;`, the standard library's tree rendering, imported from
+`Views`. ortho draws a function tree as a tree either way; the line asks other
+tools to do the same.
+
 ```sysml
 package Functions {
     private import StandardViewDefinitions::*;
+    private import Views::*;
 
     action def MakeBeverage {
         action heatWater;
@@ -94,6 +100,7 @@ package Functions {
 
     view 'Logical view — Coffee Machine' : GeneralView {
         expose MakeBeverage;
+        render asTreeDiagram;
     }
 }
 ```

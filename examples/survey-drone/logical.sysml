@@ -5,6 +5,7 @@
 // in physical.sysml and implementation.sysml.
 package Functions {
     private import StandardViewDefinitions::*;
+    private import Views::*;
 
     action def PerformAerialSurvey {
 
@@ -62,5 +63,7 @@ package Functions {
 
     view 'Logical view — Survey Drone' : GeneralView {
         expose PerformAerialSurvey;
+        // Drawn as a tree: the standard library's tree rendering (§7.26.2).
+        render asTreeDiagram;
     }
 }
