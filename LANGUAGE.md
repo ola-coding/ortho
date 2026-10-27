@@ -80,7 +80,7 @@ the model; no view draws them.
 A model declares its views (§7.26), and ortho draws each: a `view` typed by
 one of the standard view definitions, exposing what the diagram shows. Its
 name is the diagram's heading (§7.26.5), in single quotes unless it is a plain
-name: the frame's tab reads «view» name : Definition (§8.2.3.26).
+name: the frame's tab reads «view» and the name (§8.2.3.26).
 ortho matches the definition by name rather than loading the standard library, so
 import `StandardViewDefinitions` for other tools.
 

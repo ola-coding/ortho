@@ -7,7 +7,7 @@ import { createSysmlServices } from '../src/parser/sysml-module.js';
 import type { Model } from '../src/generated/ast.js';
 import { extractUseCaseGraph } from '../src/diagrams/use-case.js';
 import { layoutUseCases } from '../src/layout/use-case-layout.js';
-import { renderSvg } from '../src/render/svg-renderer.js';
+import { renderFrame, renderSvg } from '../src/render/svg-renderer.js';
 import { darkGlassTheme, getTheme, lightTheme } from '../src/render/theme.js';
 
 const services = createSysmlServices();
@@ -26,8 +26,10 @@ describe('themes', () => {
     it('paints the light theme on paper, inside a frame', async () => {
         const svg = await render();
         expect(svg).toContain('fill="white"');
-        // The frame's tab names the view and its definition (§8.2.3.26).
-        expect(svg).toContain(`&#171;view&#187;</tspan><tspan font-weight="600"> ${title.heading}</tspan> : GeneralView`);
+        // The frame's tab names the view (§8.2.3.26); its definition is
+        // optional there, and left out.
+        expect(svg).toContain(`&#171;view&#187;</tspan><tspan font-weight="600"> ${title.heading}</tspan></text>`);
+        expect(svg).not.toContain(': GeneralView');
         expect(svg).toContain(title.source);
         expect(svg).toContain('fill="#fdfdf6"');
         expect(svg).not.toContain('url(#glass)');
@@ -67,6 +69,11 @@ describe('themes', () => {
         for (const coordinate of new Set(light)) {
             expect(dark, coordinate).toContain(coordinate);
         }
+    });
+
+    it('names an unnamed view by its definition', () => {
+        const frame = renderFrame(400, 300, { heading: '', definition: 'GeneralView', source: 'inline' }, lightTheme);
+        expect(frame).toContain('&#171;view&#187;</tspan><tspan font-weight="600"></tspan> : GeneralView</text>');
     });
 
     it('knows its themes by name', () => {

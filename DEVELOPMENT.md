@@ -106,9 +106,10 @@ declare any view.
 - **Sequence diagrams bypass ELK** (`src/render/sequence-renderer.ts`): gaps
   between lifelines widen only where a label needs it. A message runs from
   lifeline to lifeline, since SysML v2 draws no activation bars.
-- **The frame** is SysML v2's: its tab reads «view» name : Definition, and
+- **The frame** is SysML v2's: its tab reads «view» and the view's name, and
   the file that declares the view sits in its bottom-right compartment, so a
-  diagram names its source. Boxes get their corners and keyword from what
+  diagram names its source. The view's definition, optional in the tab, is
+  shown only for a view without a name. Boxes get their corners and keyword from what
   they draw (`boxOf`): square for a definition, rounded for a usage.
 - **Themes are colour only** (`src/render/theme.ts`). Every coordinate is
   fixed before a theme is consulted, and a test asserts both themes place

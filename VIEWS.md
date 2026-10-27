@@ -35,8 +35,7 @@ flowchart TD
 Every view is drawn in SysML v2's graphical notation (§8.2.3). A definition
 is a box with square corners and a usage one with rounded corners, each with
 its keyword above its name: «part def», «part», «action». The frame's tab
-names the view and its definition, and its bottom-right corner the file that
-declares it.
+names the view, and its bottom-right corner the file that declares it.
 
 ## Use case view
 

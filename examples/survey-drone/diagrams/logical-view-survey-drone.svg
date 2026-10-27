@@ -13,9 +13,9 @@
   </defs>
   <rect x="0" y="0" width="1420.76" height="430" fill="white" />
   <rect x="8" y="8" width="1404.76" height="414" rx="10" ry="10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-  <path d="M8,30 L8,18 A10,10 0 0 1 18,8 L289.08299999999997,8 L289.08299999999997,22 A8,8 0 0 1 281.08299999999997,30 Z"
+  <path d="M8,30 L8,18 A10,10 0 0 1 18,8 L216.945,8 L216.945,22 A8,8 0 0 1 208.945,30 Z"
         fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
-  <text x="18" y="23" font-size="11" fill="#1a1a1a"><tspan fill="#555555">&#171;view&#187;</tspan><tspan font-weight="600"> Logical view — Survey Drone</tspan> : GeneralView</text>
+  <text x="18" y="23" font-size="11" fill="#1a1a1a"><tspan fill="#555555">&#171;view&#187;</tspan><tspan font-weight="600"> Logical view — Survey Drone</tspan></text>
   <path d="M1249.727,422 L1249.727,413 A6,6 0 0 1 1255.727,407 L1412.76,407"
         fill="none" stroke="#2b2b2b" stroke-width="1.25" />
   <text x="1404.76" y="418" text-anchor="end" font-size="9" fill="#8a8a86">examples/survey-drone/logical.sysml</text>

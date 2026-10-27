@@ -31,14 +31,14 @@ export function escapeXml(text: string): string {
 }
 
 /**
- * What the frame says: the view's name and definition in its tab, and the
- * model file that declares the view in its bottom-right corner
+ * What the frame says: the view's name in its tab, and the model file that
+ * declares the view in its bottom-right corner
  * (everything-as-code: every SVG names the file that generated it).
  */
 export interface DiagramTitle {
     /** The view's name; empty for an unnamed view. */
     heading: string;
-    /** Its view definition, as written: `GeneralView`. */
+    /** Its view definition, as written: `GeneralView`. The tab shows it only for an unnamed view. */
     definition?: string;
     source: string;
 }
@@ -53,8 +53,9 @@ const INFO_RADIUS = 6;
 
 /**
  * The view frame (§8.2.3.26): a rounded border, a tab in its top-left corner
- * reading `«view» name : Definition`, and an info compartment in its
- * bottom-right corner holding the source file.
+ * reading «view» and the view's name, and an info compartment in its
+ * bottom-right corner holding the source file. The view's definition is
+ * optional there, and stands in only for a missing name.
  */
 export function renderFrame(width: number, height: number, title: DiagramTitle, t: Theme): string {
     if (!t.frame) {
@@ -65,7 +66,7 @@ export function renderFrame(width: number, height: number, title: DiagramTitle, 
     const right = width - FRAME_INSET;
     const bottom = height - FRAME_INSET;
     const name = title.heading ? ` ${title.heading}` : '';
-    const definition = title.definition ? ` : ${title.definition}` : '';
+    const definition = !title.heading && title.definition ? ` : ${title.definition}` : '';
     const tabRight = left + 22 + measureText('«view»', 11) + measureText(name, 11, 'bold') + measureText(definition, 11);
     const tabBottom = top + TAB_HEIGHT;
     const infoLeft = right - measureText(title.source, 9) - 16;

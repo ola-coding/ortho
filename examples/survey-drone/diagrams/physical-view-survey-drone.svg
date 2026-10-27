@@ -13,9 +13,9 @@
   </defs>
   <rect x="0" y="0" width="845.3341666666666" height="1279" fill="white" />
   <rect x="8" y="8" width="829.3341666666666" height="1263" rx="10" ry="10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-  <path d="M8,30 L8,18 A10,10 0 0 1 18,8 L331.29,8 L331.29,22 A8,8 0 0 1 323.29,30 Z"
+  <path d="M8,30 L8,18 A10,10 0 0 1 18,8 L223.072,8 L223.072,22 A8,8 0 0 1 215.072,30 Z"
         fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
-  <text x="18" y="23" font-size="11" fill="#1a1a1a"><tspan fill="#555555">&#171;view&#187;</tspan><tspan font-weight="600"> Physical view — Survey Drone</tspan> : InterconnectionView</text>
+  <text x="18" y="23" font-size="11" fill="#1a1a1a"><tspan fill="#555555">&#171;view&#187;</tspan><tspan font-weight="600"> Physical view — Survey Drone</tspan></text>
   <path d="M667.2991666666667,1271 L667.2991666666667,1262 A6,6 0 0 1 673.2991666666667,1256 L837.3341666666666,1256"
         fill="none" stroke="#2b2b2b" stroke-width="1.25" />
   <text x="829.3341666666666" y="1267" text-anchor="end" font-size="9" fill="#8a8a86">examples/survey-drone/physical.sysml</text>
