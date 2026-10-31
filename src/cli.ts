@@ -50,7 +50,11 @@ program
         }
 
         try {
-            const { rendered, skipped } = await renderViews(await parseSysmlFiles(createSysmlServices().Sysml, uniqueFiles), theme);
+            const parsed = await parseSysmlFiles(createSysmlServices().Sysml, uniqueFiles);
+            for (const warning of parsed.warnings) {
+                console.error(`Warning: ${warning}`);
+            }
+            const { rendered, skipped } = await renderViews(parsed, theme);
             for (const { view, reason } of skipped) {
                 console.error(`Skipped '${viewHeading(view)}': ${reason}`);
             }

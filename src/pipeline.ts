@@ -93,7 +93,7 @@ export interface ModelRendering {
  * draw is passed over with the reason; two views that would be written to the
  * same file are an error.
  */
-export async function renderViews(parsed: ParsedModel, theme: Theme = lightTheme): Promise<ModelRendering> {
+export async function renderViews(parsed: Pick<ParsedModel, 'model' | 'documents'>, theme: Theme = lightTheme): Promise<ModelRendering> {
     const skipped: ModelRendering['skipped'] = [];
     const byFile = new Map<string, ViewUsage>();
     for (const view of parsed.documents.flatMap(document => declaredViews(document.parseResult.value))) {

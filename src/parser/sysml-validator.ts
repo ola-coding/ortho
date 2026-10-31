@@ -1,10 +1,11 @@
 import { GrammarUtils } from 'langium';
 import type { AstNode, ValidationAcceptor, ValidationChecks } from 'langium';
 import {
-    isActorUsage, isAttributeUsage, isConnectionUsage, isOtherUsage, isPackageDecl, isPartUsage, isPortUsage,
+    isActorUsage, isAttributeUsage, isConnectionUsage, isModel, isOtherUsage, isPackageDecl, isPartUsage, isPortUsage,
     isSubjectUsage
 } from '../generated/ast.js';
-import type { ConnectorEnd, PerformUsage, SysmlAstType, UseCaseDef, UseCaseUsage } from '../generated/ast.js';
+import type { ConnectorEnd, PackageDecl, PerformUsage, SysmlAstType, UseCaseDef, UseCaseUsage } from '../generated/ast.js';
+import { LIBRARY } from '../model/library.js';
 import type { SysmlServices } from './sysml-module.js';
 
 /**
@@ -34,12 +35,14 @@ export const RESERVED_WORDS: ReadonlySet<string> = new Set([
  * Checks that keep a model ortho accepts a valid SysML v2 model, where the
  * grammar alone cannot: a name must not be a reserved word, a connector end
  * may not name a feature through its owner by qualified name, and a use case
- * that declares actors declares its subject first.
+ * that declares actors declares its subject first. One more is only a warning:
+ * a package should not take the name of a standard library package.
  */
 export function registerValidationChecks(services: SysmlServices): void {
     const checks: ValidationChecks<SysmlAstType> = {
         AstNode: checkNameNotReserved,
         ConnectorEnd: checkEndStartsAtAccessibleFeature,
+        PackageDecl: checkPackageNotNamedAfterLibrary,
         PerformUsage: checkPerformTarget,
         UseCaseDef: checkSubjectBeforeActors,
         UseCaseUsage: checkSubjectBeforeActors
@@ -55,6 +58,21 @@ function checkNameNotReserved(node: AstNode, accept: ValidationAcceptor): void {
         if (typeof name === 'string' && RESERVED_WORDS.has(name) && !written?.startsWith("'")) {
             accept('error', `'${name}' is a reserved word in SysML v2 and cannot be a name.`, { node, property });
         }
+    }
+}
+
+/**
+ * A top-level package named after a standard library package hides it, and
+ * which of the two a reference finds depends on the tool. ortho finds the
+ * model's; OMG's pilot implementation finds the library's when the reference is
+ * in the same file. So the model renders here and may fail elsewhere, which is
+ * worth a warning but no reason to stop.
+ */
+function checkPackageNotNamedAfterLibrary(pkg: PackageDecl, accept: ValidationAcceptor): void {
+    if (isModel(pkg.$container) && !pkg.isLibrary && pkg.name && Object.hasOwn(LIBRARY, pkg.name)) {
+        accept('warning',
+            `Package '${pkg.name}' has the name of a standard library package and hides it, and other tools may find the library's instead. Rename it.`,
+            { node: pkg, property: 'name' });
     }
 }
 

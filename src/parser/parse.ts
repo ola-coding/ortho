@@ -9,6 +9,8 @@ export interface ParsedModel {
     model: Model;
     /** One document per input file, in input order. */
     documents: Array<LangiumDocument<Model>>;
+    /** What the validator warns of, `file line n: message`. None of it stops a model rendering. */
+    warnings: string[];
 }
 
 /**
@@ -24,21 +26,19 @@ export async function parseSysmlFiles(services: SysmlServices, filePaths: string
     }
     await services.shared.workspace.DocumentBuilder.build(documents, { validation: true });
 
-    const failures: string[] = [];
-    documents.forEach((document, i) => {
-        for (const error of (document.diagnostics ?? []).filter(d => d.severity === 1)) {
+    // LSP's severities: 1 is an error, 2 a warning.
+    const reported = (severity: 1 | 2): string[] => documents.flatMap((document, i) =>
+        (document.diagnostics ?? []).filter(d => d.severity === severity).map(d =>
             // LSP 3.18 lets a message be markup; ortho's own are plain strings.
-            const message = typeof error.message === 'string' ? error.message : error.message.value;
-            failures.push(`  ${filePaths[i]} line ${error.range.start.line + 1}: ${message}`);
-        }
-    });
+            `${filePaths[i]} line ${d.range.start.line + 1}: ${typeof d.message === 'string' ? d.message : d.message.value}`));
+    const failures = reported(1);
     if (failures.length > 0) {
-        throw new Error(`Failed to parse:\n${failures.join('\n')}`);
+        throw new Error(`Failed to parse:\n${failures.map(failure => `  ${failure}`).join('\n')}`);
     }
 
     const model = {
         $type: 'Model',
         packages: documents.flatMap(d => d.parseResult.value.packages)
     } as unknown as Model;
-    return { model, documents };
+    return { model, documents, warnings: reported(2) };
 }

@@ -1,7 +1,11 @@
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { parseHelper } from 'langium/test';
 import type { LangiumDocument } from 'langium';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
+import { parseSysmlFiles } from '../src/parser/parse.js';
 import {
     isActionDef, isAllocationUsage, isAttributeUsage, isConnectionUsage, isMessageUsage, isOtherDefinition, isOtherUsage,
     isPackageDecl, isPartDef, isPartUsage, isPortDef, isPortUsage, isSatisfyUsage
@@ -565,5 +569,45 @@ describe('SysML v2 conformance', () => {
             }`;
         expect(await errorsOf(text('Command'))).toEqual([]);
         expect(await errorsOf(text('Undeclared'))).not.toHaveLength(0);
+    });
+});
+
+describe('a package named after a standard library package', () => {
+    const reported = async (text: string, severity: number) => ((await parse(text, { validation: true })).diagnostics ?? [])
+        .filter(d => d.severity === severity).map(d => d.message);
+    const WARNING = "Package 'UseCases' has the name of a standard library package and hides it, and other tools may find the library's instead. Rename it.";
+
+    it('is a warning, not an error, as the model still loads', async () => {
+        const text = 'package UseCases { use case def A; }';
+        expect(await reported(text, 2)).toEqual([WARNING]);
+        expect(await reported(text, 1)).toEqual([]);
+        // Quoted, it is the same name.
+        expect(await reported("package 'UseCases';", 2)).toEqual([WARNING]);
+    });
+
+    it('leaves alone any other package, and the library itself', async () => {
+        for (const text of [
+            'package SystemUseCases;',
+            'package Outer { package UseCases; }',
+            'standard library package UseCases;',
+            'library package Views;',
+            // A name every JavaScript object has, which the library does not.
+            'package toString;'
+        ]) {
+            expect(await reported(text, 2), text).toEqual([]);
+        }
+    });
+
+    it('is handed back with its file and line, and does not stop the model loading', async () => {
+        const folder = await mkdtemp(join(tmpdir(), 'ortho-'));
+        const file = join(folder, 'model.sysml');
+        await writeFile(file, '// A note.\npackage UseCases { use case def A; }\n');
+        try {
+            const { model, warnings } = await parseSysmlFiles(createSysmlServices().Sysml, [file]);
+            expect(model.packages.map(p => p.name)).toEqual(['UseCases']);
+            expect(warnings).toEqual([`${file} line 2: ${WARNING}`]);
+        } finally {
+            await rm(folder, { recursive: true });
+        }
     });
 });

@@ -70,9 +70,9 @@ for other files to start from.
 one of SysML v2's 128 reserved words, even those ortho does not use, such as
 `frame`, `state`, `item`, `flow` and `out`. A short name in angle brackets,
 `part def <BU> 'Brew unit';`, names the element too, as does an `alias`. Name
-no package after a standard library package, such as `UseCases`, `Requirements`
-or `Views`: it hides the library's, and a reference to it may find the library's
-instead.
+no top-level package after a standard library package, such as `UseCases`,
+`Requirements` or `Views`: it hides the library's, and other tools may find the
+library's instead. ortho warns of one, and renders anyway.
 
 **Comments** (§8.2.2.4). `// ...` and `//* ... */` are notes, which no tool
 keeps. `/* ... */`, `doc /* ... */` and `comment about x /* ... */` are part of

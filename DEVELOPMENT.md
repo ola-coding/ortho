@@ -58,10 +58,11 @@ from one made a single broken file take seconds.
 it can. After linking, the validator checks the rules it cannot, all listed
 in [LANGUAGE.md](LANGUAGE.md): no reserved word as a name, chains that start
 at a usage, and a use case's subject before its actors — each found by running
-the examples through the OMG pilot implementation. That also found what ortho
-does not check: a package named after a standard library package, such as
-`UseCases`, hides the library's, and a reference to it may find the library's
-instead, so a test keeps the examples and LANGUAGE.md clear of those names.
+the examples through the OMG pilot implementation. One rule is only a warning,
+which the CLI prints before carrying on: a top-level package named after a
+standard library package, such as `UseCases`, hides the library's. ortho finds
+the model's, while the pilot may find the library's, so such a model renders
+here and may fail elsewhere.
 Whether ortho can draw a view is asked only when one is rendered
 (`whyUndrawable`), since a model may declare any view.
 
@@ -253,6 +254,8 @@ In priority order:
   implementation view of a cloud solution built from a vendor's services, whose
   modules' headings say what they specialize, `OrderTable :> DynamoDB`. Both
   examples and LANGUAGE.md pass OMG's pilot implementation, 0.63.1.
+- [x] **Warn of a package named after a standard library package**, such as
+  `UseCases`, which OMG's pilot implementation may refuse where ortho would not.
 - [ ] **Prepare for NPX.** Publish ortho on npm, so it runs without the repo.
   First clean up `package.json`, the README and whatever else publishing
   needs. The name `ortho` is taken on npm, so publish under a scope, such as

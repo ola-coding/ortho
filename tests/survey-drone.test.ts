@@ -296,5 +296,5 @@ describe('survey drone example model', () => {
         }
         // Each diagram names the file that declares its view.
         expect(rendered.find(r => diagramKind(r.view) === 'physical')!.result.svg).toContain('examples/survey-drone/physical.sysml');
-    }, 30_000);
+    });
 });

@@ -236,5 +236,5 @@ describe('coffee machine example model', () => {
         }
         // Each diagram names the file that declares its view.
         expect(rendered.find(r => diagramKind(r.view) === 'physical')!.result.svg).toContain('examples/coffee-machine/physical.sysml');
-    }, 30_000);
+    });
 });
