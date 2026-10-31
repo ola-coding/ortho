@@ -1,7 +1,8 @@
 import { AstUtils } from 'langium';
 import type { AstNode } from 'langium';
 import {
-    isActionDef, isAllocationUsage, isPackageDecl, isPartUsage, isUseCaseDef, isUseCaseUsage, isViewUsage
+    isActionDef, isAllocationUsage, isOtherDefinition, isPackageDecl, isPartUsage, isUseCaseDef, isUseCaseUsage,
+    isViewUsage
 } from '../generated/ast.js';
 import type { Member, ViewUsage } from '../generated/ast.js';
 
@@ -9,7 +10,8 @@ import type { Member, ViewUsage } from '../generated/ast.js';
 export const STANDARD_VIEWS = {
     GeneralView: (e: Member) => isPackageDecl(e) || isActionDef(e) || isUseCaseDef(e) || isUseCaseUsage(e),
     InterconnectionView: (e: Member) => isPartUsage(e),
-    SequenceView: (e: Member) => isActionDef(e)
+    // A scenario: an `occurrence def`, or an `action def`, which is one too.
+    SequenceView: (e: Member) => isActionDef(e) || (isOtherDefinition(e) && e.kind === 'occurrence')
 };
 
 export type StandardView = keyof typeof STANDARD_VIEWS;
@@ -24,7 +26,7 @@ export function standardView(view: ViewUsage): StandardView | undefined {
 const EXPOSES: Record<StandardView, string> = {
     GeneralView: 'packages, action definitions or use cases',
     InterconnectionView: 'parts',
-    SequenceView: 'an action definition'
+    SequenceView: 'an occurrence definition'
 };
 
 /**

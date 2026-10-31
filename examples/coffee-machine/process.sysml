@@ -7,29 +7,29 @@ package MakeCappuccinoScenario {
     private import Software::*;
     private import StandardViewDefinitions::*;
 
-    // What the messages carry. Values, not things, so attribute defs.
-    attribute def BeverageRecipe;
-    attribute def TempSetpoint;
-    attribute def DoseSetting;
-    attribute def MilkSetting;
+    // What the messages carry.
+    item def BeverageRecipe;
+    item def TempSetpoint;
+    item def DoseSetting;
+    item def MilkSetting;
 
-    action def MakeCappuccino {
+    occurrence def MakeCappuccino {
         part user;
-        part ui : Application::UiApp;
-        part recipes : Application::RecipeEngine;
-        part temperature : Control::TemperatureController;
-        part brew : Control::BrewController;
-        part milk : Control::MilkController;
+        part uiApp : Application::UiApp;
+        part recipeEngine : Application::RecipeEngine;
+        part temperatureController : Control::TemperatureController;
+        part brewController : Control::BrewController;
+        part milkController : Control::MilkController;
 
-        message selectCappuccino from user to ui;
-        then message startBeverage of BeverageRecipe from ui to recipes;
-        then message heatTo of TempSetpoint from recipes to temperature;
-        then message atTemperature from temperature to recipes;
-        then message grindAndBrew of DoseSetting from recipes to brew;
-        then message extractShot from brew to brew;
-        then message shotComplete from brew to recipes;
-        then message frothMilk of MilkSetting from recipes to milk;
-        then message beverageReady from recipes to ui;
+        message selectCappuccino from user to uiApp;
+        then message startBeverage of BeverageRecipe from uiApp to recipeEngine;
+        then message heatTo of TempSetpoint from recipeEngine to temperatureController;
+        then message atTemperature from temperatureController to recipeEngine;
+        then message grindAndBrew of DoseSetting from recipeEngine to brewController;
+        then message extractShot from brewController to brewController;
+        then message shotComplete from brewController to recipeEngine;
+        then message frothMilk of MilkSetting from recipeEngine to milkController;
+        then message beverageReady from recipeEngine to uiApp;
     }
 
     view 'Process view — Coffee Machine' : SequenceView {

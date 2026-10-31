@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="324.84000000000003" height="383"
-     viewBox="0 0 324.84000000000003 383" font-family="Arial, Helvetica, Liberation Sans, DejaVu Sans, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="344.079" height="383"
+     viewBox="0 0 344.079 383" font-family="Arial, Helvetica, Liberation Sans, DejaVu Sans, sans-serif">
   <title>Deployment view — Coffee Machine (generated from examples/coffee-machine/deployment.sysml)</title>
   <defs>
     <marker id="openArrow" markerWidth="12" markerHeight="12" refX="10" refY="5"
@@ -11,39 +11,39 @@
       <path d="M0,4 L6,0 L12,4 L6,8 z" fill="#2b2b2b" />
     </marker>
   </defs>
-  <rect x="0" y="0" width="324.84000000000003" height="383" fill="white" />
-  <rect x="8" y="8" width="308.84000000000003" height="367" rx="10" ry="10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+  <rect x="0" y="0" width="344.079" height="383" fill="white" />
+  <rect x="8" y="8" width="328.079" height="367" rx="10" ry="10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
   <path d="M8,30 L8,18 A10,10 0 0 1 18,8 L291.745,8 L291.745,22 A8,8 0 0 1 283.745,30 Z"
         fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
   <text x="18" y="23" font-size="11" fill="#1a1a1a"><tspan fill="#555555">&#171;view&#187;</tspan><tspan font-weight="600"> Deployment view — Coffee Machine</tspan></text>
-  <path d="M98.71800000000002,375 L98.71800000000002,366 A6,6 0 0 1 104.71800000000002,360 L316.84000000000003,360"
+  <path d="M117.957,375 L117.957,366 A6,6 0 0 1 123.957,360 L336.079,360"
         fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-  <text x="308.84000000000003" y="371" text-anchor="end" font-size="9" fill="#8a8a86">examples/coffee-machine/deployment.sysml</text>
+  <text x="328.079" y="371" text-anchor="end" font-size="9" fill="#8a8a86">examples/coffee-machine/deployment.sysml</text>
   
-    <g><rect x="39" y="63" width="246.84" height="275" rx="10" ry="10"
+    <g><rect x="39" y="63" width="266.079" height="275" rx="10" ry="10"
           fill="#f6f6ec" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="162.42000000000002" y="76" text-anchor="middle"
+      <text x="172.0395" y="76" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="162.42000000000002" y="89" text-anchor="middle"
+      <text x="172.0395" y="89" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">machine : CoffeeMachine</text></g>
-    <g><rect x="64" y="108" width="196.84" height="113" rx="10" ry="10"
+    <g><rect x="64" y="108" width="216.079" height="113" rx="10" ry="10"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="162.42000000000002" y="121" text-anchor="middle"
+      <text x="172.0395" y="121" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="162.42000000000002" y="134" text-anchor="middle"
+      <text x="172.0395" y="134" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">controller : ControlBoard</text>
-      <line x1="64" y1="140" x2="260.84000000000003" y2="140"
+      <line x1="64" y1="140" x2="280.079" y2="140"
           stroke="#2b2b2b" stroke-width="1" />
       <text x="72" y="151"
           font-size="9" fill="#555555">relationships</text>
       <text x="72" y="165"
-          font-size="11" fill="#1a1a1a">allocated sw.recipes</text>
+          font-size="11" fill="#1a1a1a">allocated sw::recipeEngine</text>
       <text x="72" y="180"
-          font-size="11" fill="#1a1a1a">allocated sw.brew</text>
+          font-size="11" fill="#1a1a1a">allocated sw::brewController</text>
       <text x="72" y="195"
-          font-size="11" fill="#1a1a1a">allocated sw.temperature</text>
+          font-size="11" fill="#1a1a1a">allocated sw::temperatureController</text>
       <text x="72" y="210"
-          font-size="11" fill="#1a1a1a">allocated sw.milk</text></g>
+          font-size="11" fill="#1a1a1a">allocated sw::milkController</text></g>
     <g><rect x="64" y="245" width="180.112" height="68" rx="10" ry="10"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
       <text x="154.05599999999998" y="258" text-anchor="middle"
@@ -55,6 +55,6 @@
       <text x="72" y="288"
           font-size="9" fill="#555555">relationships</text>
       <text x="72" y="302"
-          font-size="11" fill="#1a1a1a">allocated sw.uiApp</text></g>
+          font-size="11" fill="#1a1a1a">allocated sw::uiApp</text></g>
   
 </svg>

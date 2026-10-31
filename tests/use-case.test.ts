@@ -94,6 +94,40 @@ describe('use-case diagram extraction', () => {
         );
     });
 
+    it('draws a use case an include declares as a box of its own', async () => {
+        const model = (await parseOk(`
+            package P {
+                part def System;
+                use case def Help { subject system : System; }
+                use case main { include use case help : Help; }
+            }
+        `)).parseResult.value;
+        const graph = extractUseCaseGraph(model.packages);
+        expect(graph.nodes.filter(n => n.keyword === 'use case').map(n => n.name)).toEqual(['main', 'help : Help']);
+        // As for any usage, the def it is typed by is not shown itself, and
+        // what the def declares comes with it.
+        expect(graph.nodes.some(n => n.name === 'Help')).toBe(false);
+        expect(graph.nodes.filter(n => n.keyword === 'subject').map(n => n.name)).toEqual(['system : System']);
+
+        const includes = layoutUseCases(graph).edges.filter(e => e.kind === 'include');
+        expect(includes.map(e => [e.sourceId, e.targetId])).toEqual([['P::main', 'P::main::help']]);
+    });
+
+    it('keeps a use case an include declares apart from one of the same name', async () => {
+        const model = (await parseOk(`
+            package P {
+                use case help;
+                use case a { include use case help; }
+                use case b { include help; }
+            }
+        `)).parseResult.value;
+        const graph = extractUseCaseGraph(model.packages);
+        expect(graph.edges.filter(e => e.kind === 'include').map(e => [e.sourceId, e.targetId])).toEqual([
+            ['P::a', 'P::a::help'],
+            ['P::b', 'P::help']
+        ]);
+    });
+
     it('stands the subject above the use cases and the actor below them, and renders them', async () => {
         const graph = extractUseCaseGraph((await parseExample()).packages);
         const laidOut = layoutUseCases(graph);

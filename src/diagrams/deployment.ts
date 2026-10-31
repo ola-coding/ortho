@@ -6,14 +6,17 @@ import { boxOf, qualifiedName } from '../model/graph.js';
 import { boxSize, endPart, usageLabel } from './connector-ends.js';
 import { measureText } from '../render/text-metrics.js';
 
-/** A connector end as written: `sw.recipes`. */
-function endText(end: ConnectorEnd): string {
-    return end.segments.map(segment => segment.$refText).join('.');
+/**
+ * A connector end as the *relationships* compartment names it, by qualified
+ * name (§8.2.3.5): the model's chain `sw.recipeEngine` reads `sw::recipeEngine`.
+ */
+function endName(end: ConnectorEnd): string {
+    return end.segments.map(segment => segment.$refText).join('::');
 }
 
 /**
  * A host: a «part» box listing what is allocated to it in its *relationships*
- * compartment (§8.2.3.5), `allocated sw.recipes`.
+ * compartment (§8.2.3.5), `allocated sw::recipeEngine`.
  */
 function hostNode(host: PartUsage, allocated: string[]): GraphNode {
     const name = usageLabel(host);
@@ -104,8 +107,8 @@ export function extractDeploymentGraph(exposed: Member[], model: Model): Diagram
             continue;
         }
         const software = allocated.get(host) ?? [];
-        if (!software.includes(endText(allocation.source))) {
-            software.push(endText(allocation.source));
+        if (!software.includes(endName(allocation.source))) {
+            software.push(endName(allocation.source));
         }
         allocated.set(host, software);
     }

@@ -112,49 +112,53 @@ package Software {
             private import Software::Onboard::Perception;
 
             part def RoutePlanner {
-            perform survey.plan.planRoute;
+                perform survey.plan.planRoute;
 
-            port route : Apis::RouteTopic;
-            port world : ~Apis::WorldTopic;
-            port mission : ~Apis::MissionTopic;
-        }
+                port route : Apis::RouteTopic;
+                port world : ~Apis::WorldTopic;
+                port mission : ~Apis::MissionTopic;
+            }
+
             part def ObstacleAvoidance {
-            perform survey.guideNavigateAndControl.avoidObstacles;
+                perform survey.guideNavigateAndControl.avoidObstacles;
 
-            port world : ~Apis::WorldTopic;
-        }
+                port world : ~Apis::WorldTopic;
+            }
         }
 
         package Perception {
             part def VideoStreamer {
-            perform survey.communicate.streamVideo;
+                perform survey.communicate.streamVideo;
 
-            port video : Apis::VideoTopic;
-        }
+                port video : Apis::VideoTopic;
+            }
+
             part def SensorFusion {
-            perform survey.perceive.fuseSensorData;
+                perform survey.perceive.fuseSensorData;
 
-            port world : Apis::WorldTopic;
-        }
+                port world : Apis::WorldTopic;
+            }
+
             part def WorldModel {
-            perform survey.perceive.maintainWorldModel;
+                perform survey.perceive.maintainWorldModel;
 
-            port world : Apis::WorldTopic;
-        }
+                port world : Apis::WorldTopic;
+            }
         }
 
         package Services {
             part def Diagnostics {
-            perform survey.superviseSystem.monitorHealth;
+                perform survey.superviseSystem.monitorHealth;
 
-            port health : Apis::HealthTopic;
-        }
+                port health : Apis::HealthTopic;
+            }
+
             part def DataLogger {
-            perform survey.superviseSystem.recordFlightData;
+                perform survey.superviseSystem.recordFlightData;
 
-            port health : ~Apis::HealthTopic;
-            port video : ~Apis::VideoTopic;
-        }
+                port health : ~Apis::HealthTopic;
+                port video : ~Apis::VideoTopic;
+            }
         }
     }
 
@@ -165,6 +169,7 @@ package Software {
         part def ZenohRouter {
             port transport : Apis::TransportApi;
         }
+
         // Turns the flight firmware's MAVLink into Zenoh topics, and back.
         part def MavlinkBridge {
             perform survey.communicate.exchangeTelemetry;
@@ -172,10 +177,12 @@ package Software {
             port mavlink : ~Apis::MavlinkApi;
             port mission : ~Apis::MissionTopic;
         }
+
         // Video capture, encoding and streaming.
         part def GStreamer {
             port transport : ~Apis::TransportApi;
         }
+
         // Encrypts everything that crosses the radio link.
         part def WireGuardTunnel {
             port transport : ~Apis::TransportApi;
@@ -187,13 +194,16 @@ package Software {
         part def ContainerRuntime {
             port containers : Apis::ContainerApi;
         }
+
         // A/B system images, so a failed update rolls itself back.
         part def OtaUpdateAgent {
             port containers : ~Apis::ContainerApi;
         }
+
         part def MinimalLinux {
             port containers : ~Apis::ContainerApi;
         }
+
         part def SecureBoot;
     }
 
@@ -246,45 +256,49 @@ package Software {
     // The bottom of the firmware stack — the counterpart of LinuxPlatform, and
     // the reason the flight code is portable across controller boards.
     package FlightPlatform {
+        // AP_HAL, AP_HAL_ChibiOS
         part def HardwareAbstraction {
             port hal : Apis::HalApi;
             port scheduler : ~Apis::SchedulerApi;
-        }  // AP_HAL, AP_HAL_ChibiOS
+        }
+
+        // ChibiOS
         part def RealTimeKernel {
             port scheduler : Apis::SchedulerApi;
-        }       // ChibiOS
+        }
     }
 
-    // The deployable parts, named once so deployment.sysml can allocate them.
-    // Every module declared above appears here, because a module missing from
-    // this list would be a program with nowhere to run. Only the tunnel appears
-    // twice: it is fitted at both ends of the link, and each end is deployed
-    // on its own computer.
+    // The deployable parts, named once so deployment.sysml can allocate them,
+    // and after their modules so the two views read alike. Every module
+    // declared above appears here, because a module missing from this list
+    // would be a program with nowhere to run. Only the tunnel appears twice: it
+    // is fitted at both ends of the link, and each end is deployed on its own
+    // computer.
     part sw {
-        part mission : Flight::MissionExecutor;
-        part estimator : Flight::StateEstimator;
-        part control : Flight::FlightControl;
-        part sensors : Flight::SensorDrivers;
-        part mavlink : Flight::MavlinkInterface;
-        part hal : FlightPlatform::HardwareAbstraction;
-        part rtos : FlightPlatform::RealTimeKernel;
-        part planner : Onboard::Autonomy::RoutePlanner;
-        part avoidance : Onboard::Autonomy::ObstacleAvoidance;
-        part video : Onboard::Perception::VideoStreamer;
-        part fusion : Onboard::Perception::SensorFusion;
-        part world : Onboard::Perception::WorldModel;
+        part missionExecutor : Flight::MissionExecutor;
+        part stateEstimator : Flight::StateEstimator;
+        part flightControl : Flight::FlightControl;
+        part sensorDrivers : Flight::SensorDrivers;
+        part mavlinkInterface : Flight::MavlinkInterface;
+        part hardwareAbstraction : FlightPlatform::HardwareAbstraction;
+        part realTimeKernel : FlightPlatform::RealTimeKernel;
+        part routePlanner : Onboard::Autonomy::RoutePlanner;
+        part obstacleAvoidance : Onboard::Autonomy::ObstacleAvoidance;
+        part videoStreamer : Onboard::Perception::VideoStreamer;
+        part sensorFusion : Onboard::Perception::SensorFusion;
+        part worldModel : Onboard::Perception::WorldModel;
         part diagnostics : Onboard::Services::Diagnostics;
-        part logger : Onboard::Services::DataLogger;
-        part zenoh : Middleware::ZenohRouter;
-        part bridge : Middleware::MavlinkBridge;
-        part gstreamer : Middleware::GStreamer;
-        part airTunnel : Middleware::WireGuardTunnel;
-        part runtime : LinuxPlatform::ContainerRuntime;
-        part ota : LinuxPlatform::OtaUpdateAgent;
-        part linux : LinuxPlatform::MinimalLinux;
+        part dataLogger : Onboard::Services::DataLogger;
+        part zenohRouter : Middleware::ZenohRouter;
+        part mavlinkBridge : Middleware::MavlinkBridge;
+        part gStreamer : Middleware::GStreamer;
+        part airWireGuardTunnel : Middleware::WireGuardTunnel;
+        part containerRuntime : LinuxPlatform::ContainerRuntime;
+        part otaUpdateAgent : LinuxPlatform::OtaUpdateAgent;
+        part minimalLinux : LinuxPlatform::MinimalLinux;
         part secureBoot : LinuxPlatform::SecureBoot;
-        part app : Ground::SurveyPlanner;
-        part groundTunnel : Middleware::WireGuardTunnel;
+        part surveyPlanner : Ground::SurveyPlanner;
+        part groundWireGuardTunnel : Middleware::WireGuardTunnel;
     }
 
     view 'Implementation view — Survey Drone' : GeneralView {

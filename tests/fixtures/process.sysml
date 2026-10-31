@@ -11,9 +11,9 @@ package DroneProcess {
     part nav : NavigationSw;
     part motors : MotorControl;
 
-    attribute def TakeOffCommand;
+    item def TakeOffCommand;
 
-    action def ExecuteMission {
+    occurrence def ExecuteMission {
         message cmdTakeOff of TakeOffCommand from pilot to fc;
         then message planRoute from fc to nav;
         then message computePath from nav to nav;

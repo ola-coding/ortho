@@ -13,35 +13,35 @@ package Deployment {
 
     // The flight firmware has the control computer to itself: the control
     // libraries, the drivers that feed them, and the kernel underneath.
-    allocate sw.mission to system.drone.fc;
-    allocate sw.estimator to system.drone.fc;
-    allocate sw.control to system.drone.fc;
-    allocate sw.sensors to system.drone.fc;
-    allocate sw.mavlink to system.drone.fc;
-    allocate sw.hal to system.drone.fc;
-    allocate sw.rtos to system.drone.fc;
+    allocate sw.missionExecutor to system.drone.fc;
+    allocate sw.stateEstimator to system.drone.fc;
+    allocate sw.flightControl to system.drone.fc;
+    allocate sw.sensorDrivers to system.drone.fc;
+    allocate sw.mavlinkInterface to system.drone.fc;
+    allocate sw.hardwareAbstraction to system.drone.fc;
+    allocate sw.realTimeKernel to system.drone.fc;
 
     // Every onboard container shares the GPU computer, with the middleware
     // and the Linux platform they stand on.
-    allocate sw.planner to system.drone.companion;
-    allocate sw.avoidance to system.drone.companion;
-    allocate sw.video to system.drone.companion;
-    allocate sw.fusion to system.drone.companion;
-    allocate sw.world to system.drone.companion;
+    allocate sw.routePlanner to system.drone.companion;
+    allocate sw.obstacleAvoidance to system.drone.companion;
+    allocate sw.videoStreamer to system.drone.companion;
+    allocate sw.sensorFusion to system.drone.companion;
+    allocate sw.worldModel to system.drone.companion;
     allocate sw.diagnostics to system.drone.companion;
-    allocate sw.logger to system.drone.companion;
-    allocate sw.zenoh to system.drone.companion;
-    allocate sw.bridge to system.drone.companion;
-    allocate sw.gstreamer to system.drone.companion;
-    allocate sw.airTunnel to system.drone.companion;
-    allocate sw.runtime to system.drone.companion;
-    allocate sw.ota to system.drone.companion;
-    allocate sw.linux to system.drone.companion;
+    allocate sw.dataLogger to system.drone.companion;
+    allocate sw.zenohRouter to system.drone.companion;
+    allocate sw.mavlinkBridge to system.drone.companion;
+    allocate sw.gStreamer to system.drone.companion;
+    allocate sw.airWireGuardTunnel to system.drone.companion;
+    allocate sw.containerRuntime to system.drone.companion;
+    allocate sw.otaUpdateAgent to system.drone.companion;
+    allocate sw.minimalLinux to system.drone.companion;
     allocate sw.secureBoot to system.drone.companion;
 
     // The operator's app runs on the tablet, behind its own end of the tunnel.
-    allocate sw.app to system.ground.tablet;
-    allocate sw.groundTunnel to system.ground.tablet;
+    allocate sw.surveyPlanner to system.ground.tablet;
+    allocate sw.groundWireGuardTunnel to system.ground.tablet;
 
     view 'Deployment view — Survey Drone' : GeneralView {
         expose Deployment;

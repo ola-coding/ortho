@@ -50,13 +50,13 @@ describe('implementation diagram extraction', () => {
         // Requirements holds no module, so it is not software and not drawn;
         // the import into it goes with it.
         expect(root.children!.filter(c => c.shape === 'package').map(c => c.name).sort())
-            .toEqual(['Logical', 'Physical', 'Software']);
+            .toEqual(['Physical', 'Software', 'Structure']);
 
         const imports = graph.edges.map(e => `${e.sourceId} -> ${e.targetId}`).sort();
         expect(imports).toEqual([
-            'DroneSystem::Physical -> DroneSystem::Logical',
-            'DroneSystem::Software -> DroneSystem::Logical',
-            'DroneSystem::Software -> DroneSystem::Physical'
+            'DroneSystem::Physical -> DroneSystem::Structure',
+            'DroneSystem::Software -> DroneSystem::Physical',
+            'DroneSystem::Software -> DroneSystem::Structure'
         ]);
         expect(graph.edges.every(e => e.kind === 'import')).toBe(true);
         // Each imports a package's members, `Pkg::*` (§8.2.3.5).
@@ -166,11 +166,11 @@ describe('deployment diagram extraction', () => {
         const runs = Object.fromEntries(graph.nodes.map(n => [n.name, n.compartments]));
         expect(runs['fc : FlightController']).toEqual([{
             title: 'relationships',
-            lines: ['allocated flightStack.attitudeControl', 'allocated flightStack.telemetry']
+            lines: ['allocated flightStack::attitudeControl', 'allocated flightStack::telemetry']
         }]);
         expect(runs['cc : CompanionComputer']).toEqual([{
             title: 'relationships',
-            lines: ['allocated flightStack.navigation', 'allocated flightStack.perception']
+            lines: ['allocated flightStack::navigation', 'allocated flightStack::perception']
         }]);
     });
 
@@ -188,8 +188,8 @@ describe('deployment diagram extraction', () => {
         `, { validation: true });
         const graph = extractDeploymentGraph(...everything(document.parseResult.value));
         expect(graph.nodes.map(n => [n.name, n.compartments[0].lines])).toEqual([
-            ['a : Computer', ['allocated sw.logger']],
-            ['b : Computer', ['allocated sw.logger']]
+            ['a : Computer', ['allocated sw::logger']],
+            ['b : Computer', ['allocated sw::logger']]
         ]);
     });
 
@@ -215,7 +215,7 @@ describe('deployment diagram extraction', () => {
         // The host sits inside its device, as the part it is.
         expect(host.x).toBeGreaterThan(frame.x);
         expect(host.x + host.width).toBeLessThan(frame.x + frame.width);
-        expect(host.compartments[0].lines).toEqual(['allocated sw.a']);
+        expect(host.compartments[0].lines).toEqual(['allocated sw::a']);
     });
 
     it('renders both diagrams end-to-end', async () => {
@@ -232,7 +232,7 @@ describe('deployment diagram extraction', () => {
         // Hosts list what they run, and nothing on this view is an arrow.
         expect(deploymentSvg).toContain('fc : FlightController');
         expect(deploymentSvg).toContain('>relationships</text>');
-        expect(deploymentSvg).toContain('>allocated flightStack.attitudeControl</text>');
+        expect(deploymentSvg).toContain('>allocated flightStack::attitudeControl</text>');
         expect(deploymentSvg).not.toContain('marker-end');
     });
 });

@@ -1,5 +1,6 @@
 // Smoke model for the physical view: parts, ports and connections of a small quadcopter.
-package DroneLogical {
+package DronePhysical {
+    private import ScalarValues::*;
     private import StandardViewDefinitions::*;
 
     port def PowerPort {
@@ -36,15 +37,15 @@ package DroneLogical {
     part def Quadcopter :> Drone;
 
     requirement def PowerBudget {
-        attribute minCapacity : Real = 2000;
         subject source : Battery;
+        attribute minCapacity : Real = 2000;
     }
 
     requirement powerReq : PowerBudget;
 
     part quadcopter : Quadcopter;
 
-    view 'Physical view — DroneLogical' : InterconnectionView {
+    view 'Physical view — DronePhysical' : InterconnectionView {
         expose quadcopter;
     }
 }

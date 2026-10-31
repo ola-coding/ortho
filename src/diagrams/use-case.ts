@@ -10,12 +10,13 @@ import { exposedMembers } from '../model/packages.js';
 import { measureText } from '../render/text-metrics.js';
 import { boxSize, declaration, typeName, usageLabel } from './connector-ends.js';
 
-type UseCase = UseCaseDef | UseCaseUsage;
+/** A use case drawn as a box. `include use case x` declares one (§7.25); `include x` only names one. */
+type UseCase = UseCaseDef | UseCaseUsage | IncludeUsage;
 
 /** Own members plus, for a typed usage, the members inherited from its def. */
 function effectiveMembers(useCase: UseCase): Member[] {
     const members: Member[] = [...useCase.members];
-    if (isUseCaseUsage(useCase) && useCase.type?.ref) {
+    if (!isUseCaseDef(useCase) && useCase.type?.ref) {
         members.push(...useCase.type.ref.members);
     }
     return members;
@@ -23,7 +24,7 @@ function effectiveMembers(useCase: UseCase): Member[] {
 
 /** A «use case» box, named as declared, or a «use case def» one. */
 export function useCaseNode(useCase: UseCase): GraphNode {
-    const name = isUseCaseUsage(useCase) ? usageLabel(useCase) : useCase.name ?? '';
+    const name = isUseCaseDef(useCase) ? useCase.name ?? '' : usageLabel(useCase);
     const { shape, keyword } = boxOf(useCase);
     return {
         id: qualifiedName(useCase),
@@ -69,12 +70,20 @@ function actorNode(id: string, label: string): GraphNode {
  * «include» arrow to each included use case.
  */
 export function extractUseCaseGraph(exposed: Member[]): DiagramGraph {
-    const useCases = exposedMembers(exposed).filter((m): m is UseCase => isUseCaseDef(m) || isUseCaseUsage(m));
+    const found = new Set(exposedMembers(exposed).filter((m): m is UseCase => isUseCaseDef(m) || isUseCaseUsage(m)));
+    // A set visits what is added while it is walked, so this reaches what those
+    // declare in turn.
+    for (const useCase of found) {
+        for (const member of effectiveMembers(useCase)) {
+            if (isIncludeUsage(member) && member.useCase) {
+                found.add(member);
+            }
+        }
+    }
+    const useCases = [...found];
 
     // A def represented by usages is not shown itself.
-    const typedDefs = new Set(
-        useCases.filter(isUseCaseUsage).map(u => u.type?.ref).filter((d): d is UseCaseDef => !!d)
-    );
+    const typedDefs = new Set(useCases.flatMap(u => (!isUseCaseDef(u) && u.type?.ref ? [u.type.ref] : [])));
     const rendered = useCases.filter(uc => !(isUseCaseDef(uc) && typedDefs.has(uc)));
     const boxByUseCase = new Map<UseCase, GraphNode>(rendered.map(uc => [uc, useCaseNode(uc)]));
 
@@ -166,12 +175,7 @@ export function extractUseCaseGraph(exposed: Member[]): DiagramGraph {
     return { nodes, edges };
 }
 
-/**
- * The box an include points at: `include x` names the use case, and
- * `include use case x` declares one, drawn as the use case of that name.
- */
-function includedBox(include: IncludeUsage, boxByUseCase: Map<UseCase, GraphNode>): GraphNode | undefined {
-    const included = include.target?.segments.at(-1)?.ref
-        ?? [...boxByUseCase.keys()].find(u => isUseCaseUsage(u) && include.useCase && u.name === include.name);
-    return isUseCaseUsage(included) ? boxByUseCase.get(included) : undefined;
+/** The box an include points at: its own, or that of the use case it names. */
+function includedBox(include: IncludeUsage, boxByUseCase: ReadonlyMap<unknown, GraphNode>): GraphNode | undefined {
+    return boxByUseCase.get(include.useCase ? include : include.target?.segments.at(-1)?.ref);
 }

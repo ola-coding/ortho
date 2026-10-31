@@ -23,9 +23,9 @@ package SystemUseCases {
     use case makeEspresso : OperateMachine;
 
     // A cappuccino is an espresso the user also wants milk on; both are
-    // beverages a customer orders, so the include is usage, not decomposition.
+    // beverages the user orders, so the include is usage, not decomposition.
     use case makeCappuccino : OperateMachine {
-        include use case makeEspresso;
+        include makeEspresso;
     }
 
     use case descale : ServiceMachine;

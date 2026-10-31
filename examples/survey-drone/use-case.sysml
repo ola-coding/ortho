@@ -19,8 +19,8 @@ package SystemUseCases {
     // it flies. Each also stands on its own: an operator can plan tomorrow's
     // survey, or check on one already under way.
     use case surveyArea : SurveyTask {
-        include use case planSurvey;
-        include use case followProgress;
+        include planSurvey;
+        include followProgress;
     }
 
     use case planSurvey : SurveyTask;

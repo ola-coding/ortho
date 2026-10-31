@@ -505,8 +505,8 @@ use case def SurveyTask {
 // Surveying an area always means planning it
 // first and following it as it flies.
 use case surveyArea : SurveyTask {
-    include use case planSurvey;
-    include use case followProgress;
+    include planSurvey;
+    include followProgress;
 }
 
 use case planSurvey : SurveyTask;
@@ -628,8 +628,11 @@ package Software {
 
     // A platform realizes no function of its own.
     package FlightPlatform {
-        part def HardwareAbstraction;  // AP_HAL
-        part def RealTimeKernel;       // ChibiOS
+        // AP_HAL
+        part def HardwareAbstraction;
+
+        // ChibiOS
+        part def RealTimeKernel;
     }
 
     package Middleware {
@@ -707,7 +710,7 @@ part def SurveyDroneSystem {
     part drone : SurveyDrone;
     part ground : GroundStation;
 
-    connection : RadioLink
+    interface : RadioLink
         connect drone.rfLink to ground.rfLink;
 }
 
@@ -751,15 +754,18 @@ package Deployment {
 
     // The firmware has the control computer
     // to itself, kernel included.
-    allocate sw.mission to system.drone.fc;
-    allocate sw.control to system.drone.fc;
-    allocate sw.rtos to system.drone.fc;
+    allocate sw.missionExecutor to system.drone.fc;
+    allocate sw.flightControl to system.drone.fc;
+    allocate sw.realTimeKernel to system.drone.fc;
 
     // Every container shares the GPU computer.
-    allocate sw.planner to system.drone.companion;
-    allocate sw.zenoh to system.drone.companion;
+    allocate sw.routePlanner
+        to system.drone.companion;
+    allocate sw.zenohRouter
+        to system.drone.companion;
 
-    allocate sw.app to system.ground.tablet;
+    allocate sw.surveyPlanner
+        to system.ground.tablet;
 }
 </pre>
           </div>
@@ -791,30 +797,32 @@ package Deployment {
           <div class="code-mount">
             <div class="filename">examples/survey-drone/process.sysml</div>
 <pre class="code">
-action def SurveyMission {
+occurrence def SurveyMission {
     part operator;
-    part app : Ground::SurveyPlanner;
-    part bridge : Middleware::MavlinkBridge;
-    part mavlink : Flight::MavlinkInterface;
-    part mission : Flight::MissionExecutor;
+    part surveyPlanner : Ground::SurveyPlanner;
+    part mavlinkBridge : Middleware::MavlinkBridge;
+    part mavlinkInterface : Flight::MavlinkInterface;
+    part missionExecutor : Flight::MissionExecutor;
 
-    message markArea from operator to app;
-    then message approve from operator to app;
+    message markArea from operator to surveyPlanner;
+    then message approve
+        from operator to surveyPlanner;
 
     // MAVLink's mission protocol: the vehicle
     // asks for each item in turn.
     then message missionCount of MissionCount
-        from bridge to mavlink;
+        from mavlinkBridge to mavlinkInterface;
     then message requestItem of MissionRequestInt
-        from mavlink to bridge;
+        from mavlinkInterface to mavlinkBridge;
     then message missionItem of MissionItemInt
-        from bridge to mavlink;
+        from mavlinkBridge to mavlinkInterface;
     then message missionAck of MissionAck
-        from mavlink to bridge;
+        from mavlinkInterface to mavlinkBridge;
 
-    then message startAuto from mavlink to mission;
+    then message startAuto
+        from mavlinkInterface to missionExecutor;
     then message flySurveyLegs
-        from mission to mission;
+        from missionExecutor to missionExecutor;
 }
 </pre>
           </div>

@@ -52,6 +52,25 @@ describe('views', () => {
             .toEqual(['ping']);
     });
 
+    it('draws a SequenceView of an occurrence def, as OMG writes a scenario', async () => {
+        const [view] = declaredViews((await parse(`
+            package M {
+                private import StandardViewDefinitions::*;
+                part def Engine;
+                item def Go;
+                occurrence def Scenario {
+                    part a : Engine;
+                    part b : Engine;
+                    message ping of Go from a to b;
+                }
+                view sequence : SequenceView { expose Scenario; }
+            }
+        `)).parseResult.value);
+        expect(whyUndrawable(view)).toBeUndefined();
+        expect(diagramKind(view)).toBe('process');
+        expect(extractSequenceModel(exposedElements(view)).messages.map(m => m.label)).toEqual(['ping of Go']);
+    });
+
     it('loads any view, and says why it cannot draw one other than the three it knows', async () => {
         const why = async (text: string) => {
             expect(await errorsOf(text)).toEqual([]);

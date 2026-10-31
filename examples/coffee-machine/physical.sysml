@@ -2,10 +2,10 @@
 //
 // Topology only. Which part connects, feeds or wires to which; never where a
 // part sits or how big it is. A cable is a connection, so the control looms
-// below are `connect` statements typed by the interface they carry.
+// below are `interface` usages, typed by the contract they carry.
 package Hardware {
 
-    // Real and String are the spec's own value types, from its library.
+    // Real, Integer and String are value types from the spec's library.
     private import ScalarValues::*;
 
     // The functions this hardware realizes, said on the part that realizes
@@ -107,7 +107,7 @@ package Hardware {
 
     // --- electronics -------------------------------------------------------
     part def ControlBoard {
-        attribute mcuCores : Real = 2;
+        attribute mcuCores : Integer = 2;
         port powerIn : PowerPort;
         port uiLink : DataPort;
         port waterCtrl : DataPort;
@@ -155,12 +155,12 @@ package Hardware {
         connect psu.powerOut to controller.powerIn;
 
         // Control looms, each carrying the same contract
-        connection : ControlLink connect controller.waterCtrl to pump.ctrlIn;
-        connection : ControlLink connect controller.waterCtrl to heater.ctrlIn;
-        connection : ControlLink connect controller.coffeeCtrl to grinder.ctrlIn;
-        connection : ControlLink connect controller.coffeeCtrl to brewUnit.ctrlIn;
-        connection : ControlLink connect controller.milkCtrl to wand.ctrlIn;
-        connection : ControlLink connect controller.uiLink to display.ctrlOut;
+        interface : ControlLink connect controller.waterCtrl to pump.ctrlIn;
+        interface : ControlLink connect controller.waterCtrl to heater.ctrlIn;
+        interface : ControlLink connect controller.coffeeCtrl to grinder.ctrlIn;
+        interface : ControlLink connect controller.coffeeCtrl to brewUnit.ctrlIn;
+        interface : ControlLink connect controller.milkCtrl to wand.ctrlIn;
+        interface : ControlLink connect controller.uiLink to display.ctrlOut;
     }
 
     // The machine itself, named once so deployment.sysml can allocate to the

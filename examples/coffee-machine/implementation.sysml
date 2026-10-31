@@ -79,13 +79,14 @@ package Software {
         }
     }
 
-    // The deployable parts, named once so deployment.sysml can allocate them.
+    // The deployable parts, named once so deployment.sysml can allocate them,
+    // and after their modules so the two views read alike.
     part sw {
-        part recipes : Application::RecipeEngine;
+        part recipeEngine : Application::RecipeEngine;
         part uiApp : Application::UiApp;
-        part brew : Control::BrewController;
-        part temperature : Control::TemperatureController;
-        part milk : Control::MilkController;
+        part brewController : Control::BrewController;
+        part temperatureController : Control::TemperatureController;
+        part milkController : Control::MilkController;
     }
 
     view 'Implementation view — Coffee Machine' : GeneralView {

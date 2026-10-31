@@ -209,11 +209,11 @@ describe('coffee machine example model', () => {
         const sequence = extractSequenceModel((await viewSet('process.sysml', 'implementation.sysml', 'logical.sysml', 'use-case.sysml'))[0]);
         expect(sequence.lifelines.map(l => l.label)).toEqual([
             'user',
-            'ui : UiApp',
-            'recipes : RecipeEngine',
-            'temperature : TemperatureController',
-            'brew : BrewController',
-            'milk : MilkController'
+            'uiApp : UiApp',
+            'recipeEngine : RecipeEngine',
+            'temperatureController : TemperatureController',
+            'brewController : BrewController',
+            'milkController : MilkController'
         ]);
         expect(sequence.messages[0].label).toBe('selectCappuccino');
         expect(sequence.messages.at(-1)!.label).toBe('beverageReady');

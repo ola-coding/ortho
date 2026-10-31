@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1508.3339999999998" height="1114"
-     viewBox="0 0 1508.3339999999998 1114" font-family="Arial, Helvetica, Liberation Sans, DejaVu Sans, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="1792.8999999999999" height="1114"
+     viewBox="0 0 1792.8999999999999 1114" font-family="Arial, Helvetica, Liberation Sans, DejaVu Sans, sans-serif">
   <title>Process view — Survey Drone (generated from examples/survey-drone/process.sysml)</title>
   <defs>
     <marker id="msgArrow" markerWidth="13" markerHeight="11" refX="11" refY="5" orient="auto"
@@ -7,14 +7,14 @@
       <path d="M1,1 L11,5 L1,9 z" fill="white" stroke="#2b2b2b" stroke-width="1.25" />
     </marker>
   </defs>
-  <rect x="0" y="0" width="1508.3339999999998" height="1114" fill="white" />
-  <rect x="8" y="8" width="1492.3339999999998" height="1098" rx="10" ry="10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+  <rect x="0" y="0" width="1792.8999999999999" height="1114" fill="white" />
+  <rect x="8" y="8" width="1776.8999999999999" height="1098" rx="10" ry="10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
   <path d="M8,30 L8,18 A10,10 0 0 1 18,8 L253.355,8 L253.355,22 A8,8 0 0 1 245.355,30 Z"
         fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
   <text x="18" y="23" font-size="11" fill="#1a1a1a"><tspan fill="#555555">&#171;view&#187;</tspan><tspan font-weight="600"> Process view — Survey Drone</tspan></text>
-  <path d="M1311.3629999999998,1106 L1311.3629999999998,1097 A6,6 0 0 1 1317.3629999999998,1091 L1500.3339999999998,1091"
+  <path d="M1595.9289999999999,1106 L1595.9289999999999,1097 A6,6 0 0 1 1601.9289999999999,1091 L1784.8999999999999,1091"
         fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-  <text x="1492.3339999999998" y="1102" text-anchor="end" font-size="9" fill="#8a8a86">examples/survey-drone/process.sysml</text>
+  <text x="1776.8999999999999" y="1102" text-anchor="end" font-size="9" fill="#8a8a86">examples/survey-drone/process.sysml</text>
   
     <g><rect x="24" y="48" width="90" height="36" rx="10" ry="10"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
@@ -24,145 +24,145 @@
           font-size="12" font-weight="600" fill="#1a1a1a">operator</text>
       <line x1="69" y1="84" x2="69" y2="1080"
           stroke="#2b2b2b" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g><rect x="144" y="48" width="161.472" height="36" rx="10" ry="10"
+    <g><rect x="143.99999999999997" y="48" width="233.724" height="36" rx="10" ry="10"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="224.736" y="63" text-anchor="middle"
+      <text x="260.86199999999997" y="63" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="224.736" y="76" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">app : SurveyPlanner</text>
-      <line x1="224.736" y1="84" x2="224.736" y2="1080"
+      <text x="260.86199999999997" y="76" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">surveyPlanner : SurveyPlanner</text>
+      <line x1="260.86199999999997" y1="84" x2="260.86199999999997" y2="1080"
           stroke="#2b2b2b" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g><rect x="338.67999999999995" y="48" width="181.152" height="36" rx="10" ry="10"
+    <g><rect x="407.72399999999993" y="48" width="217.932" height="36" rx="10" ry="10"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="429.256" y="63" text-anchor="middle"
+      <text x="516.6899999999999" y="63" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="429.256" y="76" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">planner : RoutePlanner</text>
-      <line x1="429.256" y1="84" x2="429.256" y2="1080"
+      <text x="516.6899999999999" y="76" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">routePlanner : RoutePlanner</text>
+      <line x1="516.6899999999999" y1="84" x2="516.6899999999999" y2="1080"
           stroke="#2b2b2b" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g><rect x="595.766" y="48" width="178.212" height="36" rx="10" ry="10"
+    <g><rect x="683.1999999999999" y="48" width="231.948" height="36" rx="10" ry="10"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="684.872" y="63" text-anchor="middle"
+      <text x="799.174" y="63" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="684.872" y="76" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">bridge : MavlinkBridge</text>
-      <line x1="684.872" y1="84" x2="684.872" y2="1080"
+      <text x="799.174" y="76" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">mavlinkBridge : MavlinkBridge</text>
+      <line x1="799.174" y1="84" x2="799.174" y2="1080"
           stroke="#2b2b2b" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g><rect x="803.978" y="48" width="204.324" height="36" rx="10" ry="10"
+    <g><rect x="945.1479999999999" y="48" width="265.692" height="36" rx="10" ry="10"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="906.14" y="63" text-anchor="middle"
+      <text x="1077.994" y="63" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="906.14" y="76" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">mavlink : MavlinkInterface</text>
-      <line x1="906.14" y1="84" x2="906.14" y2="1080"
+      <text x="1077.994" y="76" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">mavlinkInterface : MavlinkInterface</text>
+      <line x1="1077.994" y1="84" x2="1077.994" y2="1080"
           stroke="#2b2b2b" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g><rect x="1065.4779999999998" y="48" width="199.824" height="36" rx="10" ry="10"
+    <g><rect x="1240.8399999999997" y="48" width="259.452" height="36" rx="10" ry="10"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1165.3899999999999" y="63" text-anchor="middle"
+      <text x="1370.5659999999998" y="63" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="1165.3899999999999" y="76" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">mission : MissionExecutor</text>
-      <line x1="1165.3899999999999" y1="84" x2="1165.3899999999999" y2="1080"
+      <text x="1370.5659999999998" y="76" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">missionExecutor : MissionExecutor</text>
+      <line x1="1370.5659999999998" y1="84" x2="1370.5659999999998" y2="1080"
           stroke="#2b2b2b" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g><rect x="1308.81" y="48" width="175.524" height="36" rx="10" ry="10"
+    <g><rect x="1530.2919999999997" y="48" width="238.608" height="36" rx="10" ry="10"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1396.572" y="63" text-anchor="middle"
+      <text x="1649.5959999999998" y="63" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="1396.572" y="76" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">video : VideoStreamer</text>
-      <line x1="1396.572" y1="84" x2="1396.572" y2="1080"
+      <text x="1649.5959999999998" y="76" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">videoStreamer : VideoStreamer</text>
+      <line x1="1649.5959999999998" y1="84" x2="1649.5959999999998" y2="1080"
           stroke="#2b2b2b" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g><line x1="69" y1="120" x2="224.736" y2="120"
+    <g><line x1="69" y1="120" x2="260.86199999999997" y2="120"
           stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
-      <text x="146.868" y="114" text-anchor="middle" font-size="10"
+      <text x="164.93099999999998" y="114" text-anchor="middle" font-size="10"
           fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="3">markArea</text></g>
-    <g><line x1="224.736" y1="160" x2="429.256" y2="160"
+    <g><line x1="260.86199999999997" y1="160" x2="516.6899999999999" y2="160"
           stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
-      <text x="326.996" y="154" text-anchor="middle" font-size="10"
+      <text x="388.77599999999995" y="154" text-anchor="middle" font-size="10"
           fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="3">surveyRequest of AreaPolygon</text></g>
-    <g><polyline points="429.256,200 469.256,200 469.256,216 429.256,216"
+    <g><polyline points="516.6899999999999,200 556.6899999999999,200 556.6899999999999,216 516.6899999999999,216"
           fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
-      <text x="475.256" y="212" font-size="10" fill="#1a1a1a">computeSurveyLegs</text></g>
-    <g><line x1="429.256" y1="240" x2="224.736" y2="240"
+      <text x="562.6899999999999" y="212" font-size="10" fill="#1a1a1a">computeSurveyLegs</text></g>
+    <g><line x1="516.6899999999999" y1="240" x2="260.86199999999997" y2="240"
           stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
-      <text x="326.996" y="234" text-anchor="middle" font-size="10"
+      <text x="388.77599999999995" y="234" text-anchor="middle" font-size="10"
           fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="3">routePreview of Waypoints</text></g>
-    <g><line x1="69" y1="280" x2="224.736" y2="280"
+    <g><line x1="69" y1="280" x2="260.86199999999997" y2="280"
           stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
-      <text x="146.868" y="274" text-anchor="middle" font-size="10"
+      <text x="164.93099999999998" y="274" text-anchor="middle" font-size="10"
           fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="3">approve</text></g>
-    <g><line x1="224.736" y1="320" x2="429.256" y2="320"
+    <g><line x1="260.86199999999997" y1="320" x2="516.6899999999999" y2="320"
           stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
-      <text x="326.996" y="314" text-anchor="middle" font-size="10"
+      <text x="388.77599999999995" y="314" text-anchor="middle" font-size="10"
           fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="3">startSurvey</text></g>
-    <g><line x1="429.256" y1="360" x2="684.872" y2="360"
+    <g><line x1="516.6899999999999" y1="360" x2="799.174" y2="360"
           stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
-      <text x="557.064" y="354" text-anchor="middle" font-size="10"
+      <text x="657.932" y="354" text-anchor="middle" font-size="10"
           fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="3">uploadMission of MissionItems</text></g>
-    <g><line x1="684.872" y1="400" x2="906.14" y2="400"
+    <g><line x1="799.174" y1="400" x2="1077.994" y2="400"
           stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
-      <text x="795.506" y="394" text-anchor="middle" font-size="10"
+      <text x="938.584" y="394" text-anchor="middle" font-size="10"
           fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="3">missionCount of MissionCount</text></g>
-    <g><line x1="906.14" y1="440" x2="684.872" y2="440"
+    <g><line x1="1077.994" y1="440" x2="799.174" y2="440"
           stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
-      <text x="795.506" y="434" text-anchor="middle" font-size="10"
+      <text x="938.584" y="434" text-anchor="middle" font-size="10"
           fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="3">requestItem of MissionRequestInt</text></g>
-    <g><line x1="684.872" y1="480" x2="906.14" y2="480"
+    <g><line x1="799.174" y1="480" x2="1077.994" y2="480"
           stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
-      <text x="795.506" y="474" text-anchor="middle" font-size="10"
+      <text x="938.584" y="474" text-anchor="middle" font-size="10"
           fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="3">missionItem of MissionItemInt</text></g>
-    <g><line x1="906.14" y1="520" x2="1165.3899999999999" y2="520"
+    <g><line x1="1077.994" y1="520" x2="1370.5659999999998" y2="520"
           stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
-      <text x="1035.7649999999999" y="514" text-anchor="middle" font-size="10"
+      <text x="1224.2799999999997" y="514" text-anchor="middle" font-size="10"
           fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="3">storeItems</text></g>
-    <g><line x1="906.14" y1="560" x2="684.872" y2="560"
+    <g><line x1="1077.994" y1="560" x2="799.174" y2="560"
           stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
-      <text x="795.506" y="554" text-anchor="middle" font-size="10"
+      <text x="938.584" y="554" text-anchor="middle" font-size="10"
           fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="3">missionAck of MissionAck</text></g>
-    <g><line x1="684.872" y1="600" x2="906.14" y2="600"
+    <g><line x1="799.174" y1="600" x2="1077.994" y2="600"
           stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
-      <text x="795.506" y="594" text-anchor="middle" font-size="10"
+      <text x="938.584" y="594" text-anchor="middle" font-size="10"
           fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="3">armThrottle of CommandLong</text></g>
-    <g><line x1="684.872" y1="640" x2="906.14" y2="640"
+    <g><line x1="799.174" y1="640" x2="1077.994" y2="640"
           stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
-      <text x="795.506" y="634" text-anchor="middle" font-size="10"
+      <text x="938.584" y="634" text-anchor="middle" font-size="10"
           fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="3">setAutoMode of SetMode</text></g>
-    <g><line x1="906.14" y1="680" x2="1165.3899999999999" y2="680"
+    <g><line x1="1077.994" y1="680" x2="1370.5659999999998" y2="680"
           stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
-      <text x="1035.7649999999999" y="674" text-anchor="middle" font-size="10"
+      <text x="1224.2799999999997" y="674" text-anchor="middle" font-size="10"
           fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="3">startAuto</text></g>
-    <g><polyline points="1165.3899999999999,720 1205.3899999999999,720 1205.3899999999999,736 1165.3899999999999,736"
+    <g><polyline points="1370.5659999999998,720 1410.5659999999998,720 1410.5659999999998,736 1370.5659999999998,736"
           fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
-      <text x="1211.3899999999999" y="732" font-size="10" fill="#1a1a1a">flySurveyLegs</text></g>
-    <g><line x1="1396.572" y1="760" x2="224.736" y2="760"
+      <text x="1416.5659999999998" y="732" font-size="10" fill="#1a1a1a">flySurveyLegs</text></g>
+    <g><line x1="1649.5959999999998" y1="760" x2="260.86199999999997" y2="760"
           stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
-      <text x="810.654" y="754" text-anchor="middle" font-size="10"
+      <text x="955.2289999999998" y="754" text-anchor="middle" font-size="10"
           fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="3">liveVideo of H265Stream</text></g>
-    <g><line x1="1165.3899999999999" y1="800" x2="906.14" y2="800"
+    <g><line x1="1370.5659999999998" y1="800" x2="1077.994" y2="800"
           stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
-      <text x="1035.7649999999999" y="794" text-anchor="middle" font-size="10"
+      <text x="1224.2799999999997" y="794" text-anchor="middle" font-size="10"
           fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="3">waypointReached of MissionItemReached</text></g>
-    <g><line x1="906.14" y1="840" x2="684.872" y2="840"
+    <g><line x1="1077.994" y1="840" x2="799.174" y2="840"
           stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
-      <text x="795.506" y="834" text-anchor="middle" font-size="10"
+      <text x="938.584" y="834" text-anchor="middle" font-size="10"
           fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="3">missionCurrent of MissionCurrent</text></g>
-    <g><line x1="684.872" y1="880" x2="224.736" y2="880"
+    <g><line x1="799.174" y1="880" x2="260.86199999999997" y2="880"
           stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
-      <text x="454.804" y="874" text-anchor="middle" font-size="10"
+      <text x="530.018" y="874" text-anchor="middle" font-size="10"
           fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="3">progress of SurveyProgress</text></g>
-    <g><polyline points="1165.3899999999999,920 1205.3899999999999,920 1205.3899999999999,936 1165.3899999999999,936"
+    <g><polyline points="1370.5659999999998,920 1410.5659999999998,920 1410.5659999999998,936 1370.5659999999998,936"
           fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
-      <text x="1211.3899999999999" y="932" font-size="10" fill="#1a1a1a">returnToLaunch</text></g>
-    <g><line x1="1165.3899999999999" y1="960" x2="906.14" y2="960"
+      <text x="1416.5659999999998" y="932" font-size="10" fill="#1a1a1a">returnToLaunch</text></g>
+    <g><line x1="1370.5659999999998" y1="960" x2="1077.994" y2="960"
           stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
-      <text x="1035.7649999999999" y="954" text-anchor="middle" font-size="10"
+      <text x="1224.2799999999997" y="954" text-anchor="middle" font-size="10"
           fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="3">missionFinished</text></g>
-    <g><line x1="906.14" y1="1000" x2="684.872" y2="1000"
+    <g><line x1="1077.994" y1="1000" x2="799.174" y2="1000"
           stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
-      <text x="795.506" y="994" text-anchor="middle" font-size="10"
+      <text x="938.584" y="994" text-anchor="middle" font-size="10"
           fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="3">missionComplete</text></g>
-    <g><line x1="684.872" y1="1040" x2="224.736" y2="1040"
+    <g><line x1="799.174" y1="1040" x2="260.86199999999997" y2="1040"
           stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#msgArrow)" />
-      <text x="454.804" y="1034" text-anchor="middle" font-size="10"
+      <text x="530.018" y="1034" text-anchor="middle" font-size="10"
           fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="3">surveyComplete</text></g>
 </svg>

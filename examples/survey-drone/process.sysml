@@ -16,63 +16,63 @@ package SurveyMissionScenario {
     private import Software::*;
     private import StandardViewDefinitions::*;
 
-    // What the messages carry. Values, not things, so attribute defs; the
-    // MAVLink ones are named after the protocol's own message types.
-    attribute def AreaPolygon;
-    attribute def Waypoints;
-    attribute def MissionItems;
-    attribute def MissionCount;
-    attribute def MissionRequestInt;
-    attribute def MissionItemInt;
-    attribute def MissionAck;
-    attribute def CommandLong;
-    attribute def SetMode;
-    attribute def H265Stream;
-    attribute def MissionItemReached;
-    attribute def MissionCurrent;
-    attribute def SurveyProgress;
+    // What the messages carry; the MAVLink ones are named after the
+    // protocol's own message types.
+    item def AreaPolygon;
+    item def Waypoints;
+    item def MissionItems;
+    item def MissionCount;
+    item def MissionRequestInt;
+    item def MissionItemInt;
+    item def MissionAck;
+    item def CommandLong;
+    item def SetMode;
+    item def H265Stream;
+    item def MissionItemReached;
+    item def MissionCurrent;
+    item def SurveyProgress;
 
-    action def SurveyMission {
+    occurrence def SurveyMission {
         part operator;
-        part app : Ground::SurveyPlanner;
-        part planner : Onboard::Autonomy::RoutePlanner;
-        part bridge : Middleware::MavlinkBridge;
-        part mavlink : Flight::MavlinkInterface;
-        part mission : Flight::MissionExecutor;
-        part video : Onboard::Perception::VideoStreamer;
+        part surveyPlanner : Ground::SurveyPlanner;
+        part routePlanner : Onboard::Autonomy::RoutePlanner;
+        part mavlinkBridge : Middleware::MavlinkBridge;
+        part mavlinkInterface : Flight::MavlinkInterface;
+        part missionExecutor : Flight::MissionExecutor;
+        part videoStreamer : Onboard::Perception::VideoStreamer;
 
         // Planning, on the ground and in the air.
-        message markArea from operator to app;
-        then message surveyRequest of AreaPolygon from app to planner;
-        then message computeSurveyLegs from planner to planner;
-        then message routePreview of Waypoints from planner to app;
-        then message approve from operator to app;
-        then message startSurvey from app to planner;
+        message markArea from operator to surveyPlanner;
+        then message surveyRequest of AreaPolygon from surveyPlanner to routePlanner;
+        then message computeSurveyLegs from routePlanner to routePlanner;
+        then message routePreview of Waypoints from routePlanner to surveyPlanner;
+        then message approve from operator to surveyPlanner;
+        then message startSurvey from surveyPlanner to routePlanner;
 
         // Upload, in MAVLink's mission protocol: the vehicle asks for each
         // item in turn, and acknowledges the set once it has them all.
-        then message uploadMission of MissionItems from planner to bridge;
-        then message missionCount of MissionCount from bridge to mavlink;
-        then message requestItem of MissionRequestInt from mavlink to bridge;
-        then message missionItem of MissionItemInt from bridge to mavlink;
-        then message storeItems from mavlink to mission;
-        then message missionAck of MissionAck from mavlink to bridge;
+        then message uploadMission of MissionItems from routePlanner to mavlinkBridge;
+        then message missionCount of MissionCount from mavlinkBridge to mavlinkInterface;
+        then message requestItem of MissionRequestInt from mavlinkInterface to mavlinkBridge;
+        then message missionItem of MissionItemInt from mavlinkBridge to mavlinkInterface;
+        then message storeItems from mavlinkInterface to missionExecutor;
+        then message missionAck of MissionAck from mavlinkInterface to mavlinkBridge;
 
         // Arm, then Auto: two commands, as on any ArduPilot vehicle.
-        then message armThrottle of CommandLong from bridge to mavlink;
-        then message setAutoMode of SetMode from bridge to mavlink;
-        then message startAuto from mavlink to mission;
+        then message armThrottle of CommandLong from mavlinkBridge to mavlinkInterface;
+        then message setAutoMode of SetMode from mavlinkBridge to mavlinkInterface;
+        then message startAuto from mavlinkInterface to missionExecutor;
 
         // Flying it, and saying so.
-        then message flySurveyLegs from mission to mission;
-        then message liveVideo of H265Stream from video to app;
-        then message waypointReached of MissionItemReached from mission to mavlink;
-        then message missionCurrent of MissionCurrent from mavlink to bridge;
-        then message progress of SurveyProgress from bridge to app;
-        then message returnToLaunch from mission to mission;
-        then message missionFinished from mission to mavlink;
-        then message missionComplete from mavlink to bridge;
-        then message surveyComplete from bridge to app;
+        then message flySurveyLegs from missionExecutor to missionExecutor;
+        then message liveVideo of H265Stream from videoStreamer to surveyPlanner;
+        then message waypointReached of MissionItemReached from missionExecutor to mavlinkInterface;
+        then message missionCurrent of MissionCurrent from mavlinkInterface to mavlinkBridge;
+        then message progress of SurveyProgress from mavlinkBridge to surveyPlanner;
+        then message returnToLaunch from missionExecutor to missionExecutor;
+        then message missionFinished from missionExecutor to mavlinkInterface;
+        then message missionComplete from mavlinkInterface to mavlinkBridge;
+        then message surveyComplete from mavlinkBridge to surveyPlanner;
     }
 
     view 'Process view — Survey Drone' : SequenceView {

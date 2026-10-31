@@ -6,13 +6,13 @@ package DroneSystem {
         requirement def MassLimit;
     }
 
-    package Logical {
+    package Structure {
         private import Requirements::*;
         part def Airframe;
     }
 
     package Physical {
-        private import Logical::*;
+        private import Structure::*;
 
         part def FlightController;
         part def CompanionComputer;
@@ -22,7 +22,7 @@ package DroneSystem {
     }
 
     package Software {
-        private import Logical::*;
+        private import Structure::*;
         private import Physical::*;
 
         part flightStack {

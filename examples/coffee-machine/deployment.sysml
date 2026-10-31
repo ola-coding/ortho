@@ -10,10 +10,10 @@ package Deployment {
     private import StandardViewDefinitions::*;
 
     // One dual-core board carries all four control programs.
-    allocate sw.recipes to machine.controller;
-    allocate sw.brew to machine.controller;
-    allocate sw.temperature to machine.controller;
-    allocate sw.milk to machine.controller;
+    allocate sw.recipeEngine to machine.controller;
+    allocate sw.brewController to machine.controller;
+    allocate sw.temperatureController to machine.controller;
+    allocate sw.milkController to machine.controller;
 
     // The panel runs its own UI.
     allocate sw.uiApp to machine.display;

@@ -10,8 +10,8 @@ package DroneUseCases {
     }
 
     use case flyMission : FlyMission {
-        include use case avoidObstacles;
-        include use case returnToHome;
+        include avoidObstacles;
+        include returnToHome;
     }
 
     use case avoidObstacles {

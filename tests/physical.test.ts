@@ -67,8 +67,8 @@ describe('physical diagram extraction', () => {
     it('wires each connection between the ports of the parts it names', async () => {
         const graph = extractPhysicalGraph(exposedByView(await parseExample()));
         expect(graph.edges.map(e => [e.sourcePortId, e.targetPortId])).toEqual([
-            ['DroneLogical::quadcopter.battery#powerOut', 'DroneLogical::quadcopter.fc#powerIn'],
-            ['DroneLogical::quadcopter.fc#motorCtrl', 'DroneLogical::quadcopter.motors#ctrlIn']
+            ['DronePhysical::quadcopter.battery#powerOut', 'DronePhysical::quadcopter.fc#powerIn'],
+            ['DronePhysical::quadcopter.fc#motorCtrl', 'DronePhysical::quadcopter.motors#ctrlIn']
         ]);
     });
 
@@ -76,7 +76,7 @@ describe('physical diagram extraction', () => {
         const graph = extractPhysicalGraph(exposedByView(await parseExample()));
         const laidOut = await layoutGraph(graph);
         const byId = new Map(laidOut.nodes.map(n => [n.id, n]));
-        const owner = byId.get('DroneLogical::quadcopter')!;
+        const owner = byId.get('DronePhysical::quadcopter')!;
         for (const child of graph.nodes[0].children!) {
             const box = byId.get(child.id)!;
             expect(box.x).toBeGreaterThanOrEqual(owner.x);
@@ -89,7 +89,7 @@ describe('physical diagram extraction', () => {
             expect(node.ports.every(p => p.labelX !== undefined && p.labelY !== undefined), node.name).toBe(true);
         }
 
-        const svg = renderSvg(laidOut, { heading: 'Physical view — DroneLogical', source: 'fixtures/physical.sysml' });
+        const svg = renderSvg(laidOut, { heading: 'Physical view — DronePhysical', source: 'fixtures/physical.sysml' });
         expect(svg).toContain('<svg');
         expect(svg).toContain('>powerIn</text>');
         expect(svg).not.toContain('part def');

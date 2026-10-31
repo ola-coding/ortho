@@ -9,7 +9,7 @@
 // would state a cable that does not exist.
 package Hardware {
 
-    // Real is the spec's own value type, from its library.
+    // Real and Integer are value types from the spec's library.
     private import ScalarValues::*;
 
     // The functions this hardware realizes, said on the part that realizes
@@ -63,7 +63,7 @@ package Hardware {
     part def LiPoBattery {
         perform survey.operateVehicle.supplyPower;
 
-        attribute cells : Real = 6;
+        attribute cells : Integer = 6;
         attribute capacity_mAh : Real = 10000;
         port powerOut : PowerPort;
     }
@@ -179,7 +179,7 @@ package Hardware {
         part drone : SurveyDrone;
         part ground : GroundStation;
 
-        connection : RadioLink connect drone.rfLink to ground.rfLink;
+        interface : RadioLink connect drone.rfLink to ground.rfLink;
     }
 
     // The system itself, named once so deployment.sysml can allocate to the

@@ -36,8 +36,8 @@ package Units {
 ```
 
 - **Imports make names visible.** After `private import Software::*;`,
-  `sw.video` is `Software::sw.video`. A package's own members come before
-  what it imports.
+  `sw.videoStreamer` is `Software::sw.videoStreamer`. A package's own members
+  come before what it imports.
 - **Attribute types are not resolved.** Import `ScalarValues`, where `Real`,
   `String`, `Integer` and `Boolean` live, so that other tools find them.
 
@@ -114,7 +114,7 @@ package Functions {
 | implementation | `GeneralView` | the package of software |
 | physical | `InterconnectionView` | the product's `part` usage |
 | deployment | `GeneralView` | the package of allocations |
-| process | `SequenceView` | the scenario's `action def` |
+| process | `SequenceView` | the scenario's `occurrence def` |
 
 A view draws only what it exposes, and a `GeneralView` draws whatever that is.
 ortho skips any other view a model declares, and says why; with nothing left to
@@ -138,7 +138,7 @@ package SystemUseCases {
     use case makeEspresso : OperateMachine;
 
     use case makeCappuccino : OperateMachine {
-        include use case makeEspresso;
+        include makeEspresso;
     }
 
     use case descale : OperateMachine {
@@ -153,7 +153,8 @@ package SystemUseCases {
 | `use case name : Def;` | a «use case» box, `name : Def`. A `use case def` is drawn itself, as a «use case def» box, only when no usage is typed by it. |
 | `subject name : System;` in a use case (def) | a «subject» box above the use cases, joined by a line to each it is the subject of |
 | `actor name : Type;` | a stick figure, `name : Type`, below the use cases: primary on a `use case def`, secondary on a single use case and drawn after the primary ones |
-| `include use case name;` (or `include name;`) | a solid «include» arrow to the use case beside it. The target is a use case usage, never a definition. |
+| `include name;` | a solid «include» arrow to that use case, beside it. The target is a use case usage, never a definition. |
+| `include use case name : Def;` | the same arrow, to a «use case» box of its own. This declares a use case rather than naming one, so next to a `use case name;` it is a second one. |
 
 The subject is a use case's first parameter, so a use case that declares an
 actor states its `subject` first, as `descale` does. Restated, it keeps its
@@ -236,8 +237,8 @@ package Software {
     }
 
     part sw {
-        part recipes : Application::RecipeEngine;
-        part brew : Control::BrewController;
+        part recipeEngine : Application::RecipeEngine;
+        part brewController : Control::BrewController;
     }
 }
 
@@ -345,7 +346,7 @@ package Hardware {
         part board : Board;
 
         connect tank.waterOut to pumps.waterIn;
-        connection : ControlLink connect board.pumpCtrl to pumps.ctrlIn;
+        interface : ControlLink connect board.pumpCtrl to pumps.ctrlIn;
     }
 
     part machine : Machine;
@@ -358,8 +359,8 @@ package Hardware {
 | the `part` the view exposes | the top-level box |
 | `port name : PortDef;` | a port on the box's edge. `~PortDef` conjugates it. |
 | `connect a.p to b.q;` | a line between the two ports (or parts) |
-| `connection : Interface connect a.p to b.q;` (optionally named) | the same line, labelled as declared: `: Interface` |
-| `interface def` with its `end`s, `port def` | nothing. They type ports and connections. |
+| `interface : Def connect a.p to b.q;` (optionally named), or a `connection` of a `connection def` | the same line, labelled as declared: `: Def` |
+| `interface def` with its `end`s, `port def` | nothing. They type interfaces and ports. |
 | `attribute name : Type = value;` | nothing |
 | `perform Functions::use.branch.leaf;` in a part or its definition | a line in its *perform actions* compartment |
 
@@ -376,8 +377,8 @@ package Software {
     part def RecipeEngine;
     part def UiApp;
     part sw {
-        part recipes : RecipeEngine;
-        part ui : UiApp;
+        part recipeEngine : RecipeEngine;
+        part uiApp : UiApp;
     }
 }
 
@@ -395,48 +396,51 @@ package Deployment {
     private import Software::*;
     private import Hardware::*;
 
-    allocate sw.recipes to machine.controller;
-    allocation uiOnPanel allocate sw.ui to machine.display;
+    allocate sw.recipeEngine to machine.controller;
+    allocation uiOnPanel allocate sw.uiApp to machine.display;
 }
 ```
 
 | You write | The view draws |
 |---|---|
-| `allocate software to host;` | a «part» box for the host, listing `allocated software` in its *relationships* compartment |
+| `allocate sw.part to host;` | a «part» box for the host, listing `allocated sw::part` in its *relationships* compartment, which takes a qualified name (§8.2.3.5) |
 | `allocation name allocate ... to ...;` | the same; the name is not drawn |
 
-Software allocated to two hosts is listed on both.
+Software allocated to two hosts is listed on both. Name each software usage
+after its module, `part recipeEngine : RecipeEngine`: this view lists it by name
+alone, and the implementation view draws the module. Two usages of one module
+need names of their own.
 
 ## Process view
 
-One scenario: who sends what to whom, in order (§7.16, §7.17).
+One scenario: who sends what to whom, in order (§7.9, §7.16).
 
 ```sysml
 package Scenario {
     part def RecipeEngine;
     part def BrewController;
 
-    attribute def DoseSetting;
+    item def DoseSetting;
 
-    action def Brew {
+    occurrence def Brew {
         part user;
-        part recipes : RecipeEngine;
-        part brew : BrewController;
+        part recipeEngine : RecipeEngine;
+        part brewController : BrewController;
 
-        message order from user to recipes;
-        then message grind of DoseSetting from recipes to brew;
-        then message extract from brew to brew;
-        then message finished from brew to recipes;
+        message order from user to recipeEngine;
+        then message grind of DoseSetting from recipeEngine to brewController;
+        then message extract from brewController to brewController;
+        then message finished from brewController to recipeEngine;
     }
 }
 ```
 
 | You write | The view draws |
 |---|---|
-| `part name : Def;`, or a person's untyped `part name;`, in the scenario's `action def` | a lifeline headed by a «part» box, once a message names it, in order of first appearance |
-| `message name from a to b;` | an arrow from `a` to `b`, labelled `name`, in document order |
+| `part name : Def;`, or a person's untyped `part name;`, in the scenario's `occurrence def` | a lifeline headed by a «part» box, once a message names it, in order of first appearance |
+| `message name from a to b;` | an arrow from `a` to `b`, labelled `name`, in document order. The ends are parts, or `event occurrence`s on them. |
 | `message name of Payload from a to b;` | the same arrow, labelled `name of Payload` |
-| `attribute def Payload;` | nothing. It types a payload. |
+| `item def Payload;` | nothing. It types a payload. |
 | `then` before a message | nothing. Document order already gives the order. |
 
 ## Realization

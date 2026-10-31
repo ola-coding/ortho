@@ -201,9 +201,9 @@ Pages.
 - Give one `SysMLInteractive.process(text)` session each example's six files
   in dependency order — use case, logical, implementation, physical,
   deployment, process — and print `getIssues()` after each. Give each block of
-  LANGUAGE.md `process(text, false)`, which leaves it out of the index, so no
-  block leans on another's names. Give it a broken model too: a check that
-  cannot fail proves nothing.
+  LANGUAGE.md and each test fixture `process(text, false)`, which leaves it out
+  of the index, so none leans on another's names. Give it a broken model too: a
+  check that cannot fail proves nothing.
 
 ## Backlog
 
@@ -229,6 +229,9 @@ In priority order:
 - [x] **Text that fits its box on Windows, Linux and Typst.**
 - [x] **Tie the logical view to the use cases:** each function tree refines one.
 - [x] **Warn of a package named after a standard library package.**
+- [x] **Update the models** to the stricter reading of SysML v2: software usages
+  named after their modules, `include x`, `interface` usages, and scenarios as
+  an `occurrence def` of `item def` messages.
 - [ ] **Prepare for NPX.** Publish ortho on npm, so it runs without the repo.
   First clean up `package.json`, the README and whatever else publishing
   needs. The name `ortho` is taken on npm, so publish under a scope, such as

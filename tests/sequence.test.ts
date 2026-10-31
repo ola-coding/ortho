@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { parseHelper } from 'langium/test';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
-import { isActionDef, isMessageUsage } from '../src/generated/ast.js';
+import { isActionDef, isMessageUsage, isOtherDefinition } from '../src/generated/ast.js';
 import type { Model } from '../src/generated/ast.js';
 import { extractSequenceModel } from '../src/diagrams/sequence.js';
 import { renderSequenceSvg } from '../src/render/sequence-renderer.js';
@@ -27,11 +27,11 @@ async function parseExample(): Promise<Model> {
     return (await parseOk(text)).parseResult.value;
 }
 
-describe('action and message grammar', () => {
-    it('parses action defs with ordered messages', async () => {
+describe('scenario and message grammar', () => {
+    it('parses an occurrence def with ordered messages', async () => {
         const model = await parseExample();
-        const actionDef = model.packages[0].members.find(isActionDef)!;
-        const messages = actionDef.members.filter(isMessageUsage);
+        const scenario = model.packages[0].members.filter(isOtherDefinition).find(d => d.kind === 'occurrence')!;
+        const messages = scenario.members.filter(isMessageUsage);
         expect(messages).toHaveLength(6);
         expect(messages[0].then).toBeFalsy();
         expect(messages[1].then).toBe(true);

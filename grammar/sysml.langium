@@ -80,8 +80,7 @@ Element:
         ((':>' | 'specializes') supertypes+=[Definition:QualifiedName] (',' supertypes+=[Definition:QualifiedName])*)?
         Body
     | {infer InterfaceDef} 'interface' 'def' Identification WrittenSupertypes? Body
-    // A definition of values without identity. Its one job here is to type a
-    // message's payload, as the spec's own examples do.
+    // A definition of values without identity.
     | {infer AttributeDef} 'attribute' 'def' Identification WrittenSupertypes? Body
     | {infer ActionDef} 'action' 'def' Identification WrittenSupertypes? Body
     // SysML v2 has no UML-style `extend`; scenarios compose via include/perform.

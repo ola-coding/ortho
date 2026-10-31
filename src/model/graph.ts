@@ -75,6 +75,7 @@ const KEYWORDS: Record<string, string> = {
     ActionUsage: 'action',
     UseCaseDef: 'use case def',
     UseCaseUsage: 'use case',
+    IncludeUsage: 'use case',
     SubjectUsage: 'subject'
 };
 

@@ -102,10 +102,10 @@ the functions it realizes. Attribute values are not drawn.
 Which hardware runs which software — the only view whose subject is a
 relation, between elements of Implementation and Physical.
 
-Each computer is a «part» box listing what is allocated to it, `allocated
-sw.recipes`, in its *relationships* compartment, inside the device it is
-fitted in. Nothing is drawn inside a computer: a box drawn inside another is
-its member, and software is not a computer's.
+Each computer is a «part» box listing what is allocated to it, such as
+`allocated sw::recipeEngine`, in its *relationships* compartment, inside the
+device it is fitted in. Nothing is drawn inside a computer: a box drawn inside
+another is its member, and software is not a computer's.
 
 ## Process view
 

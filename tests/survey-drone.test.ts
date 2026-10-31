@@ -240,13 +240,13 @@ describe('survey drone example model', () => {
         // container, no router, not a line of the Linux stack.
         const fc = hosts.find(n => n.id === 'Hardware::SurveyDrone::fc')!;
         expect(fc.compartments[0].lines).toEqual([
-            'allocated sw.mission',
-            'allocated sw.estimator',
-            'allocated sw.control',
-            'allocated sw.sensors',
-            'allocated sw.mavlink',
-            'allocated sw.hal',
-            'allocated sw.rtos'
+            'allocated sw::missionExecutor',
+            'allocated sw::stateEstimator',
+            'allocated sw::flightControl',
+            'allocated sw::sensorDrivers',
+            'allocated sw::mavlinkInterface',
+            'allocated sw::hardwareAbstraction',
+            'allocated sw::realTimeKernel'
         ]);
 
         // A module missing from this view would be a program with nowhere to

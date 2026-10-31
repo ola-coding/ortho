@@ -4,7 +4,7 @@ import type { Member, MessageUsage } from '../generated/ast.js';
 import { qualifiedName } from '../model/graph.js';
 import { endPart, usageLabel } from './connector-ends.js';
 
-/** A lifeline, headed by its part as declared: `ui : UiApp`, or a person's `user`. */
+/** A lifeline, headed by its part as declared: `uiApp : UiApp`, or a person's `user`. */
 export interface SequenceLifeline {
     id: string;
     label: string;
