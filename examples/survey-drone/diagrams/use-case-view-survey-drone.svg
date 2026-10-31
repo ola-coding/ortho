@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="774.8520000000001" height="370"
-     viewBox="0 0 774.8520000000001 370" font-family="Arial, Helvetica, Segoe UI, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="852.288" height="370"
+     viewBox="0 0 852.288 370" font-family="Arial, Helvetica, Liberation Sans, DejaVu Sans, sans-serif">
   <title>Use case view — Survey Drone (generated from examples/survey-drone/use-case.sysml)</title>
   <defs>
     <marker id="openArrow" markerWidth="12" markerHeight="12" refX="10" refY="5"
@@ -11,59 +11,59 @@
       <path d="M0,4 L6,0 L12,4 L6,8 z" fill="#2b2b2b" />
     </marker>
   </defs>
-  <rect x="0" y="0" width="774.8520000000001" height="370" fill="white" />
-  <rect x="8" y="8" width="758.8520000000001" height="354" rx="10" ry="10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-  <path d="M8,30 L8,18 A10,10 0 0 1 18,8 L226.13,8 L226.13,22 A8,8 0 0 1 218.13,30 Z"
+  <rect x="0" y="0" width="852.288" height="370" fill="white" />
+  <rect x="8" y="8" width="836.288" height="354" rx="10" ry="10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+  <path d="M8,30 L8,18 A10,10 0 0 1 18,8 L259.955,8 L259.955,22 A8,8 0 0 1 251.95499999999998,30 Z"
         fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
   <text x="18" y="23" font-size="11" fill="#1a1a1a"><tspan fill="#555555">&#171;view&#187;</tspan><tspan font-weight="600"> Use case view — Survey Drone</tspan></text>
-  <path d="M592.8120000000001,362 L592.8120000000001,353 A6,6 0 0 1 598.8120000000001,347 L766.8520000000001,347"
+  <path d="M650.232,362 L650.232,353 A6,6 0 0 1 656.232,347 L844.288,347"
         fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-  <text x="758.8520000000001" y="358" text-anchor="end" font-size="9" fill="#8a8a86">examples/survey-drone/use-case.sysml</text>
+  <text x="836.288" y="358" text-anchor="end" font-size="9" fill="#8a8a86">examples/survey-drone/use-case.sysml</text>
   
-    <g><rect x="290.728" y="156" width="171.4" height="40" rx="10" ry="10"
+    <g><rect x="315.676" y="156" width="196.264" height="40" rx="10" ry="10"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="376.428" y="173" text-anchor="middle"
+      <text x="413.808" y="173" text-anchor="middle"
           font-size="9" fill="#555555">&#171;use case&#187;</text>
-      <text x="376.428" y="186" text-anchor="middle"
+      <text x="413.808" y="186" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">surveyArea : SurveyTask</text></g>
-    <g><rect x="36" y="156" width="170.728" height="40" rx="10" ry="10"
+    <g><rect x="36" y="156" width="195.676" height="40" rx="10" ry="10"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="121.364" y="173" text-anchor="middle"
+      <text x="133.838" y="173" text-anchor="middle"
           font-size="9" fill="#555555">&#171;use case&#187;</text>
-      <text x="121.364" y="186" text-anchor="middle"
+      <text x="133.838" y="186" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">planSurvey : SurveyTask</text></g>
-    <g><rect x="546.128" y="156" width="192.724" height="40" rx="10" ry="10"
+    <g><rect x="595.94" y="156" width="220.348" height="40" rx="10" ry="10"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="642.49" y="173" text-anchor="middle"
+      <text x="706.114" y="173" text-anchor="middle"
           font-size="9" fill="#555555">&#171;use case&#187;</text>
-      <text x="642.49" y="186" text-anchor="middle"
+      <text x="706.114" y="186" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">followProgress : SurveyTask</text></g>
-    <g><rect x="281.398" y="60" width="197.392" height="40" rx="10" ry="10"
+    <g><rect x="304.27200000000005" y="60" width="227.296" height="40" rx="10" ry="10"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="380.09400000000005" y="77" text-anchor="middle"
+      <text x="417.9200000000001" y="77" text-anchor="middle"
           font-size="9" fill="#555555">&#171;subject&#187;</text>
-      <text x="380.09400000000005" y="90" text-anchor="middle"
+      <text x="417.9200000000001" y="90" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">system : SurveyDroneSystem</text></g>
     <g stroke="#2b2b2b" stroke-width="1.5" fill="none">
-      <circle cx="380.09400000000005" cy="261" r="8" fill="#fdfdf6" />
-      <line x1="380.09400000000005" y1="269" x2="380.09400000000005" y2="288" />
-      <line x1="367.09400000000005" y1="276" x2="393.09400000000005" y2="276" />
-      <line x1="380.09400000000005" y1="288" x2="369.09400000000005" y2="304" />
-      <line x1="380.09400000000005" y1="288" x2="391.09400000000005" y2="304" />
-      <text x="380.09400000000005" y="320" text-anchor="middle" stroke="none"
+      <circle cx="417.92" cy="261" r="8" fill="#fdfdf6" />
+      <line x1="417.92" y1="269" x2="417.92" y2="288" />
+      <line x1="404.92" y1="276" x2="430.92" y2="276" />
+      <line x1="417.92" y1="288" x2="406.92" y2="304" />
+      <line x1="417.92" y1="288" x2="428.92" y2="304" />
+      <text x="417.92" y="320" text-anchor="middle" stroke="none"
           font-size="11" fill="#1a1a1a">operator : Operator</text>
     </g>
   
-    <polyline points="376.428,156 376.428,100" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="380.09400000000005,249 380.09400000000005,196" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="196.728,156 291.398,100" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="380.09400000000005,249 196.728,196" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="556.128,156 468.79,100" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="380.09400000000005,249 556.128,196" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="290.728,176 206.728,176" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#openArrow)" />
-    <text x="248.728" y="171" text-anchor="middle" font-size="9"
+    <polyline points="413.808,156 413.808,100" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="417.92,249 417.92,196" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="221.676,156 314.27200000000005,100" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="417.92,249 221.676,196" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="605.94,156 521.568,100" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="417.92,249 605.94,196" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="315.676,176 231.676,176" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#openArrow)" />
+    <text x="273.676" y="171" text-anchor="middle" font-size="9"
           fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;include&#187;</text>
-    <polyline points="462.12800000000004,176 546.128,176" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#openArrow)" />
-    <text x="504.12800000000004" y="171" text-anchor="middle" font-size="9"
+    <polyline points="511.94,176 595.94,176" fill="none" stroke="#2b2b2b" stroke-width="1.25" marker-end="url(#openArrow)" />
+    <text x="553.94" y="171" text-anchor="middle" font-size="9"
           fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;include&#187;</text>
 </svg>

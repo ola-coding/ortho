@@ -11,7 +11,7 @@ export const PAD_X = 24;
 export const PAD_TOP = 48;
 /** Room below the drawing, clear of the frame's corner compartment. */
 const PAD_BOTTOM = 30;
-export const FONT = 'Arial, Helvetica, Segoe UI, sans-serif';
+export const FONT = 'Arial, Helvetica, Liberation Sans, DejaVu Sans, sans-serif';
 
 /** A port is a usage too, at a port's size. */
 const PORT_RADIUS = 2;
