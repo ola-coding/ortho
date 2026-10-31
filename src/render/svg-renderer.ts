@@ -244,13 +244,14 @@ function renderEdge(e: LaidOutEdge, t: Theme): string {
     }
     const points = e.points;
     const pointsAttr = points.map(p => `${p.x + PAD_X},${p.y + PAD_TOP}`).join(' ');
-    // «include» and «import» carry an open arrowhead and their keyword; an
-    // «import» is dashed (§8.2.3.5), an «include» solid (§8.2.3.25). A branch
-    // of the function tree is owned by its parent: a filled diamond at the
-    // parent's end (§8.2.3.6). Every other line is plain: a connection, or a
-    // use case's line.
-    const dash = e.kind === 'import' ? ` stroke-dasharray="6 4"` : '';
-    const markers = e.kind === 'include' || e.kind === 'import' ? ` marker-end="url(#openArrow)"`
+    // «include», «import» and a dependency carry an open arrowhead; the last
+    // two are dashed (§8.2.3.3, §8.2.3.5), an «include» solid (§8.2.3.25). A
+    // branch of the function tree is owned by its parent: a filled diamond at
+    // the parent's end (§8.2.3.6). Every other line is plain: a connection, or
+    // a use case's line.
+    const dashed = e.kind === 'import' || e.kind === 'dependency';
+    const dash = dashed ? ` stroke-dasharray="6 4"` : '';
+    const markers = dashed || e.kind === 'include' ? ` marker-end="url(#openArrow)"`
         : e.kind === 'decomposition' ? ` marker-start="url(#diamond)"` : '';
     let svg = `\n    <polyline points="${pointsAttr}" fill="none" stroke="${t.stroke}" stroke-width="1.25"${dash}${markers} />`;
     if (e.label) {

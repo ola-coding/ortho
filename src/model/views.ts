@@ -7,7 +7,7 @@ import type { Member, ViewUsage } from '../generated/ast.js';
 
 /** The standard view definitions ortho draws (§9.2.20), and what each may expose. */
 export const STANDARD_VIEWS = {
-    GeneralView: (e: Member) => isPackageDecl(e) || isActionDef(e),
+    GeneralView: (e: Member) => isPackageDecl(e) || isActionDef(e) || isUseCaseDef(e) || isUseCaseUsage(e),
     InterconnectionView: (e: Member) => isPartUsage(e),
     SequenceView: (e: Member) => isActionDef(e)
 };
@@ -22,7 +22,7 @@ export function standardView(view: ViewUsage): StandardView | undefined {
 }
 
 const EXPOSES: Record<StandardView, string> = {
-    GeneralView: 'packages or action definitions',
+    GeneralView: 'packages, action definitions or use cases',
     InterconnectionView: 'parts',
     SequenceView: 'an action definition'
 };
@@ -72,8 +72,8 @@ export function viewFileName(view: ViewUsage): string {
 /**
  * Which of ortho's six diagrams a view is. An InterconnectionView is the
  * physical view and a SequenceView the process view. A GeneralView presents
- * whatever it exposes, so its content decides: a function tree, use cases,
- * allocations, or else packages of software.
+ * whatever it exposes, so its content decides: a function tree, with any use
+ * cases it refines, use cases, allocations, or else packages of software.
  */
 export function diagramKind(view: ViewUsage): DiagramKind {
     const definition = standardView(view);
@@ -87,7 +87,7 @@ export function diagramKind(view: ViewUsage): DiagramKind {
     if (exposed.some(isActionDef)) {
         return 'logical';
     }
-    const contents = exposed.flatMap(e => [...AstUtils.streamAllContents(e)]);
+    const contents = exposed.flatMap(e => [e, ...AstUtils.streamAllContents(e)]);
     if (contents.some(n => isUseCaseDef(n) || isUseCaseUsage(n))) {
         return 'use-case';
     }

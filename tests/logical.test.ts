@@ -4,12 +4,16 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { parseHelper } from 'langium/test';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
-import type { Model } from '../src/generated/ast.js';
+import type { Member, Model } from '../src/generated/ast.js';
 import type { DiagramGraph, GraphEdge, GraphNode } from '../src/model/graph.js';
 import { USAGE_RADIUS } from '../src/model/graph.js';
+import { declaredViews, exposedElements } from '../src/model/views.js';
 import { extractLogicalGraph } from '../src/diagrams/logical.js';
 import { layoutTree } from '../src/layout/tree-layout.js';
 import { renderSvg } from '../src/render/svg-renderer.js';
+
+/** Exposes the whole test model, as a view of all of it would. */
+const everything = (model: Model): [Member[], Model] => [model.packages, model];
 
 const services = createSysmlServices();
 const parse = parseHelper<Model>(services.Sysml);
@@ -24,7 +28,7 @@ async function parseExample(): Promise<Model> {
 
 describe('logical diagram extraction', () => {
     it('produces one box per function: «action def» for the root, «action» below it', async () => {
-        const graph = extractLogicalGraph((await parseExample()).packages);
+        const graph = extractLogicalGraph(...everything(await parseExample()));
         const [root, ...functions] = graph.nodes;
         expect([root.name, root.shape, root.keyword]).toEqual(['OperateDrone', 'definition', 'action def']);
         expect(functions.every(n => n.shape === 'usage' && n.keyword === 'action')).toBe(true);
@@ -34,7 +38,7 @@ describe('logical diagram extraction', () => {
     });
 
     it('is a strict tree: one root, one parent per function', async () => {
-        const graph = extractLogicalGraph((await parseExample()).packages);
+        const graph = extractLogicalGraph(...everything(await parseExample()));
         // A tree of n nodes has exactly n-1 branches.
         expect(graph.edges).toHaveLength(graph.nodes.length - 1);
 
@@ -49,13 +53,13 @@ describe('logical diagram extraction', () => {
     });
 
     it('draws branches as plain decomposition lines, never arrows', async () => {
-        const graph = extractLogicalGraph((await parseExample()).packages);
+        const graph = extractLogicalGraph(...everything(await parseExample()));
         expect(graph.edges.every(e => e.kind === 'decomposition')).toBe(true);
         expect(graph.edges.every(e => e.label === undefined)).toBe(true);
     });
 
     it('renders each branch with a filled diamond at its parent, and no arrowhead', async () => {
-        const graph = extractLogicalGraph((await parseExample()).packages);
+        const graph = extractLogicalGraph(...everything(await parseExample()));
         const laidOut = layoutTree(graph);
         const svg = renderSvg(laidOut, { heading: 'Logical view — DroneFunctions', source: 'fixtures/logical.sysml' });
         expect(svg).toContain(`rx="${USAGE_RADIUS}"`);
@@ -71,7 +75,7 @@ describe('logical diagram extraction', () => {
     });
 
     it('lays the tree out as a work-breakdown chart', async () => {
-        const graph = extractLogicalGraph((await parseExample()).packages);
+        const graph = extractLogicalGraph(...everything(await parseExample()));
         const laidOut = layoutTree(graph);
         expect(laidOut.nodes).toHaveLength(graph.nodes.length);
 
@@ -115,6 +119,89 @@ describe('logical diagram extraction', () => {
                 expect(p.x === edge.points[i].x || p.y === edge.points[i].y).toBe(true);
             });
         }
+    });
+
+    describe('the use cases the trees refine', () => {
+        /** A model whose view exposes the given elements. */
+        const refining = async (exposes: string[], refinements = ['HandleOrder to SystemUseCases::Order']) => {
+            const document = await parse(`
+                package SystemUseCases {
+                    use case def Order;
+                    use case def Return;
+                }
+                package Functions {
+                    private import ModelingMetadata::*;
+                    action def HandleOrder { action pack; action ship; }
+                    action def HandleReturn { action refund; }
+                    ${refinements.map(r => `#refinement dependency ${r};`).join('\n')}
+                    view v : GeneralView { ${exposes.map(e => `expose ${e};`).join(' ')} }
+                }
+            `, { validation: true });
+            const model = document.parseResult.value;
+            const errors = (document.diagnostics ?? []).filter(d => d.severity === 1).map(d => d.message);
+            return { errors, graph: extractLogicalGraph(exposedElements(declaredViews(model)[0]), model) };
+        };
+        const centre = (b: { x: number; width: number }) => b.x + b.width / 2;
+
+        it('stands a use case above its tree, with a dashed arrow up to it', async () => {
+            const { graph, errors } = await refining(['HandleOrder', 'SystemUseCases::Order']);
+            expect(errors).toEqual([]);
+            const laidOut = layoutTree(graph);
+            const at = new Map(laidOut.nodes.map(n => [n.name, n]));
+            const [root, useCase] = [at.get('HandleOrder')!, at.get('Order')!];
+            expect([useCase.shape, useCase.keyword]).toEqual(['definition', 'use case def']);
+            expect(useCase.y + useCase.height).toBeLessThan(root.y);
+            expect(centre(useCase)).toBeCloseTo(centre(root));
+
+            // From the client up to the supplier, straight.
+            const arrow = laidOut.edges.find(e => e.kind === 'dependency')!;
+            expect(arrow.points).toEqual([
+                { x: centre(root), y: root.y },
+                { x: centre(root), y: useCase.y + useCase.height }
+            ]);
+            const svg = renderSvg(laidOut, { heading: 'Functions', source: 'inline' });
+            expect(svg).toContain('stroke-dasharray="6 4" marker-end="url(#openArrow)"');
+        });
+
+        it('draws neither a use case nor an arrow the view does not expose', async () => {
+            const { graph } = await refining(['HandleOrder']);
+            expect(graph.nodes.map(n => n.name)).toEqual(['HandleOrder', 'pack', 'ship']);
+            expect(graph.edges.every(e => e.kind === 'decomposition')).toBe(true);
+        });
+
+        it('shows a use case nothing refines, last and with no arrow', async () => {
+            const { graph } = await refining(['HandleOrder', 'SystemUseCases::Return', 'SystemUseCases::Order']);
+            const laidOut = layoutTree(graph);
+            expect(laidOut.edges.filter(e => e.kind === 'dependency').map(e => e.targetId)).toEqual(['SystemUseCases::Order']);
+            const at = new Map(laidOut.nodes.map(n => [n.name, n]));
+            expect(at.get('Return')!.x).toBeGreaterThan(at.get('Order')!.x + at.get('Order')!.width);
+        });
+
+        it('centres a use case over all the trees that refine it, and keeps a row of them apart', async () => {
+            const both = await refining(
+                ['HandleOrder', 'HandleReturn', 'SystemUseCases::Order'],
+                ['HandleOrder to SystemUseCases::Order', 'HandleReturn to SystemUseCases::Order']
+            );
+            const shared = new Map(layoutTree(both.graph).nodes.map(n => [n.name, n]));
+            expect(centre(shared.get('Order')!))
+                .toBeCloseTo((centre(shared.get('HandleOrder')!) + centre(shared.get('HandleReturn')!)) / 2);
+
+            // One tree refining both: its use cases side by side, not overlapping.
+            const one = await refining(
+                ['HandleOrder', 'SystemUseCases::Order', 'SystemUseCases::Return'],
+                ['HandleOrder to SystemUseCases::Order, SystemUseCases::Return']
+            );
+            const laidOut = layoutTree(one.graph);
+            expect(laidOut.edges.filter(e => e.kind === 'dependency')).toHaveLength(2);
+            const row = new Map(laidOut.nodes.map(n => [n.name, n]));
+            expect(row.get('Return')!.x).toBeGreaterThanOrEqual(row.get('Order')!.x + row.get('Order')!.width);
+            expect(laidOut.width).toBeGreaterThanOrEqual(row.get('Return')!.x + row.get('Return')!.width);
+        });
+
+        it('fails on a dependency that names nothing, so a typo cannot pass', async () => {
+            const { errors } = await refining(['HandleOrder'], ['HandleOrder to SystemUseCases::Ordr']);
+            expect(errors).toEqual(["Could not resolve reference to Member named 'SystemUseCases::Ordr'."]);
+        });
     });
 
     describe('where the stem lands', () => {

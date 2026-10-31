@@ -1,5 +1,5 @@
 import type { DiagramGraph, GraphEdge, GraphNode } from '../model/graph.js';
-import { USAGE_RADIUS } from '../model/graph.js';
+import { isUseCaseNode, USAGE_RADIUS } from '../model/graph.js';
 import type { LaidOutDiagram, LaidOutEdge, LaidOutNode } from './elk-layout.js';
 
 /** Clearance around the drawing; matches ELK's default root padding. */
@@ -39,7 +39,7 @@ function compareKeys(a: number[], b: number[]): number {
  */
 export function layoutUseCases(graph: DiagramGraph): LaidOutDiagram {
     const byId = new Map(graph.nodes.map(n => [n.id, n]));
-    const useCases = graph.nodes.filter(n => n.keyword === 'use case' || n.keyword === 'use case def');
+    const useCases = graph.nodes.filter(isUseCaseNode);
     const subjects = graph.nodes.filter(n => n.keyword === 'subject');
     const actors = graph.nodes.filter(n => n.shape === 'actor');
     const includes = graph.edges.filter(e => e.kind === 'include');

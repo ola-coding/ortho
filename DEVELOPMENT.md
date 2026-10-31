@@ -42,7 +42,9 @@ any element answers to its short name too, and a quoted name loses its quotes
 as it is parsed (`sysml-value-converter.ts`). An import's target is a
 reference found the same way, which the implementation view follows for its
 «import» lines; one ortho does not have, such as the standard library's,
-imports nothing (`sysml-document-validator.ts`).
+imports nothing (`sysml-document-validator.ts`). A dependency's ends are
+references too, which the logical view follows for its dashed arrows, so a typo
+in one fails.
 
 **Grammar** (`grammar/sysml.langium`). What the views draw has alternatives
 of its own, close to the spec's; every other definition and usage shares one
@@ -56,9 +58,12 @@ from one made a single broken file take seconds.
 it can. After linking, the validator checks the rules it cannot, all listed
 in [LANGUAGE.md](LANGUAGE.md): no reserved word as a name, chains that start
 at a usage, and a use case's subject before its actors — each found by running
-the examples through the OMG pilot implementation. Whether ortho can draw a
-view is asked only when one is rendered (`whyUndrawable`), since a model may
-declare any view.
+the examples through the OMG pilot implementation. That also found what ortho
+does not check: a package named after a standard library package, such as
+`UseCases`, hides the library's, and a reference to it may find the library's
+instead, so a test keeps the examples and LANGUAGE.md clear of those names.
+Whether ortho can draw a view is asked only when one is rendered
+(`whyUndrawable`), since a model may declare any view.
 
 ## Layout and rendering
 
@@ -87,7 +92,8 @@ declare any view.
   family of leaves is listed vertically off a spine; any other family is
   spread in a row off a bus, the parent over its middle child, or over the
   middle of the row when there is none. ELK put every leaf in one row: 3322 px
-  across for 27 functions.
+  across for 27 functions. A use case the view exposes stands in a row above,
+  centred over the functions that depend on it, and takes no part in the tree.
 - **The use case view is laid out by ortho** (`src/layout/use-case-layout.ts`)
   as OMG's examples are drawn: the subject above its use cases and the actors
   below them, so that neither's lines cross a box, and each use case between
@@ -122,15 +128,19 @@ The examples keep one model file per view. The rule behind that is that **a
 view file names nothing from another view**, except:
 
 ```text
+logical                   →  use case
 implementation, physical  →  logical
 deployment                →  implementation, physical
 process                   →  implementation
 ```
 
-Every dependency points towards what the system does: a component names its
-functions, never the other way round. A view draws only what it exposes, so
-the files it refers to supply names, never boxes. The example tests enforce
-three conventions:
+Every dependency points back towards what users need: a function tree names
+the use case it refines, and a component names its functions, never the other
+way round. A view draws only what it exposes, so the files it refers to supply
+names, and boxes only where it exposes what they declare. These are the
+examples' rules, not ortho's: a view needs another only where its model names
+something in it, so any of these links can be left out. The example tests
+enforce three conventions:
 
 - `logical.sysml` names no component.
 - `implementation.sysml` and `physical.sysml` never name each other;
@@ -139,7 +149,7 @@ three conventions:
   software, and one usage of the whole product, which also heads the physical
   view.
 
-Use case and logical must also parse and render on their own.
+The use case file must also parse and render on its own.
 
 ## Working on the code
 
@@ -182,7 +192,7 @@ Pages.
 **Repeating the OMG pilot implementation check** from
 [LANGUAGE.md](LANGUAGE.md#how-this-is-checked), without conda or Jupyter:
 
-- Download `jupyter-sysml-kernel` from conda-forge (0.62.0 was used). The
+- Download `jupyter-sysml-kernel` from conda-forge (0.63.1 was used). The
   `.conda` file is a zip holding a `.tar.zst`, which holds
   `share/jupyter/kernels/sysml/jupyter-sysml-kernel-<version>-all.jar` and the
   standard library in `sysml.library/`. It needs Java 21.
@@ -193,7 +203,10 @@ Pages.
   kernel libraries and `".sysml"` for the other two.
 - Give one `SysMLInteractive.process(text)` session each example's six files
   in dependency order — use case, logical, implementation, physical,
-  deployment, process — and print `getIssues()` after each.
+  deployment, process — and print `getIssues()` after each. Give each block of
+  LANGUAGE.md `process(text, false)`, which leaves it out of the index, so no
+  block leans on another's names. Give it a broken model too: a check that
+  cannot fail proves nothing.
 
 ## Backlog
 
@@ -230,6 +243,16 @@ In priority order:
   and otherwise uses the document's font; Linux seldom has Arial. Name
   `Arial, Helvetica, Liberation Sans, DejaVu Sans, sans-serif`, and size text
   for the wider of Arial and DejaVu Sans, character by character.
+- [x] **Tie the logical view to the use cases.** Everything starts with the use
+  cases, and the logical view details the functions they need, so each function
+  tree refines its use case: `#refinement dependency MakeBeverage to
+  SystemUseCases::OperateMachine;` (§7.3, `ModelingMetadata`). Drawn as the use case
+  above its tree, with a dashed arrow up to it (§8.2.3.3). A dependency's ends
+  are references now, so a typo fails. Every link between views stays optional:
+  a view needs another only where its model names something in it, as for an
+  implementation view of a cloud solution built from a vendor's services, whose
+  modules' headings say what they specialize, `OrderTable :> DynamoDB`. Both
+  examples and LANGUAGE.md pass OMG's pilot implementation, 0.63.1.
 - [ ] **Prepare for NPX.** Publish ortho on npm, so it runs without the repo.
   First clean up `package.json`, the README and whatever else publishing
   needs. The name `ortho` is taken on npm, so publish under a scope, such as

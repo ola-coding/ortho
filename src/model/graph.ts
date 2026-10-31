@@ -49,7 +49,7 @@ export interface GraphNode {
     height: number;
 }
 
-export type EdgeKind = 'connection' | 'association' | 'include' | 'import' | 'decomposition';
+export type EdgeKind = 'connection' | 'association' | 'include' | 'import' | 'decomposition' | 'dependency';
 
 export interface GraphEdge {
     id: string;
@@ -77,6 +77,11 @@ const KEYWORDS: Record<string, string> = {
     UseCaseUsage: 'use case',
     SubjectUsage: 'subject'
 };
+
+/** Whether a node stands for a use case, a usage or a definition. */
+export function isUseCaseNode(node: { keyword: string }): boolean {
+    return node.keyword === 'use case' || node.keyword === 'use case def';
+}
 
 /** How SysML v2 draws an element as a box: its corners, and the keyword above its name. */
 export function boxOf(element: AstNode): { shape: 'definition' | 'usage'; keyword: string } {

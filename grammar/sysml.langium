@@ -176,7 +176,8 @@ Element:
     | {infer MetadataUsage} ('@' | 'metadata') (Identification (':' | 'typed' 'by'))? type=QualifiedName
         ('about' about+=QualifiedName (',' about+=QualifiedName)*)? Body
     | {infer Dependency} 'dependency' (Identification 'from')?
-        clients+=QualifiedName (',' clients+=QualifiedName)* 'to' suppliers+=QualifiedName (',' suppliers+=QualifiedName)*
+        clients+=[Member:QualifiedName] (',' clients+=[Member:QualifiedName])*
+        'to' suppliers+=[Member:QualifiedName] (',' suppliers+=[Member:QualifiedName])*
         RelationshipBody
     // Every other usage with a keyword of its own.
     | {infer OtherUsage}

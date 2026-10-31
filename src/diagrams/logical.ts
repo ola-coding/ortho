@@ -1,9 +1,11 @@
-import { isActionDef, isActionUsage } from '../generated/ast.js';
-import type { ActionDef, ActionUsage, Member } from '../generated/ast.js';
+import { AstUtils } from 'langium';
+import { isActionDef, isActionUsage, isDependency, isUseCaseDef, isUseCaseUsage } from '../generated/ast.js';
+import type { ActionDef, ActionUsage, Member, Model } from '../generated/ast.js';
 import type { DiagramGraph, GraphEdge, GraphNode } from '../model/graph.js';
 import { boxOf, qualifiedName } from '../model/graph.js';
 import { exposedMembers } from '../model/packages.js';
 import { boxSize } from './connector-ends.js';
+import { useCaseNode } from './use-case.js';
 
 type Function_ = ActionDef | ActionUsage;
 
@@ -36,8 +38,12 @@ function childFunctions(fn: Function_): ActionUsage[] {
  * own: `action survey : PerformAerialSurvey` is what a realizing part's
  * `perform` chain starts from, and the tree it names is already drawn from
  * its definition. Drawing it too would double the diagram.
+ *
+ * The functions detail what the use cases ask for. A use case the view exposes
+ * is drawn too, and a dependency joining two things on the view, such as a
+ * tree's `#refinement dependency` on its use case, is a dashed arrow (§8.2.3.3).
  */
-export function extractLogicalGraph(exposed: Member[]): DiagramGraph {
+export function extractLogicalGraph(exposed: Member[], model: Model): DiagramGraph {
     const nodes: GraphNode[] = [];
     const edges: GraphEdge[] = [];
     const seen = new Set<string>();
@@ -65,6 +71,20 @@ export function extractLogicalGraph(exposed: Member[]): DiagramGraph {
     for (const member of exposedMembers(exposed)) {
         if (isActionDef(member) || (isActionUsage(member) && !member.type)) {
             visit(member);
+        } else if ((isUseCaseDef(member) || isUseCaseUsage(member)) && !seen.has(qualifiedName(member))) {
+            seen.add(qualifiedName(member));
+            nodes.push(useCaseNode(member));
+        }
+    }
+
+    for (const dependency of AstUtils.streamAllContents(model).filter(isDependency)) {
+        const ids = (ends: typeof dependency.clients): string[] => ends
+            .flatMap(end => (end.ref ? [qualifiedName(end.ref)] : []))
+            .filter(id => seen.has(id));
+        for (const sourceId of ids(dependency.clients)) {
+            for (const targetId of ids(dependency.suppliers)) {
+                edges.push({ id: `e${edgeCounter++}`, kind: 'dependency', sourceId, targetId });
+            }
         }
     }
 

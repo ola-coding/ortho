@@ -2,7 +2,7 @@
 //
 // Nothing here says how the machine works. The subject is the machine as a
 // black box: a part def of its own, naming no hardware.
-package UseCases {
+package SystemUseCases {
     private import StandardViewDefinitions::*;
 
     part def User;
@@ -31,6 +31,6 @@ package UseCases {
     use case descale : ServiceMachine;
 
     view 'Use case view — Coffee Machine' : GeneralView {
-        expose UseCases;
+        expose SystemUseCases;
     }
 }

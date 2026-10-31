@@ -6,6 +6,8 @@ import { parseHelper } from 'langium/test';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
 import { isAllocationUsage } from '../src/generated/ast.js';
 import type { Member, Model, PackageDecl } from '../src/generated/ast.js';
+import { declaredViews, diagramKind, exposedElements } from '../src/model/views.js';
+import { renderViews } from '../src/pipeline.js';
 import { extractImplementationGraph } from '../src/diagrams/implementation.js';
 import { extractDeploymentGraph } from '../src/diagrams/deployment.js';
 import { layoutGraph } from '../src/layout/elk-layout.js';
@@ -110,6 +112,44 @@ describe('module APIs on the implementation view', () => {
         expect(pkg.width).toBeGreaterThan(measureText(pkg.name, 12, 'bold'));
         // The grid centres under the name.
         expect(module.x + module.width / 2).toBeCloseTo(pkg.x + pkg.width / 2);
+    });
+});
+
+describe('an implementation view on its own', () => {
+    // A cloud solution from a vendor's services: no use cases, no functions.
+    const CLOUD = `
+        package Aws {
+            part def Lambda;
+            part def DynamoDB;
+        }
+        package OrderSolution {
+            private import Aws::*;
+            part def OrderHandler :> Lambda;
+            part def OrderTable :> DynamoDB, Lambda;
+            view 'Order solution' : GeneralView {
+                expose OrderSolution;
+                expose Aws;
+            }
+        }
+    `;
+
+    it('renders with no use case or logical view, every link between views being optional', async () => {
+        const document = await parse(CLOUD, { validation: true });
+        expect((document.diagnostics ?? []).filter(d => d.severity === 1)).toEqual([]);
+        const { rendered, skipped } = await renderViews({ model: document.parseResult.value, documents: [document] });
+        expect(skipped).toEqual([]);
+        expect(rendered.map(r => [diagramKind(r.view), r.file])).toEqual([['implementation', 'order-solution.svg']]);
+    });
+
+    it('heads a module with what it specializes, as declared', async () => {
+        const document = await parse(CLOUD, { validation: true });
+        const model = document.parseResult.value;
+        const solution = extractImplementationGraph(exposedElements(declaredViews(model)[0])).nodes[0];
+        expect(solution.children!.map(c => c.name)).toEqual(['OrderHandler :> Lambda', 'OrderTable :> DynamoDB, Lambda']);
+        // Its box fits the longer heading.
+        const [handler, table] = solution.children!;
+        expect(table.width).toBeGreaterThan(handler.width);
+        expect(table.width).toBeGreaterThan(measureText('OrderTable :> DynamoDB, Lambda', 12, 'bold'));
     });
 });
 

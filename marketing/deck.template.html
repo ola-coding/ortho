@@ -565,6 +565,9 @@ action def PerformAerialSurvey {
         action maintainWorldModel;
     }
 }
+
+// What the operator asks for, in more detail.
+#refinement dependency PerformAerialSurvey to SystemUseCases::SurveyTask;
 </pre>
           </div>
           <div class="figure">

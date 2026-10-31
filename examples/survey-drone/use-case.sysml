@@ -4,7 +4,7 @@
 // it, and follow its progress while it flies. The subject is the system as a
 // black box: a part def of its own, naming neither the drone, the tablet nor
 // the radio.
-package UseCases {
+package SystemUseCases {
     private import StandardViewDefinitions::*;
 
     part def Operator;
@@ -28,6 +28,6 @@ package UseCases {
     use case followProgress : SurveyTask;
 
     view 'Use case view — Survey Drone' : GeneralView {
-        expose UseCases;
+        expose SystemUseCases;
     }
 }

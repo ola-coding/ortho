@@ -1133,10 +1133,10 @@ export function isDefinitionKind(item: unknown): item is DefinitionKind {
 export interface Dependency extends Element {
     readonly $type: 'Dependency';
     annotations: Array<AnnotatingElement>;
-    clients: Array<QualifiedName>;
+    clients: Array<langium.Reference<Member>>;
     name?: Name;
     shortName?: Name;
-    suppliers: Array<QualifiedName>;
+    suppliers: Array<langium.Reference<Member>>;
 }
 
 export const Dependency = {
@@ -5368,7 +5368,8 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 },
                 clients: {
                     name: Dependency.clients,
-                    defaultValue: []
+                    defaultValue: [],
+                    referenceType: Member.$type
                 },
                 crossName: {
                     name: Dependency.crossName,
@@ -5446,7 +5447,8 @@ export class SysmlAstReflection extends langium.AbstractAstReflection {
                 },
                 suppliers: {
                     name: Dependency.suppliers,
-                    defaultValue: []
+                    defaultValue: [],
+                    referenceType: Member.$type
                 },
                 then: {
                     name: Dependency.then,

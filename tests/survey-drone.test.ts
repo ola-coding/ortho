@@ -5,6 +5,8 @@ import { createSysmlServices } from '../src/parser/sysml-module.js';
 import { parseSysmlFiles } from '../src/parser/parse.js';
 import type { Member, Model } from '../src/generated/ast.js';
 import type { GraphNode } from '../src/model/graph.js';
+import { isUseCaseNode, qualifiedName } from '../src/model/graph.js';
+import { isUseCaseDef } from '../src/generated/ast.js';
 import { extractUseCaseGraph } from '../src/diagrams/use-case.js';
 import { extractLogicalGraph } from '../src/diagrams/logical.js';
 import { extractImplementationGraph } from '../src/diagrams/implementation.js';
@@ -22,8 +24,8 @@ const ALL = [
     'physical.sysml', 'deployment.sysml', 'process.sysml'
 ];
 
-/** The two views whose file declares everything it draws. */
-const SELF_CONTAINED = ['use-case.sysml', 'logical.sysml'];
+/** The view whose file declares everything it draws, and names no other. */
+const SELF_CONTAINED = ['use-case.sysml'];
 
 /** Every box, nested ones included. */
 function allNodes(nodes: GraphNode[]): GraphNode[] {
@@ -46,7 +48,7 @@ describe('survey drone example model', () => {
     it('parses and links all six files as one workspace', async () => {
         const model = await parseSet(...ALL);
         expect(model.packages.map(p => p.name)).toEqual([
-            'UseCases', 'Functions', 'Software', 'Hardware', 'Deployment', 'SurveyMissionScenario'
+            'SystemUseCases', 'Functions', 'Software', 'Hardware', 'Deployment', 'SurveyMissionScenario'
         ]);
     });
 
@@ -69,19 +71,20 @@ describe('survey drone example model', () => {
 
         const includes = graph.edges.filter(e => e.kind === 'include');
         expect(includes.map(e => e.targetId).sort())
-            .toEqual(['UseCases::followProgress', 'UseCases::planSurvey']);
+            .toEqual(['SystemUseCases::followProgress', 'SystemUseCases::planSurvey']);
 
         // The operator comes through the shared use case def, so they are a
         // primary actor of all three: planning and watching stand on their own
         // as well as inside a survey.
         const associations = graph.edges.filter(e => e.kind === 'association');
-        expect(associations.filter(e => e.sourceId === 'actor:UseCases::Operator')).toHaveLength(3);
+        expect(associations.filter(e => e.sourceId === 'actor:SystemUseCases::Operator')).toHaveLength(3);
     });
 
     it('logical view: a strict capability tree naming nothing that realizes a function', async () => {
-        const graph = extractLogicalGraph((await viewSet('logical.sysml'))[0]);
-        expect(graph.edges).toHaveLength(graph.nodes.length - 1);
-        expect(graph.nodes.length).toBeGreaterThan(20);
+        const graph = extractLogicalGraph(...await viewSet('logical.sysml', 'use-case.sysml'));
+        const functions = graph.nodes.filter(n => !isUseCaseNode(n));
+        expect(graph.edges.filter(e => e.kind === 'decomposition')).toHaveLength(functions.length - 1);
+        expect(functions.length).toBeGreaterThan(20);
 
         const names = graph.nodes.map(n => n.name);
         expect(names).toContain('avoidObstacles');
@@ -108,8 +111,19 @@ describe('survey drone example model', () => {
         expect(names).not.toContain('survey');
     });
 
+    it('logical view: the tree refines its use case, and no use case goes unrefined', async () => {
+        const [exposed, model] = await viewSet('logical.sysml', 'use-case.sysml');
+        const graph = extractLogicalGraph(exposed, model);
+        const refinements = graph.edges.filter(e => e.kind === 'dependency').map(e => [e.sourceId, e.targetId]);
+        expect(refinements).toEqual([['Functions::PerformAerialSurvey', 'SystemUseCases::SurveyTask']]);
+        // A use case no function tree details would be a hole in the design.
+        const useCases = model.packages.find(p => p.name === 'SystemUseCases')!.members.filter(isUseCaseDef);
+        const refined = new Set(refinements.map(([, target]) => target));
+        expect(useCases.map(qualifiedName).filter(u => !refined.has(u))).toEqual([]);
+    });
+
     it('implementation view: each module lists the functions it realizes', async () => {
-        const graph = extractImplementationGraph((await viewSet('implementation.sysml', 'logical.sysml'))[0]);
+        const graph = extractImplementationGraph((await viewSet('implementation.sysml', 'logical.sysml', 'use-case.sysml'))[0]);
         const modules = new Map(allNodes(graph.nodes).map(n => [n.name, n]));
         const compartment = (name: string, title: string) =>
             modules.get(name)!.compartments.find(c => c.title === title)?.lines ?? [];
@@ -134,7 +148,7 @@ describe('survey drone example model', () => {
     });
 
     it('implementation view: the firmware stack and the Linux stack never import each other', async () => {
-        const graph = extractImplementationGraph((await viewSet('implementation.sysml', 'logical.sysml'))[0]);
+        const graph = extractImplementationGraph((await viewSet('implementation.sysml', 'logical.sysml', 'use-case.sysml'))[0]);
         const imports = graph.edges.map(e => `${e.sourceId} -> ${e.targetId}`).sort();
         expect(imports).toEqual([
             'Software::Flight -> Software::FlightPlatform',
@@ -154,7 +168,7 @@ describe('survey drone example model', () => {
     });
 
     it('physical view: the product as nested parts, each radio wired on its own', async () => {
-        const graph = extractPhysicalGraph((await viewSet('physical.sysml', 'logical.sysml'))[0]);
+        const graph = extractPhysicalGraph((await viewSet('physical.sysml', 'logical.sysml', 'use-case.sysml'))[0]);
         expect(graph.nodes.map(n => n.name)).toEqual(['system : SurveyDroneSystem']);
         const system = graph.nodes[0];
         expect(system.children!.map(c => c.name)).toEqual([
@@ -185,7 +199,7 @@ describe('survey drone example model', () => {
     });
 
     it('physical view: a part inherits what its definition performs', async () => {
-        const graph = extractPhysicalGraph((await viewSet('physical.sysml', 'logical.sysml'))[0]);
+        const graph = extractPhysicalGraph((await viewSet('physical.sysml', 'logical.sysml', 'use-case.sysml'))[0]);
         const boxes = new Map(allNodes(graph.nodes).map(n => [n.name, n]));
 
         // The perform sits on BrushlessMotor; the box is the usage.
@@ -199,7 +213,7 @@ describe('survey drone example model', () => {
     });
 
     it('deployment view: every module hosted, on three computers in two devices', async () => {
-        const graph = extractDeploymentGraph(...await viewSet('deployment.sysml', 'implementation.sysml', 'physical.sysml', 'logical.sysml'));
+        const graph = extractDeploymentGraph(...await viewSet('deployment.sysml', 'implementation.sysml', 'physical.sysml', 'logical.sysml', 'use-case.sysml'));
         expect(graph.edges).toHaveLength(0);
 
         expect(graph.nodes.map(n => n.name)).toEqual(['system : SurveyDroneSystem']);
@@ -243,7 +257,7 @@ describe('survey drone example model', () => {
     });
 
     it('process view: a survey mission, uploaded over the MAVLink mission protocol', async () => {
-        const sequence = extractSequenceModel((await viewSet('process.sysml', 'implementation.sysml', 'logical.sysml'))[0]);
+        const sequence = extractSequenceModel((await viewSet('process.sysml', 'implementation.sysml', 'logical.sysml', 'use-case.sysml'))[0]);
         expect(sequence.lifelines).toHaveLength(7);
         // The operator starts it: a person, untyped in the model.
         expect(sequence.lifelines[0].label).toBe('operator');

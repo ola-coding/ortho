@@ -3561,11 +3561,19 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                     "feature": "clients",
                     "operator": "+=",
                     "terminal": {
-                      "$type": "RuleCall",
-                      "rule": {
-                        "$ref": "#/rules@41"
+                      "$type": "CrossReference",
+                      "type": {
+                        "$ref": "#/rules@7"
                       },
-                      "arguments": []
+                      "terminal": {
+                        "$type": "RuleCall",
+                        "rule": {
+                          "$ref": "#/rules@41"
+                        },
+                        "arguments": []
+                      },
+                      "deprecatedSyntax": false,
+                      "isMulti": false
                     }
                   },
                   {
@@ -3580,11 +3588,19 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                         "feature": "clients",
                         "operator": "+=",
                         "terminal": {
-                          "$type": "RuleCall",
-                          "rule": {
-                            "$ref": "#/rules@41"
+                          "$type": "CrossReference",
+                          "type": {
+                            "$ref": "#/rules@7"
                           },
-                          "arguments": []
+                          "terminal": {
+                            "$type": "RuleCall",
+                            "rule": {
+                              "$ref": "#/rules@41"
+                            },
+                            "arguments": []
+                          },
+                          "deprecatedSyntax": false,
+                          "isMulti": false
                         }
                       }
                     ],
@@ -3599,11 +3615,19 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                     "feature": "suppliers",
                     "operator": "+=",
                     "terminal": {
-                      "$type": "RuleCall",
-                      "rule": {
-                        "$ref": "#/rules@41"
+                      "$type": "CrossReference",
+                      "type": {
+                        "$ref": "#/rules@7"
                       },
-                      "arguments": []
+                      "terminal": {
+                        "$type": "RuleCall",
+                        "rule": {
+                          "$ref": "#/rules@41"
+                        },
+                        "arguments": []
+                      },
+                      "deprecatedSyntax": false,
+                      "isMulti": false
                     }
                   },
                   {
@@ -3618,11 +3642,19 @@ export const SysmlGrammar = (): Grammar => loadedSysmlGrammar ?? (loadedSysmlGra
                         "feature": "suppliers",
                         "operator": "+=",
                         "terminal": {
-                          "$type": "RuleCall",
-                          "rule": {
-                            "$ref": "#/rules@41"
+                          "$type": "CrossReference",
+                          "type": {
+                            "$ref": "#/rules@7"
                           },
-                          "arguments": []
+                          "terminal": {
+                            "$type": "RuleCall",
+                            "rule": {
+                              "$ref": "#/rules@41"
+                            },
+                            "arguments": []
+                          },
+                          "deprecatedSyntax": false,
+                          "isMulti": false
                         }
                       }
                     ],

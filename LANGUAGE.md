@@ -69,7 +69,10 @@ for other files to start from.
 `'Brew unit'`, and is the same name without them. An unquoted name may not be
 one of SysML v2's 128 reserved words, even those ortho does not use, such as
 `frame`, `state`, `item`, `flow` and `out`. A short name in angle brackets,
-`part def <BU> 'Brew unit';`, names the element too, as does an `alias`.
+`part def <BU> 'Brew unit';`, names the element too, as does an `alias`. Name
+no package after a standard library package, such as `UseCases`, `Requirements`
+or `Views`: it hides the library's, and a reference to it may find the library's
+instead.
 
 **Comments** (§8.2.2.4). `// ...` and `//* ... */` are notes, which no tool
 keeps. `/* ... */`, `doc /* ... */` and `comment about x /* ... */` are part of
@@ -108,7 +111,7 @@ package Functions {
 | View | Definition | Exposes |
 |---|---|---|
 | use case | `GeneralView` | the package of use cases |
-| logical | `GeneralView` | the `action def` of each function tree |
+| logical | `GeneralView` | the `action def` of each function tree, and the use cases they refine |
 | implementation | `GeneralView` | the package of software |
 | physical | `InterconnectionView` | the product's `part` usage |
 | deployment | `GeneralView` | the package of allocations |
@@ -123,7 +126,7 @@ declare other views too; only rendering one fails.
 What people ask the system for, and who asks (§7.25).
 
 ```sysml
-package UseCases {
+package SystemUseCases {
     part def CoffeeMachine;
     part def Operator;
     part def Technician;
@@ -180,8 +183,38 @@ package Functions {
 | `action def Name { ... }` in a package | the root of a tree, an «action def» box |
 | `action name;` or `action name { ... }` nested in another | an «action» box under its parent, which owns it: a filled diamond at the parent's end |
 | `action name : Def;` in a package | nothing. It is the usage a `perform` chain starts from. |
+| `#refinement dependency Tree to SystemUseCases::Name;` | a dashed arrow from the tree's root up to the use case, when the view exposes both |
+| `expose SystemUseCases::Name;` in the view | the use case, above the trees that refine it. One nothing refines stands alone, a visible gap. |
 
 Name no component in this file, and end it with one usage of its tree.
+
+**Refining a use case** (§7.3). Use cases come first, and each function tree
+details what one asks for. A refinement says so: a dependency, tagged from the
+standard library's `ModelingMetadata`, whose source is "a more precise and/or
+accurate representation" than its target. It is optional, but its ends are
+checked: once it names a use case, that use case has to be loaded.
+
+```sysml
+package SystemUseCases {
+    use case def OperateMachine;
+}
+
+package Functions {
+    private import StandardViewDefinitions::*;
+    private import ModelingMetadata::*;
+
+    action def MakeBeverage {
+        action heatWater;
+    }
+
+    #refinement dependency MakeBeverage to SystemUseCases::OperateMachine;
+
+    view 'Logical view' : GeneralView {
+        expose MakeBeverage;
+        expose SystemUseCases::OperateMachine;
+    }
+}
+```
 
 ## Implementation view
 
@@ -226,6 +259,7 @@ package Functions {
 |---|---|
 | `package Name { ... }` | a package box, nested inside its parent package |
 | `part def Name;` in a package | a module, a «part def» box, inside its package |
+| `part def Name :> Base;` | the same, headed `Name :> Base` |
 | `private import Pkg::*;` (or `Pkg::Element`, `Pkg::**`) | a dashed arrow to `Pkg`: «import»* (or «import», «import»**) |
 | `part sw { part x : Module; ... }` in a package | nothing. The deployment view allocates from it. |
 | `perform Functions::use.branch.leaf;` in a module | a line in its *perform actions* compartment |
@@ -256,6 +290,32 @@ package Software {
 
     part def RecipeEngine {
         port brew : ~BrewApi;
+    }
+}
+```
+
+**On its own.** `perform` is optional, so an implementation view can stand alone,
+as for a cloud solution built from a vendor's services. Declare the services
+in a package of their own: ortho knows the names in OMG's library, but no
+vendor's. To show which service talks to which, use them as parts in an
+`InterconnectionView`, as on the physical view.
+
+```sysml
+package Aws {
+    part def Lambda;
+    part def DynamoDB;
+}
+
+package OrderSolution {
+    private import StandardViewDefinitions::*;
+    private import Aws::*;
+
+    part def OrderHandler :> Lambda;
+    part def OrderTable :> DynamoDB;
+
+    view 'Order solution' : GeneralView {
+        expose OrderSolution;
+        expose Aws;
     }
 }
 ```
@@ -423,7 +483,7 @@ requirements has to keep loading. `satisfy` names a requirement and the part
 that satisfies it.
 
 ```sysml
-package Requirements {
+package DroneRequirements {
     private import ScalarValues::*;
 
     part def Drone;
@@ -476,6 +536,6 @@ Tests keep this page honest: every `sysml` block above parses on its own.
 Another loads all 252 of OMG's own example, training and validation models.
 
 Both example models and every block on this page also passed the OMG pilot
-implementation, release 0.62.0, on 2026-10-24, with no errors or warnings.
+implementation, release 0.63.1, on 2026-10-31, with no errors or warnings.
 That is a one-off check, not part of CI; [DEVELOPMENT.md](DEVELOPMENT.md)
 describes how to repeat it when the grammar grows.

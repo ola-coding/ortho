@@ -22,7 +22,7 @@ function effectiveMembers(useCase: UseCase): Member[] {
 }
 
 /** A «use case» box, named as declared, or a «use case def» one. */
-function useCaseNode(useCase: UseCase): GraphNode {
+export function useCaseNode(useCase: UseCase): GraphNode {
     const name = isUseCaseUsage(useCase) ? usageLabel(useCase) : useCase.name ?? '';
     const { shape, keyword } = boxOf(useCase);
     return {

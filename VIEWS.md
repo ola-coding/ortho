@@ -29,6 +29,10 @@ flowchart TD
     PHY --> DEP
 ```
 
+Every arrow is optional. A view needs another only where its model names
+something in it, so one can stand alone: an implementation view of a cloud
+solution built from a vendor's services needs no use cases or functions.
+
 [LANGUAGE.md](LANGUAGE.md) says what to write for each view;
 [README.md](README.md) how to render it.
 
@@ -58,11 +62,13 @@ a volume, raising a temperature — do not.
 
 Each function appears once, and names nothing that realizes it: the parts on
 the Implementation and Physical views name their functions themselves. A
-function nothing performs is a gap.
+function nothing performs is a gap. Each tree details what a use case asks for,
+and says so: it refines that use case. A use case nothing refines is a gap too.
 
 Drawn as a work-breakdown chart: one box per function, the root an «action
 def» and the rest «action»s, each parent above its children on a single stem.
-The stem leaves the parent at a filled diamond, since the parent owns them. The lowest level of
+The stem leaves the parent at a filled diamond, since the parent owns them.
+A use case the view exposes stands above its tree, with a dashed arrow up to it. The lowest level of
 a branch is listed vertically, so a broad tree keeps a page's proportions.
 
 ## Implementation view
@@ -72,7 +78,9 @@ their packages. Run-time behaviour belongs to Process, hardware to Physical.
 
 Packages are tabbed rectangles, named in their tab, nested, holding their
 modules. A dashed «import» arrow points at a package depended upon, «import»*
-where `Pkg::*` imports its members. A module's box lists the functions
+where `Pkg::*` imports its members. A module's heading says what it
+specializes, such as the vendor's service it is built on: `OrderTable :>
+DynamoDB`. Its box lists the functions
 it realizes (*perform actions*) and its API (*ports*: what it offers, and,
 conjugated with `~`, what it needs). No lines join modules: where they
 publish and subscribe rather than call, a line would claim a coupling that

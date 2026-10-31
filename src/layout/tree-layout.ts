@@ -1,4 +1,5 @@
 import type { DiagramGraph, GraphEdge, GraphNode } from '../model/graph.js';
+import { isUseCaseNode, USAGE_RADIUS } from '../model/graph.js';
 import type { LaidOutDiagram, LaidOutEdge, LaidOutNode } from './elk-layout.js';
 
 /** Clearance around the drawing; matches ELK's default root padding. */
@@ -42,12 +43,17 @@ function withoutRepeats(points: Point[]): Point[] {
  * middle of the row when it does not. Listing the lowest level is
  * what keeps a broad tree page-shaped: a row holding every leaf is a strip.
  *
- * The graph is expected to be a forest. An edge that would give a function a
- * second parent, or close a cycle, is drawn as a straight line but takes no
- * part in the layout.
+ * A use case the view exposes stands in a row above the trees, over the
+ * functions that depend on it, as OMG's course draws a dependency used for
+ * traceability: the client below, the supplier above, the arrow pointing up.
+ *
+ * The graph is expected to be a forest. Any other edge, one that would give a
+ * function a second parent, close a cycle, or be a dependency, is drawn as a
+ * straight line but takes no part in the layout.
  */
 export function layoutTree(graph: DiagramGraph): LaidOutDiagram {
     const byId = new Map(graph.nodes.map(n => [n.id, n]));
+    const useCases = graph.nodes.filter(isUseCaseNode);
     const children = new Map<string, string[]>();
     const parentOf = new Map<string, string>();
     const treeEdge = new Map<string, GraphEdge>();
@@ -64,7 +70,8 @@ export function layoutTree(graph: DiagramGraph): LaidOutDiagram {
 
     for (const edge of graph.edges) {
         const { sourceId: parent, targetId: child } = edge;
-        if (!byId.has(parent) || !byId.has(child) || parentOf.has(child) || closesCycle(parent, child)) {
+        if (edge.kind !== 'decomposition' || !byId.has(parent) || !byId.has(child)
+            || parentOf.has(child) || closesCycle(parent, child)) {
             extra.push(edge);
             continue;
         }
@@ -132,6 +139,23 @@ export function layoutTree(graph: DiagramGraph): LaidOutDiagram {
     const edges: LaidOutEdge[] = [];
     const position = new Map<string, Point>();
 
+    const put = (node: GraphNode, x: number, y: number): void => {
+        nodes.push({
+            id: node.id,
+            shape: node.shape,
+            keyword: node.keyword,
+            name: node.name,
+            compartments: node.compartments,
+            ports: [],
+            hasChildren: false,
+            x,
+            y,
+            width: node.width,
+            height: node.height
+        });
+        position.set(node.id, { x, y });
+    };
+
     const branch = (childId: string, points: Point[]): void => {
         const edge = treeEdge.get(childId)!;
         edges.push({
@@ -148,20 +172,7 @@ export function layoutTree(graph: DiagramGraph): LaidOutDiagram {
         const node: GraphNode = byId.get(id)!;
         const m = measures.get(id)!;
         const x = left + m.boxLeft;
-        nodes.push({
-            id: node.id,
-            shape: node.shape,
-            keyword: node.keyword,
-            name: node.name,
-            compartments: node.compartments,
-            ports: [],
-            hasChildren: false,
-            x,
-            y: top,
-            width: node.width,
-            height: node.height
-        });
-        position.set(id, { x, y: top });
+        put(node, x, top);
 
         const bottom = top + node.height;
         const list = kids(id);
@@ -198,14 +209,31 @@ export function layoutTree(graph: DiagramGraph): LaidOutDiagram {
         }
     };
 
-    const roots = graph.nodes.filter(n => !parentOf.has(n.id)).map(n => n.id);
+    const roots = graph.nodes.filter(n => !parentOf.has(n.id) && !isUseCaseNode(n)).map(n => n.id);
+    const useCaseHeight = Math.max(0, ...useCases.map(u => u.height));
+    const treesTop = MARGIN + (useCases.length > 0 ? useCaseHeight + LEVEL_GAP : 0);
     let left = MARGIN;
     let height = 0;
     for (const root of roots) {
         const m = measure(root);
-        place(root, left, MARGIN);
+        place(root, left, treesTop);
         left += m.width + SIBLING_GAP * 2;
         height = Math.max(height, m.height);
+    }
+
+    // Each use case centred over the functions that depend on it, as far as
+    // the one before it allows; one nothing depends on goes last, a visible gap.
+    const middle = new Map(useCases.map(useCase => {
+        const clients = extra.filter(e => e.targetId === useCase.id && position.has(e.sourceId))
+            .map(e => position.get(e.sourceId)!.x + byId.get(e.sourceId)!.width / 2);
+        return [useCase.id, clients.length > 0 ? clients.reduce((sum, x) => sum + x, 0) / clients.length : Infinity];
+    }));
+    let right = MARGIN - SIBLING_GAP;
+    for (const useCase of [...useCases].sort((a, b) => (middle.get(a.id)! - middle.get(b.id)!) || 0)) {
+        const centred = middle.get(useCase.id)! - useCase.width / 2;
+        const x = Math.max(Number.isFinite(centred) ? centred : -Infinity, right + SIBLING_GAP);
+        put(useCase, x, MARGIN + useCaseHeight - useCase.height);
+        right = x + useCase.width;
     }
 
     for (const edge of extra) {
@@ -216,19 +244,28 @@ export function layoutTree(graph: DiagramGraph): LaidOutDiagram {
         }
         const source = byId.get(edge.sourceId)!;
         const target = byId.get(edge.targetId)!;
+        // Up from a function to a use case, straight where the two overlap;
+        // any other line from the source's bottom to the target's top.
+        const sourceX = s.x + source.width / 2;
+        const points = isUseCaseNode(target) && !isUseCaseNode(source)
+            ? [
+                { x: sourceX, y: s.y },
+                { x: Math.max(t.x + USAGE_RADIUS, Math.min(t.x + target.width - USAGE_RADIUS, sourceX)), y: t.y + target.height }
+            ]
+            : [{ x: sourceX, y: s.y + source.height }, { x: t.x + target.width / 2, y: t.y }];
         edges.push({
             id: edge.id,
             kind: edge.kind,
             sourceId: edge.sourceId,
             targetId: edge.targetId,
             label: edge.label,
-            points: [{ x: s.x + source.width / 2, y: s.y + source.height }, { x: t.x + target.width / 2, y: t.y }]
+            points
         });
     }
 
     return {
-        width: roots.length > 0 ? left - SIBLING_GAP * 2 + MARGIN : 2 * MARGIN,
-        height: height + 2 * MARGIN,
+        width: Math.max(roots.length > 0 ? left - SIBLING_GAP * 2 + MARGIN : 2 * MARGIN, right + MARGIN),
+        height: treesTop + height + MARGIN,
         nodes,
         edges
     };

@@ -46,7 +46,7 @@ describe('views', () => {
         const model = (await parse(TWO_VIEWS)).parseResult.value;
         const [functions, sequence] = declaredViews(model);
         // The scenario nests actions too, but the function view does not expose it.
-        expect(extractLogicalGraph(exposedElements(functions)).nodes.map(n => n.name))
+        expect(extractLogicalGraph(exposedElements(functions), model).nodes.map(n => n.name))
             .toEqual(['Operate', 'start', 'stop']);
         expect(extractSequenceModel(exposedElements(sequence)).messages.map(m => m.label))
             .toEqual(['ping']);
@@ -63,7 +63,18 @@ describe('views', () => {
         expect(await why('package M { action def A; view v : InterconnectionView { expose A; } }'))
             .toEqual(['An InterconnectionView exposes parts.']);
         expect(await why('package M { part p; view v : GeneralView { expose p; } }'))
-            .toEqual(['A GeneralView exposes packages or action definitions.']);
+            .toEqual(['A GeneralView exposes packages, action definitions or use cases.']);
+    });
+
+    it('takes a view that exposes only a use case for the use case view', async () => {
+        const [view] = declaredViews((await parse(`
+            package M {
+                use case def Order;
+                view v : GeneralView { expose Order; }
+            }
+        `)).parseResult.value);
+        expect(whyUndrawable(view)).toBeUndefined();
+        expect(diagramKind(view)).toBe('use-case');
     });
     it('writes each view to a file named after its short name, or else its name', async () => {
         const views = declaredViews((await parse(`

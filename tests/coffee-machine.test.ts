@@ -5,6 +5,8 @@ import { createSysmlServices } from '../src/parser/sysml-module.js';
 import { parseSysmlFiles } from '../src/parser/parse.js';
 import type { Member, Model } from '../src/generated/ast.js';
 import type { GraphNode } from '../src/model/graph.js';
+import { isUseCaseNode, qualifiedName } from '../src/model/graph.js';
+import { isUseCaseDef } from '../src/generated/ast.js';
 import { extractUseCaseGraph } from '../src/diagrams/use-case.js';
 import { extractLogicalGraph } from '../src/diagrams/logical.js';
 import { extractImplementationGraph } from '../src/diagrams/implementation.js';
@@ -22,8 +24,8 @@ const ALL = [
     'physical.sysml', 'deployment.sysml', 'process.sysml'
 ];
 
-/** The two views whose file declares everything it draws. */
-const SELF_CONTAINED = ['use-case.sysml', 'logical.sysml'];
+/** The view whose file declares everything it draws, and names no other. */
+const SELF_CONTAINED = ['use-case.sysml'];
 
 /** Every box, nested ones included. */
 function allNodes(nodes: GraphNode[]): GraphNode[] {
@@ -46,12 +48,12 @@ describe('coffee machine example model', () => {
     it('parses and links all six files as one workspace', async () => {
         const model = await parseSet(...ALL);
         expect(model.packages.map(p => p.name)).toEqual([
-            'UseCases', 'Functions', 'Software', 'Hardware', 'Deployment', 'MakeCappuccinoScenario'
+            'SystemUseCases', 'Functions', 'Software', 'Hardware', 'Deployment', 'MakeCappuccinoScenario'
         ]);
     });
 
     it('each self-contained view parses on its own', async () => {
-        // The point of one file per view: four of the six need no companion.
+        // Where the chain starts: the use cases name no other view.
         for (const file of SELF_CONTAINED) {
             await expect(parseSet(file)).resolves.toBeDefined();
         }
@@ -73,17 +75,17 @@ describe('coffee machine example model', () => {
         const includes = graph.edges.filter(e => e.kind === 'include');
         expect(includes).toHaveLength(1);
         expect(includes[0]).toMatchObject({
-            sourceId: 'UseCases::makeCappuccino',
-            targetId: 'UseCases::makeEspresso'
+            sourceId: 'SystemUseCases::makeCappuccino',
+            targetId: 'SystemUseCases::makeEspresso'
         });
     });
 
     it('logical view: a strict capability tree naming no realization', async () => {
-        const graph = extractLogicalGraph((await viewSet('logical.sysml'))[0]);
+        const graph = extractLogicalGraph(...await viewSet('logical.sysml', 'use-case.sysml'));
         // Two roots, one per use case definition: making a drink, and looking
         // after the machine. A forest of n trees has n fewer edges than nodes.
-        expect(graph.edges).toHaveLength(graph.nodes.length - 2);
-        expect(graph.edges.every(e => e.kind === 'decomposition')).toBe(true);
+        const functions = graph.nodes.filter(n => !isUseCaseNode(n));
+        expect(graph.edges.filter(e => e.kind === 'decomposition')).toHaveLength(functions.length - 2);
 
         const names = graph.nodes.map(n => n.name);
         expect(names).toContain('heatWater');
@@ -99,8 +101,22 @@ describe('coffee machine example model', () => {
             .toEqual(['MakeBeverage', 'MaintainMachine']);
     });
 
+    it('logical view: each tree refines its use case, and no use case goes unrefined', async () => {
+        const [exposed, model] = await viewSet('logical.sysml', 'use-case.sysml');
+        const graph = extractLogicalGraph(exposed, model);
+        const refinements = graph.edges.filter(e => e.kind === 'dependency').map(e => [e.sourceId, e.targetId]);
+        expect(refinements).toEqual([
+            ['Functions::MakeBeverage', 'SystemUseCases::OperateMachine'],
+            ['Functions::MaintainMachine', 'SystemUseCases::ServiceMachine']
+        ]);
+        // A use case no function tree details would be a hole in the design.
+        const useCases = model.packages.find(p => p.name === 'SystemUseCases')!.members.filter(isUseCaseDef);
+        const refined = new Set(refinements.map(([, target]) => target));
+        expect(useCases.map(qualifiedName).filter(u => !refined.has(u))).toEqual([]);
+    });
+
     it('implementation view: the application layer depends on control, never the reverse', async () => {
-        const graph = extractImplementationGraph((await viewSet('implementation.sysml', 'logical.sysml'))[0]);
+        const graph = extractImplementationGraph((await viewSet('implementation.sysml', 'logical.sysml', 'use-case.sysml'))[0]);
         const imports = graph.edges.map(e => `${e.sourceId} -> ${e.targetId}`);
         expect(imports).toEqual(['Software::Application -> Software::Control']);
 
@@ -116,7 +132,7 @@ describe('coffee machine example model', () => {
     });
 
     it('implementation view: the recipe engine offers one API and needs three', async () => {
-        const graph = extractImplementationGraph((await viewSet('implementation.sysml', 'logical.sysml'))[0]);
+        const graph = extractImplementationGraph((await viewSet('implementation.sysml', 'logical.sysml', 'use-case.sysml'))[0]);
         const modules = new Map(allNodes(graph.nodes).map(n => [n.name, n]));
         const ports = (name: string) =>
             modules.get(name)!.compartments.find(c => c.title === 'ports')?.lines ?? [];
@@ -132,7 +148,7 @@ describe('coffee machine example model', () => {
     });
 
     it('physical view: the machine as nested parts, looms named by their interface', async () => {
-        const graph = extractPhysicalGraph((await viewSet('physical.sysml', 'logical.sysml'))[0]);
+        const graph = extractPhysicalGraph((await viewSet('physical.sysml', 'logical.sysml', 'use-case.sysml'))[0]);
         expect(graph.nodes.map(n => n.name)).toEqual(['machine : CoffeeMachine']);
         const names = graph.nodes[0].children!.map(n => n.name);
         expect(names).toHaveLength(11);
@@ -146,12 +162,12 @@ describe('coffee machine example model', () => {
     });
 
     it('realization: every function is performed by something, and some parts by nothing', async () => {
-        const logical = extractLogicalGraph((await viewSet('logical.sysml'))[0]);
+        const logical = extractLogicalGraph(...await viewSet('logical.sysml', 'use-case.sysml'));
         const parents = new Set(logical.edges.map(e => e.sourceId));
-        const leaves = logical.nodes.filter(n => !parents.has(n.id)).map(n => n.name);
+        const leaves = logical.nodes.filter(n => !parents.has(n.id) && !isUseCaseNode(n)).map(n => n.name);
 
-        const software = extractImplementationGraph((await viewSet('implementation.sysml', 'logical.sysml'))[0]);
-        const hardware = extractPhysicalGraph((await viewSet('physical.sysml', 'logical.sysml'))[0]);
+        const software = extractImplementationGraph((await viewSet('implementation.sysml', 'logical.sysml', 'use-case.sysml'))[0]);
+        const hardware = extractPhysicalGraph((await viewSet('physical.sysml', 'logical.sysml', 'use-case.sysml'))[0]);
         const performed = new Set(
             [...allNodes(software.nodes), ...allNodes(hardware.nodes)]
                 .flatMap(n => n.compartments.flatMap(c => c.lines))
@@ -174,7 +190,7 @@ describe('coffee machine example model', () => {
     });
 
     it('deployment view: five programs on two hosts, inside the machine', async () => {
-        const graph = extractDeploymentGraph(...await viewSet('deployment.sysml', 'implementation.sysml', 'physical.sysml', 'logical.sysml'));
+        const graph = extractDeploymentGraph(...await viewSet('deployment.sysml', 'implementation.sysml', 'physical.sysml', 'logical.sysml', 'use-case.sysml'));
         expect(graph.edges).toHaveLength(0);
         // Both hosts are fitted in the machine, so they share its frame.
         expect(graph.nodes.map(n => n.name)).toEqual(['machine : CoffeeMachine']);
@@ -190,7 +206,7 @@ describe('coffee machine example model', () => {
     });
 
     it('process view: one press produces a cappuccino', async () => {
-        const sequence = extractSequenceModel((await viewSet('process.sysml', 'implementation.sysml', 'logical.sysml'))[0]);
+        const sequence = extractSequenceModel((await viewSet('process.sysml', 'implementation.sysml', 'logical.sysml', 'use-case.sysml'))[0]);
         expect(sequence.lifelines.map(l => l.label)).toEqual([
             'user',
             'ui : UiApp',

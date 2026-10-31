@@ -21,17 +21,27 @@ function portsCompartment(def: PartDef): Compartment[] {
     return lines.length > 0 ? [{ title: 'ports', lines }] : [];
 }
 
+/**
+ * A module's heading as declared (§8.2.3.6): its name, and what it specializes,
+ * such as the vendor's service it is built on: `OrderTable :> DynamoDB`.
+ */
+function moduleHeading(def: PartDef): string {
+    const supertypes = def.supertypes.map(s => s.ref?.name ?? s.$refText);
+    return supertypes.length > 0 ? `${def.name ?? ''} :> ${supertypes.join(', ')}` : def.name ?? '';
+}
+
 function moduleNode(def: PartDef): GraphNode {
     const compartments = [...performCompartments(def.members), ...portsCompartment(def)];
     const { shape, keyword } = boxOf(def);
+    const name = moduleHeading(def);
     return {
         id: qualifiedName(def),
         shape,
         keyword,
-        name: def.name ?? '',
+        name,
         compartments,
         ports: [],
-        ...boxSize(def.name ?? '', compartments, 120, 40, keyword)
+        ...boxSize(name, compartments, 120, 40, keyword)
     };
 }
 

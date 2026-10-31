@@ -2,10 +2,12 @@
 //
 // A capability tree. Every function appears exactly once and has exactly one
 // parent. No airframe, computer or program is named here — realization lives
-// in physical.sysml and implementation.sysml.
+// in physical.sysml and implementation.sysml. What it does answer to is
+// use-case.sysml: the tree details what the operator asks for.
 package Functions {
     private import StandardViewDefinitions::*;
     private import Views::*;
+    private import ModelingMetadata::*;
 
     action def PerformAerialSurvey {
 
@@ -61,8 +63,12 @@ package Functions {
     // the tree — a `perform` chain has to start at a usage.
     action survey : PerformAerialSurvey;
 
+    // What the operator asks for, in more detail: that is what a refinement says.
+    #refinement dependency PerformAerialSurvey to SystemUseCases::SurveyTask;
+
     view 'Logical view — Survey Drone' : GeneralView {
         expose PerformAerialSurvey;
+        expose SystemUseCases::SurveyTask;
         // Drawn as a tree: the standard library's tree rendering (§7.26.2).
         render asTreeDiagram;
     }
