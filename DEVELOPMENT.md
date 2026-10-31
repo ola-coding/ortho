@@ -225,6 +225,11 @@ In priority order:
   definitions and rounded usages under their keywords, the «view» frame,
   «use case» boxes with a «subject», ownership diamonds, hosts that list what
   is allocated to them, and messages without activation bars.
+- [x] **Text that fits its box on Windows, Linux and Typst**, with no fonts to
+  install. Typst matches the SVG's fonts by name only, ignores `sans-serif`,
+  and otherwise uses the document's font; Linux seldom has Arial. Name
+  `Arial, Helvetica, Liberation Sans, DejaVu Sans, sans-serif`, and size text
+  for the wider of Arial and DejaVu Sans, character by character.
 - [ ] **Prepare for NPX.** Publish ortho on npm, so it runs without the repo.
   First clean up `package.json`, the README and whatever else publishing
   needs. The name `ortho` is taken on npm, so publish under a scope, such as

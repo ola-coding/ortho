@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1754.3705" height="1279"
-     viewBox="0 0 1754.3705 1279" font-family="Arial, Helvetica, Segoe UI, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="1871.755" height="1279"
+     viewBox="0 0 1871.755 1279" font-family="Arial, Helvetica, Liberation Sans, DejaVu Sans, sans-serif">
   <title>Implementation view — Survey Drone (generated from examples/survey-drone/implementation.sysml)</title>
   <defs>
     <marker id="openArrow" markerWidth="12" markerHeight="12" refX="10" refY="5"
@@ -11,329 +11,329 @@
       <path d="M0,4 L6,0 L12,4 L6,8 z" fill="#2b2b2b" />
     </marker>
   </defs>
-  <rect x="0" y="0" width="1754.3705" height="1279" fill="white" />
-  <rect x="8" y="8" width="1738.3705" height="1263" rx="10" ry="10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-  <path d="M8,30 L8,18 A10,10 0 0 1 18,8 L259.724,8 L259.724,22 A8,8 0 0 1 251.724,30 Z"
+  <rect x="0" y="0" width="1871.755" height="1279" fill="white" />
+  <rect x="8" y="8" width="1855.755" height="1263" rx="10" ry="10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+  <path d="M8,30 L8,18 A10,10 0 0 1 18,8 L303.757,8 L303.757,22 A8,8 0 0 1 295.757,30 Z"
         fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
   <text x="18" y="23" font-size="11" fill="#1a1a1a"><tspan fill="#555555">&#171;view&#187;</tspan><tspan font-weight="600"> Implementation view — Survey Drone</tspan></text>
-  <path d="M1547.8235,1271 L1547.8235,1262 A6,6 0 0 1 1553.8235,1256 L1746.3705,1256"
+  <path d="M1638.2530000000002,1271 L1638.2530000000002,1262 A6,6 0 0 1 1644.2530000000002,1256 L1863.755,1256"
         fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-  <text x="1738.3705" y="1267" text-anchor="end" font-size="9" fill="#8a8a86">examples/survey-drone/implementation.sysml</text>
+  <text x="1855.755" y="1267" text-anchor="end" font-size="9" fill="#8a8a86">examples/survey-drone/implementation.sysml</text>
   
-    <g><rect x="36" y="60" width="62.453" height="18"
+    <g><rect x="36" y="60" width="71.99000000000001" height="18"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="36" y="78" width="1682.3705" height="1159"
+      <rect x="36" y="78" width="1799.755" height="1159"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
       <text x="44" y="73" font-size="11" font-weight="600" fill="#1a1a1a">Software</text></g>
-    <g><rect x="1516.7435" y="371" width="55.721" height="18"
+    <g><rect x="1621.731" y="371" width="61.551" height="18"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="1516.7435" y="389" width="176.627" height="216"
+      <rect x="1621.731" y="389" width="189.024" height="216"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1524.7435" y="384" font-size="11" font-weight="600" fill="#1a1a1a">Ground</text></g>
-    <g><rect x="1541.7435" y="416" width="126.627" height="164"
+      <text x="1629.731" y="384" font-size="11" font-weight="600" fill="#1a1a1a">Ground</text></g>
+    <g><rect x="1646.731" y="416" width="139.024" height="164"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1605.057" y="429" text-anchor="middle"
+      <text x="1716.243" y="429" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="1605.057" y="442" text-anchor="middle"
+      <text x="1716.243" y="442" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">SurveyPlanner</text>
-      <line x1="1541.7435" y1="448" x2="1668.3705" y2="448"
+      <line x1="1646.731" y1="448" x2="1785.755" y2="448"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="1549.7435" y="459"
+      <text x="1654.731" y="459"
           font-size="9" fill="#555555">perform actions</text>
-      <text x="1549.7435" y="473"
+      <text x="1654.731" y="473"
           font-size="11" fill="#1a1a1a">planMission</text>
-      <text x="1549.7435" y="488"
+      <text x="1654.731" y="488"
           font-size="11" fill="#1a1a1a">presentInformation</text>
-      <text x="1549.7435" y="503"
+      <text x="1654.731" y="503"
           font-size="11" fill="#1a1a1a">acceptOperatorInput</text>
-      <line x1="1541.7435" y1="514" x2="1668.3705" y2="514"
+      <line x1="1646.731" y1="514" x2="1785.755" y2="514"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="1549.7435" y="525"
+      <text x="1654.731" y="525"
           font-size="9" fill="#555555">ports</text>
-      <text x="1549.7435" y="539"
+      <text x="1654.731" y="539"
           font-size="11" fill="#1a1a1a">route : ~RouteTopic</text>
-      <text x="1549.7435" y="554"
+      <text x="1654.731" y="554"
           font-size="11" fill="#1a1a1a">mission : MissionTopic</text>
-      <text x="1549.7435" y="569"
+      <text x="1654.731" y="569"
           font-size="11" fill="#1a1a1a">video : ~VideoTopic</text></g>
-    <g><rect x="630.285" y="105" width="61.837" height="18"
+    <g><rect x="685.8240000000001" y="105" width="69.339" height="18"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="630.285" y="123" width="846.4585" height="482"
+      <rect x="685.8240000000001" y="123" width="895.9069999999999" height="482"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="638.285" y="118" font-size="11" font-weight="600" fill="#1a1a1a">Onboard</text></g>
-    <g><rect x="1025.532" y="150" width="70.384" height="18"
+      <text x="693.8240000000001" y="118" font-size="11" font-weight="600" fill="#1a1a1a">Onboard</text></g>
+    <g><rect x="1104.44" y="150" width="79.184" height="18"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="1025.532" y="168" width="362.423" height="186"
+      <rect x="1104.44" y="168" width="395.33799999999997" height="186"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1033.532" y="163" font-size="11" font-weight="600" fill="#1a1a1a">Autonomy</text></g>
-    <g><rect x="1050.532" y="195" width="133.051" height="134"
+      <text x="1112.44" y="163" font-size="11" font-weight="600" fill="#1a1a1a">Autonomy</text></g>
+    <g><rect x="1129.44" y="195" width="148.242" height="134"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1117.0575" y="208" text-anchor="middle"
+      <text x="1203.5610000000001" y="208" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="1117.0575" y="221" text-anchor="middle"
+      <text x="1203.5610000000001" y="221" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">RoutePlanner</text>
-      <line x1="1050.532" y1="227" x2="1183.5829999999999" y2="227"
+      <line x1="1129.44" y1="227" x2="1277.682" y2="227"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="1058.532" y="238"
+      <text x="1137.44" y="238"
           font-size="9" fill="#555555">perform actions</text>
-      <text x="1058.532" y="252"
+      <text x="1137.44" y="252"
           font-size="11" fill="#1a1a1a">planRoute</text>
-      <line x1="1050.532" y1="263" x2="1183.5829999999999" y2="263"
+      <line x1="1129.44" y1="263" x2="1277.682" y2="263"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="1058.532" y="274"
+      <text x="1137.44" y="274"
           font-size="9" fill="#555555">ports</text>
-      <text x="1058.532" y="288"
+      <text x="1137.44" y="288"
           font-size="11" fill="#1a1a1a">route : RouteTopic</text>
-      <text x="1058.532" y="303"
+      <text x="1137.44" y="303"
           font-size="11" fill="#1a1a1a">world : ~WorldTopic</text>
-      <text x="1058.532" y="318"
+      <text x="1137.44" y="318"
           font-size="11" fill="#1a1a1a">mission : ~MissionTopic</text></g>
-    <g><rect x="1223.5829999999999" y="210" width="139.372" height="104"
+    <g><rect x="1317.682" y="210" width="157.096" height="104"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1293.2689999999998" y="223" text-anchor="middle"
+      <text x="1396.23" y="223" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="1293.2689999999998" y="236" text-anchor="middle"
+      <text x="1396.23" y="236" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">ObstacleAvoidance</text>
-      <line x1="1223.5829999999999" y1="242" x2="1362.955" y2="242"
+      <line x1="1317.682" y1="242" x2="1474.778" y2="242"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="1231.5829999999999" y="253"
+      <text x="1325.682" y="253"
           font-size="9" fill="#555555">perform actions</text>
-      <text x="1231.5829999999999" y="267"
+      <text x="1325.682" y="267"
           font-size="11" fill="#1a1a1a">avoidObstacles</text>
-      <line x1="1223.5829999999999" y1="278" x2="1362.955" y2="278"
+      <line x1="1317.682" y1="278" x2="1474.778" y2="278"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="1231.5829999999999" y="289"
+      <text x="1325.682" y="289"
           font-size="9" fill="#555555">ports</text>
-      <text x="1231.5829999999999" y="303"
+      <text x="1325.682" y="303"
           font-size="11" fill="#1a1a1a">world : ~WorldTopic</text></g>
-    <g><rect x="961.7435" y="406" width="72.848" height="18"
+    <g><rect x="1047.487" y="406" width="83.221" height="18"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="961.7435" y="424" width="490" height="156"
+      <rect x="1047.487" y="424" width="509.2439999999999" height="156"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="969.7435" y="419" font-size="11" font-weight="600" fill="#1a1a1a">Perception</text></g>
-    <g><rect x="986.7435" y="451" width="120" height="104"
+      <text x="1055.487" y="419" font-size="11" font-weight="600" fill="#1a1a1a">Perception</text></g>
+    <g><rect x="1072.487" y="451" width="129.45999999999998" height="104"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1046.7435" y="464" text-anchor="middle"
+      <text x="1137.217" y="464" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="1046.7435" y="477" text-anchor="middle"
+      <text x="1137.217" y="477" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">VideoStreamer</text>
-      <line x1="986.7435" y1="483" x2="1106.7435" y2="483"
+      <line x1="1072.487" y1="483" x2="1201.9470000000001" y2="483"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="994.7435" y="494"
+      <text x="1080.487" y="494"
           font-size="9" fill="#555555">perform actions</text>
-      <text x="994.7435" y="508"
+      <text x="1080.487" y="508"
           font-size="11" fill="#1a1a1a">streamVideo</text>
-      <line x1="986.7435" y1="519" x2="1106.7435" y2="519"
+      <line x1="1072.487" y1="519" x2="1201.9470000000001" y2="519"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="994.7435" y="530"
+      <text x="1080.487" y="530"
           font-size="9" fill="#555555">ports</text>
-      <text x="994.7435" y="544"
+      <text x="1080.487" y="544"
           font-size="11" fill="#1a1a1a">video : VideoTopic</text></g>
-    <g><rect x="1146.7435" y="451" width="120" height="104"
+    <g><rect x="1241.9470000000001" y="451" width="120" height="104"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1206.7435" y="464" text-anchor="middle"
+      <text x="1301.9470000000001" y="464" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="1206.7435" y="477" text-anchor="middle"
+      <text x="1301.9470000000001" y="477" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">SensorFusion</text>
-      <line x1="1146.7435" y1="483" x2="1266.7435" y2="483"
+      <line x1="1241.9470000000001" y1="483" x2="1361.9470000000001" y2="483"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="1154.7435" y="494"
+      <text x="1249.9470000000001" y="494"
           font-size="9" fill="#555555">perform actions</text>
-      <text x="1154.7435" y="508"
+      <text x="1249.9470000000001" y="508"
           font-size="11" fill="#1a1a1a">fuseSensorData</text>
-      <line x1="1146.7435" y1="519" x2="1266.7435" y2="519"
+      <line x1="1241.9470000000001" y1="519" x2="1361.9470000000001" y2="519"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="1154.7435" y="530"
+      <text x="1249.9470000000001" y="530"
           font-size="9" fill="#555555">ports</text>
-      <text x="1154.7435" y="544"
+      <text x="1249.9470000000001" y="544"
           font-size="11" fill="#1a1a1a">world : WorldTopic</text></g>
-    <g><rect x="1306.7435" y="451" width="120" height="104"
+    <g><rect x="1401.9470000000001" y="451" width="129.784" height="104"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1366.7435" y="464" text-anchor="middle"
+      <text x="1466.8390000000002" y="464" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="1366.7435" y="477" text-anchor="middle"
+      <text x="1466.8390000000002" y="477" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">WorldModel</text>
-      <line x1="1306.7435" y1="483" x2="1426.7435" y2="483"
+      <line x1="1401.9470000000001" y1="483" x2="1531.7310000000002" y2="483"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="1314.7435" y="494"
+      <text x="1409.9470000000001" y="494"
           font-size="9" fill="#555555">perform actions</text>
-      <text x="1314.7435" y="508"
+      <text x="1409.9470000000001" y="508"
           font-size="11" fill="#1a1a1a">maintainWorldModel</text>
-      <line x1="1306.7435" y1="519" x2="1426.7435" y2="519"
+      <line x1="1401.9470000000001" y1="519" x2="1531.7310000000002" y2="519"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="1314.7435" y="530"
+      <text x="1409.9470000000001" y="530"
           font-size="9" fill="#555555">ports</text>
-      <text x="1314.7435" y="544"
+      <text x="1409.9470000000001" y="544"
           font-size="11" fill="#1a1a1a">world : WorldTopic</text></g>
-    <g><rect x="655.285" y="157.5" width="61.254" height="18"
+    <g><rect x="710.8240000000001" y="157.5" width="68.27199999999999" height="18"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="655.285" y="175.5" width="330.247" height="171"
+      <rect x="710.8240000000001" y="175.5" width="353.616" height="171"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="663.285" y="170.5" font-size="11" font-weight="600" fill="#1a1a1a">Services</text></g>
-    <g><rect x="680.285" y="210" width="120" height="104"
+      <text x="718.8240000000001" y="170.5" font-size="11" font-weight="600" fill="#1a1a1a">Services</text></g>
+    <g><rect x="735.8240000000001" y="210" width="127.199" height="104"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="740.285" y="223" text-anchor="middle"
+      <text x="799.4235000000001" y="223" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="740.285" y="236" text-anchor="middle"
+      <text x="799.4235000000001" y="236" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">Diagnostics</text>
-      <line x1="680.285" y1="242" x2="800.285" y2="242"
+      <line x1="735.8240000000001" y1="242" x2="863.023" y2="242"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="688.285" y="253"
+      <text x="743.8240000000001" y="253"
           font-size="9" fill="#555555">perform actions</text>
-      <text x="688.285" y="267"
+      <text x="743.8240000000001" y="267"
           font-size="11" fill="#1a1a1a">monitorHealth</text>
-      <line x1="680.285" y1="278" x2="800.285" y2="278"
+      <line x1="735.8240000000001" y1="278" x2="863.023" y2="278"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="688.285" y="289"
+      <text x="743.8240000000001" y="289"
           font-size="9" fill="#555555">ports</text>
-      <text x="688.285" y="303"
+      <text x="743.8240000000001" y="303"
           font-size="11" fill="#1a1a1a">health : HealthTopic</text></g>
-    <g><rect x="840.285" y="202.5" width="120.247" height="119"
+    <g><rect x="903.0230000000001" y="202.5" width="136.417" height="119"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="900.4085" y="215.5" text-anchor="middle"
+      <text x="971.2315000000001" y="215.5" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="900.4085" y="228.5" text-anchor="middle"
+      <text x="971.2315000000001" y="228.5" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">DataLogger</text>
-      <line x1="840.285" y1="234.5" x2="960.5319999999999" y2="234.5"
+      <line x1="903.0230000000001" y1="234.5" x2="1039.44" y2="234.5"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="848.285" y="245.5"
+      <text x="911.0230000000001" y="245.5"
           font-size="9" fill="#555555">perform actions</text>
-      <text x="848.285" y="259.5"
+      <text x="911.0230000000001" y="259.5"
           font-size="11" fill="#1a1a1a">recordFlightData</text>
-      <line x1="840.285" y1="270.5" x2="960.5319999999999" y2="270.5"
+      <line x1="903.0230000000001" y1="270.5" x2="1039.44" y2="270.5"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="848.285" y="281.5"
+      <text x="911.0230000000001" y="281.5"
           font-size="9" fill="#555555">ports</text>
-      <text x="848.285" y="295.5"
+      <text x="911.0230000000001" y="295.5"
           font-size="11" fill="#1a1a1a">health : ~HealthTopic</text>
-      <text x="848.285" y="310.5"
+      <text x="911.0230000000001" y="310.5"
           font-size="11" fill="#1a1a1a">video : ~VideoTopic</text></g>
-    <g><rect x="931.5355833333333" y="657" width="75.906" height="18"
+    <g><rect x="998.7381666666668" y="657" width="88.171" height="18"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="931.5355833333333" y="675" width="365.93600000000004" height="259"
+      <rect x="998.7381666666668" y="675" width="405.118" height="259"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="939.5355833333333" y="670" font-size="11" font-weight="600" fill="#1a1a1a">Middleware</text></g>
-    <g><rect x="959.7475833333333" y="727.5" width="131.54399999999998" height="68"
+      <text x="1006.7381666666668" y="670" font-size="11" font-weight="600" fill="#1a1a1a">Middleware</text></g>
+    <g><rect x="1028.347166666667" y="727.5" width="148.341" height="68"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1025.5195833333332" y="740.5" text-anchor="middle"
+      <text x="1102.5176666666669" y="740.5" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="1025.5195833333332" y="753.5" text-anchor="middle"
+      <text x="1102.5176666666669" y="753.5" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">ZenohRouter</text>
-      <line x1="959.7475833333333" y1="759.5" x2="1091.2915833333332" y2="759.5"
+      <line x1="1028.347166666667" y1="759.5" x2="1176.6881666666668" y2="759.5"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="967.7475833333333" y="770.5"
+      <text x="1036.347166666667" y="770.5"
           font-size="9" fill="#555555">ports</text>
-      <text x="967.7475833333333" y="784.5"
+      <text x="1036.347166666667" y="784.5"
           font-size="11" fill="#1a1a1a">transport : TransportApi</text></g>
-    <g><rect x="1136.9620833333333" y="702" width="133.051" height="119"
+    <g><rect x="1225.9556666666667" y="702" width="148.242" height="119"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1203.4875833333333" y="715" text-anchor="middle"
+      <text x="1300.0766666666668" y="715" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="1203.4875833333333" y="728" text-anchor="middle"
+      <text x="1300.0766666666668" y="728" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">MavlinkBridge</text>
-      <line x1="1136.9620833333333" y1="734" x2="1270.0130833333333" y2="734"
+      <line x1="1225.9556666666667" y1="734" x2="1374.1976666666667" y2="734"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="1144.9620833333333" y="745"
+      <text x="1233.9556666666667" y="745"
           font-size="9" fill="#555555">perform actions</text>
-      <text x="1144.9620833333333" y="759"
+      <text x="1233.9556666666667" y="759"
           font-size="11" fill="#1a1a1a">exchangeTelemetry</text>
-      <line x1="1136.9620833333333" y1="770" x2="1270.0130833333333" y2="770"
+      <line x1="1225.9556666666667" y1="770" x2="1374.1976666666667" y2="770"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="1144.9620833333333" y="781"
+      <text x="1233.9556666666667" y="781"
           font-size="9" fill="#555555">ports</text>
-      <text x="1144.9620833333333" y="795"
+      <text x="1233.9556666666667" y="795"
           font-size="11" fill="#1a1a1a">mavlink : ~MavlinkApi</text>
-      <text x="1144.9620833333333" y="810"
+      <text x="1233.9556666666667" y="810"
           font-size="11" fill="#1a1a1a">mission : ~MissionTopic</text></g>
-    <g><rect x="956.5355833333333" y="841" width="137.96800000000002" height="68"
+    <g><rect x="1023.7381666666668" y="841" width="157.559" height="68"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1025.5195833333332" y="854" text-anchor="middle"
+      <text x="1102.5176666666669" y="854" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="1025.5195833333332" y="867" text-anchor="middle"
+      <text x="1102.5176666666669" y="867" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">GStreamer</text>
-      <line x1="956.5355833333333" y1="873" x2="1094.5035833333334" y2="873"
+      <line x1="1023.7381666666668" y1="873" x2="1181.2971666666667" y2="873"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="964.5355833333333" y="884"
+      <text x="1031.7381666666668" y="884"
           font-size="9" fill="#555555">ports</text>
-      <text x="964.5355833333333" y="898"
+      <text x="1031.7381666666668" y="898"
           font-size="11" fill="#1a1a1a">transport : ~TransportApi</text></g>
-    <g><rect x="1134.5035833333334" y="841" width="137.96800000000002" height="68"
+    <g><rect x="1221.2971666666667" y="841" width="157.559" height="68"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1203.4875833333333" y="854" text-anchor="middle"
+      <text x="1300.0766666666668" y="854" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="1203.4875833333333" y="867" text-anchor="middle"
+      <text x="1300.0766666666668" y="867" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">WireGuardTunnel</text>
-      <line x1="1134.5035833333334" y1="873" x2="1272.4715833333335" y2="873"
+      <line x1="1221.2971666666667" y1="873" x2="1378.8561666666667" y2="873"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="1142.5035833333334" y="884"
+      <text x="1229.2971666666667" y="884"
           font-size="9" fill="#555555">ports</text>
-      <text x="1142.5035833333334" y="898"
+      <text x="1229.2971666666667" y="898"
           font-size="11" fill="#1a1a1a">transport : ~TransportApi</text></g>
-    <g><rect x="923.5825833333333" y="986" width="89.953" height="18"
+    <g><rect x="990.9281666666668" y="986" width="103.285" height="18"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="923.5825833333333" y="1004" width="381.842" height="208"
+      <rect x="990.9281666666668" y="1004" width="420.738" height="208"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="931.5825833333333" y="999" font-size="11" font-weight="600" fill="#1a1a1a">LinuxPlatform</text></g>
-    <g><rect x="951.7945833333333" y="1031" width="139.497" height="68"
+      <text x="998.9281666666668" y="999" font-size="11" font-weight="600" fill="#1a1a1a">LinuxPlatform</text></g>
+    <g><rect x="1020.5371666666668" y="1031" width="156.151" height="68"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1021.5430833333334" y="1044" text-anchor="middle"
+      <text x="1098.6126666666669" y="1044" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="1021.5430833333334" y="1057" text-anchor="middle"
+      <text x="1098.6126666666669" y="1057" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">ContainerRuntime</text>
-      <line x1="951.7945833333333" y1="1063" x2="1091.2915833333334" y2="1063"
+      <line x1="1020.5371666666668" y1="1063" x2="1176.6881666666668" y2="1063"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="959.7945833333333" y="1074"
+      <text x="1028.537166666667" y="1074"
           font-size="9" fill="#555555">ports</text>
-      <text x="959.7945833333333" y="1088"
+      <text x="1028.537166666667" y="1088"
           font-size="11" fill="#1a1a1a">containers : ContainerApi</text></g>
-    <g><rect x="1134.5035833333334" y="1031" width="145.921" height="68"
+    <g><rect x="1221.2971666666667" y="1031" width="165.369" height="68"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1207.4640833333333" y="1044" text-anchor="middle"
+      <text x="1303.9816666666668" y="1044" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="1207.4640833333333" y="1057" text-anchor="middle"
+      <text x="1303.9816666666668" y="1057" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">OtaUpdateAgent</text>
-      <line x1="1134.5035833333334" y1="1063" x2="1280.4245833333334" y2="1063"
+      <line x1="1221.2971666666667" y1="1063" x2="1386.6661666666666" y2="1063"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="1142.5035833333334" y="1074"
+      <text x="1229.2971666666667" y="1074"
           font-size="9" fill="#555555">ports</text>
-      <text x="1142.5035833333334" y="1088"
+      <text x="1229.2971666666667" y="1088"
           font-size="11" fill="#1a1a1a">containers : ~ContainerApi</text></g>
-    <g><rect x="948.5825833333333" y="1119" width="145.921" height="68"
+    <g><rect x="1015.9281666666668" y="1119" width="165.369" height="68"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1021.5430833333334" y="1132" text-anchor="middle"
+      <text x="1098.6126666666669" y="1132" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="1021.5430833333334" y="1145" text-anchor="middle"
+      <text x="1098.6126666666669" y="1145" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">MinimalLinux</text>
-      <line x1="948.5825833333333" y1="1151" x2="1094.5035833333334" y2="1151"
+      <line x1="1015.9281666666668" y1="1151" x2="1181.2971666666667" y2="1151"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="956.5825833333333" y="1162"
+      <text x="1023.9281666666668" y="1162"
           font-size="9" fill="#555555">ports</text>
-      <text x="956.5825833333333" y="1176"
+      <text x="1023.9281666666668" y="1176"
           font-size="11" fill="#1a1a1a">containers : ~ContainerApi</text></g>
-    <g><rect x="1147.4640833333333" y="1133" width="120" height="40"
+    <g><rect x="1243.9816666666668" y="1133" width="120" height="40"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="1207.4640833333333" y="1150" text-anchor="middle"
+      <text x="1303.9816666666668" y="1150" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="1207.4640833333333" y="1163" text-anchor="middle"
+      <text x="1303.9816666666668" y="1163" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">SecureBoot</text></g>
-    <g><rect x="61" y="262" width="45.942" height="18"
+    <g><rect x="61" y="262" width="52.025" height="18"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="61" y="280" width="529.285" height="325"
+      <rect x="61" y="280" width="584.8240000000001" height="325"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
       <text x="69" y="275" font-size="11" font-weight="600" fill="#1a1a1a">Flight</text></g>
-    <g><rect x="86" y="314.5" width="133.095" height="119"
+    <g><rect x="86" y="314.5" width="151.608" height="119"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="152.5475" y="327.5" text-anchor="middle"
+      <text x="161.804" y="327.5" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="152.5475" y="340.5" text-anchor="middle"
+      <text x="161.804" y="340.5" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">MissionExecutor</text>
-      <line x1="86" y1="346.5" x2="219.095" y2="346.5"
+      <line x1="86" y1="346.5" x2="237.608" y2="346.5"
           stroke="#2b2b2b" stroke-width="1" />
       <text x="94" y="357.5"
           font-size="9" fill="#555555">perform actions</text>
       <text x="94" y="371.5"
           font-size="11" fill="#1a1a1a">guide</text>
-      <line x1="86" y1="382.5" x2="219.095" y2="382.5"
+      <line x1="86" y1="382.5" x2="237.608" y2="382.5"
           stroke="#2b2b2b" stroke-width="1" />
       <text x="94" y="393.5"
           font-size="9" fill="#555555">ports</text>
@@ -341,127 +341,127 @@
           font-size="11" fill="#1a1a1a">target : TargetApi</text>
       <text x="94" y="422.5"
           font-size="11" fill="#1a1a1a">vehicleState : ~StateApi</text></g>
-    <g><rect x="262.307" y="314.5" width="126.671" height="119"
+    <g><rect x="282.217" y="314.5" width="142.39" height="119"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="325.64250000000004" y="327.5" text-anchor="middle"
+      <text x="353.412" y="327.5" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="325.64250000000004" y="340.5" text-anchor="middle"
+      <text x="353.412" y="340.5" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">StateEstimator</text>
-      <line x1="262.307" y1="346.5" x2="388.978" y2="346.5"
+      <line x1="282.217" y1="346.5" x2="424.60699999999997" y2="346.5"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="270.307" y="357.5"
+      <text x="290.217" y="357.5"
           font-size="9" fill="#555555">perform actions</text>
-      <text x="270.307" y="371.5"
+      <text x="290.217" y="371.5"
           font-size="11" fill="#1a1a1a">navigate</text>
-      <line x1="262.307" y1="382.5" x2="388.978" y2="382.5"
+      <line x1="282.217" y1="382.5" x2="424.60699999999997" y2="382.5"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="270.307" y="393.5"
+      <text x="290.217" y="393.5"
           font-size="9" fill="#555555">ports</text>
-      <text x="270.307" y="407.5"
+      <text x="290.217" y="407.5"
           font-size="11" fill="#1a1a1a">vehicleState : StateApi</text>
-      <text x="270.307" y="422.5"
+      <text x="290.217" y="422.5"
           font-size="11" fill="#1a1a1a">sensors : ~SensorApi</text></g>
-    <g><rect x="432.19" y="307" width="133.095" height="134"
+    <g><rect x="469.216" y="307" width="151.608" height="134"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="498.7375" y="320" text-anchor="middle"
+      <text x="545.02" y="320" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="498.7375" y="333" text-anchor="middle"
+      <text x="545.02" y="333" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">FlightControl</text>
-      <line x1="432.19" y1="339" x2="565.285" y2="339"
+      <line x1="469.216" y1="339" x2="620.8240000000001" y2="339"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="440.19" y="350"
+      <text x="477.216" y="350"
           font-size="9" fill="#555555">perform actions</text>
-      <text x="440.19" y="364"
+      <text x="477.216" y="364"
           font-size="11" fill="#1a1a1a">control</text>
-      <line x1="432.19" y1="375" x2="565.285" y2="375"
+      <line x1="469.216" y1="375" x2="620.8240000000001" y2="375"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="440.19" y="386"
+      <text x="477.216" y="386"
           font-size="9" fill="#555555">ports</text>
-      <text x="440.19" y="400"
+      <text x="477.216" y="400"
           font-size="11" fill="#1a1a1a">vehicleState : ~StateApi</text>
-      <text x="440.19" y="415"
+      <text x="477.216" y="415"
           font-size="11" fill="#1a1a1a">target : ~TargetApi</text>
-      <text x="440.19" y="430"
+      <text x="477.216" y="430"
           font-size="11" fill="#1a1a1a">hal : ~HalApi</text></g>
-    <g><rect x="92.5475" y="479" width="120" height="83"
+    <g><rect x="99.54650000000001" y="479" width="124.515" height="83"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="152.5475" y="492" text-anchor="middle"
+      <text x="161.804" y="492" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="152.5475" y="505" text-anchor="middle"
+      <text x="161.804" y="505" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">SensorDrivers</text>
-      <line x1="92.5475" y1="511" x2="212.5475" y2="511"
+      <line x1="99.54650000000001" y1="511" x2="224.06150000000002" y2="511"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="100.5475" y="522"
+      <text x="107.54650000000001" y="522"
           font-size="9" fill="#555555">ports</text>
-      <text x="100.5475" y="536"
+      <text x="107.54650000000001" y="536"
           font-size="11" fill="#1a1a1a">sensors : SensorApi</text>
-      <text x="100.5475" y="551"
+      <text x="107.54650000000001" y="551"
           font-size="11" fill="#1a1a1a">hal : ~HalApi</text></g>
-    <g><rect x="259.095" y="461" width="133.095" height="119"
+    <g><rect x="277.608" y="461" width="151.608" height="119"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="325.64250000000004" y="474" text-anchor="middle"
+      <text x="353.41200000000003" y="474" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="325.64250000000004" y="487" text-anchor="middle"
+      <text x="353.41200000000003" y="487" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">MavlinkInterface</text>
-      <line x1="259.095" y1="493" x2="392.19000000000005" y2="493"
+      <line x1="277.608" y1="493" x2="429.216" y2="493"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="267.095" y="504"
+      <text x="285.608" y="504"
           font-size="9" fill="#555555">perform actions</text>
-      <text x="267.095" y="518"
+      <text x="285.608" y="518"
           font-size="11" fill="#1a1a1a">exchangeTelemetry</text>
-      <line x1="259.095" y1="529" x2="392.19000000000005" y2="529"
+      <line x1="277.608" y1="529" x2="429.216" y2="529"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="267.095" y="540"
+      <text x="285.608" y="540"
           font-size="9" fill="#555555">ports</text>
-      <text x="267.095" y="554"
+      <text x="285.608" y="554"
           font-size="11" fill="#1a1a1a">mavlink : MavlinkApi</text>
-      <text x="267.095" y="569"
+      <text x="285.608" y="569"
           font-size="11" fill="#1a1a1a">vehicleState : ~StateApi</text></g>
-    <g><rect x="136.82649999999998" y="657" width="90.558" height="18"
+    <g><rect x="145.44100000000003" y="657" width="105.771" height="18"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <rect x="136.82649999999998" y="675" width="377.632" height="135"
+      <rect x="145.44100000000003" y="675" width="415.942" height="135"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="144.82649999999998" y="670" font-size="11" font-weight="600" fill="#1a1a1a">FlightPlatform</text></g>
-    <g><rect x="161.82649999999998" y="702" width="149.356" height="83"
+      <text x="153.44100000000003" y="670" font-size="11" font-weight="600" fill="#1a1a1a">FlightPlatform</text></g>
+    <g><rect x="170.44100000000003" y="702" width="172.42" height="83"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="236.50449999999998" y="715" text-anchor="middle"
+      <text x="256.651" y="715" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="236.50449999999998" y="728" text-anchor="middle"
+      <text x="256.651" y="728" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">HardwareAbstraction</text>
-      <line x1="161.82649999999998" y1="734" x2="311.1825" y2="734"
+      <line x1="170.44100000000003" y1="734" x2="342.861" y2="734"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="169.82649999999998" y="745"
+      <text x="178.44100000000003" y="745"
           font-size="9" fill="#555555">ports</text>
-      <text x="169.82649999999998" y="759"
+      <text x="178.44100000000003" y="759"
           font-size="11" fill="#1a1a1a">hal : HalApi</text>
-      <text x="169.82649999999998" y="774"
+      <text x="178.44100000000003" y="774"
           font-size="11" fill="#1a1a1a">scheduler : ~SchedulerApi</text></g>
-    <g><rect x="351.1825" y="709.5" width="138.276" height="68"
+    <g><rect x="382.861" y="709.5" width="153.522" height="68"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="420.32050000000004" y="722.5" text-anchor="middle"
+      <text x="459.62199999999996" y="722.5" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part def&#187;</text>
-      <text x="420.32050000000004" y="735.5" text-anchor="middle"
+      <text x="459.62199999999996" y="735.5" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">RealTimeKernel</text>
-      <line x1="351.1825" y1="741.5" x2="489.4585" y2="741.5"
+      <line x1="382.861" y1="741.5" x2="536.383" y2="741.5"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="359.1825" y="752.5"
+      <text x="390.861" y="752.5"
           font-size="9" fill="#555555">ports</text>
-      <text x="359.1825" y="766.5"
+      <text x="390.861" y="766.5"
           font-size="11" fill="#1a1a1a">scheduler : SchedulerApi</text></g>
   
-    <polyline points="1605.057,605 1605.057,647 1175.4929166666666,647 1175.4929166666666,657" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
-    <text x="1583.5520000000001" y="634" text-anchor="middle" font-size="9"
+    <polyline points="1716.243,605 1716.243,647 1268.8168333333333,647 1268.8168333333333,657" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="1691.876" y="634" text-anchor="middle" font-size="9"
           fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;import&#187;</text>
-    <polyline points="1053.51425,605 1053.51425,657" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
-    <text x="1032.00925" y="634" text-anchor="middle" font-size="9"
+    <polyline points="1133.7775000000001,605 1133.7775000000001,657" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="1109.4105" y="634" text-anchor="middle" font-size="9"
           fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;import&#187;</text>
-    <polyline points="1206.7435,354 1206.7435,406" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
-    <text x="1185.2385000000002" y="383" text-anchor="middle" font-size="9"
+    <polyline points="1302.109,354 1302.109,406" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="1277.742" y="383" text-anchor="middle" font-size="9"
           fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;import&#187;</text>
-    <polyline points="1114.5035833333334,934 1114.5035833333334,986" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
-    <text x="1092.9985833333335" y="963" text-anchor="middle" font-size="9"
+    <polyline points="1201.2971666666667,934 1201.2971666666667,986" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="1176.9301666666668" y="963" text-anchor="middle" font-size="9"
           fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;import&#187;</text>
-    <polyline points="325.6425,605 325.6425,657" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
-    <text x="304.1375" y="634" text-anchor="middle" font-size="9"
+    <polyline points="353.41200000000003,605 353.41200000000003,657" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="329.045" y="634" text-anchor="middle" font-size="9"
           fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;import&#187;</text>
 </svg>

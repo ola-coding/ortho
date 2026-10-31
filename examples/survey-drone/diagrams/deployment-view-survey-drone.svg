@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="766.028" height="526"
-     viewBox="0 0 766.028 526" font-family="Arial, Helvetica, Segoe UI, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="839.472" height="526"
+     viewBox="0 0 839.472 526" font-family="Arial, Helvetica, Liberation Sans, DejaVu Sans, sans-serif">
   <title>Deployment view — Survey Drone (generated from examples/survey-drone/deployment.sysml)</title>
   <defs>
     <marker id="openArrow" markerWidth="12" markerHeight="12" refX="10" refY="5"
@@ -11,34 +11,34 @@
       <path d="M0,4 L6,0 L12,4 L6,8 z" fill="#2b2b2b" />
     </marker>
   </defs>
-  <rect x="0" y="0" width="766.028" height="526" fill="white" />
-  <rect x="8" y="8" width="750.028" height="510" rx="10" ry="10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-  <path d="M8,30 L8,18 A10,10 0 0 1 18,8 L241.387,8 L241.387,22 A8,8 0 0 1 233.387,30 Z"
+  <rect x="0" y="0" width="839.472" height="526" fill="white" />
+  <rect x="8" y="8" width="823.472" height="510" rx="10" ry="10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+  <path d="M8,30 L8,18 A10,10 0 0 1 18,8 L280.217,8 L280.217,22 A8,8 0 0 1 272.217,30 Z"
         fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
   <text x="18" y="23" font-size="11" fill="#1a1a1a"><tspan fill="#555555">&#171;view&#187;</tspan><tspan font-weight="600"> Deployment view — Survey Drone</tspan></text>
-  <path d="M573.98,518 L573.98,509 A6,6 0 0 1 579.98,503 L758.028,503"
+  <path d="M623.448,518 L623.448,509 A6,6 0 0 1 629.448,503 L831.472,503"
         fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-  <text x="750.028" y="514" text-anchor="end" font-size="9" fill="#8a8a86">examples/survey-drone/deployment.sysml</text>
+  <text x="823.472" y="514" text-anchor="end" font-size="9" fill="#8a8a86">examples/survey-drone/deployment.sysml</text>
   
-    <g><rect x="39" y="63" width="688.028" height="418" rx="10" ry="10"
+    <g><rect x="39" y="63" width="761.472" height="418" rx="10" ry="10"
           fill="#f6f6ec" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="383.014" y="76" text-anchor="middle"
+      <text x="419.736" y="76" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="383.014" y="89" text-anchor="middle"
+      <text x="419.736" y="89" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">system : SurveyDroneSystem</text></g>
-    <g><rect x="64" y="108" width="407.34000000000003" height="348" rx="10" ry="10"
+    <g><rect x="64" y="108" width="452.2" height="348" rx="10" ry="10"
           fill="#f6f6ec" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="267.67" y="121" text-anchor="middle"
+      <text x="290.1" y="121" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="267.67" y="134" text-anchor="middle"
+      <text x="290.1" y="134" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">drone : SurveyDrone</text></g>
-    <g><rect x="89" y="153" width="150" height="158" rx="10" ry="10"
+    <g><rect x="89" y="153" width="169.576" height="158" rx="10" ry="10"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="164" y="166" text-anchor="middle"
+      <text x="173.788" y="166" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="164" y="179" text-anchor="middle"
+      <text x="173.788" y="179" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">fc : ControlComputer</text>
-      <line x1="89" y1="185" x2="239" y2="185"
+      <line x1="89" y1="185" x2="258.576" y2="185"
           stroke="#2b2b2b" stroke-width="1" />
       <text x="97" y="196"
           font-size="9" fill="#555555">relationships</text>
@@ -56,65 +56,65 @@
           font-size="11" fill="#1a1a1a">allocated sw.hal</text>
       <text x="97" y="300"
           font-size="11" fill="#1a1a1a">allocated sw.rtos</text></g>
-    <g><rect x="263" y="153" width="183.34" height="278" rx="10" ry="10"
+    <g><rect x="282.576" y="153" width="208.624" height="278" rx="10" ry="10"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="354.67" y="166" text-anchor="middle"
+      <text x="386.88800000000003" y="166" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="354.67" y="179" text-anchor="middle"
+      <text x="386.88800000000003" y="179" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">companion : GpuComputer</text>
-      <line x1="263" y1="185" x2="446.34000000000003" y2="185"
+      <line x1="282.576" y1="185" x2="491.20000000000005" y2="185"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="271" y="196"
+      <text x="290.576" y="196"
           font-size="9" fill="#555555">relationships</text>
-      <text x="271" y="210"
+      <text x="290.576" y="210"
           font-size="11" fill="#1a1a1a">allocated sw.planner</text>
-      <text x="271" y="225"
+      <text x="290.576" y="225"
           font-size="11" fill="#1a1a1a">allocated sw.avoidance</text>
-      <text x="271" y="240"
+      <text x="290.576" y="240"
           font-size="11" fill="#1a1a1a">allocated sw.video</text>
-      <text x="271" y="255"
+      <text x="290.576" y="255"
           font-size="11" fill="#1a1a1a">allocated sw.fusion</text>
-      <text x="271" y="270"
+      <text x="290.576" y="270"
           font-size="11" fill="#1a1a1a">allocated sw.world</text>
-      <text x="271" y="285"
+      <text x="290.576" y="285"
           font-size="11" fill="#1a1a1a">allocated sw.diagnostics</text>
-      <text x="271" y="300"
+      <text x="290.576" y="300"
           font-size="11" fill="#1a1a1a">allocated sw.logger</text>
-      <text x="271" y="315"
+      <text x="290.576" y="315"
           font-size="11" fill="#1a1a1a">allocated sw.zenoh</text>
-      <text x="271" y="330"
+      <text x="290.576" y="330"
           font-size="11" fill="#1a1a1a">allocated sw.bridge</text>
-      <text x="271" y="345"
+      <text x="290.576" y="345"
           font-size="11" fill="#1a1a1a">allocated sw.gstreamer</text>
-      <text x="271" y="360"
+      <text x="290.576" y="360"
           font-size="11" fill="#1a1a1a">allocated sw.airTunnel</text>
-      <text x="271" y="375"
+      <text x="290.576" y="375"
           font-size="11" fill="#1a1a1a">allocated sw.runtime</text>
-      <text x="271" y="390"
+      <text x="290.576" y="390"
           font-size="11" fill="#1a1a1a">allocated sw.ota</text>
-      <text x="271" y="405"
+      <text x="290.576" y="405"
           font-size="11" fill="#1a1a1a">allocated sw.linux</text>
-      <text x="271" y="420"
+      <text x="290.576" y="420"
           font-size="11" fill="#1a1a1a">allocated sw.secureBoot</text></g>
-    <g><rect x="495.34000000000003" y="108" width="206.688" height="153" rx="10" ry="10"
+    <g><rect x="540.2" y="108" width="235.272" height="153" rx="10" ry="10"
           fill="#f6f6ec" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="598.684" y="121" text-anchor="middle"
+      <text x="657.836" y="121" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="598.684" y="134" text-anchor="middle"
+      <text x="657.836" y="134" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">ground : GroundStation</text></g>
-    <g><rect x="520.34" y="153" width="156.688" height="83" rx="10" ry="10"
+    <g><rect x="565.2" y="153" width="185.272" height="83" rx="10" ry="10"
           fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
-      <text x="598.684" y="166" text-anchor="middle"
+      <text x="657.836" y="166" text-anchor="middle"
           font-size="9" fill="#555555">&#171;part&#187;</text>
-      <text x="598.684" y="179" text-anchor="middle"
+      <text x="657.836" y="179" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">tablet : OperatorTablet</text>
-      <line x1="520.34" y1="185" x2="677.028" y2="185"
+      <line x1="565.2" y1="185" x2="750.472" y2="185"
           stroke="#2b2b2b" stroke-width="1" />
-      <text x="528.34" y="196"
+      <text x="573.2" y="196"
           font-size="9" fill="#555555">relationships</text>
-      <text x="528.34" y="210"
+      <text x="573.2" y="210"
           font-size="11" fill="#1a1a1a">allocated sw.app</text>
-      <text x="528.34" y="225"
+      <text x="573.2" y="225"
           font-size="11" fill="#1a1a1a">allocated sw.groundTunnel</text></g>
   
 </svg>
