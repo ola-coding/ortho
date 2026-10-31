@@ -9,7 +9,7 @@ How ortho works inside, and why. For using it, see [README.md](README.md).
   → parse            Langium-generated parser + custom scoping   (src/parser/)
   → model            resolved AST, cross-references linked        (src/generated/)
   → extract          one extractor per diagram type               (src/diagrams/)
-  → layout           elkjs (graph diagrams only)                  (src/layout/)
+  → layout           elkjs, or ortho's own for a fixed shape      (src/layout/)
   → render           hand-written SVG serialization               (src/render/)
   → .svg file
 ```
@@ -21,9 +21,13 @@ diagram's extractor, layout and renderer on what the view exposes.
 
 - **Langium** does cross-reference resolution and scoping, the bulk of a SysML
   parser. The grammar is written from the OMG specification, not copied from
-  the EPL-licensed pilot implementation.
-- **elkjs**, the Eclipse Layout Kernel in plain JavaScript, lays out nested
-  nodes with port-aware routing — no binary, no service.
+  the EPL-licensed pilot implementation. Existing parsers were tried first:
+  `sysml-v2-lsp` offers no parser API, and OpenSysML's does not expose what the
+  views draw.
+- **elkjs**, the Eclipse Layout Kernel in plain JavaScript, lays out the
+  implementation, physical and deployment views, whose nested boxes and ports
+  need it — no binary, no service. The other three have a fixed shape, so ortho
+  lays them out itself.
 - **No renderer dependency.** SVG is written as text: no browser, no DOM, and
   output that is deterministic and diffable.
 
@@ -41,7 +45,7 @@ takes on, `part :>> engine` to engine and `perform a.b` to b (`effectiveName`);
 any element answers to its short name too, and a quoted name loses its quotes
 as it is parsed (`sysml-value-converter.ts`). An import's target is a
 reference found the same way, which the implementation view follows for its
-«import» lines; one ortho does not have, such as the standard library's,
+«import» arrows; one ortho does not have, such as the standard library's,
 imports nothing (`sysml-document-validator.ts`). A dependency's ends are
 references too, which the logical view follows for its dashed arrows, so a typo
 in one fails.
@@ -57,29 +61,27 @@ from one made a single broken file take seconds.
 **Conformance** (`src/parser/sysml-validator.ts`). The grammar enforces what
 it can. After linking, the validator checks the rules it cannot, all listed
 in [LANGUAGE.md](LANGUAGE.md): no reserved word as a name, chains that start
-at a usage, and a use case's subject before its actors — each found by running
-the examples through the OMG pilot implementation. One rule is only a warning,
-which the CLI prints before carrying on: a top-level package named after a
-standard library package, such as `UseCases`, hides the library's. ortho finds
-the model's, while the pilot may find the library's, so such a model renders
-here and may fail elsewhere.
-Whether ortho can draw a view is asked only when one is rendered
-(`whyUndrawable`), since a model may declare any view.
+at a usage, a `perform` of behaviour rather than structure, and a use case's
+subject before its actors. One rule is only a warning, which the CLI prints
+before carrying on: a top-level package named after a standard library package.
+ortho finds the model's, while the pilot may find the library's, so such a model
+renders here and may fail elsewhere. A model may declare any view, so one ortho
+cannot draw is skipped with the reason (`whyUndrawable`).
 
 ## Layout and rendering
 
 - **Text is measured without a browser.** `src/render/text-metrics.ts` embeds
-  Arial/Helvetica advance widths, and boxes are sized with `measureText()`,
-  never character counts. Arial leads the SVG font stack; the fallback, Segoe
-  UI, is narrower, so an error leaves room rather than overflowing.
+  the widths of Arial and DejaVu Sans, which the SVG's font list draws with on
+  Windows, Linux and Typst. `measureText()` takes the wider for each character,
+  so text fits whichever is drawn and nobody installs a font. Boxes are sized
+  with it, never with character counts.
 - **Edges arrive in root coordinates.** ELK reports an edge relative to the
   node that contains it, which for a line from a box's own port to its child
   is that box. `elk-layout.ts` sets `org.eclipse.elk.json.edgeCoords: ROOT`
   (elkjs 0.12); without it the edges on the implementation and physical views
   move.
-- **Containers fit their contents and their name.** Deployment,
-  implementation and physical nest boxes rather than drawing edges. A
-  container gets its name's width as a minimum and centres narrower contents.
+- **Containers fit their contents and their name.** A container gets its
+  name's width as a minimum and centres narrower contents.
 - **Deployment is packed, not layered.** With no edges, ELK's `layered` put
   every box in one row and `box` reorders by size, so the view uses
   `rectpacking`, one level at a time, since packing cannot lay out a
@@ -95,11 +97,12 @@ Whether ortho can draw a view is asked only when one is rendered
   middle of the row when there is none. ELK put every leaf in one row: 3322 px
   across for 27 functions. A use case the view exposes stands in a row above,
   centred over the functions that depend on it, and takes no part in the tree.
-- **The use case view is laid out by ortho** (`src/layout/use-case-layout.ts`)
-  as OMG's examples are drawn: the subject above its use cases and the actors
-  below them, so that neither's lines cross a box, and each use case between
-  the use cases it includes, so that an «include» joins neighbours. ELK,
-  layering left to right, spread the view out with long lines across it.
+- **The use case view is laid out by ortho** (`src/layout/use-case-layout.ts`):
+  the subject above its use cases, as OMG draws it, and the actors below them.
+  OMG draws one use case, its actors beside it; with several sharing both, only
+  opposite sides keep every line clear of every box. Each use case stands
+  between those it includes, so an «include» joins neighbours. ELK, layering
+  left to right, spread the view out with long lines across it.
 - **Realization, APIs and allocation are compartments.** An edge from a
   function to its realizer would need both on one diagram — a seventh view —
   so the part's box lists them instead; `paddingOf` adds the compartments'
@@ -113,11 +116,9 @@ Whether ortho can draw a view is asked only when one is rendered
 - **Sequence diagrams bypass ELK** (`src/render/sequence-renderer.ts`): gaps
   between lifelines widen only where a label needs it. A message runs from
   lifeline to lifeline, since SysML v2 draws no activation bars.
-- **The frame** is SysML v2's: its tab reads «view» and the view's name, and
-  the file that declares the view sits in its bottom-right compartment, so a
-  diagram names its source. The view's definition, optional in the tab, is
-  shown only for a view without a name. Boxes get their corners and keyword from what
-  they draw (`boxOf`): square for a definition, rounded for a usage.
+- **The notation** is described in [VIEWS.md](VIEWS.md). The frame's tab shows
+  the view's definition, which is optional there, only for a view without a
+  name. A box gets its corners and keyword from what it draws (`boxOf`).
 - **Themes are colour only** (`src/render/theme.ts`). Every coordinate is
   fixed before a theme is consulted, and a test asserts both themes place
   everything alike. A theme adds nothing it does not paint, so the light
@@ -125,8 +126,8 @@ Whether ortho can draw a view is asked only when one is rendered
 
 ## One model file per view
 
-The examples keep one model file per view. The rule behind that is that **a
-view file names nothing from another view**, except:
+The examples keep one model file per view, and **a view file names nothing
+from another view**, except:
 
 ```text
 logical                   →  use case
@@ -138,19 +139,13 @@ process                   →  implementation
 Every dependency points back towards what users need: a function tree names
 the use case it refines, and a component names its functions, never the other
 way round. A view draws only what it exposes, so the files it refers to supply
-names, and boxes only where it exposes what they declare. These are the
-examples' rules, not ortho's: a view needs another only where its model names
-something in it, so any of these links can be left out. The example tests
-enforce three conventions:
+names, and boxes only where it exposes what they declare.
 
-- `logical.sysml` names no component.
-- `implementation.sysml` and `physical.sysml` never name each other;
-  `deployment.sysml` only maps one onto the other.
-- Both ends of an allocation are named once: one `part sw { ... }` tree of
-  software, and one usage of the whole product, which also heads the physical
-  view.
-
-The use case file must also parse and render on its own.
+These rules are the examples' only: [any link can be left out](VIEWS.md). The
+example tests load each view with only the files it depends on, so a name from
+any other fails. Both ends of an allocation are named once: one
+`part sw { ... }` tree of software, and one usage of the whole product, which
+also heads the physical view.
 
 ## Working on the code
 
@@ -180,11 +175,11 @@ Pages.
   show them.
 - **OMG's models** are the example, training and validation models of OMG's
   release, EPL-2.0 and so fetched, not committed. `tests/omg-models.test.ts`
-  counts how many load, so the count in it changes only on purpose.
+  counts how many load, so the count in it changes only on purpose. Without
+  them, as on CI, it is skipped.
 - **The standard library's names** are listed in `src/model/library.ts`,
-  generated from the library `npm run omg-models` fetches. A view may name a
-  library element without ortho loading the library, and a typo still fails
-  (`sysml-document-validator.ts`).
+  generated from the library `npm run omg-models` fetches, and
+  `sysml-document-validator.ts` tells a library name from a typo by them.
 - **The deck** inlines the committed example diagrams, so render before
   `npm run deck`; a missing diagram fails the build. The test count is filled
   in from `vitest list`, but the table comparing the two examples' sizes is
@@ -193,15 +188,16 @@ Pages.
 **Repeating the OMG pilot implementation check** from
 [LANGUAGE.md](LANGUAGE.md#how-this-is-checked), without conda or Jupyter:
 
-- Download `jupyter-sysml-kernel` from conda-forge (0.63.1 was used). The
-  `.conda` file is a zip holding a `.tar.zst`, which holds
+- Download `jupyter-sysml-kernel` from conda-forge. The `.conda` file is a zip
+  holding a `.tar.zst`, which holds
   `share/jupyter/kernels/sysml/jupyter-sysml-kernel-<version>-all.jar` and the
   standard library in `sysml.library/`. It needs Java 21.
-- On Windows, `SysMLInteractive.loadLibrary` fails, because the library's
-  folder names contain spaces that reach the file system still URL-encoded.
-  Copy the library with the spaces replaced, and read its three folders from
-  `jshell` with `SysMLInteractive.readAll(folder, true, ".kerml")` for the
-  kernel libraries and `".sysml"` for the other two.
+- Load the library with `SysMLInteractive.loadLibrary`. On Windows that fails,
+  because the library's folder names contain spaces that reach the file system
+  still URL-encoded: copy the library with the spaces replaced, and read its
+  three folders from `jshell` with
+  `SysMLInteractive.readAll(folder, true, ".kerml")` for the kernel libraries
+  and `".sysml"` for the other two.
 - Give one `SysMLInteractive.process(text)` session each example's six files
   in dependency order — use case, logical, implementation, physical,
   deployment, process — and print `getIssues()` after each. Give each block of
@@ -213,49 +209,26 @@ Pages.
 
 In priority order:
 
-- [x] **Raise the Node floor** to 24, the current LTS; CI tests 24 and 26.
+- [x] **Raise the Node floor** to 24; CI tests 24 and 26.
 - [x] **Align the logical view's stem** with the middle child.
 - [x] **Align with the SysML v2 spec:** [LANGUAGE.md](LANGUAGE.md), a stricter
-  grammar and a validator; both examples pass the OMG pilot implementation.
+  grammar and a validator.
 - [x] **Realization through `perform`**, drawn as *perform actions*
   compartments.
 - [x] **Dark glass theme** for slides.
 - [x] **APIs on the software modules**, drawn as *ports* compartments.
 - [x] **Update the dependencies:** Langium 4.4, Commander 15, Vitest 5,
-  elkjs 0.12 and TypeScript 7; npm audit is clean.
-- [x] **Declare each view with the spec's view definitions**: each file
-  declares a `GeneralView`, `InterconnectionView` or `SequenceView`, which
-  names the heading and exposes the content; `-d` is gone.
+  elkjs 0.12 and TypeScript 7.
+- [x] **Declare each view with the spec's view definitions.**
 - [x] **Imports that make names visible:** `Pkg::*` and `Pkg::Element`, public
-  ones passed on; the examples rely on them.
+  ones passed on.
 - [x] **Read standard SysML v2:** all 252 of OMG's example, training and
-  validation models load. What no view draws is read and kept as written, and
-  the standard library's names are known without loading it. Existing parsers
-  were tried first: `sysml-v2-lsp` offers no parser API, and OpenSysML's does
-  not expose what the views draw.
-- [x] **Render every view a model declares**, each to an SVG named after it:
-  `ortho render models -o diagrams`. The first-file rule and `-t` are gone.
-- [x] **Follow SysML v2's graphical notation**, as a valid view must: square
-  definitions and rounded usages under their keywords, the «view» frame,
-  «use case» boxes with a «subject», ownership diamonds, hosts that list what
-  is allocated to them, and messages without activation bars.
-- [x] **Text that fits its box on Windows, Linux and Typst**, with no fonts to
-  install. Typst matches the SVG's fonts by name only, ignores `sans-serif`,
-  and otherwise uses the document's font; Linux seldom has Arial. Name
-  `Arial, Helvetica, Liberation Sans, DejaVu Sans, sans-serif`, and size text
-  for the wider of Arial and DejaVu Sans, character by character.
-- [x] **Tie the logical view to the use cases.** Everything starts with the use
-  cases, and the logical view details the functions they need, so each function
-  tree refines its use case: `#refinement dependency MakeBeverage to
-  SystemUseCases::OperateMachine;` (§7.3, `ModelingMetadata`). Drawn as the use case
-  above its tree, with a dashed arrow up to it (§8.2.3.3). A dependency's ends
-  are references now, so a typo fails. Every link between views stays optional:
-  a view needs another only where its model names something in it, as for an
-  implementation view of a cloud solution built from a vendor's services, whose
-  modules' headings say what they specialize, `OrderTable :> DynamoDB`. Both
-  examples and LANGUAGE.md pass OMG's pilot implementation, 0.63.1.
-- [x] **Warn of a package named after a standard library package**, such as
-  `UseCases`, which OMG's pilot implementation may refuse where ortho would not.
+  validation models load.
+- [x] **Render every view a model declares**, each to an SVG named after it.
+- [x] **Follow SysML v2's graphical notation.**
+- [x] **Text that fits its box on Windows, Linux and Typst.**
+- [x] **Tie the logical view to the use cases:** each function tree refines one.
+- [x] **Warn of a package named after a standard library package.**
 - [ ] **Prepare for NPX.** Publish ortho on npm, so it runs without the repo.
   First clean up `package.json`, the README and whatever else publishing
   needs. The name `ortho` is taken on npm, so publish under a scope, such as

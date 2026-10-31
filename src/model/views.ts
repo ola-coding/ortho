@@ -29,7 +29,7 @@ const EXPOSES: Record<StandardView, string> = {
 
 /**
  * Why ortho cannot draw a view, or nothing when it can. A model may declare
- * any view; only rendering one other than these fails.
+ * any view; one other than these is skipped, for this reason.
  */
 export function whyUndrawable(view: ViewUsage): string | undefined {
     const definition = standardView(view);

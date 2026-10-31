@@ -7,7 +7,8 @@
 
 **Orthographic projection for architecture.** Just as a technical drawing
 shows one object through several standard views, `ortho` renders six
-architectural views as SVG, straight from SysML v2 text.
+architectural views as SVG, straight from SysML v2 text: use case, logical,
+implementation, physical, deployment and process.
 
 It is self-contained — no external programs, no network calls — so the same
 model gives the same SVG on a laptop and in CI.
@@ -20,8 +21,8 @@ You need Node.js 24 or newer. Add ortho to your project from GitHub:
 npm install --save-dev github:ola-coding/ortho
 ```
 
-This installs the command as `./node_modules/.bin/ortho`. In npm scripts it is
-simply `ortho`, which is how the rest of this page writes it.
+This installs the command as `./node_modules/.bin/ortho`; in npm scripts it is
+simply `ortho`.
 
 ## Your first diagram
 
@@ -62,26 +63,6 @@ what it exposes. Render it:
 Open `diagrams/logical-view-coffee-machine.svg` in a browser: a tree of ten
 functions, headed "Logical view — Coffee Machine".
 
-## The six views
-
-ortho renders every view a model declares, each typed by one of SysML's
-standard view definitions:
-
-| View | Standard view |
-| --- | --- |
-| Use case | `GeneralView` |
-| Logical | `GeneralView` |
-| Implementation | `GeneralView` |
-| Physical | `InterconnectionView` |
-| Deployment | `GeneralView` |
-| Process | `SequenceView` |
-
-With the model in `models/`, one command draws them all:
-
-```sh
-ortho render models -o diagrams
-```
-
 ## Options
 
 ```text
@@ -97,7 +78,8 @@ ortho render <models...> -o <folder> [--theme <name>]
 
 ## Using it in a project
 
-Commit your models and the generated SVGs, and render them with an npm script:
+ortho renders every view a model declares, so one npm script draws them all.
+Commit your models and the generated SVGs:
 
 ```json
 {

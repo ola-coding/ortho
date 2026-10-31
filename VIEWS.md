@@ -45,12 +45,11 @@ names the view, and its bottom-right corner the file that declares it.
 
 How the system is used, and by whom — nothing about how it works.
 
-Drawn as OMG's examples are: the subject, a «subject» box, above its use
-cases, joined to each by a line. The use cases, «use case» boxes, stand in a
-row, each beside the use cases it includes, with a solid «include» arrow
-between them. The actors, stick figures, stand below: first the primary
-ones, declared on a use case definition, then the secondary ones, added on a
-single use case.
+The subject, a «subject» box, stands above its use cases, as OMG draws it,
+joined to each by a line. The use cases, «use case» boxes, stand in a row, each
+beside the use cases it includes, with a solid «include» arrow between them.
+The actors, stick figures, stand below: first the primary ones, declared on a
+use case definition, then the secondary ones, added on a single use case.
 
 ## Logical view
 
@@ -68,8 +67,9 @@ and says so: it refines that use case. A use case nothing refines is a gap too.
 Drawn as a work-breakdown chart: one box per function, the root an «action
 def» and the rest «action»s, each parent above its children on a single stem.
 The stem leaves the parent at a filled diamond, since the parent owns them.
-A use case the view exposes stands above its tree, with a dashed arrow up to it. The lowest level of
-a branch is listed vertically, so a broad tree keeps a page's proportions.
+A use case the view exposes stands above its tree, with a dashed arrow up to
+it. The lowest level of a branch is listed vertically, so a broad tree keeps a
+page's proportions.
 
 ## Implementation view
 
@@ -79,12 +79,11 @@ their packages. Run-time behaviour belongs to Process, hardware to Physical.
 Packages are tabbed rectangles, named in their tab, nested, holding their
 modules. A dashed «import» arrow points at a package depended upon, «import»*
 where `Pkg::*` imports its members. A module's heading says what it
-specializes, such as the vendor's service it is built on: `OrderTable :>
-DynamoDB`. Its box lists the functions
-it realizes (*perform actions*) and its API (*ports*: what it offers, and,
-conjugated with `~`, what it needs). No lines join modules: where they
-publish and subscribe rather than call, a line would claim a coupling that
-does not exist.
+specializes, such as the vendor's service it is built on:
+`OrderTable :> DynamoDB`. Its box lists the functions it realizes (*perform
+actions*) and its API (*ports*: what it offers, and, conjugated with `~`, what
+it needs). No lines join modules: where they publish and subscribe rather than
+call, a line would claim a coupling that does not exist.
 
 ## Physical view
 
@@ -92,11 +91,11 @@ The product as topology: what connects, mounts and wires to what.
 Dimensions and placement are out of scope, and a cable is a connection, not a
 part.
 
-Drawn as an internal block diagram. Each part is a box headed `name : Type`,
+Drawn as an interconnection view. Each part is a box headed `name : Type`,
 nested in the part that contains it, so a type fitted twice is two boxes.
 Ports are small squares on the border; connections are plain lines from port
-to port, labelled as declared, `: Interface` where they have one. A part lists the
-functions it realizes. Attribute values are not drawn.
+to port, labelled as declared, `: Interface` where they have one. A part lists
+the functions it realizes. Attribute values are not drawn.
 
 ## Deployment view
 

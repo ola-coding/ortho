@@ -37,8 +37,7 @@ package Units {
 
 - **Imports make names visible.** After `private import Software::*;`,
   `sw.video` is `Software::sw.video`. A package's own members come before
-  what it imports, and importing a package ortho does not have, such as
-  `ScalarValues`, imports nothing.
+  what it imports.
 - **Attribute types are not resolved.** Import `ScalarValues`, where `Real`,
   `String`, `Integer` and `Boolean` live, so that other tools find them.
 
@@ -61,9 +60,9 @@ package Power {
 
 **Feature chains** (§7.6.6). `::` walks through packages and `.` through
 features, and a chain starts at a usage: `Hardware::machine.controller`, not
-`Hardware::CoffeeMachine::controller`. So a software or hardware file ends
-with one usage of the whole, `part sw { ... }` or `part machine : CoffeeMachine`,
-for other files to start from.
+`Hardware::CoffeeMachine::controller`. So a file that others refer to declares
+one usage of each whole for them to start from: `part sw { ... }`,
+`part machine : CoffeeMachine` or `action beverage : MakeBeverage`.
 
 **Names** (§8.2.2.1.2). A name in single quotes may hold anything, as in
 `'Brew unit'`, and is the same name without them. An unquoted name may not be
@@ -81,11 +80,11 @@ the model; no view draws them.
 ## Views
 
 A model declares its views (§7.26), and ortho draws each: a `view` typed by
-one of the standard view definitions, exposing what the diagram shows. Its
-name is the diagram's heading (§7.26.5), in single quotes unless it is a plain
-name: the frame's tab reads «view» and the name (§8.2.3.26).
-ortho matches the definition by name rather than loading the standard library, so
-import `StandardViewDefinitions` for other tools.
+one of the standard view definitions, exposing what the diagram shows. Write it
+after the model, as OMG's models do. Its name is the diagram's heading
+(§7.26.5), in single quotes unless it is a plain name: the frame's tab reads
+«view» and the name (§8.2.3.26). ortho matches the definition by name, so import
+`StandardViewDefinitions` for other tools.
 
 A view may also name how it is rendered (§7.26.2). The logical view says
 `render asTreeDiagram;`, the standard library's tree rendering, imported from
@@ -117,9 +116,9 @@ package Functions {
 | deployment | `GeneralView` | the package of allocations |
 | process | `SequenceView` | the scenario's `action def` |
 
-A view draws only what it exposes. A `GeneralView` draws whatever that is: a
-function tree, use cases, allocations, or packages of software. A model may
-declare other views too; only rendering one fails.
+A view draws only what it exposes, and a `GeneralView` draws whatever that is.
+ortho skips any other view a model declares, and says why; with nothing left to
+draw, it fails.
 
 ## Use case view
 
@@ -183,16 +182,14 @@ package Functions {
 | `action def Name { ... }` in a package | the root of a tree, an «action def» box |
 | `action name;` or `action name { ... }` nested in another | an «action» box under its parent, which owns it: a filled diamond at the parent's end |
 | `action name : Def;` in a package | nothing. It is the usage a `perform` chain starts from. |
-| `#refinement dependency Tree to SystemUseCases::Name;` | a dashed arrow from the tree's root up to the use case, when the view exposes both |
+| `#refinement dependency Tree to SystemUseCases::Name;` in a package | a dashed arrow from the tree's root up to the use case, when the view exposes both |
 | `expose SystemUseCases::Name;` in the view | the use case, above the trees that refine it. One nothing refines stands alone, a visible gap. |
 
-Name no component in this file, and end it with one usage of its tree.
-
-**Refining a use case** (§7.3). Use cases come first, and each function tree
-details what one asks for. A refinement says so: a dependency, tagged from the
-standard library's `ModelingMetadata`, whose source is "a more precise and/or
-accurate representation" than its target. It is optional, but its ends are
-checked: once it names a use case, that use case has to be loaded.
+**Refining a use case** (§7.3). A function tree says which use case it details
+with a dependency, tagged from the standard library's `ModelingMetadata`, whose
+source is "a more precise and/or accurate representation" than its target. It
+is optional, but its ends are checked: once it names a use case, that use case
+has to be loaded.
 
 ```sysml
 package SystemUseCases {
@@ -294,10 +291,10 @@ package Software {
 }
 ```
 
-**On its own.** `perform` is optional, so an implementation view can stand alone,
-as for a cloud solution built from a vendor's services. Declare the services
-in a package of their own: ortho knows the names in OMG's library, but no
-vendor's. To show which service talks to which, use them as parts in an
+**On its own.** `perform` is optional, so an implementation view can stand
+alone, as for a cloud solution built from a vendor's services. Declare the
+services in a package of their own: ortho knows the names in OMG's library, but
+no vendor's. To show which service talks to which, use them as parts in an
 `InterconnectionView`, as on the physical view.
 
 ```sysml
@@ -437,7 +434,7 @@ package Scenario {
 | You write | The view draws |
 |---|---|
 | `part name : Def;`, or a person's untyped `part name;`, in the scenario's `action def` | a lifeline headed by a «part» box, once a message names it, in order of first appearance |
-| `message name from a to b;` | an arrow from `a` to `b`, in document order |
+| `message name from a to b;` | an arrow from `a` to `b`, labelled `name`, in document order |
 | `message name of Payload from a to b;` | the same arrow, labelled `name of Payload` |
 | `attribute def Payload;` | nothing. It types a payload. |
 | `then` before a message | nothing. Document order already gives the order. |
@@ -467,9 +464,28 @@ package Hardware {
 }
 ```
 
-It is written on the component, never on the function, and it is many to
-many: a program and a device may realize one function together, and a part
-may realize several.
+It is many to many: a program and a device may realize one function together,
+and a part may realize several.
+
+A `perform` may also name a use case, listed the same way. One that names
+structure, such as a part or a port, is an error.
+
+```sysml
+package Operations {
+    part def Pilot;
+
+    use case def Fly {
+        subject Aircraft;
+        actor pilot : Pilot;
+    }
+
+    use case fly : Fly;
+
+    part def Crew {
+        perform fly;
+    }
+}
+```
 
 ## Parsed, not drawn
 
@@ -500,40 +516,23 @@ package DroneRequirements {
 }
 ```
 
-**A `perform` of a use case** (§7.17.6), rather than a function.
-
-```sysml
-package Operations {
-    part def Pilot;
-
-    use case def Fly {
-        subject Aircraft;
-        actor pilot : Pilot;
-    }
-
-    use case fly : Fly;
-
-    part def Crew {
-        perform fly;
-    }
-}
-```
-
 **Values and expressions** (KerML §8.2.5.8): `capacity_mAh : Real = 10000`
 above, a quantity with its unit, `mass = 1500 [kg]`, a calculation, or a
 constraint's condition. No view evaluates them.
 
 ## The standard library
 
-ortho does not load the standard library, but it knows the library's names: a
+ortho does not load the standard library, so importing one of its packages,
+such as `ScalarValues`, imports nothing. It knows the library's names, though: a
 view may name a library element, such as a part typed
 `SpatialItems::SpatialItem`, and shows it as written. A name the library does
 not have is an error, as anywhere else.
 
 ## How this is checked
 
-Tests keep this page honest: every `sysml` block above parses on its own.
-Another loads all 252 of OMG's own example, training and validation models.
+Tests keep this page honest: every `sysml` block above parses on its own, with
+no errors or warnings. Another loads all 252 of OMG's own example, training and
+validation models.
 
 Both example models and every block on this page also passed the OMG pilot
 implementation, release 0.63.1, on 2026-10-31, with no errors or warnings.
