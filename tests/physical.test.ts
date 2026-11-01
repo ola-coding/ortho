@@ -9,7 +9,7 @@ import { declaredViews, exposedElements } from '../src/model/views.js';
 import type { GraphNode } from '../src/model/graph.js';
 import { BOX_HEADER_HEIGHT, compartmentsHeight } from '../src/model/graph.js';
 import { extractPhysicalGraph } from '../src/diagrams/physical.js';
-import { layoutGraph } from '../src/layout/elk-layout.js';
+import { layoutGraph, PORT_SIZE } from '../src/layout/elk-layout.js';
 import { renderSvg } from '../src/render/svg-renderer.js';
 
 const services = createSysmlServices();
@@ -93,6 +93,43 @@ describe('physical diagram extraction', () => {
         expect(svg).toContain('<svg');
         expect(svg).toContain('>powerIn</text>');
         expect(svg).not.toContain('part def');
+    });
+
+    it('widens a box to a name wider than its contents, and centres them under it', async () => {
+        const document = await parse(`
+            package Hardware {
+                private import StandardViewDefinitions::*;
+                port def RfPort;
+                part def Radio {
+                    port rf : RfPort;
+                }
+                part def GroundStation {
+                    port rfLink : RfPort;
+                    part radio : Radio;
+                    connect radio.rf to rfLink;
+                }
+                part def Site {
+                    part primaryGroundStation : GroundStation;
+                }
+                part site : Site;
+                view 'Site' : InterconnectionView {
+                    expose site;
+                }
+            }
+        `, { validation: true });
+        const graph = extractPhysicalGraph(exposedByView(document.parseResult.value));
+        const name = 'primaryGroundStation : GroundStation';
+        const nameWidth = allNodes(graph.nodes).find(n => n.name === name)!.width;
+        const laidOut = await layoutGraph(graph);
+
+        const station = laidOut.nodes.find(n => n.name === name)!;
+        const radio = laidOut.nodes.find(n => n.name === 'radio : Radio')!;
+        expect(station.width).toBe(nameWidth);
+        expect(station.height).toBeLessThan(nameWidth);
+        expect(radio.x + radio.width / 2).toBeCloseTo(station.x + station.width / 2);
+        // The wire still reaches the port on the box's border.
+        const [port] = station.ports;
+        expect(laidOut.edges[0].points.at(-1)!.x).toBeCloseTo(station.x + port.x + PORT_SIZE / 2);
     });
 
     it('keeps the parts of an assembly below the compartment of what it performs', async () => {

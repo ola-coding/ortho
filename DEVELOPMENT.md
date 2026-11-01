@@ -81,7 +81,9 @@ cannot draw is skipped with the reason (`whyUndrawable`).
   (elkjs 0.12); without it the edges on the implementation and physical views
   move.
 - **Containers fit their contents and their name.** A container gets its
-  name's width as a minimum and centres narrower contents.
+  name's width as a minimum and centres narrower contents. Layering downwards,
+  ELK reads a container's minimum size and content alignment with their axes
+  swapped, so `elk-layout.ts` gives them swapped.
 - **Deployment is packed, not layered.** With no edges, ELK's `layered` put
   every box in one row and `box` reorders by size, so the view uses
   `rectpacking`, one level at a time, since packing cannot lay out a
@@ -234,6 +236,8 @@ In priority order:
   an `occurrence def` of `item def` messages.
 - [x] **Update the colouring:** one flat blue tint on a white body, in place of
   the cream.
+- [ ] **Move to Rust,** in `rust/` until it replaces the TypeScript, for a single
+  binary that needs no Node. New features wait for it.
 - [ ] **Prepare for NPX.** Publish ortho on npm, so it runs without the repo.
   First clean up `package.json`, the README and whatever else publishing
   needs. The name `ortho` is taken on npm, so publish under a scope, such as

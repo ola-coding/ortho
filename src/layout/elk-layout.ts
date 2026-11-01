@@ -155,10 +155,12 @@ function toElkNode(n: GraphNode, conversion: Conversion): ElkNode {
         elkNode.layoutOptions!['elk.padding'] = `[top=${pad.top},left=${pad.left},bottom=${pad.bottom},right=${pad.right}]`;
         // ELK sizes a container to its contents; the container's own size,
         // worked out from its name, keeps a long name inside its box, and the
-        // contents centre under the name when they are the narrower.
+        // contents centre under the name when they are the narrower. Layering
+        // downwards, ELK reads both with their axes swapped; packing has no
+        // direction and takes them as they are.
         elkNode.layoutOptions!['elk.nodeSize.constraints'] = 'MINIMUM_SIZE';
-        elkNode.layoutOptions!['elk.nodeSize.minimum'] = `(${n.width}, ${n.height})`;
-        elkNode.layoutOptions!['elk.contentAlignment'] = 'H_CENTER V_TOP';
+        elkNode.layoutOptions!['elk.nodeSize.minimum'] = packing ? `(${n.width}, ${n.height})` : `(${n.height}, ${n.width})`;
+        elkNode.layoutOptions!['elk.contentAlignment'] = packing ? 'H_CENTER V_TOP' : 'H_LEFT V_CENTER';
         elkNode.layoutOptions!['elk.spacing.nodeNode'] = packing ? '24' : '40';
         if (packing) {
             // Packing lays out each level on its own, so every container
@@ -177,7 +179,7 @@ function toElkNode(n: GraphNode, conversion: Conversion): ElkNode {
         const options = elkNode.layoutOptions!;
         options['elk.portLabels.placement'] = 'OUTSIDE';
         options['elk.nodeSize.constraints'] = 'PORTS PORT_LABELS MINIMUM_SIZE';
-        options['elk.nodeSize.minimum'] = `(${n.width}, ${n.height})`;
+        options['elk.nodeSize.minimum'] ??= `(${n.width}, ${n.height})`;
         elkNode.ports = n.ports.map(p => ({
             id: p.id,
             width: PORT_SIZE,
