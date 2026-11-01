@@ -5,7 +5,7 @@ import { compartmentsHeight } from '../model/graph.js';
 import { measureText } from '../render/text-metrics.js';
 
 const ELK = ElkConstructor as unknown as { new(args?: ELKConstructorArguments): ELK };
-const elk = new ELK();
+export const elk = new ELK();
 
 export const PORT_SIZE = 10;
 

@@ -1,0 +1,62 @@
+{
+"graph": {
+ "id": "root",
+ "layoutOptions": {
+  "elk.algorithm": "rectpacking",
+  "elk.aspectRatio": "1.6",
+  "elk.spacing.nodeNode": "30"
+ },
+ "children": [
+  {
+   "id": "rack",
+   "layoutOptions": {
+    "elk.padding": "[top=45,left=25,bottom=25,right=25]",
+    "elk.nodeSize.constraints": "MINIMUM_SIZE",
+    "elk.nodeSize.minimum": "(200, 60)",
+    "elk.contentAlignment": "H_CENTER V_TOP",
+    "elk.spacing.nodeNode": "24",
+    "elk.algorithm": "rectpacking",
+    "elk.aspectRatio": "1.6"
+   },
+   "children": [
+    {
+     "id": "a",
+     "width": 120,
+     "height": 58
+    },
+    {
+     "id": "b",
+     "width": 90.5,
+     "height": 40
+    },
+    {
+     "id": "c",
+     "width": 150,
+     "height": 76
+    }
+   ]
+  },
+  {
+   "id": "d",
+   "width": 180,
+   "height": 94
+  },
+  {
+   "id": "e",
+   "width": 140,
+   "height": 40
+  }
+ ]
+},
+"places": [
+["rack",15,15,284.5,228],
+["a",25,45,120,58],
+["b",169,45,90.5,40],
+["c",25,127,150,76],
+["d",329.5,15,180,94],
+["e",329.5,139,140,40]
+],
+"wires": [
+
+]
+}

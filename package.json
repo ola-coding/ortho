@@ -26,6 +26,7 @@
     "deck": "tsx scripts/build-deck.ts",
     "omg-models": "tsx scripts/fetch-omg-models.ts",
     "library-names": "tsx scripts/library-names.ts",
+    "oracle": "tsx scripts/oracle.ts",
     "test": "vitest run"
   },
   "dependencies": {

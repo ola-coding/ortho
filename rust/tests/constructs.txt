@@ -1,0 +1,863 @@
+end a [1] : T;
+end [1] : T;
+end a [1];
+end [1];
+end a [1] part b : T;
+end [0..*] nonunique ordered part d;
+end c;
+end;
+end a : T [1];
+end a [1] b;
+end [1] b;
+end a [1] [2];
+end [1] [2];
+end in a;
+end a in b;
+end [1] in b;
+interface a to b;
+interface a.b to c.d;
+interface [1] a to b;
+interface [1] a;
+interface [1];
+interface [1] : T;
+interface [1] connect a to b;
+interface a [1] to b;
+interface a [1];
+interface (a, b);
+interface (a);
+interface (a, b, c) { }
+interface i : I connect a to b;
+interface i : I connect (a, b);
+interface;
+interface i;
+interface : I;
+interface = 1;
+interface i = 1 connect a to b;
+interface a references b to c;
+interface a ::> b to c;
+interface a ::> b;
+interface <s>;
+interface <s> a to b;
+connection a to b;
+connection;
+connection c;
+connection c connect a to b;
+connection connect a to b;
+connection [1] a to b;
+connection (a, b);
+connect a to b;
+connect (a, b);
+connect a;
+connect [1] a to [2] b;
+allocate a to b;
+allocate (a, b);
+allocation;
+allocation a;
+allocation a allocate b to c;
+allocation : T allocate b to c;
+allocation allocate b to c;
+allocation a to b;
+message;
+message a;
+message a to b;
+message a.b to c.d;
+message [1] a to b;
+message [1];
+message a [1];
+message a [1] to b;
+message [1] : T from a to b;
+message a of b;
+message of b;
+message of a : b;
+message of a : b [1] = 2 from c to d;
+message of a from b to c;
+message from a to b;
+message a from b to c;
+message a : T from b to c;
+message a = 1 of b;
+message <s>;
+message <s> a to b;
+message a ::> b to c;
+flow;
+flow a;
+flow a to b;
+flow a.b to c.d;
+flow [1];
+flow a [1];
+flow a [1] from b to c;
+flow a [1] to b;
+flow [1] a to b;
+flow of a;
+flow of a : b;
+flow of ~a;
+flow of a : ~b [1] = 2 from c to d;
+flow from a to b;
+flow a from b.c to d.e;
+succession flow a to b;
+succession flow;
+succession flow a;
+succession a;
+succession;
+succession s first a then b;
+succession first a;
+succession s : T first a;
+succession s [1] first a then b;
+succession <s> first a;
+first a;
+first a then b;
+first a if b then c;
+first a if b;
+first a then b { }
+first [1] a then [2] b;
+first a.b then c.d;
+first;
+then a;
+then first a;
+then part a;
+if a then b;
+if a;
+if a { }
+if a { };
+if a ? b else c
+if a ? b else c;
+if a then;
+if a action b { }
+if a action b;
+if a action b : T { } else { }
+if a { } else;
+if a { } else { }
+if a { } else b;
+if a { } else b.c;
+if a { } else [1] b;
+if a { } else action b;
+if a { } else action b { }
+if a { } else if b { }
+if a { } else if b then c;
+if a { } else if b ? c else d;
+if a ? b else c then d;
+if (a) then b;
+else a;
+else;
+else { }
+else [1] a;
+action a if b { }
+action a if b then c;
+action a accept b;
+action accept b;
+action a send b;
+action a assign b := 1;
+action a terminate;
+action a terminate b;
+action a while b { }
+action a loop { }
+action a for b in c { }
+action a : T accept b;
+action a;
+action;
+action : T;
+action a : T { }
+action a = 1;
+accept a;
+accept;
+accept a : T;
+accept : T;
+accept a at 1;
+accept a after 1 via b;
+accept a when b;
+accept via b;
+accept a then b;
+accept a if b then c;
+accept a if b;
+accept a do send b then c;
+accept a do action b then c;
+accept a do action b send c { doc /* d */ } then e;
+accept a do perform b.c then d;
+accept a do accept b then c;
+accept a do assign b := 1 then c;
+send;
+send a;
+send a.b;
+send via b;
+send to b;
+send a to b;
+send a via b to c;
+send a to b via c;
+send { }
+send new A() to b;
+assign a := 1;
+assign a = 1;
+assign a.b := c + 1 { }
+terminate;
+terminate a;
+terminate { }
+terminate a.b { }
+while a;
+while a { }
+while a { } until b;
+while a { } until b
+loop;
+loop { }
+loop; until b;
+loop { } until b
+loop action a;
+loop action a { }
+for a in b;
+for a : T in b { }
+for a : T, U in b { }
+for a;
+for in b;
+merge a;
+merge a.b;
+merge;
+decide;
+join a::b;
+fork a : T;
+event a;
+event a.b;
+event occurrence a;
+event occurrence a.b;
+event occurrence;
+exhibit a;
+exhibit state a parallel;
+exhibit state a.b;
+render a;
+render rendering a;
+frame a;
+frame concern a;
+verify a;
+verify requirement a;
+require a;
+require constraint a;
+require #M constraint a;
+require #M a;
+require a.b;
+assume constraint { a }
+assert a;
+assert a.b;
+assert not a;
+assert constraint a;
+assert not constraint a;
+assert not constraint a.b;
+assert satisfy a;
+assert not satisfy a;
+assert satisfy a by b;
+assert satisfy requirement a by b;
+assert not satisfy requirement a : T by b;
+assert not not a;
+not satisfy a;
+not a;
+satisfy a;
+satisfy requirement a;
+satisfy requirement;
+satisfy requirement : T by b;
+satisfy a.b by c.d;
+satisfy a :> b;
+satisfy a : T;
+objective a;
+objective a.b;
+stakeholder a;
+item a;
+item a.b;
+item a::b;
+item a::b.c : T;
+item;
+item <s> a;
+item <s> a.b;
+item a parallel;
+item a = 1 parallel { }
+state a parallel { }
+calc a { b }
+case a;
+analysis a;
+verification a;
+requirement a;
+concern a;
+constraint a { b }
+occurrence a;
+rendering a;
+viewpoint a;
+enum a;
+def a;
+def;
+item def a;
+item def;
+item def a :> b, c;
+item def a :> b parallel { }
+state def a parallel { }
+view def a;
+viewpoint def a;
+flow def a;
+connection def a;
+allocation def a;
+metadata def a;
+occurrence def a;
+calc def a;
+constraint def a;
+requirement def a;
+concern def a;
+case def a;
+analysis def a;
+verification def a;
+rendering def a;
+enum def a;
+use case def a;
+use case def a :> b;
+use case a;
+use case;
+use case : T;
+use a;
+use;
+part def a :> b;
+part def a specializes b, c;
+part def <s> a;
+part def <s>;
+part def;
+port def a :> b;
+port def;
+interface def a :> b;
+attribute def a :> b;
+action def a :> b;
+part a;
+part;
+part : T;
+part a : T, ~U;
+part a : ~T;
+part a defined by T;
+part a defined T;
+part a :> b, c;
+part a subsets b;
+part a :>> b;
+part a redefines b;
+part a ::> b;
+part a references b;
+part a => b;
+part a crosses b;
+part a [1];
+part a [1..2];
+part a [*];
+part a [*..1];
+part a [1..*];
+part a [b::c];
+part a [1..b];
+part a [b.c];
+part a [];
+part a ordered nonunique;
+part a : T :> b;
+part a :> b : T;
+part a :> b : T [1];
+part a : T : U;
+part a = 1;
+part a := 1;
+part a default 1;
+part a default = 1;
+part a default := 1;
+part a = 1 : T;
+attribute a : T::U;
+attribute a : T.U;
+attribute a : ~T;
+port a : ~T;
+port a : ~T, U;
+port a : ~;
+actor a;
+subject a;
+subject;
+actor : T;
+include a;
+include a.b;
+include a::b;
+include use case a;
+include use case;
+include use case : T;
+include use case a : T = 1;
+include a : T;
+include a :> b;
+include [1] a;
+include a ::> b;
+include;
+include use;
+perform a;
+perform a.b;
+perform action a;
+perform action;
+perform action a : T;
+perform a : T;
+perform a :> b;
+perform [1] a;
+perform a ::> b;
+perform a = 1;
+perform;
+bind a = b;
+bind a.b = c.d;
+bind a;
+bind a = 1;
+binding bind a = b;
+binding a bind b = c;
+binding a : T bind b = c;
+binding a;
+binding;
+transition a;
+transition first a then b;
+transition a first b then c;
+transition a then b;
+transition <s> first a then b;
+transition <s> a first b then c;
+transition [1] a then b;
+transition a [1] then b;
+transition a accept b then c;
+transition a accept b if c do send d then e;
+transition a if b then c;
+transition a do send b then c;
+transition first a;
+transition;
+entry;
+entry a;
+entry action a;
+entry send a;
+entry entry;
+do a;
+do;
+exit part a;
+exit first a;
+exit private part a;
+private a;
+private part a;
+protected action a;
+public first a;
+private;
+private private a;
+variant a;
+variant part a;
+variation part a;
+abstract part a;
+abstract variation part a;
+variation abstract part a;
+in a;
+out a;
+inout a;
+in out a;
+in part a;
+ref a;
+ref part a;
+ref in a;
+in ref a;
+derived a;
+constant a;
+derived constant ref individual snapshot part a;
+individual part a;
+snapshot a;
+timeslice a;
+snapshot timeslice a;
+return a;
+return part a;
+return;
+return : T;
+then return a;
+return then a;
+variant then a;
+then variant a;
+private variant then return end in derived abstract constant ref individual snapshot #M part a;
+#M a;
+#M part a;
+#M;
+#M #N::O part a;
+#M::N.O part a;
+@a;
+@a::b;
+@a : b;
+@ : b;
+@ <s> : b;
+@ <s> b;
+@a about b;
+@a about b, c;
+@a : b about c { }
+@a.b;
+metadata a;
+metadata a : b;
+metadata a typed by b;
+metadata a typed b;
+metadata : a;
+metadata;
+metadata a about b;
+dependency a;
+dependency a to b;
+dependency a, b to c, d;
+dependency a from b;
+dependency a from b to c;
+dependency from a to b;
+dependency from;
+dependency <s> from a to b;
+dependency <s> a from b to c;
+dependency a to b { doc /* c */ }
+dependency a to b { part c; }
+dependency;
+view a;
+view;
+view : T;
+view a : T { expose b; }
+view a defined by T;
+view a : T, U;
+view a = 1;
+expose a;
+expose a::*;
+expose a::**;
+expose a::*::**;
+expose a [b];
+expose a::* [b] [c] { /* d */ }
+private expose a;
+filter a;
+filter @a;
+private filter a;
+filter;
+import a;
+private import a;
+public import all a;
+public import a::*;
+public import a::**;
+public import a::*::**;
+public import a::b::*;
+public import a [b];
+public import a::* [b] { /* c */ }
+public import;
+alias a for b;
+alias for b;
+alias <s> a for b;
+alias <s> for b;
+alias a for b::c;
+alias a for b.c;
+alias a for b { /* c */ }
+private alias a for b;
+alias a;
+package a;
+package;
+package a { part b; }
+package <s> a { }
+private package a;
+library package a;
+standard library package a;
+standard package a;
+#M package a;
+private standard library #M #N package a;
+library part a;
+standard part a;
+comment /* a */
+comment a /* b */
+comment a about b /* c */
+comment a about b, c::d /* e */
+comment about a /* b */
+comment <s> /* a */
+comment locale "a" /* b */
+comment;
+locale "a" /* b */
+locale a /* b */
+locale "a";
+/* a */
+/* a */ /* b */
+doc /* a */
+doc a /* b */
+doc <s> /* a */
+doc locale "a" /* b */
+doc;
+rep language "a" /* b */
+rep a language "b" /* c */
+rep /* a */
+language "a" /* b */
+language a /* b */
+language "a";
+// note
+//* note */
+//* note
+/* unclosed
+//* unclosed
+"unclosed
+'unclosed
+$
+é
+a é;
+part a /* b */ : T;
+part a // b
+part a //* b */ : T;
+part a; // note
+part 'a b';
+part 'a\'b';
+part 'a\nb';
+part 'a'::'b';
+part a : 'b c'::d;
+part '';
+part "a";
+1;
+1e5;
+<s>;
+<s> a;
+<s> : T;
+<s> a : T;
+<a b>;
+<1> a;
+<'1.1'> a;
+<'1.1'> 'a b';
+: T;
+:> T;
+:>> a = 2;
+::> a;
+=> a;
+defined by T;
+subsets a;
+redefines a;
+references a;
+crosses a;
+ordered;
+nonunique;
+[1];
+[1] a;
+= 3;
+:= 3;
+default 3;
+default;
+a;
+a b;
+a.b;
+a::b;
+a : T;
+a :> b;
+a [1];
+a [1] : T;
+a = 1;
+a := 1;
+a default 1;
+a { }
+a { b; }
+a { b }
+a { b } c;
+x = a[1][2];
+x = a[];
+x = (a);
+x = ();
+x = (a,);
+x = (,);
+x = (a, b, c);
+x = a.b(1).c();
+x = a.b(c = 1, d);
+x = a->b;
+x = a->b c;
+x = a->b c::d;
+x = a->b();
+x = a->b(1, 2);
+x = a->b::c{};
+x = a->b{in c; c};
+x = a.{};
+x = a.{b};
+x = a.?{};
+x = a.?{b};
+x = a.metadata;
+x = a.metadata.b;
+x = a.b.c.d;
+x = a#(1);
+x = a#(1, 2);
+x = a#();
+x = a#;
+x = new A;
+x = new A();
+x = new A(1, b = 2);
+x = new A::B();
+x = all A;
+x = all;
+x = @A;
+x = @@A;
+x = a @ b;
+x = a @@ b;
+x = a as b;
+x = as b;
+x = meta b;
+x = a meta b;
+x = istype b;
+x = a istype b;
+x = hastype b;
+x = a hastype b.c;
+x = -a;
+x = - -a;
+x = +a;
+x = ~a;
+x = not a;
+x = not not a;
+x = a ** b ^ c;
+x = a ^ b ^ c;
+x = a * b / c % d;
+x = a + b - c;
+x = a - b + c * d;
+x = a..b;
+x = a .. *;
+x = * .. a;
+x = * * *;
+x = *;
+x = a < b;
+x = a > b;
+x = a <= b >= c;
+x = a == b != c;
+x = a === b !== c;
+x = a & b | c xor d;
+x = a and b or c;
+x = a implies b;
+x = a ?? b ?? c;
+x = a ? b;
+x = "s";
+x = "a\"b\\c\n";
+x = true;
+x = false;
+x = null;
+x = .5;
+x = 1.5;
+x = 1.5.5;
+x = 1.;
+x = 1e5;
+x = 1E-5;
+x = 1e+5;
+x = 1e;
+x = 1.5e3;
+x = 1..2;
+x = 1.5..2.5;
+x = a.5;
+x = if a ? b else c;
+x = a + if b ? c else d;
+x = (if a ? b else c);
+x = if a ? b else if c ? d else e;
+x = if a then b;
+x = f(a = 1, 2);
+x = f(a == 1);
+x = f(if a ? b else c);
+x = f(a = if b ? c else d);
+x = f();
+x = f(,);
+x = 1500 [kg];
+x = 1500 [kg] + 2 [g];
+x = a [b] [c];
+x = 'a b'.'c d';
+x = a::b.c::d;
+x = a::b;
+x = a::;
+x = a.;
+x = a.();
+x = #a;
+x = a #b;
+x = { };
+x = { a };
+x = ;
+x;
+calc def C { x }
+calc def C { x; }
+calc def C { x y }
+calc def C { x.y }
+calc def C { x.y; }
+calc def C { x : T }
+calc def C { x : T; x }
+calc def C { x = 1 }
+calc def C { x == 1 }
+calc def C { x; y == 1 }
+calc def C { x } y;
+calc def C { [1] }
+calc def C { * }
+calc def C { * 2 }
+calc def C { @a }
+calc def C { @a; }
+calc def C { @a.b }
+calc def C { @a : b }
+calc def C { @a + 1 }
+calc def C { @a; b }
+calc def C { not a }
+calc def C { not satisfy }
+calc def C { not satisfy a; }
+calc def C { not satisfy a }
+calc def C { if a ? b else c }
+calc def C { if a ? b else c; }
+calc def C { if a then b; }
+calc def C { if a { } }
+calc def C { if a { } b }
+calc def C { if a; b }
+calc def C { (a) }
+calc def C { (a); }
+calc def C { "s" }
+calc def C { 1 }
+calc def C { 1 + 2 }
+calc def C { -a }
+calc def C { all a }
+calc def C { new a() }
+calc def C { istype a }
+calc def C { as a }
+calc def C { doc /* a */ b }
+calc def C { /* a */ b }
+calc def C { b /* a */ }
+calc def C { private a; b }
+calc def C { public import a; b }
+calc def C { part a; }
+calc def C { part a }
+calc def C { a {} }
+calc def C { a {} b }
+calc def C { a {} b; }
+calc def C { a; b; c }
+calc def C { a b; }
+calc def C { = 1; }
+calc def C { = 1 }
+calc def C { a.{b} }
+calc def C { a->f{in x; x > 1}.?{in y; y}.{in z; z} }
+calc def C { a->g(1, b = 2)->h c#(1)[2].metadata }
+calc def C { 1 + 2 * 3 ^ 4 ^ 5 - 6 / 7 % 8 .. 9 < 10 == 11 & 12 xor 13 | 14 and 15 or 16 implies 17 ?? 18 }
+calc def C { a istype B as C hastype D @ E @@ F meta G }
+calc def C { -+~not a }
+calc def C { .5 + 1.5e3 + 2E-2 + "s" + 'a b'::'c\'d'.e }
+calc def C { a.{ part b; c } }
+calc def C { a.{ private part b; } }
+calc def C { a.{ package b; } }
+calc def C { a.{ public import b; } }
+calc def C { a.{ /* b */ } }
+calc def C { a.{ doc /* b */ c } }
+part a { filter b; expose c; alias d for e; public import f; comment /* g */ doc /* h */ rep language "i" /* j */ }
+part a {
+part a } b
+part a { } }
+a/*b*/c;
+a/**/;
+1e5a;
+a1;
+_a;
+a_b;
+partial;
+part1;
+part_;
+Part;
+to;
+'to';
+toa;
+a::*;
+a ::* ;
+a:: b;
+a :: b;
+a ::b;
+a: b;
+a :b;
+a:b;
+a:>b;
+a:>>b;
+a::>b;
+a=>b;
+a=b;
+a:=b;
+a.b.c;
+a . b;
+x=a..b;
+x=a...b;
+x=a.?{};
+x=a?b;
+x=a??b;
+x=a->b();
+x=a-b;
+x=a- >b;
+x=a<b;
+x=a<=b;
+x=a< =b;
+x=a===b;
+x=a== =b;
+x=a!==b;
+x=a!=b;
+x=a! =b;
+x=a**b;
+x=a* *b;
+x=a@@b;
+x=a@ @b;

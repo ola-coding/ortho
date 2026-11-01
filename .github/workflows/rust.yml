@@ -1,0 +1,70 @@
+# The Rust port, built beside the TypeScript until it replaces it.
+#
+# test    Builds and tests it on each system it will ship for.
+# lint    Formatting and clippy, which read the same on every system.
+# oracle  Records what the TypeScript produces at each stage, which the port is
+#         checked against, and fails if the committed diagrams are not what it
+#         renders.
+name: Rust
+
+on:
+  push:
+    branches: [main, rust-port]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  test:
+    name: Tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      # Report every system rather than stopping at the first failure: which
+      # one broke is the point of running three.
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    defaults:
+      run:
+        working-directory: rust
+    steps:
+      - uses: actions/checkout@v7
+      - run: rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust
+      - run: cargo test
+
+  lint:
+    name: Formatting and clippy
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rust
+    steps:
+      - uses: actions/checkout@v7
+      - run: rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust
+      - run: cargo fmt --check
+      - run: cargo clippy --all-targets -- -D warnings
+
+  oracle:
+    name: Record the TypeScript's stages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run omg-models
+      - run: npm run oracle

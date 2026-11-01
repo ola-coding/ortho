@@ -160,6 +160,7 @@ npm run render:examples  # regenerate every example's diagrams/
 npm run deck             # build the pitch deck into marketing/
 npm run omg-models       # fetch OMG's models, which npm test counts
 npm run library-names    # list the standard library's names
+npm run oracle           # record each stage's output for the Rust port
 ```
 
 CI typechecks and tests on Node 24 and 26, fails if a fresh render differs
@@ -206,6 +207,23 @@ Pages.
   LANGUAGE.md and each test fixture `process(text, false)`, which leaves it out
   of the index, so none leans on another's names. Give it a broken model too: a
   check that cannot fail proves nothing.
+
+## The Rust port
+
+`rust/` is the port, built beside the TypeScript until it replaces it, with the
+same folders as `src/`. The TypeScript is the reference: `npm run oracle`, after
+`npm run omg-models`, records what each stage produces for every model into
+`rust/oracle/`, not committed, and each stage is checked against that as it is
+ported.
+
+```sh
+cd rust
+cargo test
+cargo fmt --check
+cargo clippy --all-targets -- -D warnings
+```
+
+CI builds and tests it on Linux, Windows and macOS.
 
 ## Backlog
 
