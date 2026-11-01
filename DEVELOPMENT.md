@@ -232,6 +232,8 @@ In priority order:
 - [x] **Update the models** to the stricter reading of SysML v2: software usages
   named after their modules, `include x`, `interface` usages, and scenarios as
   an `occurrence def` of `item def` messages.
+- [x] **Update the colouring:** one flat blue tint on a white body, in place of
+  the cream.
 - [ ] **Prepare for NPX.** Publish ortho on npm, so it runs without the repo.
   First clean up `package.json`, the README and whatever else publishing
   needs. The name `ortho` is taken on npm, so publish under a scope, such as

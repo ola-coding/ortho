@@ -1,7 +1,7 @@
 /**
- * How a diagram is painted. The light theme is ortho's own drawing on paper;
- * `dark-glass` is for slides: translucent boxes on a transparent background,
- * so whatever dark colour the slide uses shows through.
+ * How a diagram is painted. The light theme is for documents: flat, one tint
+ * on white. `dark-glass` is for slides: translucent boxes on a transparent
+ * background, so whatever dark colour the slide uses shows through.
  *
  * Only colours and a few flags live here. Every position, size and line on a
  * diagram is the same in both themes, so a change of theme never moves
@@ -11,9 +11,14 @@ export interface Theme {
     name: ThemeName;
     /** Page background, or null to leave the page transparent. */
     page: string | null;
-    /** A box with nothing inside it. */
+    /**
+     * A box's name compartment, which is the whole box when it holds nothing
+     * else; null to tint it no differently from the rest.
+     */
+    nameFill: string | null;
+    /** The rest of a box. */
     fill: string;
-    /** A box that holds other boxes, tinted apart from its contents. */
+    /** The rest of a box that holds other boxes. */
     containerFill: string;
     /** Every line between boxes, and the arrowheads on them. */
     stroke: string;
@@ -23,7 +28,7 @@ export interface Theme {
     text: string;
     /** Keywords and compartment titles. */
     keyword: string;
-    /** «include», an interface on a wire: the one colour that is not grey. */
+    /** «include», an interface on a wire. */
     edgeLabel: string;
     /** The source path in the frame's corner. */
     provenanceText: string;
@@ -40,32 +45,37 @@ export interface Theme {
     gloss: boolean;
     /** A soft shadow under a box, lifting it off the page. */
     shadow: boolean;
-    /** The diagram frame: its border, the tab naming the view, and the source file in its corner. */
-    frame: boolean;
+    /**
+     * What the diagram frame holds the drawing on, or null for no frame. Its
+     * outline, the tab naming the view and the corner naming the source file
+     * are painted as a box's outline and name are.
+     */
+    frameFill: string | null;
     /** Gradients and filters the theme's fills refer to. */
     defs: string;
 }
 
 export type ThemeName = 'light' | 'dark-glass';
 
-/** Paper: what ortho has always drawn, and what the examples commit. */
+/** Documents, and what the examples commit: a flat tint on white, inside a pale frame. */
 export const lightTheme: Theme = {
     name: 'light',
     page: 'white',
-    fill: '#fdfdf6',
-    containerFill: '#f6f6ec',
-    stroke: '#2b2b2b',
-    boxStroke: '#2b2b2b',
+    nameFill: '#ccdce5',
+    fill: 'white',
+    containerFill: 'white',
+    stroke: '#1a1a1a',
+    boxStroke: '#40657e',
     text: '#1a1a1a',
-    keyword: '#555555',
-    edgeLabel: '#555555',
-    provenanceText: '#8a8a86',
-    halo: 'white',
+    keyword: '#40657e',
+    edgeLabel: '#40657e',
+    provenanceText: '#1a1a1a',
+    halo: '#f9fbfc',
     portFill: 'white',
-    actorFill: '#fdfdf6',
+    actorFill: '#ccdce5',
     gloss: false,
     shadow: false,
-    frame: true,
+    frameFill: '#f9fbfc',
     defs: ''
 };
 
@@ -77,6 +87,7 @@ export const lightTheme: Theme = {
 export const darkGlassTheme: Theme = {
     name: 'dark-glass',
     page: null,
+    nameFill: null,
     fill: 'url(#glass)',
     containerFill: 'url(#glassDeep)',
     stroke: '#A9C2D1',
@@ -90,7 +101,7 @@ export const darkGlassTheme: Theme = {
     actorFill: '#C3D5E0',
     gloss: true,
     shadow: true,
-    frame: false,
+    frameFill: null,
     defs: `
     <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.17" />

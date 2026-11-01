@@ -31,8 +31,44 @@ describe('themes', () => {
         expect(svg).toContain(`&#171;view&#187;</tspan><tspan font-weight="600"> ${title.heading}</tspan></text>`);
         expect(svg).not.toContain(': GeneralView');
         expect(svg).toContain(title.source);
-        expect(svg).toContain('fill="#fdfdf6"');
+        expect(svg).toContain(`fill="${lightTheme.nameFill}"`);
         expect(svg).not.toContain('url(#glass)');
+    });
+
+    it('tints a box up to the end of its name compartment, and leaves the rest white', () => {
+        const box = {
+            id: 'a', shape: 'usage' as const, keyword: 'part', name: 'a', ports: [], x: 0, y: 0, width: 200, height: 90
+        };
+        const svgOf = (node: object, theme = lightTheme) => renderSvg(
+            { width: 200, height: 90, edges: [], nodes: [{ ...box, compartments: [], hasChildren: false, ...node }] },
+            title, theme
+        );
+        const tinted = `fill="${lightTheme.nameFill}"`;
+        const band = /<path d="[^"]*" fill="#ccdce5"/;
+
+        // Nothing else inside: the whole box is its name compartment.
+        expect(svgOf({})).toMatch(/<rect[^>]*height="90"[^>]*fill="#ccdce5"/);
+        expect(svgOf({})).not.toMatch(band);
+
+        // With compartments or nested boxes, the band ends where the name does.
+        for (const node of [{ compartments: [{ lines: ['x'] }] }, { hasChildren: true }]) {
+            expect(svgOf(node)).toMatch(band);
+            expect(svgOf(node)).toMatch(/<rect[^>]*height="90"[^>]*fill="white"/);
+        }
+
+        // A theme without a tint of its own draws no band.
+        const dark = svgOf({ hasChildren: true }, darkGlassTheme);
+        expect(dark).not.toContain(tinted);
+        expect(dark.replace(/<defs>[\s\S]*<\/defs>/, '')).not.toContain('<path');
+    });
+
+    it('paints the frame as the boxes inside it are painted', () => {
+        const frame = renderFrame(400, 300, title, lightTheme);
+        expect(frame).toContain(`fill="${lightTheme.frameFill}"`);
+        // The tab and the corner take a box's tint, all three a box's outline.
+        expect(frame.match(new RegExp(`fill="${lightTheme.nameFill}"`, 'g'))).toHaveLength(2);
+        expect(frame.match(new RegExp(`stroke="${lightTheme.boxStroke}"`, 'g'))).toHaveLength(3);
+        expect(renderFrame(400, 300, title, darkGlassTheme)).toBe('');
     });
 
     it('paints dark glass on nothing at all, for a slide to show through', async () => {
@@ -62,7 +98,7 @@ describe('themes', () => {
     it('moves nothing: both themes lay the diagram out identically', async () => {
         const positions = (svg: string) => svg.match(/(?:x|y|cx|cy|points)="[^"]*"/g);
         // Frameless light, so the frame's own coordinates are not in the way.
-        const light = positions(await render({ ...lightTheme, frame: false }));
+        const light = positions(await render({ ...lightTheme, frameFill: null }));
         const dark = positions(await render(darkGlassTheme));
         // The dark theme adds the gloss rectangles, so compare what the light
         // theme drew: every one of its coordinates must appear in the dark.

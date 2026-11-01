@@ -58,7 +58,7 @@ const INFO_RADIUS = 6;
  * optional there, and stands in only for a missing name.
  */
 export function renderFrame(width: number, height: number, title: DiagramTitle, t: Theme): string {
-    if (!t.frame) {
+    if (!t.frameFill) {
         return '';
     }
     const left = FRAME_INSET;
@@ -72,13 +72,14 @@ export function renderFrame(width: number, height: number, title: DiagramTitle, 
     const infoLeft = right - measureText(title.source, 9) - 16;
     const infoTop = bottom - INFO_HEIGHT;
     const line = `stroke="${t.boxStroke}" stroke-width="1.25"`;
+    const tint = t.nameFill ?? t.fill;
     return `
-  <rect x="${left}" y="${top}" width="${right - left}" height="${bottom - top}"${radiusAttrs(FRAME_RADIUS)} fill="none" ${line} />
+  <rect x="${left}" y="${top}" width="${right - left}" height="${bottom - top}"${radiusAttrs(FRAME_RADIUS)} fill="${t.frameFill}" ${line} />
   <path d="M${left},${tabBottom} L${left},${top + FRAME_RADIUS} A${FRAME_RADIUS},${FRAME_RADIUS} 0 0 1 ${left + FRAME_RADIUS},${top} L${tabRight},${top} L${tabRight},${tabBottom - TAB_RADIUS} A${TAB_RADIUS},${TAB_RADIUS} 0 0 1 ${tabRight - TAB_RADIUS},${tabBottom} Z"
-        fill="#f4f4ea" ${line} />
-  <text x="${left + 10}" y="${top + 15}" font-size="11" fill="${t.text}"><tspan fill="${t.keyword}">&#171;view&#187;</tspan><tspan font-weight="600">${escapeXml(name)}</tspan>${escapeXml(definition)}</text>
-  <path d="M${infoLeft},${bottom} L${infoLeft},${infoTop + INFO_RADIUS} A${INFO_RADIUS},${INFO_RADIUS} 0 0 1 ${infoLeft + INFO_RADIUS},${infoTop} L${right},${infoTop}"
-        fill="none" ${line} />
+        fill="${tint}" ${line} />
+  <text x="${left + 10}" y="${top + 15}" font-size="11" fill="${t.text}"><tspan font-style="italic" fill="${t.keyword}">&#171;view&#187;</tspan><tspan font-weight="600">${escapeXml(name)}</tspan>${escapeXml(definition)}</text>
+  <path d="M${infoLeft},${bottom} L${infoLeft},${infoTop + INFO_RADIUS} A${INFO_RADIUS},${INFO_RADIUS} 0 0 1 ${infoLeft + INFO_RADIUS},${infoTop} L${right},${infoTop} L${right},${bottom - FRAME_RADIUS} A${FRAME_RADIUS},${FRAME_RADIUS} 0 0 1 ${right - FRAME_RADIUS},${bottom} Z"
+        fill="${tint}" ${line} />
   <text x="${right - 8}" y="${bottom - 4}" text-anchor="end" font-size="9" fill="${t.provenanceText}">${escapeXml(title.source)}</text>`;
 }
 
@@ -122,16 +123,29 @@ function renderPackageNode(n: LaidOutNode, t: Theme): string {
     const tab = n.hasChildren
         ? { width: measureText(n.name, 11, 'bold') + 16, height: 18 }
         : { width: Math.max(46, Math.min(90, measureText(n.name, 11, 'bold') + 20)), height: 12 };
+    const tint = t.nameFill ?? t.fill;
     const name = n.hasChildren
         ? `<text x="${x + 8}" y="${y + 13}" font-size="11" font-weight="600" fill="${t.text}">${escapeXml(n.name)}</text>`
         : `<text x="${x + n.width / 2}" y="${y + 12 + (n.height - 12) / 2 + 4}" text-anchor="middle"
           font-size="12" font-weight="600" fill="${t.text}">${escapeXml(n.name)}</text>`;
     return `
     <g><rect x="${x}" y="${y}" width="${tab.width}" height="${tab.height}"
-          fill="${t.fill}" stroke="${t.boxStroke}" stroke-width="1.25" />
+          fill="${tint}" stroke="${t.boxStroke}" stroke-width="1.25" />
       <rect x="${x}" y="${y + tab.height}" width="${n.width}" height="${n.height - tab.height}"
-          fill="${t.fill}" stroke="${t.boxStroke}" stroke-width="1.25" />${glossOver(t, x, y + tab.height, n.width, n.height - tab.height, 0)}
+          fill="${n.hasChildren ? t.fill : tint}" stroke="${t.boxStroke}" stroke-width="1.25" />${glossOver(t, x, y + tab.height, n.width, n.height - tab.height, 0)}
       ${name}</g>`;
+}
+
+/** A name compartment's tint, up to the box's outline. */
+function nameBand(x: number, y: number, width: number, radius: number, fill: string): string {
+    const inset = 0.5;
+    const r = Math.max(radius - inset, 0);
+    const left = x + inset;
+    const right = x + width - inset;
+    const top = y + inset;
+    const bottom = y + HEADER_HEIGHT;
+    const corner = (toX: number, toY: number): string => (r > 0 ? `A${r},${r} 0 0 1 ${toX},${toY} ` : '');
+    return `<path d="M${left},${bottom} L${left},${top + r} ${corner(left + r, top)}L${right - r},${top} ${corner(right, top + r)}L${right},${bottom} Z" fill="${fill}" />`;
 }
 
 /**
@@ -144,22 +158,26 @@ function renderBoxNode(n: LaidOutNode, t: Theme): string {
     const radius = n.shape === 'usage' ? USAGE_RADIUS : 0;
     const parts: string[] = [];
 
-    // A box that contains other boxes (an assembly on the Physical view) takes
-    // a slightly deeper tint, so nesting reads before any border is traced.
+    // The name compartment is tinted, and it is the whole box when the box
+    // holds nothing else.
+    const holdsMore = n.compartments.length > 0 || n.hasChildren;
+    const body = n.hasChildren ? t.containerFill : t.fill;
     parts.push(`<rect x="${x}" y="${y}" width="${n.width}" height="${n.height}"${radiusAttrs(radius)}${liftAttr(t)}
-          fill="${n.hasChildren ? t.containerFill : t.fill}" stroke="${t.boxStroke}" stroke-width="1.25" />`);
+          fill="${holdsMore ? body : t.nameFill ?? body}" stroke="${t.boxStroke}" stroke-width="1.25" />`);
+    if (holdsMore && t.nameFill) {
+        parts.push(nameBand(x, y, n.width, radius, t.nameFill));
+    }
     const gloss = glossOver(t, x, y, n.width, n.height, radius).trim();
     if (gloss) {
         parts.push(gloss);
     }
 
-    // The keyword and name are centred in the header, which is the whole box
-    // when it holds nothing else.
-    const header = n.compartments.length > 0 || n.hasChildren ? HEADER_HEIGHT : n.height;
+    // The keyword and name are centred in the name compartment.
+    const header = holdsMore ? HEADER_HEIGHT : n.height;
     const top = y + (header - HEADER_HEIGHT) / 2;
     if (n.keyword) {
         parts.push(`<text x="${x + n.width / 2}" y="${top + 13}" text-anchor="middle"
-          font-size="9" fill="${t.keyword}">&#171;${escapeXml(n.keyword)}&#187;</text>`);
+          font-size="9" font-style="italic" fill="${t.keyword}">&#171;${escapeXml(n.keyword)}&#187;</text>`);
         parts.push(`<text x="${x + n.width / 2}" y="${top + 26}" text-anchor="middle"
           font-size="12" font-weight="600" fill="${t.text}">${escapeXml(n.name)}</text>`);
     } else {
@@ -173,8 +191,8 @@ function renderBoxNode(n: LaidOutNode, t: Theme): string {
           stroke="${t.boxStroke}" stroke-width="1" />`);
         let linesTop = compartmentTop;
         if (compartment.title) {
-            parts.push(`<text x="${x + 8}" y="${compartmentTop + 11}"
-          font-size="9" fill="${t.keyword}">${escapeXml(compartment.title)}</text>`);
+            parts.push(`<text x="${x + n.width / 2}" y="${compartmentTop + 11}" text-anchor="middle"
+          font-size="9" font-style="italic" fill="${t.keyword}">${escapeXml(compartment.title)}</text>`);
             linesTop += COMPARTMENT_TITLE_HEIGHT;
         }
         compartment.lines.forEach((line, i) => {
@@ -184,10 +202,14 @@ function renderBoxNode(n: LaidOutNode, t: Theme): string {
         compartmentTop += COMPARTMENT_PADDING + (compartment.title ? COMPARTMENT_TITLE_HEIGHT : 0)
             + compartment.lines.length * LINE_HEIGHT;
     }
+    if (n.hasChildren) {
+        parts.push(`<line x1="${x}" y1="${compartmentTop}" x2="${x + n.width}" y2="${compartmentTop}"
+          stroke="${t.boxStroke}" stroke-width="1" />`);
+    }
 
     for (const port of n.ports) {
         parts.push(`<rect x="${x + port.x}" y="${y + port.y}" width="${PORT_SIZE}" height="${PORT_SIZE}"${radiusAttrs(PORT_RADIUS)}
-          fill="${t.portFill}" stroke="${t.stroke}" stroke-width="1.25" />`);
+          fill="${t.portFill}" stroke="${t.boxStroke}" stroke-width="1.25" />`);
     }
 
     return `\n    <g>${parts.join('\n      ')}</g>`;
@@ -282,7 +304,7 @@ export function renderSvg(diagram: LaidOutDiagram, title: DiagramTitle, t: Theme
   <defs>${t.defs}
     <marker id="openArrow" markerWidth="12" markerHeight="12" refX="10" refY="5"
             orient="auto" markerUnits="userSpaceOnUse">
-      <path d="M0,0 L10,5 L0,10" fill="none" stroke="${t.boxStroke}" stroke-width="1.25" />
+      <path d="M0,0 L10,5 L0,10" fill="none" stroke="${t.stroke}" stroke-width="1.25" />
     </marker>
     <marker id="diamond" markerWidth="12" markerHeight="8" refX="0" refY="4"
             orient="auto" markerUnits="userSpaceOnUse">

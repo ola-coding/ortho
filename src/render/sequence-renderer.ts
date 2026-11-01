@@ -75,9 +75,9 @@ export function renderSequenceSvg(model: SequenceModel, title: DiagramTitle, t: 
         const cx = centers.get(head.id)!;
         parts.push(`
     <g><rect x="${cx - head.width / 2}" y="${headTop}" width="${head.width}" height="${HEAD_HEIGHT}"${radiusAttrs(USAGE_RADIUS)}${liftAttr(t)}
-          fill="${t.fill}" stroke="${t.boxStroke}" stroke-width="1.25" />${glossOver(t, cx - head.width / 2, headTop, head.width, HEAD_HEIGHT, USAGE_RADIUS)}
+          fill="${t.nameFill ?? t.fill}" stroke="${t.boxStroke}" stroke-width="1.25" />${glossOver(t, cx - head.width / 2, headTop, head.width, HEAD_HEIGHT, USAGE_RADIUS)}
       <text x="${cx}" y="${headTop + 15}" text-anchor="middle"
-          font-size="9" fill="${t.keyword}">&#171;part&#187;</text>
+          font-size="9" font-style="italic" fill="${t.keyword}">&#171;part&#187;</text>
       <text x="${cx}" y="${headTop + 28}" text-anchor="middle"
           font-size="12" font-weight="600" fill="${t.text}">${escapeXml(head.label)}</text>
       <line x1="${cx}" y1="${headTop + HEAD_HEIGHT}" x2="${cx}" y2="${lifelineBottom}"

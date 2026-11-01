@@ -4,288 +4,304 @@
   <defs>
     <marker id="openArrow" markerWidth="12" markerHeight="12" refX="10" refY="5"
             orient="auto" markerUnits="userSpaceOnUse">
-      <path d="M0,0 L10,5 L0,10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+      <path d="M0,0 L10,5 L0,10" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
     </marker>
     <marker id="diamond" markerWidth="12" markerHeight="8" refX="0" refY="4"
             orient="auto" markerUnits="userSpaceOnUse">
-      <path d="M0,4 L6,0 L12,4 L6,8 z" fill="#2b2b2b" />
+      <path d="M0,4 L6,0 L12,4 L6,8 z" fill="#1a1a1a" />
     </marker>
   </defs>
   <rect x="0" y="0" width="914.5656666666666" height="1279" fill="white" />
-  <rect x="8" y="8" width="898.5656666666666" height="1263" rx="10" ry="10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+  <rect x="8" y="8" width="898.5656666666666" height="1263" rx="10" ry="10" fill="#f9fbfc" stroke="#40657e" stroke-width="1.25" />
   <path d="M8,30 L8,18 A10,10 0 0 1 18,8 L256.347,8 L256.347,22 A8,8 0 0 1 248.34699999999998,30 Z"
-        fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
-  <text x="18" y="23" font-size="11" fill="#1a1a1a"><tspan fill="#555555">&#171;view&#187;</tspan><tspan font-weight="600"> Physical view — Survey Drone</tspan></text>
-  <path d="M715.4706666666666,1271 L715.4706666666666,1262 A6,6 0 0 1 721.4706666666666,1256 L906.5656666666666,1256"
-        fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-  <text x="898.5656666666666" y="1267" text-anchor="end" font-size="9" fill="#8a8a86">examples/survey-drone/physical.sysml</text>
+        fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+  <text x="18" y="23" font-size="11" fill="#1a1a1a"><tspan font-style="italic" fill="#40657e">&#171;view&#187;</tspan><tspan font-weight="600"> Physical view — Survey Drone</tspan></text>
+  <path d="M715.4706666666666,1271 L715.4706666666666,1262 A6,6 0 0 1 721.4706666666666,1256 L906.5656666666666,1256 L906.5656666666666,1261 A10,10 0 0 1 896.5656666666666,1271 Z"
+        fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+  <text x="898.5656666666666" y="1267" text-anchor="end" font-size="9" fill="#1a1a1a">examples/survey-drone/physical.sysml</text>
   
     <g><rect x="36" y="60" width="842.5656666666666" height="1177" rx="10" ry="10"
-          fill="#f6f6ec" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M36.5,92 L36.5,70 A9.5,9.5 0 0 1 46,60.5 L868.5656666666666,60.5 A9.5,9.5 0 0 1 878.0656666666666,70 L878.0656666666666,92 Z" fill="#ccdce5" />
       <text x="457.2828333333333" y="73" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
       <text x="457.2828333333333" y="86" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">system : SurveyDroneSystem</text></g>
+          font-size="12" font-weight="600" fill="#1a1a1a">system : SurveyDroneSystem</text>
+      <line x1="36" y1="92" x2="878.5656666666666" y2="92"
+          stroke="#40657e" stroke-width="1" /></g>
     <g><rect x="61" y="406" width="664.9296666666667" height="779" rx="10" ry="10"
-          fill="#f6f6ec" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M61.5,438 L61.5,416 A9.5,9.5 0 0 1 71,406.5 L715.9296666666667,406.5 A9.5,9.5 0 0 1 725.4296666666667,416 L725.4296666666667,438 Z" fill="#ccdce5" />
       <text x="393.46483333333333" y="419" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
       <text x="393.46483333333333" y="432" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">drone : SurveyDrone</text>
+      <line x1="61" y1="438" x2="725.9296666666667" y2="438"
+          stroke="#40657e" stroke-width="1" />
       <rect x="574.1651666666667" y="1180" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+          fill="white" stroke="#40657e" stroke-width="1.25" /></g>
     <g><rect x="355.43983333333335" y="1081" width="160.12" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="435.49983333333336" y="1098" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
       <text x="435.49983333333336" y="1111" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">airframe : Fuselage</text>
       <rect x="402.1465" y="1076" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="458.8531666666667" y="1076" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+          fill="white" stroke="#40657e" stroke-width="1.25" /></g>
     <g><rect x="155.16683333333333" y="959" width="218.332" height="68" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M155.66683333333333,991 L155.66683333333333,969 A9.5,9.5 0 0 1 165.16683333333333,959.5 L363.4988333333333,959.5 A9.5,9.5 0 0 1 372.9988333333333,969 L372.9988333333333,991 Z" fill="#ccdce5" />
       <text x="264.3328333333333" y="972" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
       <text x="264.3328333333333" y="985" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">motors : BrushlessMotor [4]</text>
       <line x1="155.16683333333333" y1="991" x2="373.4988333333333" y2="991"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="163.16683333333333" y="1002"
-          font-size="9" fill="#555555">perform actions</text>
+          stroke="#40657e" stroke-width="1" />
+      <text x="264.3328333333333" y="1002" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">perform actions</text>
       <text x="163.16683333333333" y="1016"
           font-size="11" fill="#1a1a1a">produceThrust</text>
       <rect x="297.3881666666667" y="1022" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="259.3328333333333" y="954" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="221.2775" y="1022" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+          fill="white" stroke="#40657e" stroke-width="1.25" /></g>
     <g><rect x="143.72750000000002" y="1081" width="165.1" height="68" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M144.22750000000002,1113 L144.22750000000002,1091 A9.5,9.5 0 0 1 153.72750000000002,1081.5 L298.8275,1081.5 A9.5,9.5 0 0 1 308.3275,1091 L308.3275,1113 Z" fill="#ccdce5" />
       <text x="226.27750000000003" y="1094" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
       <text x="226.27750000000003" y="1107" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">props : Propeller [4]</text>
       <line x1="143.72750000000002" y1="1113" x2="308.8275" y2="1113"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="151.72750000000002" y="1124"
-          font-size="9" fill="#555555">perform actions</text>
+          stroke="#40657e" stroke-width="1" />
+      <text x="226.27750000000003" y="1124" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">perform actions</text>
       <text x="151.72750000000002" y="1138"
           font-size="11" fill="#1a1a1a">produceThrust</text>
       <rect x="221.27750000000003" y="1076" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+          fill="white" stroke="#40657e" stroke-width="1.25" /></g>
     <g><rect x="185.94083333333333" y="846.3333333333333" width="156.784" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="264.3328333333333" y="863.3333333333333" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
       <text x="264.3328333333333" y="876.3333333333333" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">esc : FourInOneEsc</text>
       <rect x="231.53549999999998" y="841.3333333333333" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="287.13016666666664" y="841.3333333333333" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="259.3328333333333" y="881.3333333333333" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+          fill="white" stroke="#40657e" stroke-width="1.25" /></g>
     <g><rect x="484.09041666666667" y="451" width="170.584" height="68" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M484.59041666666667,483 L484.59041666666667,461 A9.5,9.5 0 0 1 494.09041666666667,451.5 L644.6744166666667,451.5 A9.5,9.5 0 0 1 654.1744166666667,461 L654.1744166666667,483 Z" fill="#ccdce5" />
       <text x="569.3824166666667" y="464" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
       <text x="569.3824166666667" y="477" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">battery : LiPoBattery</text>
       <line x1="484.09041666666667" y1="483" x2="654.6744166666667" y2="483"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="492.09041666666667" y="494"
-          font-size="9" fill="#555555">perform actions</text>
+          stroke="#40657e" stroke-width="1" />
+      <text x="569.3824166666667" y="494" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">perform actions</text>
       <text x="492.09041666666667" y="508"
           font-size="11" fill="#1a1a1a">supplyPower</text>
       <rect x="564.3824166666667" y="514" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+          fill="white" stroke="#40657e" stroke-width="1.25" /></g>
     <g><rect x="481.9424166666667" y="573" width="174.88" height="68" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M482.4424166666667,605 L482.4424166666667,583 A9.5,9.5 0 0 1 491.9424166666667,573.5 L646.8224166666666,573.5 A9.5,9.5 0 0 1 656.3224166666666,583 L656.3224166666666,605 Z" fill="#ccdce5" />
       <text x="569.3824166666667" y="586" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
       <text x="569.3824166666667" y="599" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">power : PowerModule</text>
       <line x1="481.9424166666667" y1="605" x2="656.8224166666666" y2="605"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="489.9424166666667" y="616"
-          font-size="9" fill="#555555">perform actions</text>
+          stroke="#40657e" stroke-width="1" />
+      <text x="569.3824166666667" y="616" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">perform actions</text>
       <text x="489.9424166666667" y="630"
           font-size="11" fill="#1a1a1a">supplyPower</text>
       <rect x="564.3824166666667" y="568" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="496.8601666666667" y="636" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="556.2689166666667" y="636" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="631.9046666666667" y="636" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+          fill="white" stroke="#40657e" stroke-width="1.25" /></g>
     <g><rect x="237.2715" y="705" width="169.576" height="68" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M237.7715,737 L237.7715,715 A9.5,9.5 0 0 1 247.2715,705.5 L396.84749999999997,705.5 A9.5,9.5 0 0 1 406.34749999999997,715 L406.34749999999997,737 Z" fill="#ccdce5" />
       <text x="322.0595" y="718" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
       <text x="322.0595" y="731" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">fc : ControlComputer</text>
       <line x1="237.2715" y1="737" x2="406.84749999999997" y2="737"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="245.2715" y="748"
-          font-size="9" fill="#555555">perform actions</text>
+          stroke="#40657e" stroke-width="1" />
+      <text x="322.0595" y="748" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">perform actions</text>
       <text x="245.2715" y="762"
           font-size="11" fill="#1a1a1a">provideComputing</text>
       <rect x="375.90725" y="700" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="316.632" y="700" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="258.21175" y="700" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="287.1301666666667" y="768" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="346.98883333333333" y="768" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+          fill="white" stroke="#40657e" stroke-width="1.25" /></g>
     <g><rect x="474.85316666666665" y="837" width="208.624" height="68" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M475.35316666666665,869 L475.35316666666665,847 A9.5,9.5 0 0 1 484.85316666666665,837.5 L673.4771666666667,837.5 A9.5,9.5 0 0 1 682.9771666666667,847 L682.9771666666667,869 Z" fill="#ccdce5" />
       <text x="579.1651666666667" y="850" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
       <text x="579.1651666666667" y="863" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">companion : GpuComputer</text>
       <line x1="474.85316666666665" y1="869" x2="683.4771666666667" y2="869"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="482.85316666666665" y="880"
-          font-size="9" fill="#555555">perform actions</text>
+          stroke="#40657e" stroke-width="1" />
+      <text x="579.1651666666667" y="880" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">perform actions</text>
       <text x="482.85316666666665" y="894"
           font-size="11" fill="#1a1a1a">provideComputing</text>
       <rect x="650.9109166666667" y="832" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="572.9996666666666" y="832" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="497.4194166666666" y="832" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="574.1651666666667" y="900" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+          fill="white" stroke="#40657e" stroke-width="1.25" /></g>
     <g><rect x="481.27433333333335" y="705" width="142.588" height="68" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M481.77433333333335,737 L481.77433333333335,715 A9.5,9.5 0 0 1 491.27433333333335,705.5 L613.8623333333334,705.5 A9.5,9.5 0 0 1 623.3623333333334,715 L623.3623333333334,737 Z" fill="#ccdce5" />
       <text x="552.5683333333334" y="718" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
       <text x="552.5683333333334" y="731" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">camera : Camera</text>
       <line x1="481.27433333333335" y1="737" x2="623.8623333333334" y2="737"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="489.27433333333335" y="748"
-          font-size="9" fill="#555555">perform actions</text>
+          stroke="#40657e" stroke-width="1" />
+      <text x="552.5683333333334" y="748" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">perform actions</text>
       <text x="489.27433333333335" y="762"
           font-size="11" fill="#1a1a1a">captureVideo</text>
       <rect x="522.1370000000001" y="768" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="572.9996666666667" y="768" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+          fill="white" stroke="#40657e" stroke-width="1.25" /></g>
     <g><rect x="266.632" y="601" width="110" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="321.632" y="618" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
       <text x="321.632" y="631" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">imu : Imu</text>
       <rect x="316.632" y="636" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+          fill="white" stroke="#40657e" stroke-width="1.25" /></g>
     <g><rect x="86" y="601" width="140.632" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="156.316" y="618" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
       <text x="156.316" y="631" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">gps : GpsModule</text>
       <rect x="151.316" y="636" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+          fill="white" stroke="#40657e" stroke-width="1.25" /></g>
     <g><rect x="515.4311666666667" y="973" width="127.468" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="579.1651666666668" y="990" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
       <text x="579.1651666666668" y="1003" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">radio : IpRadio</text>
       <rect x="574.1651666666668" y="968" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="574.1651666666668" y="1008" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+          fill="white" stroke="#40657e" stroke-width="1.25" /></g>
     <g><rect x="618.2936666666667" y="105" width="235.272" height="232" rx="10" ry="10"
-          fill="#f6f6ec" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M618.7936666666667,137 L618.7936666666667,115 A9.5,9.5 0 0 1 628.2936666666667,105.5 L843.5656666666666,105.5 A9.5,9.5 0 0 1 853.0656666666666,115 L853.0656666666666,137 Z" fill="#ccdce5" />
       <text x="735.9296666666667" y="118" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
       <text x="735.9296666666667" y="131" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">ground : GroundStation</text>
+      <line x1="618.2936666666667" y1="137" x2="853.5656666666666" y2="137"
+          stroke="#40657e" stroke-width="1" />
       <rect x="730.9296666666667" y="332" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+          fill="white" stroke="#40657e" stroke-width="1.25" /></g>
     <g><rect x="643.2936666666667" y="150" width="185.272" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="735.9296666666667" y="167" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
       <text x="735.9296666666667" y="180" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">tablet : OperatorTablet</text>
       <rect x="730.9296666666667" y="185" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+          fill="white" stroke="#40657e" stroke-width="1.25" /></g>
     <g><rect x="672.1956666666667" y="244" width="127.468" height="40" rx="10" ry="10"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="735.9296666666668" y="261" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part&#187;</text>
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
       <text x="735.9296666666668" y="274" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">radio : IpRadio</text>
       <rect x="730.9296666666668" y="239" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="730.9296666666668" y="279" width="10" height="10" rx="2" ry="2"
-          fill="white" stroke="#2b2b2b" stroke-width="1.25" /></g>
+          fill="white" stroke="#40657e" stroke-width="1.25" /></g>
   
-    <polyline points="569.3824166666667,524 569.3824166666667,568" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="501.8601666666667,646 501.8601666666667,668 226.2715,668 226.2715,800 236.53549999999998,800 236.53549999999998,841.3333333333333" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="561.2689166666667,646 561.2689166666667,678 380.90725,678 380.90725,700" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="636.9046666666667,646 636.9046666666667,800 655.9109166666667,800 655.9109166666667,832" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="292.1301666666667,778 292.13016666666664,841.3333333333333" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="264.3328333333333,891.3333333333333 264.3328333333333,954" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="226.27749999999997,1032 226.27750000000003,1076" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="302.3881666666667,1032 302.3881666666667,1054 407.1465,1054 407.1465,1076" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="527.137,778 527.137,800 463.85316666666665,800 463.85316666666665,1076" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="321.632,646 321.632,700" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="156.31599999999997,646 156.31599999999997,678 263.21175,678 263.21175,700" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="351.98883333333333,778 351.98883333333333,810 502.4194166666667,810 502.4194166666667,832" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="577.9996666666667,778 577.9996666666667,832" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="579.1651666666667,910 579.1651666666667,968" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="579.1651666666667,1018 579.1651666666667,1190" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="735.9296666666667,195 735.9296666666667,239" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="735.9296666666667,289 735.9296666666667,342" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-    <polyline points="579.1651666666667,1190 579.1651666666667,1212 735.9296666666667,1212 735.9296666666667,342" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+    <polyline points="569.3824166666667,524 569.3824166666667,568" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="501.8601666666667,646 501.8601666666667,668 226.2715,668 226.2715,800 236.53549999999998,800 236.53549999999998,841.3333333333333" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="561.2689166666667,646 561.2689166666667,678 380.90725,678 380.90725,700" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="636.9046666666667,646 636.9046666666667,800 655.9109166666667,800 655.9109166666667,832" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="292.1301666666667,778 292.13016666666664,841.3333333333333" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="264.3328333333333,891.3333333333333 264.3328333333333,954" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="226.27749999999997,1032 226.27750000000003,1076" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="302.3881666666667,1032 302.3881666666667,1054 407.1465,1054 407.1465,1076" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="527.137,778 527.137,800 463.85316666666665,800 463.85316666666665,1076" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="321.632,646 321.632,700" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="156.31599999999997,646 156.31599999999997,678 263.21175,678 263.21175,700" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="351.98883333333333,778 351.98883333333333,810 502.4194166666667,810 502.4194166666667,832" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="577.9996666666667,778 577.9996666666667,832" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="579.1651666666667,910 579.1651666666667,968" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="579.1651666666667,1018 579.1651666666667,1190" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="735.9296666666667,195 735.9296666666667,239" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="735.9296666666667,289 735.9296666666667,342" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="579.1651666666667,1190 579.1651666666667,1212 735.9296666666667,1212 735.9296666666667,342" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
     <text x="706.8961666666667" y="383" text-anchor="middle" font-size="9"
-          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">: RadioLink</text>
+          fill="#40657e" paint-order="stroke" stroke="#f9fbfc" stroke-width="3">: RadioLink</text>
   
-    <text x="585.1651666666667" y="1200" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">rfLink</text>
-    <text x="348.8275" y="1073" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">motorArms</text>
-    <text x="469.8531666666667" y="1073" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">cameraMount</text>
-    <text x="308.3881666666667" y="1042" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">arm</text>
-    <text x="270.3328333333333" y="951" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">phases</text>
-    <text x="195.6695" y="1042" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">shaft</text>
-    <text x="232.27750000000003" y="1073" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">hub</text>
-    <text x="192.35549999999998" y="838.3333333333333" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">powerIn</text>
-    <text x="298.13016666666664" y="838.3333333333333" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">signalIn</text>
-    <text x="270.3328333333333" y="901.3333333333333" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">phasesOut</text>
-    <text x="575.3824166666667" y="534" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">powerOut</text>
-    <text x="575.3824166666667" y="565" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">batteryIn</text>
-    <text x="507.8601666666667" y="656" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">escOut</text>
-    <text x="567.2689166666667" y="656" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">controlOut</text>
-    <text x="642.9046666666667" y="656" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">computeOut</text>
-    <text x="386.90725" y="697" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">powerIn</text>
-    <text x="327.632" y="697" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">imuIn</text>
-    <text x="269.21175" y="697" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">gpsIn</text>
-    <text x="240.8041666666667" y="788" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">motorOut</text>
-    <text x="357.98883333333333" y="788" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">mavlink</text>
-    <text x="661.9109166666667" y="829" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">powerIn</text>
-    <text x="583.9996666666666" y="829" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">cameraIn</text>
-    <text x="508.4194166666666" y="829" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">autopilot</text>
-    <text x="585.1651666666667" y="920" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ethernet</text>
-    <text x="489.92300000000006" y="788" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">mount</text>
-    <text x="583.9996666666667" y="788" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">videoOut</text>
-    <text x="327.632" y="656" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">dataOut</text>
-    <text x="162.316" y="656" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">dataOut</text>
-    <text x="585.1651666666668" y="965" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ethernet</text>
-    <text x="585.1651666666668" y="1028" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">rf</text>
-    <text x="741.9296666666667" y="352" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">rfLink</text>
-    <text x="741.9296666666667" y="205" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">network</text>
-    <text x="741.9296666666668" y="236" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">ethernet</text>
-    <text x="741.9296666666668" y="299" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="white" stroke-width="2.5">rf</text>
+    <text x="585.1651666666667" y="1200" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">rfLink</text>
+    <text x="348.8275" y="1073" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">motorArms</text>
+    <text x="469.8531666666667" y="1073" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">cameraMount</text>
+    <text x="308.3881666666667" y="1042" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">arm</text>
+    <text x="270.3328333333333" y="951" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">phases</text>
+    <text x="195.6695" y="1042" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">shaft</text>
+    <text x="232.27750000000003" y="1073" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">hub</text>
+    <text x="192.35549999999998" y="838.3333333333333" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">powerIn</text>
+    <text x="298.13016666666664" y="838.3333333333333" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">signalIn</text>
+    <text x="270.3328333333333" y="901.3333333333333" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">phasesOut</text>
+    <text x="575.3824166666667" y="534" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">powerOut</text>
+    <text x="575.3824166666667" y="565" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">batteryIn</text>
+    <text x="507.8601666666667" y="656" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">escOut</text>
+    <text x="567.2689166666667" y="656" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">controlOut</text>
+    <text x="642.9046666666667" y="656" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">computeOut</text>
+    <text x="386.90725" y="697" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">powerIn</text>
+    <text x="327.632" y="697" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">imuIn</text>
+    <text x="269.21175" y="697" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">gpsIn</text>
+    <text x="240.8041666666667" y="788" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">motorOut</text>
+    <text x="357.98883333333333" y="788" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">mavlink</text>
+    <text x="661.9109166666667" y="829" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">powerIn</text>
+    <text x="583.9996666666666" y="829" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">cameraIn</text>
+    <text x="508.4194166666666" y="829" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">autopilot</text>
+    <text x="585.1651666666667" y="920" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">ethernet</text>
+    <text x="489.92300000000006" y="788" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">mount</text>
+    <text x="583.9996666666667" y="788" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">videoOut</text>
+    <text x="327.632" y="656" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">dataOut</text>
+    <text x="162.316" y="656" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">dataOut</text>
+    <text x="585.1651666666668" y="965" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">ethernet</text>
+    <text x="585.1651666666668" y="1028" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">rf</text>
+    <text x="741.9296666666667" y="352" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">rfLink</text>
+    <text x="741.9296666666667" y="205" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">network</text>
+    <text x="741.9296666666668" y="236" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">ethernet</text>
+    <text x="741.9296666666668" y="299" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">rf</text>
 </svg>

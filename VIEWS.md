@@ -39,7 +39,9 @@ solution built from a vendor's services needs no use cases or functions.
 Every view is drawn in SysML v2's graphical notation (§8.2.3). A definition
 is a box with square corners and a usage one with rounded corners, each with
 its keyword above its name: «part def», «part», «action». The frame's tab
-names the view, and its bottom-right corner the file that declares it.
+names the view, and its bottom-right corner the file that declares it. The
+notation leaves colour open, so ortho's carries no meaning: one flat tint marks
+a box's name, and the keyword says what the box is.
 
 ## Use case view
 

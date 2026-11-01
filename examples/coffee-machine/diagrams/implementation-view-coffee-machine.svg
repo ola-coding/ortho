@@ -4,42 +4,43 @@
   <defs>
     <marker id="openArrow" markerWidth="12" markerHeight="12" refX="10" refY="5"
             orient="auto" markerUnits="userSpaceOnUse">
-      <path d="M0,0 L10,5 L0,10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+      <path d="M0,0 L10,5 L0,10" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
     </marker>
     <marker id="diamond" markerWidth="12" markerHeight="8" refX="0" refY="4"
             orient="auto" markerUnits="userSpaceOnUse">
-      <path d="M0,4 L6,0 L12,4 L6,8 z" fill="#2b2b2b" />
+      <path d="M0,4 L6,0 L12,4 L6,8 z" fill="#1a1a1a" />
     </marker>
   </defs>
   <rect x="0" y="0" width="691.421" height="647" fill="white" />
-  <rect x="8" y="8" width="675.421" height="631" rx="10" ry="10" fill="none" stroke="#2b2b2b" stroke-width="1.25" />
+  <rect x="8" y="8" width="675.421" height="631" rx="10" ry="10" fill="#f9fbfc" stroke="#40657e" stroke-width="1.25" />
   <path d="M8,30 L8,18 A10,10 0 0 1 18,8 L315.28499999999997,8 L315.28499999999997,22 A8,8 0 0 1 307.28499999999997,30 Z"
-        fill="#f4f4ea" stroke="#2b2b2b" stroke-width="1.25" />
-  <text x="18" y="23" font-size="11" fill="#1a1a1a"><tspan fill="#555555">&#171;view&#187;</tspan><tspan font-weight="600"> Implementation view — Coffee Machine</tspan></text>
-  <path d="M447.821,639 L447.821,630 A6,6 0 0 1 453.821,624 L683.421,624"
-        fill="none" stroke="#2b2b2b" stroke-width="1.25" />
-  <text x="675.421" y="635" text-anchor="end" font-size="9" fill="#8a8a86">examples/coffee-machine/implementation.sysml</text>
+        fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+  <text x="18" y="23" font-size="11" fill="#1a1a1a"><tspan font-style="italic" fill="#40657e">&#171;view&#187;</tspan><tspan font-weight="600"> Implementation view — Coffee Machine</tspan></text>
+  <path d="M447.821,639 L447.821,630 A6,6 0 0 1 453.821,624 L683.421,624 L683.421,629 A10,10 0 0 1 673.421,639 Z"
+        fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+  <text x="675.421" y="635" text-anchor="end" font-size="9" fill="#1a1a1a">examples/coffee-machine/implementation.sysml</text>
   
     <g><rect x="36" y="60" width="71.99000000000001" height="18"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <rect x="36" y="78" width="619.421" height="527"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
       <text x="44" y="73" font-size="11" font-weight="600" fill="#1a1a1a">Software</text></g>
     <g><rect x="61" y="376" width="61.474" height="18"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <rect x="61" y="394" width="569.421" height="186"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
       <text x="69" y="389" font-size="11" font-weight="600" fill="#1a1a1a">Control</text></g>
     <g><rect x="86" y="421" width="130.06" height="134"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M86.5,453 L86.5,421.5 L215.56,421.5 L215.56,453 Z" fill="#ccdce5" />
       <text x="151.03" y="434" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part def&#187;</text>
+          font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
       <text x="151.03" y="447" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">BrewController</text>
       <line x1="86" y1="453" x2="216.06" y2="453"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="94" y="464"
-          font-size="9" fill="#555555">perform actions</text>
+          stroke="#40657e" stroke-width="1" />
+      <text x="151.03" y="464" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">perform actions</text>
       <text x="94" y="478"
           font-size="11" fill="#1a1a1a">doseGrounds</text>
       <text x="94" y="493"
@@ -47,68 +48,71 @@
       <text x="94" y="508"
           font-size="11" fill="#1a1a1a">runDescaleCycle</text>
       <line x1="86" y1="519" x2="216.06" y2="519"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="94" y="530"
-          font-size="9" fill="#555555">ports</text>
+          stroke="#40657e" stroke-width="1" />
+      <text x="151.03" y="530" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">ports</text>
       <text x="94" y="544"
           font-size="11" fill="#1a1a1a">brew : BrewApi</text></g>
     <g><rect x="256.06" y="436" width="185.433" height="104"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M256.56,468 L256.56,436.5 L440.993,436.5 L440.993,468 Z" fill="#ccdce5" />
       <text x="348.7765" y="449" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part def&#187;</text>
+          font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
       <text x="348.7765" y="462" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">TemperatureController</text>
       <line x1="256.06" y1="468" x2="441.493" y2="468"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="264.06" y="479"
-          font-size="9" fill="#555555">perform actions</text>
+          stroke="#40657e" stroke-width="1" />
+      <text x="348.7765" y="479" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">perform actions</text>
       <text x="264.06" y="493"
           font-size="11" fill="#1a1a1a">regulateTemperature</text>
       <line x1="256.06" y1="504" x2="441.493" y2="504"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="264.06" y="515"
-          font-size="9" fill="#555555">ports</text>
+          stroke="#40657e" stroke-width="1" />
+      <text x="348.7765" y="515" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">ports</text>
       <text x="264.06" y="529"
           font-size="11" fill="#1a1a1a">temperature : TemperatureApi</text></g>
     <g><rect x="481.493" y="436" width="123.928" height="104"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M481.993,468 L481.993,436.5 L604.921,436.5 L604.921,468 Z" fill="#ccdce5" />
       <text x="543.457" y="449" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part def&#187;</text>
+          font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
       <text x="543.457" y="462" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">MilkController</text>
       <line x1="481.493" y1="468" x2="605.421" y2="468"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="489.493" y="479"
-          font-size="9" fill="#555555">perform actions</text>
+          stroke="#40657e" stroke-width="1" />
+      <text x="543.457" y="479" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">perform actions</text>
       <text x="489.493" y="493"
           font-size="11" fill="#1a1a1a">frothMilk</text>
       <line x1="481.493" y1="504" x2="605.421" y2="504"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="489.493" y="515"
-          font-size="9" fill="#555555">ports</text>
+          stroke="#40657e" stroke-width="1" />
+      <text x="543.457" y="515" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">ports</text>
       <text x="489.493" y="529"
           font-size="11" fill="#1a1a1a">milk : MilkApi</text></g>
     <g><rect x="140.78650000000002" y="105" width="86.18" height="18"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <rect x="140.78650000000002" y="123" width="409.848" height="201"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
       <text x="148.78650000000002" y="118" font-size="11" font-weight="600" fill="#1a1a1a">Application</text></g>
     <g><rect x="165.78650000000002" y="150" width="194.651" height="149"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M166.28650000000002,182 L166.28650000000002,150.5 L359.9375,150.5 L359.9375,182 Z" fill="#ccdce5" />
       <text x="263.112" y="163" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part def&#187;</text>
+          font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
       <text x="263.112" y="176" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">RecipeEngine</text>
       <line x1="165.78650000000002" y1="182" x2="360.4375" y2="182"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="173.78650000000002" y="193"
-          font-size="9" fill="#555555">perform actions</text>
+          stroke="#40657e" stroke-width="1" />
+      <text x="263.112" y="193" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">perform actions</text>
       <text x="173.78650000000002" y="207"
           font-size="11" fill="#1a1a1a">sequenceRecipe</text>
       <line x1="165.78650000000002" y1="218" x2="360.4375" y2="218"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="173.78650000000002" y="229"
-          font-size="9" fill="#555555">ports</text>
+          stroke="#40657e" stroke-width="1" />
+      <text x="263.112" y="229" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">ports</text>
       <text x="173.78650000000002" y="243"
           font-size="11" fill="#1a1a1a">recipe : RecipeApi</text>
       <text x="173.78650000000002" y="258"
@@ -118,27 +122,28 @@
       <text x="173.78650000000002" y="288"
           font-size="11" fill="#1a1a1a">milk : ~MilkApi</text></g>
     <g><rect x="400.4375" y="165" width="125.197" height="119"
-          fill="#fdfdf6" stroke="#2b2b2b" stroke-width="1.25" />
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M400.9375,197 L400.9375,165.5 L525.1345,165.5 L525.1345,197 Z" fill="#ccdce5" />
       <text x="463.036" y="178" text-anchor="middle"
-          font-size="9" fill="#555555">&#171;part def&#187;</text>
+          font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
       <text x="463.036" y="191" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">UiApp</text>
       <line x1="400.4375" y1="197" x2="525.6345" y2="197"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="408.4375" y="208"
-          font-size="9" fill="#555555">perform actions</text>
+          stroke="#40657e" stroke-width="1" />
+      <text x="463.036" y="208" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">perform actions</text>
       <text x="408.4375" y="222"
           font-size="11" fill="#1a1a1a">selectBeverage</text>
       <text x="408.4375" y="237"
           font-size="11" fill="#1a1a1a">signalDescaleDue</text>
       <line x1="400.4375" y1="248" x2="525.6345" y2="248"
-          stroke="#2b2b2b" stroke-width="1" />
-      <text x="408.4375" y="259"
-          font-size="9" fill="#555555">ports</text>
+          stroke="#40657e" stroke-width="1" />
+      <text x="463.036" y="259" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">ports</text>
       <text x="408.4375" y="273"
           font-size="11" fill="#1a1a1a">recipe : ~RecipeApi</text></g>
   
-    <polyline points="345.7105,324 345.7105,376" fill="none" stroke="#2b2b2b" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <polyline points="345.7105,324 345.7105,376" fill="none" stroke="#1a1a1a" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
     <text x="321.3435" y="353" text-anchor="middle" font-size="9"
-          fill="#555555" paint-order="stroke" stroke="white" stroke-width="3">&#171;import&#187;</text>
+          fill="#40657e" paint-order="stroke" stroke="#f9fbfc" stroke-width="3">&#171;import&#187;</text>
 </svg>
