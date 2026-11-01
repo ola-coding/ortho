@@ -6,7 +6,7 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { AstUtils, URI } from 'langium';
-import type { LangiumDocument, Reference } from 'langium';
+import type { CstNode, LangiumDocument, Reference } from 'langium';
 import type { Model, ViewUsage } from '../src/generated/ast.js';
 import { extractDeploymentGraph } from '../src/diagrams/deployment.js';
 import { extractImplementationGraph } from '../src/diagrams/implementation.js';
@@ -114,7 +114,11 @@ function writeBroken(files: string[], perFile: number, seed: number, dir: string
 
 // ---------------------------------------------------------------- Trees
 
-/** A tree as JSON, keys sorted, without what is empty or false, as the Rust parser writes it. */
+/**
+ * A tree as JSON: where each node and reference starts, then keys sorted, without
+ * what is empty or false, as the Rust parser's test writes it. A binary expression
+ * has no offset of its own, since Langium gives all of one expression's the same.
+ */
 function canonical(value: unknown): unknown {
     if (Array.isArray(value)) {
         return value.map(canonical);
@@ -122,9 +126,12 @@ function canonical(value: unknown): unknown {
     if (value && typeof value === 'object') {
         const object = value as Record<string, unknown>;
         if ('$refText' in object) {
-            return { $ref: object.$refText };
+            return { $offset: (object.$refNode as CstNode).offset, $ref: object.$refText };
         }
         const out: Record<string, unknown> = {};
+        if (object.$type !== 'OperatorExpression') {
+            out.$offset = (object.$cstNode as CstNode).offset;
+        }
         for (const key of Object.keys(object).sort()) {
             const item = object[key];
             if ((key.startsWith('$') && key !== '$type') || item === false || item === undefined

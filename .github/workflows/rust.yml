@@ -2,9 +2,8 @@
 #
 # test    Builds and tests it on each system it will ship for.
 # lint    Formatting and clippy, which read the same on every system.
-# oracle  Records what the TypeScript produces at each stage, which the port is
-#         checked against, and fails if the committed diagrams are not what it
-#         renders.
+# oracle  Records what the TypeScript produces at each stage, fails if the committed
+#         diagrams are not what it renders, and checks the port against the rest.
 name: Rust
 
 on:
@@ -57,7 +56,7 @@ jobs:
       - run: cargo clippy --all-targets -- -D warnings
 
   oracle:
-    name: Record the TypeScript's stages
+    name: The port against the TypeScript
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -68,3 +67,10 @@ jobs:
       - run: npm ci
       - run: npm run omg-models
       - run: npm run oracle
+      - run: rustup toolchain install
+        working-directory: rust
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust
+      - run: cargo test --test oracle -- --ignored
+        working-directory: rust

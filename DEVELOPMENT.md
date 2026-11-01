@@ -221,6 +221,7 @@ cd rust
 cargo test
 cargo fmt --check
 cargo clippy --all-targets -- -D warnings
+cargo test --test oracle -- --ignored   # against what npm run oracle recorded
 ```
 
 CI builds and tests it on Linux, Windows and macOS.
