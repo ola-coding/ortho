@@ -1,8 +1,14 @@
 //! The port against what the TypeScript produces, which `npm run oracle` records in
 //! `rust/oracle/`. Ignored until asked for: `cargo test --test oracle -- --ignored`.
+use ortho::diagrams::sequence::{SequenceLifeline, SequenceMessage, SequenceModel};
+use ortho::layout::{LabelBox, LaidOutDiagram, LaidOutEdge, LaidOutNode, LaidOutPort, Point};
+use ortho::model::graph::{Compartment, EdgeKind, NodeShape};
 use ortho::parser::ast::{Ast, Field, NodeId, Prop, Type, Value};
 use ortho::parser::workspace::Workspace;
 use ortho::parser::{parse, position};
+use ortho::render::sequence::render_sequence_svg;
+use ortho::render::svg::{DiagramTitle, render_svg};
+use ortho::render::theme::{DARK_GLASS, LIGHT};
 use std::fmt::Write;
 use std::path::{Path, PathBuf};
 
@@ -312,4 +318,175 @@ fn trees_of_tricky_constructs() {
 #[ignore = "needs npm run oracle"]
 fn trees_of_broken_models() {
     check_trees("broken");
+}
+
+// ---------------------------------------------------------------- Rendering
+
+type Json = serde_json::Value;
+
+fn number(json: &Json, key: &str) -> f64 {
+    json[key].as_f64().unwrap_or_else(|| panic!("{key} in {json}"))
+}
+
+fn text(json: &Json, key: &str) -> String {
+    json[key].as_str().unwrap_or_else(|| panic!("{key} in {json}")).to_string()
+}
+
+fn optional_text(json: &Json, key: &str) -> Option<String> {
+    json[key].as_str().map(String::from)
+}
+
+fn list<T>(json: &Json, key: &str, read: impl Fn(&Json) -> T) -> Vec<T> {
+    json[key].as_array().unwrap_or_else(|| panic!("{key} in {json}")).iter().map(read).collect()
+}
+
+fn read_node(json: &Json) -> LaidOutNode {
+    LaidOutNode {
+        id: text(json, "id"),
+        shape: match json["shape"].as_str().unwrap() {
+            "definition" => NodeShape::Definition,
+            "usage" => NodeShape::Usage,
+            "actor" => NodeShape::Actor,
+            "package" => NodeShape::Package,
+            other => panic!("shape {other}"),
+        },
+        keyword: text(json, "keyword"),
+        name: text(json, "name"),
+        compartments: list(json, "compartments", |c| Compartment {
+            title: optional_text(c, "title"),
+            lines: list(c, "lines", |line| line.as_str().unwrap().to_string()),
+        }),
+        ports: list(json, "ports", |p| LaidOutPort {
+            id: text(p, "id"),
+            label: text(p, "label"),
+            x: number(p, "x"),
+            y: number(p, "y"),
+            label_at: p["labelX"].as_f64().zip(p["labelY"].as_f64()),
+        }),
+        has_children: json["hasChildren"].as_bool().unwrap(),
+        x: number(json, "x"),
+        y: number(json, "y"),
+        width: number(json, "width"),
+        height: number(json, "height"),
+    }
+}
+
+fn read_edge(json: &Json) -> LaidOutEdge {
+    LaidOutEdge {
+        id: text(json, "id"),
+        kind: match json["kind"].as_str().unwrap() {
+            "connection" => EdgeKind::Connection,
+            "association" => EdgeKind::Association,
+            "include" => EdgeKind::Include,
+            "import" => EdgeKind::Import,
+            "decomposition" => EdgeKind::Decomposition,
+            "dependency" => EdgeKind::Dependency,
+            other => panic!("kind {other}"),
+        },
+        source_id: text(json, "sourceId"),
+        target_id: text(json, "targetId"),
+        label: optional_text(json, "label"),
+        points: list(json, "points", |p| Point { x: number(p, "x"), y: number(p, "y") }),
+        label_box: json.get("labelBox").map(|b| LabelBox {
+            x: number(b, "x"),
+            y: number(b, "y"),
+            width: number(b, "width"),
+            height: number(b, "height"),
+        }),
+    }
+}
+
+fn read_diagram(json: &Json) -> LaidOutDiagram {
+    LaidOutDiagram {
+        width: number(json, "width"),
+        height: number(json, "height"),
+        nodes: list(json, "nodes", read_node),
+        edges: list(json, "edges", read_edge),
+    }
+}
+
+fn read_sequence(json: &Json) -> SequenceModel {
+    SequenceModel {
+        lifelines: list(json, "lifelines", |l| SequenceLifeline { id: text(l, "id"), label: text(l, "label") }),
+        messages: list(json, "messages", |m| SequenceMessage {
+            source_id: text(m, "sourceId"),
+            target_id: text(m, "targetId"),
+            label: text(m, "label"),
+        }),
+    }
+}
+
+/// Where two SVGs part, with what surrounds it.
+fn svg_difference(actual: &str, expected: &str) -> Option<String> {
+    if actual == expected {
+        return None;
+    }
+    let at = actual.bytes().zip(expected.bytes()).take_while(|(a, b)| a == b).count();
+    let around =
+        |s: &str| String::from_utf8_lossy(&s.as_bytes()[at.saturating_sub(100)..(at + 100).min(s.len())]).into_owned();
+    Some(format!("at byte {at}\n  rust   {}\n  oracle {}", around(actual), around(expected)))
+}
+
+fn check_svgs(name: &str, stem: &str, render: impl Fn(&ortho::render::theme::Theme) -> String) {
+    for (theme, extension) in [(&LIGHT, "svg"), (&DARK_GLASS, "dark.svg")] {
+        let expected = read_recorded(&format!("{stem}.{extension}"));
+        if let Some(difference) = svg_difference(&render(theme), &expected) {
+            panic!("{name}, {extension}: {difference}");
+        }
+    }
+}
+
+/// Every view the examples and fixtures declare, drawn from its recorded layout or
+/// model, byte for byte what the TypeScript draws, in both themes.
+#[test]
+#[ignore = "needs npm run oracle"]
+fn svgs_of_recorded_views() {
+    let mut compared = 0;
+    for line in read_recorded("views/index.jsonl").lines() {
+        let record: Json = serde_json::from_str(line).unwrap();
+        let Some(kind) = record["kind"].as_str() else {
+            continue;
+        };
+        assert!(record.get("error").is_none(), "{line}");
+        let id = text(&record, "id");
+        let title = DiagramTitle {
+            heading: optional_text(&record, "name").unwrap_or_default(),
+            definition: optional_text(&record, "definition"),
+            source: text(&record, "source"),
+        };
+        let stem = format!("views/{id}");
+        if kind == "process" {
+            let model = read_sequence(&serde_json::from_str(&read_recorded(&format!("{stem}.graph.json"))).unwrap());
+            check_svgs(&id, &stem, |theme| render_sequence_svg(&model, &title, theme));
+        } else {
+            let diagram = read_diagram(&serde_json::from_str(&read_recorded(&format!("{stem}.layout.json"))).unwrap());
+            check_svgs(&id, &stem, |theme| render_svg(&diagram, &title, theme));
+        }
+        compared += 1;
+    }
+    assert!(compared > 0, "no view recorded");
+    println!("{compared} views, identical in both themes");
+}
+
+/// Diagrams written by hand, for what no model draws.
+#[test]
+#[ignore = "needs npm run oracle"]
+fn svgs_of_diagrams_written_by_hand() {
+    let cases: Json = serde_json::from_str(include_str!("renderings.json")).unwrap();
+    for (i, case) in cases.as_array().unwrap().iter().enumerate() {
+        let title = &case["title"];
+        let title = DiagramTitle {
+            heading: text(title, "heading"),
+            definition: optional_text(title, "definition"),
+            source: text(title, "source"),
+        };
+        let (name, stem) = (format!("case {i}"), format!("renderings/{i}"));
+        if let Some(sequence) = case.get("sequence") {
+            let model = read_sequence(sequence);
+            check_svgs(&name, &stem, |theme| render_sequence_svg(&model, &title, theme));
+        } else {
+            let diagram = read_diagram(&case["diagram"]);
+            check_svgs(&name, &stem, |theme| render_svg(&diagram, &title, theme));
+        }
+    }
 }

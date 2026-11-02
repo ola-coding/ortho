@@ -67,7 +67,7 @@ jobs:
           path: |
             rust/oracle
             .omg-models
-          key: oracle-node24-${{ hashFiles('src/**', 'grammar/**', 'examples/**', 'tests/fixtures/**', 'rust/tests/constructs.txt', 'rust/tests/workspaces.txt', 'scripts/oracle.ts', 'scripts/fetch-omg-models.ts', 'package.json', 'package-lock.json') }}
+          key: oracle-node24-${{ hashFiles('src/**', 'grammar/**', 'examples/**', 'tests/fixtures/**', 'rust/tests/constructs.txt', 'rust/tests/workspaces.txt', 'rust/tests/renderings.json', 'scripts/oracle.ts', 'scripts/fetch-omg-models.ts', 'package.json', 'package-lock.json') }}
       - uses: actions/setup-node@v7
         if: steps.recording.outputs.cache-hit != 'true'
         with:

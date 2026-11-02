@@ -1,0 +1,68 @@
+[
+  { "title": { "heading": "Every box", "source": "a<b>&\"c\".sysml" }, "diagram": {
+    "width": 900.5, "height": 400.125,
+    "nodes": [
+      { "id": "a", "shape": "definition", "keyword": "part def", "name": "Engine «x» <&> \"y\"", "hasChildren": false, "x": 0, "y": -0, "width": 200, "height": 120,
+        "compartments": [ { "title": "perform actions", "lines": ["one", "a < b"] }, { "lines": ["two"] }, { "title": "empty", "lines": [] } ],
+        "ports": [
+          { "id": "a#p", "label": "placed", "x": 195, "y": 20.5, "labelX": 11, "labelY": -12 },
+          { "id": "a#q", "label": "right", "x": 3.3, "y": 40 },
+          { "id": "a#s", "label": "", "x": 184, "y": 80 },
+          { "id": "a#r", "label": "a label too long to fit on the right of its port", "x": 190, "y": 60 }
+        ] },
+      { "id": "b", "shape": "usage", "keyword": "part", "name": "nested", "hasChildren": true, "x": 240.1, "y": 0.2, "width": 300.7, "height": 200.3, "compartments": [], "ports": [] },
+      { "id": "c", "shape": "usage", "keyword": "", "name": "no keyword", "hasChildren": false, "x": 600, "y": 0, "width": 100, "height": 50, "compartments": [], "ports": [] },
+      { "id": "d", "shape": "usage", "keyword": "", "name": "no keyword, more", "hasChildren": false, "x": 600, "y": 80, "width": 100, "height": 90, "compartments": [ { "lines": ["line"] } ], "ports": [] },
+      { "id": "e", "shape": "definition", "keyword": "action def", "name": "children and more", "hasChildren": true, "x": 720, "y": 0, "width": 170, "height": 170, "compartments": [ { "title": "t", "lines": ["l"] } ], "ports": [] },
+      { "id": "f", "shape": "definition", "keyword": "x<y", "name": "tall", "hasChildren": false, "x": 720, "y": 200, "width": 170, "height": 131, "compartments": [], "ports": [] }
+    ],
+    "edges": [] } },
+  { "title": { "heading": "", "definition": "GeneralView", "source": "unnamed.sysml" }, "diagram": {
+    "width": 700, "height": 300,
+    "nodes": [
+      { "id": "p", "shape": "package", "keyword": "", "name": "Holding", "hasChildren": true, "x": 0, "y": 0, "width": 300, "height": 200, "compartments": [], "ports": [] },
+      { "id": "q", "shape": "package", "keyword": "", "name": "A", "hasChildren": false, "x": 320, "y": 0, "width": 100, "height": 61, "compartments": [], "ports": [] },
+      { "id": "r", "shape": "package", "keyword": "", "name": "A package with a name far too long for its tab", "hasChildren": false, "x": 320, "y": 80, "width": 300, "height": 60.5, "compartments": [], "ports": [] },
+      { "id": "s", "shape": "package", "keyword": "", "name": "Medium <name>", "hasChildren": false, "x": 320, "y": 160, "width": 200, "height": 60, "compartments": [], "ports": [] },
+      { "id": "t", "shape": "package", "keyword": "", "name": "Abcd", "hasChildren": false, "x": 320, "y": 230, "width": 200, "height": 60, "compartments": [], "ports": [] },
+      { "id": "u", "shape": "actor", "keyword": "", "name": "the <user>", "hasChildren": false, "x": 640.5, "y": 10.25, "width": 40.3, "height": 80, "compartments": [], "ports": [] }
+    ],
+    "edges": [] } },
+  { "title": { "heading": "", "source": "nothing.sysml" }, "diagram": {
+    "width": 1000, "height": 700, "nodes": [],
+    "edges": [
+      { "id": "1", "kind": "connection", "sourceId": "a", "targetId": "b", "points": [ { "x": 0, "y": 0 }, { "x": 10.1, "y": 20.7 } ] },
+      { "id": "2", "kind": "association", "sourceId": "a", "targetId": "b", "label": "plain <mid>", "points": [ { "x": 3.3, "y": 7.7 }, { "x": 41.9, "y": 13.1 }, { "x": 100.7, "y": 77.3 } ] },
+      { "id": "3", "kind": "include", "sourceId": "a", "targetId": "b", "label": "«include»", "points": [ { "x": 1.1, "y": 2.2 }, { "x": 123.456, "y": 654.321 } ] },
+      { "id": "4", "kind": "import", "sourceId": "a", "targetId": "b", "label": "«import»", "labelBox": { "x": 10.1, "y": 20.2, "width": 33.3, "height": 12 }, "points": [ { "x": 0, "y": 100 }, { "x": 0.1, "y": 200.3 } ] },
+      { "id": "5", "kind": "decomposition", "sourceId": "a", "targetId": "b", "points": [ { "x": 20, "y": 30 }, { "x": 40, "y": 30 } ] },
+      { "id": "6", "kind": "dependency", "sourceId": "a", "targetId": "b", "label": "repeats", "points": [ { "x": 5.5, "y": 5.5 }, { "x": 5.5, "y": 5.5 }, { "x": 5.5, "y": 5.5 } ] },
+      { "id": "7", "kind": "connection", "sourceId": "a", "targetId": "b", "label": "too few", "points": [ { "x": 1, "y": 1 } ] },
+      { "id": "8", "kind": "connection", "sourceId": "a", "targetId": "b", "points": [] },
+      { "id": "9", "kind": "connection", "sourceId": "a", "targetId": "b", "label": "halfway at a bend", "points": [ { "x": 0, "y": 0 }, { "x": 50, "y": 0 }, { "x": 50, "y": 50 } ] },
+      { "id": "10", "kind": "connection", "sourceId": "a", "targetId": "b", "label": "fine", "points": [ { "x": 0.1, "y": 0.2 }, { "x": 0.30000000000000004, "y": 271.828 }, { "x": 314.159, "y": 1.41421 }, { "x": 1.7320508, "y": 2.2360679 } ] },
+      { "id": "11", "kind": "connection", "sourceId": "a", "targetId": "b", "label": "huge", "points": [ { "x": 1e21, "y": 1e-7 }, { "x": 3.5e21, "y": 1.5e-7 } ] },
+      { "id": "12", "kind": "connection", "sourceId": "a", "targetId": "b", "label": "tiny", "points": [ { "x": -24, "y": -48 }, { "x": -23.9999999, "y": -47.9999999 } ] }
+    ] } },
+  { "title": { "heading": "Measures Ωé—😀 «x»", "source": "Ωé—😀.sysml" }, "diagram": { "width": 0, "height": 0, "nodes": [
+      { "id": "p", "shape": "package", "keyword": "", "name": "Ωé—😀«»", "hasChildren": true, "x": 0, "y": 0, "width": 300, "height": 200, "compartments": [], "ports": [] }
+    ], "edges": [] } },
+  { "title": { "heading": "No messages", "source": "s.sysml" }, "sequence": { "lifelines": [], "messages": [] } },
+  { "title": { "heading": "Two narrow lifelines", "source": "s.sysml" }, "sequence": { "lifelines": [ { "id": "a", "label": "a" }, { "id": "b", "label": "b" } ], "messages": [] } },
+  { "title": { "heading": "One lifeline", "source": "s.sysml" }, "sequence": { "lifelines": [ { "id": "a", "label": "a" } ], "messages": [] } },
+  { "title": { "heading": "", "definition": "Unnamed", "source": "s.sysml" }, "sequence": {
+    "lifelines": [ { "id": "a", "label": "user" }, { "id": "b", "label": "a lifeline with a very long label : LongerStill" }, { "id": "c", "label": "c <&>" }, { "id": "d", "label": "d" } ],
+    "messages": [
+      { "sourceId": "a", "targetId": "b", "label": "short" },
+      { "sourceId": "c", "targetId": "a", "label": "backwards" },
+      { "sourceId": "a", "targetId": "a", "label": "self, not last" },
+      { "sourceId": "b", "targetId": "b", "label": "self, widening the gap it stands in by a long way indeed, on and on" },
+      { "sourceId": "c", "targetId": "d", "label": "a message with a label much wider than the gap it spans, widening it" },
+      { "sourceId": "a", "targetId": "d", "label": "a message across all of them with a label wider than the three gaps it spans, so all three of them have to grow to hold it, and then some more, on and on and on and on and on and on" },
+      { "sourceId": "d", "targetId": "d", "label": "self on the last, wider than its head" },
+      { "sourceId": "d", "targetId": "d", "label": "«message»" }
+    ] } },
+  { "title": { "heading": "Last self-loop, narrow", "source": "s.sysml" }, "sequence": {
+    "lifelines": [ { "id": "a", "label": "a" } ],
+    "messages": [ { "sourceId": "a", "targetId": "a", "label": "" } ] } }
+]

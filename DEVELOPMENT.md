@@ -236,7 +236,8 @@ The plan, each step done when its check passes:
 - [x] **Linking:** every reference finds Langium's target, with the same
   diagnostics, on the same models, 4,393 small workspaces and 11 written by hand
   for what the others do not reach.
-- [ ] **Rendering:** byte-identical SVGs from the recorded layouts, both themes.
+- [x] **Rendering:** byte-identical SVGs from the recorded layouts and from
+  diagrams written by hand for what no model draws, both themes.
 - [ ] **Views without ELK:** use case, logical and process, byte-identical.
 - [ ] **Views with ELK:** implementation, physical and deployment, identical but
   for rounding. If [elk-rs#3](https://github.com/openedges/elk-rs/issues/3) is

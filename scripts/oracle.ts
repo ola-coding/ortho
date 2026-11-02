@@ -24,6 +24,8 @@ import { renderView } from '../src/pipeline.js';
 import { renderSequenceSvg } from '../src/render/sequence-renderer.js';
 import { renderSvg } from '../src/render/svg-renderer.js';
 import type { DiagramTitle } from '../src/render/svg-renderer.js';
+import type { LaidOutDiagram } from '../src/layout/elk-layout.js';
+import type { SequenceModel } from '../src/diagrams/sequence.js';
 import { darkGlassTheme, lightTheme } from '../src/render/theme.js';
 import type { Theme } from '../src/render/theme.js';
 
@@ -31,6 +33,7 @@ const OUT = 'rust/oracle';
 const OMG = '.omg-models/sysml/src';
 const CONSTRUCTS = 'rust/tests/constructs.txt';
 const WORKSPACES = 'rust/tests/workspaces.txt';
+const RENDERINGS = 'rust/tests/renderings.json';
 
 function sysmlFiles(path: string): string[] {
     if (statSync(path).isFile()) {
@@ -359,6 +362,18 @@ async function dumpViews(name: string, documents: Documents): Promise<void> {
     console.log(`views: ${name}, ${lines.length} declared, ${rendered} rendered`);
 }
 
+/** Diagrams written by hand, for what no model draws: each rendered in both themes. */
+function dumpRenderings(): void {
+    const cases = JSON.parse(readFileSync(RENDERINGS, 'utf-8')) as Array<{ title: DiagramTitle; diagram?: LaidOutDiagram; sequence?: SequenceModel }>;
+    mkdirSync(`${OUT}/renderings`, { recursive: true });
+    cases.forEach(({ title, diagram, sequence }, i) => {
+        const svg = (theme: Theme): string => (sequence ? renderSequenceSvg(sequence, title, theme) : renderSvg(diagram!, title, theme));
+        writeFileSync(`${OUT}/renderings/${i}.svg`, svg(lightTheme));
+        writeFileSync(`${OUT}/renderings/${i}.dark.svg`, svg(darkGlassTheme));
+    });
+    console.log(`renderings: ${cases.length}`);
+}
+
 /** The committed diagrams are what the examples must render to. */
 function checkCommitted(example: string): void {
     const diagrams = `examples/${example}/diagrams`;
@@ -410,6 +425,8 @@ for (const [name, files] of workspaces) {
         await dumpViews(name, documents);
     }
 }
+
+dumpRenderings();
 
 await dumpSmallWorkspaces('alone', [...omg, ...ours].map(file => [file]));
 await dumpSmallWorkspaces('constructs-alone', constructs.map(file => [file]));
