@@ -4,6 +4,7 @@
 # lint    Formatting and clippy, which read the same on every system.
 # oracle  Records what the TypeScript produces at each stage, fails if the committed
 #         diagrams are not what it renders, and checks the port against the rest.
+#         Recording takes minutes, so it is kept until something it reads changes.
 name: Rust
 
 on:
@@ -60,13 +61,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      - id: recording
+        uses: actions/cache/restore@v6
+        with:
+          path: |
+            rust/oracle
+            .omg-models
+          key: oracle-node24-${{ hashFiles('src/**', 'grammar/**', 'examples/**', 'tests/fixtures/**', 'rust/tests/constructs.txt', 'rust/tests/workspaces.txt', 'scripts/oracle.ts', 'scripts/fetch-omg-models.ts', 'package.json', 'package-lock.json') }}
       - uses: actions/setup-node@v7
+        if: steps.recording.outputs.cache-hit != 'true'
         with:
           node-version: 24
           cache: npm
-      - run: npm ci
-      - run: npm run omg-models
-      - run: npm run oracle
+      - if: steps.recording.outputs.cache-hit != 'true'
+        run: |
+          npm ci
+          npm run omg-models
+          npm run oracle
+      # Saved here, so a comparison that fails below does not cost the next run a recording.
+      - if: steps.recording.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: |
+            rust/oracle
+            .omg-models
+          key: ${{ steps.recording.outputs.cache-primary-key }}
       - run: rustup toolchain install
         working-directory: rust
       - uses: Swatinem/rust-cache@v2

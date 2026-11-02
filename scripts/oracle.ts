@@ -30,6 +30,7 @@ import type { Theme } from '../src/render/theme.js';
 const OUT = 'rust/oracle';
 const OMG = '.omg-models/sysml/src';
 const CONSTRUCTS = 'rust/tests/constructs.txt';
+const WORKSPACES = 'rust/tests/workspaces.txt';
 
 function sysmlFiles(path: string): string[] {
     if (statSync(path).isFile()) {
@@ -65,6 +66,18 @@ function writeConstructs(): string[] {
         writeFileSync(file, place(line));
         return file;
     }));
+}
+
+/** Workspaces written by hand, for what no other model reaches: one file per line, a blank line between them. */
+function writeWorkspaces(): string[][] {
+    const dir = `${OUT}/models/workspaces`;
+    mkdirSync(dir, { recursive: true });
+    return readFileSync(WORKSPACES, 'utf-8').split(/\n\n+/).map((block, i) =>
+        block.split('\n').filter(line => line && !line.startsWith('#')).map((line, j) => {
+            const file = `${dir}/${i}-${j}.sysml`;
+            writeFileSync(file, `${line}\n`);
+            return file;
+        }));
 }
 
 const WORDS = ['part', 'def', 'port', 'action', 'attribute', 'use', 'case', 'item', 'if', 'then', 'else', 'first', 'end',
@@ -146,12 +159,27 @@ function canonical(value: unknown): unknown {
     return value;
 }
 
+const parser = createSysmlServices().Sysml.parser.LangiumParser;
+// Whether each file parsed so far was rejected. Parsing is the slowest part of a recording.
+const rejected = new Map<string, boolean>();
+
+function parseFile(file: string): ReturnType<typeof parser.parse> {
+    const result = parser.parse(readFileSync(file, 'utf-8'));
+    rejected.set(file, result.lexerErrors.length + result.parserErrors.length > 0);
+    return result;
+}
+
+function isRejected(file: string): boolean {
+    if (!rejected.has(file)) {
+        parseFile(file);
+    }
+    return rejected.get(file)!;
+}
+
 function dumpTrees(name: string, files: string[]): void {
-    const parser = createSysmlServices().Sysml.parser.LangiumParser;
     writeLines(`${OUT}/trees/${name}.tsv`, files.map(file => {
-        const result = parser.parse(readFileSync(file, 'utf-8'));
-        const rejected = result.lexerErrors.length + result.parserErrors.length > 0;
-        return `${file}\t${rejected ? '{"$rejected":true}' : JSON.stringify(canonical(result.value))}`;
+        const result = parseFile(file);
+        return `${file}\t${rejected.get(file) ? '{"$rejected":true}' : JSON.stringify(canonical(result.value))}`;
     }));
     console.log(`trees: ${name}, ${files.length} files`);
 }
@@ -222,15 +250,11 @@ function dumpLinks(name: string, documents: Documents, services: Services): numb
  */
 async function dumpSmallWorkspaces(name: string, workspaces: string[][]): Promise<void> {
     const { shared, Sysml } = createSysmlServices();
-    const parser = Sysml.parser.LangiumParser;
     const lines: string[] = [];
     let references = 0;
     let reported = 0;
     for (const files of workspaces) {
-        if (files.some(file => {
-            const result = parser.parse(readFileSync(file, 'utf-8'));
-            return result.lexerErrors.length + result.parserErrors.length > 0;
-        })) {
+        if (files.some(isRejected)) {
             continue;
         }
         const documents = [];
@@ -389,6 +413,11 @@ for (const [name, files] of workspaces) {
 
 await dumpSmallWorkspaces('alone', [...omg, ...ours].map(file => [file]));
 await dumpSmallWorkspaces('constructs-alone', constructs.map(file => [file]));
+const written = writeWorkspaces();
+if (written.flat().some(isRejected)) {
+    throw new Error(`${WORKSPACES}: every file must parse`);
+}
+await dumpSmallWorkspaces('workspaces', written);
 await dumpSmallWorkspaces('broken-alone', broken.map(file => [file]));
 // One file of an example broken, the others as they are, so names still resolve across files.
 const contextDir = `${OUT}/models/broken-in-context`;

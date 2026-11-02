@@ -233,10 +233,9 @@ The plan, each step done when its check passes:
 - [x] **Skeleton:** Cargo, the recordings, CI on all three systems.
 - [x] **Parser:** identical trees on OMG's 252 models, our 17 files, 2,589 tricky
   constructs and 11,298 broken copies.
-- [ ] **Linking:** every reference finds Langium's target, with the same
-  diagnostics. The comparison passes; left are short names at the top level, a
-  chain never naming its own feature, a perform's target, and the cycle error,
-  which no recording reaches.
+- [x] **Linking:** every reference finds Langium's target, with the same
+  diagnostics, on the same models, 4,393 small workspaces and 11 written by hand
+  for what the others do not reach.
 - [ ] **Rendering:** byte-identical SVGs from the recorded layouts, both themes.
 - [ ] **Views without ELK:** use case, logical and process, byte-identical.
 - [ ] **Views with ELK:** implementation, physical and deployment, identical but
@@ -245,7 +244,8 @@ The plan, each step done when its check passes:
 - [ ] **CLI and tests:** the `render` command, and the rest of the tests.
 - [ ] **Switch over:** move to the root, remove the TypeScript, Node and
   `grammar/sysml.langium`, port the scripts and deck, write release binaries for
-  all three systems and the docs, and fix `end a [1];`.
+  all three systems and the docs, fix `end a [1];`, and stop calling an unnamed
+  use case `'undefined'` in its subject error.
 
 ## Backlog
 

@@ -1,0 +1,34 @@
+# A short name at the top level, found from another file.
+part def <S> Long;
+part x : S;
+
+# Only what has a name of its own is at the top level, whatever else it answers to.
+part def <S>;
+part x : S;
+
+# A chain never names its own feature: the engine this one redefines is the outer one.
+package P { part engine { part inner; } part def C { part engine :>> engine; connect engine.inner to engine.inner; } }
+
+# A feature subsetting itself ends.
+package P { part a :> a { part b; } part c { connect a.b to a.b; } }
+
+# A name in a perform's body is not looked for in what it performs.
+package P { action fly { action step; } action step; part x { perform fly { action z { connect step to step; } } } }
+
+# A chain through a perform does go through what it performs.
+package P { action fly { action step; } part x { perform fly; connect fly.step to fly.step; } }
+
+# Resolving a reference that needs itself: an error on the one that found the cycle.
+package P { part a { part b; } part d :> k.e { connection k connect e ::> a.b to f ::> a; } }
+
+# A package named after a standard library package, at the top level and inside one.
+package ScalarValues { package SpatialItems { } }
+
+# Structure cannot be performed: a part, a port, an attribute, an item, through a chain too.
+package P { part a { part b; } port q; attribute r; item s; action t; part x { perform a; perform a.b; perform q; perform r; perform s; perform t; } }
+
+# The subject comes before the actors, in a definition, a usage, and one without a name.
+package P { use case def D { actor a; subject s; } use case u { subject s; actor a; } use case v { actor a; subject s; } use case { actor a; } }
+
+# A library's names are not errors, a typo in one is, and a failed chain reports once.
+package P { private import ScalarValues::*; private import Nowhere::*; part x : Real; part y : SpatialItems::SpatialItem; part z : SpatialItems::Nope; part w : Nope; connect no.such.chain to x.none.more; }

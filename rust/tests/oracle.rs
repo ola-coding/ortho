@@ -274,6 +274,12 @@ fn links_of_each_construct_alone() {
 
 #[test]
 #[ignore = "needs npm run oracle"]
+fn links_of_workspaces_written_by_hand() {
+    check_small_workspaces("workspaces");
+}
+
+#[test]
+#[ignore = "needs npm run oracle"]
 fn links_of_each_broken_model_alone() {
     check_small_workspaces("broken-alone");
 }
