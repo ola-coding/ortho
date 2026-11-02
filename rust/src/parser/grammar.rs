@@ -243,7 +243,7 @@ impl<'a> Parser<'a> {
     fn reference(&mut self, n: NodeId, prop: P) -> R<()> {
         let offset = self.start();
         let text = self.qualified_name()?;
-        self.set(n, prop, false, offset, Value::Reference(text));
+        self.set(n, prop, false, offset, Value::Reference { text, target: None });
         Ok(())
     }
 
@@ -251,7 +251,7 @@ impl<'a> Parser<'a> {
     fn add_reference(&mut self, n: NodeId, prop: P, read: ReadText<'a>) -> R<()> {
         let offset = self.start();
         let text = read(self)?;
-        self.set(n, prop, true, offset, Value::Reference(text));
+        self.set(n, prop, true, offset, Value::Reference { text, target: None });
         Ok(())
     }
 

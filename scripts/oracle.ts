@@ -6,6 +6,7 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { AstUtils, URI } from 'langium';
+import { clearDocuments } from 'langium/test';
 import type { CstNode, LangiumDocument, Reference } from 'langium';
 import type { Model, ViewUsage } from '../src/generated/ast.js';
 import { extractDeploymentGraph } from '../src/diagrams/deployment.js';
@@ -159,7 +160,7 @@ function dumpTrees(name: string, files: string[]): void {
 
 type Documents = Array<LangiumDocument<Model>>;
 
-async function load(files: string[]): Promise<{ documents: Documents; services: ReturnType<typeof createSysmlServices>['Sysml'] }> {
+async function load(files: string[]): Promise<{ documents: Documents; services: Services }> {
     const { shared, Sysml } = createSysmlServices();
     const documents = await Promise.all(files.map(file =>
         shared.workspace.LangiumDocuments.getOrCreateDocument(URI.file(resolve(file))))) as Documents;
@@ -169,7 +170,10 @@ async function load(files: string[]): Promise<{ documents: Documents; services: 
 
 const repoPath = (document: LangiumDocument): string => relative(process.cwd(), document.uri.fsPath).replace(/\\/g, '/');
 
-function dumpLinks(name: string, documents: Documents, services: Awaited<ReturnType<typeof load>>['services']): number {
+type Services = ReturnType<typeof createSysmlServices>['Sysml'];
+
+/** Every reference and diagnostic of these documents, one JSON line each. */
+function linksOf(documents: Documents, services: Services): { links: string[]; diagnostics: string[]; errors: number } {
     const locator = services.workspace.AstNodeLocator;
     const links: string[] = [];
     const diagnostics: string[] = [];
@@ -200,10 +204,48 @@ function dumpLinks(name: string, documents: Documents, services: Awaited<ReturnT
             }));
         }
     }
+    return { links, diagnostics, errors };
+}
+
+function dumpLinks(name: string, documents: Documents, services: Services): number {
+    const { links, diagnostics, errors } = linksOf(documents, services);
     writeLines(`${OUT}/links/${name}.jsonl`, links);
     writeLines(`${OUT}/diagnostics/${name}.jsonl`, diagnostics);
     console.log(`links: ${name}, ${documents.length} files, ${links.length} references, ${diagnostics.length} diagnostics`);
     return errors;
+}
+
+/**
+ * Workspaces of a few files each, most of them with names that do not resolve:
+ * what a model loaded without the files it depends on, or a broken one, reports.
+ * Those that do not parse are left out, since they stop there.
+ */
+async function dumpSmallWorkspaces(name: string, workspaces: string[][]): Promise<void> {
+    const { shared, Sysml } = createSysmlServices();
+    const parser = Sysml.parser.LangiumParser;
+    const lines: string[] = [];
+    let references = 0;
+    let reported = 0;
+    for (const files of workspaces) {
+        if (files.some(file => {
+            const result = parser.parse(readFileSync(file, 'utf-8'));
+            return result.lexerErrors.length + result.parserErrors.length > 0;
+        })) {
+            continue;
+        }
+        const documents = [];
+        for (const file of files) {
+            documents.push(await shared.workspace.LangiumDocuments.getOrCreateDocument(URI.file(resolve(file))));
+        }
+        await shared.workspace.DocumentBuilder.build(documents, { validation: true });
+        const { links, diagnostics } = linksOf(documents as Documents, Sysml);
+        references += links.length;
+        reported += diagnostics.length;
+        lines.push(`{"files":${JSON.stringify(files)},"links":[${links.join(',')}],"diagnostics":[${diagnostics.join(',')}]}`);
+        await clearDocuments({ shared } as unknown as Parameters<typeof clearDocuments>[0]);
+    }
+    writeLines(`${OUT}/links/${name}.jsonl`, lines);
+    console.log(`links: ${name}, ${lines.length} of ${workspaces.length} workspaces, ${references} references, ${reported} diagnostics`);
 }
 
 // ---------------------------------------------------------------- Views
@@ -313,12 +355,19 @@ rmSync(OUT, { recursive: true, force: true });
 
 const omg = ['examples', 'training', 'validation'].flatMap(folder => sysmlFiles(join(OMG, folder)));
 const examples = ['coffee-machine', 'survey-drone'];
+let inContextWritten = 0;
+const nextInContext = (_example: string, _file: string): number => {
+    const first = inContextWritten;
+    inContextWritten += 100;
+    return first;
+};
 const fixtures = sysmlFiles('tests/fixtures');
 const ours = [...examples.flatMap(example => sysmlFiles(`examples/${example}`)), ...fixtures];
 
 dumpTrees('omg', omg);
 dumpTrees('ours', ours);
-dumpTrees('constructs', writeConstructs());
+const constructs = writeConstructs();
+dumpTrees('constructs', constructs);
 const brokenDir = `${OUT}/models/broken`;
 mkdirSync(brokenDir, { recursive: true });
 const broken = writeBroken([...omg, ...ours], 12, 42, brokenDir, 0);
@@ -330,11 +379,25 @@ const workspaces: Array<[string, string[]]> = [
     ...examples.map((example): [string, string[]] => [example, sysmlFiles(`examples/${example}`)]),
     ...fixtures.map((file): [string, string[]] => [`fixture-${file.replace(/^.*\/|\.sysml$/g, '')}`, [file]])
 ];
+writeLines(`${OUT}/workspaces.jsonl`, workspaces.map(([name, files]) => JSON.stringify({ name, files })));
 for (const [name, files] of workspaces) {
     const { documents, services } = await load(files);
     if (dumpLinks(name, documents, services) === 0) {
         await dumpViews(name, documents);
     }
 }
+
+await dumpSmallWorkspaces('alone', [...omg, ...ours].map(file => [file]));
+await dumpSmallWorkspaces('constructs-alone', constructs.map(file => [file]));
+await dumpSmallWorkspaces('broken-alone', broken.map(file => [file]));
+// One file of an example broken, the others as they are, so names still resolve across files.
+const contextDir = `${OUT}/models/broken-in-context`;
+mkdirSync(contextDir, { recursive: true });
+const inContext = examples.flatMap(example => {
+    const files = sysmlFiles(`examples/${example}`);
+    return files.flatMap(file => writeBroken([file], 100, 7, `${contextDir}`, nextInContext(example, file))
+        .map(copy => files.map(other => (other === file ? copy : other))));
+});
+await dumpSmallWorkspaces('broken-in-context', inContext);
 examples.forEach(checkCommitted);
 console.log(`Wrote ${OUT}/`);

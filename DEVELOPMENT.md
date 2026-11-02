@@ -226,6 +226,27 @@ cargo test --test oracle -- --ignored   # against what npm run oracle recorded
 
 CI builds and tests it on Linux, Windows and macOS.
 
+The plan, each step done when its check passes:
+
+- [x] **Prepare:** long names stay inside their box, so the committed diagrams
+  are the reference.
+- [x] **Skeleton:** Cargo, the recordings, CI on all three systems.
+- [x] **Parser:** identical trees on OMG's 252 models, our 17 files, 2,589 tricky
+  constructs and 11,298 broken copies.
+- [ ] **Linking:** every reference finds Langium's target, with the same
+  diagnostics. The comparison passes; left are short names at the top level, a
+  chain never naming its own feature, a perform's target, and the cycle error,
+  which no recording reaches.
+- [ ] **Rendering:** byte-identical SVGs from the recorded layouts, both themes.
+- [ ] **Views without ELK:** use case, logical and process, byte-identical.
+- [ ] **Views with ELK:** implementation, physical and deployment, identical but
+  for rounding. If [elk-rs#3](https://github.com/openedges/elk-rs/issues/3) is
+  still open here, contents go left-aligned under a long name until it is fixed.
+- [ ] **CLI and tests:** the `render` command, and the rest of the tests.
+- [ ] **Switch over:** move to the root, remove the TypeScript, Node and
+  `grammar/sysml.langium`, port the scripts and deck, write release binaries for
+  all three systems and the docs, and fix `end a [1];`.
+
 ## Backlog
 
 In priority order:

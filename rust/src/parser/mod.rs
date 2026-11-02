@@ -2,6 +2,9 @@
 pub mod ast;
 mod grammar;
 mod lexer;
+mod scope;
+mod validator;
+pub mod workspace;
 
 use ast::{Ast, NodeId};
 
