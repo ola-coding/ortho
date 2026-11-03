@@ -106,6 +106,9 @@ pub const DARK_GLASS: Theme = Theme {
     </filter>"##,
 };
 
+/// The themes, by the name `--theme` takes.
+pub const THEME_NAMES: [&str; 2] = ["light", "dark-glass"];
+
 impl Theme {
     pub fn named(name: &str) -> Option<&'static Theme> {
         match name {

@@ -31,7 +31,7 @@ pub struct LaidOutNode {
     pub height: f64,
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, PartialEq, Debug)]
 pub struct Point {
     pub x: f64,
     pub y: f64,

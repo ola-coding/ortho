@@ -9,12 +9,15 @@ use crate::layout::elk::{Algorithm, LayoutOptions, layout_graph};
 use crate::layout::tree::layout_tree;
 use crate::layout::use_case::layout_use_cases;
 use crate::model::graph::DiagramGraph;
-use crate::model::views::{DiagramKind, diagram_kind, exposed_elements};
-use crate::parser::ast::NodeId;
+use crate::model::views::{
+    DiagramKind, declared_views, diagram_kind, exposed_elements, view_file_name, view_heading, why_undrawable,
+};
+use crate::parser::ast::{NodeId, Prop};
 use crate::parser::workspace::Workspace;
 use crate::render::sequence::render_sequence_svg;
 use crate::render::svg::{DiagramTitle, render_svg};
 use crate::render::theme::Theme;
+use std::path::{Component, Path, PathBuf};
 
 pub struct RenderResult {
     pub svg: String,
@@ -79,4 +82,92 @@ pub fn render_view(
 ) -> Result<RenderResult, String> {
     let ast = &workspace.ast;
     render_exposed(workspace, diagram_kind(ast, view), &exposed_elements(ast, view), title, theme)
+}
+
+/// A view rendered to the file named after it.
+pub struct RenderedView {
+    pub view: NodeId,
+    /// The file it is written to, named after the view.
+    pub file: String,
+    pub result: RenderResult,
+}
+
+/// A view ortho does not draw, and why.
+pub struct SkippedView {
+    pub view: NodeId,
+    pub reason: String,
+}
+
+pub struct ModelRendering {
+    pub rendered: Vec<RenderedView>,
+    pub skipped: Vec<SkippedView>,
+}
+
+/// Renders every view a model declares, each to a file named after it, headed by its
+/// name and naming the file that declares it, relative to the working folder. A view
+/// ortho does not draw is passed over with the reason; two views that would be written
+/// to the same file are an error.
+pub fn render_views(workspace: &Workspace, theme: &Theme) -> Result<ModelRendering, String> {
+    let ast = &workspace.ast;
+    let mut skipped = Vec::new();
+    let mut by_file: Vec<(String, NodeId, &str)> = Vec::new();
+    for document in &workspace.documents {
+        for view in declared_views(ast, document.root) {
+            let file = view_file_name(ast, view);
+            if let Some(reason) = why_undrawable(ast, view) {
+                skipped.push(SkippedView { view, reason });
+            } else if let Some((_, other, _)) = by_file.iter().find(|(taken, _, _)| *taken == file) {
+                return Err(format!(
+                    "'{}' and '{}' would both be written to {file}; give one a short name, view <name> '...'.",
+                    view_heading(ast, *other),
+                    view_heading(ast, view)
+                ));
+            } else {
+                by_file.push((file, view, &document.path));
+            }
+        }
+    }
+    let mut rendered = Vec::with_capacity(by_file.len());
+    for (file, view, path) in by_file {
+        let title = DiagramTitle {
+            heading: ast.text(view, Prop::Name).unwrap_or("").to_string(),
+            definition: ast.text(view, Prop::Definition).map(String::from),
+            source: relative_to_working_folder(path),
+        };
+        rendered.push(RenderedView { view, file, result: render_view(workspace, view, &title, theme)? });
+    }
+    Ok(ModelRendering { rendered, skipped })
+}
+
+/// A path as seen from the working folder, with forward slashes on every system, as
+/// Node's `path.relative` gives it: `examples/coffee-machine/logical.sysml`, or
+/// `../other/model.sysml` for one outside it.
+pub fn relative_to_working_folder(path: &str) -> String {
+    let (Ok(path), Ok(working)) = (std::path::absolute(path), std::env::current_dir()) else {
+        return path.replace('\\', "/");
+    };
+    let (path, working) = (normal(&path), normal(&working));
+    // A file on another drive has no relative path; Node gives it whole.
+    if path.first() != working.first() {
+        return path.iter().collect::<PathBuf>().to_string_lossy().replace('\\', "/");
+    }
+    let shared = path.iter().zip(&working).take_while(|(a, b)| a == b).count();
+    let mut parts: Vec<String> = vec!["..".to_string(); working.len() - shared];
+    parts.extend(path[shared..].iter().map(|part| part.as_os_str().to_string_lossy().into_owned()));
+    parts.join("/")
+}
+
+/// A path's parts without `.`, and with each `..` taking the part before it away.
+fn normal(path: &Path) -> Vec<Component<'_>> {
+    let mut parts: Vec<Component> = Vec::new();
+    for part in path.components() {
+        match part {
+            Component::CurDir => {}
+            Component::ParentDir if matches!(parts.last(), Some(Component::Normal(_))) => {
+                parts.pop();
+            }
+            _ => parts.push(part),
+        }
+    }
+    parts
 }
