@@ -245,9 +245,14 @@ The plan, each step done when its check passes:
   written by hand in `rust/tests/views/` for what no model draws, and 375 views
   `npm run oracle` makes of every element of OMG's models and ours that a view
   could expose.
-- [ ] **Views with ELK:** implementation, physical and deployment, identical but
-  for rounding. If [elk-rs#3](https://github.com/openedges/elk-rs/issues/3) is
-  still open here, contents go left-aligned under a long name until it is fixed.
+- [x] **Views with ELK:** implementation, physical and deployment, the graph and
+  what ELK is given byte-identical, and what it gives back, the layout and the
+  SVG identical but for rounding, for the examples' views, views written by hand
+  in `rust/tests/views/`, and every view `npm run oracle` makes, InterconnectionViews
+  of each part included. elk-rs 0.12.2 centres contents under a long name
+  ([elk-rs#3](https://github.com/openedges/elk-rs/issues/3)); it still orders two
+  lines into one nested box the other way round in one OMG model, listed in
+  `ELK_DIFFERS` in `rust/tests/oracle.rs`.
 - [ ] **CLI and tests:** the `render` command, and the rest of the tests.
 - [ ] **Switch over:** move to the root, remove the TypeScript, Node and
   `grammar/sysml.langium`, port the scripts and deck, write release binaries for
