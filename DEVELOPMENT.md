@@ -239,8 +239,10 @@ git tag v0.2.0
 git push origin v0.2.0
 ```
 
-The tag has to be `v` and the version in `Cargo.toml`, or nothing is
-published. Each archive is named after its target alone, such as
+Without Git at hand, run the Release workflow on `main` from the Actions
+tab, with *publish* ticked: it tags that commit `v` and the version in
+`Cargo.toml` itself. Either way, the tag has to be `v` and the version in
+`Cargo.toml`, or nothing is published. Each archive is named after its target alone, such as
 `ortho-x86_64-unknown-linux-musl.tar.gz`, so
 `releases/latest/download/<archive>` always finds the newest. A pull request
 that changes the build, such as `Cargo.toml` or the workflow, builds every
