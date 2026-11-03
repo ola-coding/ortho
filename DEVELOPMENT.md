@@ -214,7 +214,9 @@ Pages.
 same folders as `src/`. The TypeScript is the reference: `npm run oracle`, after
 `npm run omg-models`, records what each stage produces for every model into
 `rust/oracle/`, not committed, and each stage is checked against that as it is
-ported.
+ported. Beside the views the models declare, it makes views of its own, of
+each element a view could expose, so a view is checked on far more than the
+examples draw.
 
 ```sh
 cd rust
@@ -238,7 +240,11 @@ The plan, each step done when its check passes:
   for what the others do not reach.
 - [x] **Rendering:** byte-identical SVGs from the recorded layouts and from
   diagrams written by hand for what no model draws, both themes.
-- [ ] **Views without ELK:** use case, logical and process, byte-identical.
+- [x] **Views without ELK:** use case, logical and process, byte-identical at
+  every stage, from the graph to the SVG, for the examples' views, views
+  written by hand in `rust/tests/views/` for what no model draws, and 375 views
+  `npm run oracle` makes of every element of OMG's models and ours that a view
+  could expose.
 - [ ] **Views with ELK:** implementation, physical and deployment, identical but
   for rounding. If [elk-rs#3](https://github.com/openedges/elk-rs/issues/3) is
   still open here, contents go left-aligned under a long name until it is fixed.

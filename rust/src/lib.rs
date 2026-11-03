@@ -4,4 +4,5 @@ pub mod diagrams;
 pub mod layout;
 pub mod model;
 pub mod parser;
+pub mod pipeline;
 pub mod render;

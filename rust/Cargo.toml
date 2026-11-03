@@ -11,3 +11,4 @@ publish = false
 [dependencies]
 org-eclipse-elk-graph-json = "=0.12.1"
 serde_json = { version = "1", features = ["float_roundtrip"] }
+unicode-normalization = "0.1.26"
