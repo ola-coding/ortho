@@ -223,7 +223,7 @@ cd rust
 cargo test
 cargo fmt --check
 cargo clippy --all-targets -- -D warnings
-cargo test --test oracle -- --ignored   # against what npm run oracle recorded
+cargo test -- --ignored   # against what npm run oracle recorded, and OMG's models
 ```
 
 CI builds and tests it on Linux, Windows and macOS.
@@ -253,7 +253,10 @@ The plan, each step done when its check passes:
   ([elk-rs#3](https://github.com/openedges/elk-rs/issues/3)); it still orders two
   lines into one nested box the other way round in one OMG model, listed in
   `ELK_DIFFERS` in `rust/tests/oracle.rs`.
-- [ ] **CLI and tests:** the `render` command, and the rest of the tests.
+- [x] **CLI and tests:** `ortho render`, with the TypeScript's options and messages,
+  renders the examples as their committed diagrams, but for ELK's rounding. Every
+  test of the TypeScript has its counterpart in `rust/tests/`, with tests of the
+  command itself, run as a user runs it, and OMG's models counted as they load.
 - [ ] **Switch over:** move to the root, remove the TypeScript, Node and
   `grammar/sysml.langium`, port the scripts and deck, write release binaries for
   all three systems and the docs, fix `end a [1];`, and stop calling an unnamed

@@ -10,7 +10,7 @@ pub enum NodeShape {
     Package,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct Compartment {
     /// Drawn small and grey above the lines, as the spec labels a compartment.
     pub title: Option<String>,

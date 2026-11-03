@@ -9,23 +9,14 @@ use ortho::model::graph::EdgeKind;
 use ortho::model::views::{
     DiagramKind, declared_views, diagram_kind, exposed_elements, view_file_name, view_heading, why_undrawable,
 };
-use ortho::parser::ast::NodeId;
-use ortho::parser::workspace::{Severity, Workspace, parse_sysml_files};
-use ortho::pipeline::render_view;
+use ortho::parser::workspace::parse_sysml_files;
+use ortho::pipeline::{relative_to_working_folder, render_view, render_views};
 use ortho::render::svg::DiagramTitle;
 use ortho::render::theme::LIGHT;
 use std::path::Path;
 
-fn parse_ok(text: &str) -> Workspace {
-    let workspace = Workspace::build(vec![("model.sysml".to_string(), text.to_string())])
-        .unwrap_or_else(|failures| panic!("{failures:?}"));
-    assert_eq!(workspace.reported(Severity::Error), Vec::<String>::new());
-    workspace
-}
-
-fn views(workspace: &Workspace) -> Vec<NodeId> {
-    declared_views(&workspace.ast, workspace.documents[0].root)
-}
+mod common;
+use common::{parse_ok, same_but_for_rounding, views};
 
 // A function tree and a scenario side by side: each nests actions, and each view
 // draws only what it exposes.
@@ -204,34 +195,6 @@ fn lists_leaves_beneath_their_parent_and_spreads_any_other_family_in_a_row() {
     assert!(at("Root").y < at("a").y);
 }
 
-/// The examples' views ortho lays out itself render as their committed diagrams.
-/// Whether two SVGs are the same text with the same numbers, but for ELK's last
-/// digits: elk-rs takes a few sums through a float as ELK's Java does, where elkjs
-/// keeps doubles, and does not always add in the same order.
-fn same_but_for_rounding(actual: &str, expected: &str) -> bool {
-    fn split(svg: &str) -> Vec<&str> {
-        let mut parts = Vec::new();
-        let mut start = 0;
-        let mut in_number = false;
-        for (i, c) in svg.char_indices() {
-            let numeric = c.is_ascii_digit() || c == '.';
-            if numeric != in_number && i > start {
-                parts.push(&svg[start..i]);
-                start = i;
-            }
-            in_number = numeric;
-        }
-        parts.push(&svg[start..]);
-        parts
-    }
-    let (a, e) = (split(actual), split(expected));
-    a.len() == e.len()
-        && a.iter().zip(&e).all(|(a, e)| match (a.parse::<f64>(), e.parse::<f64>()) {
-            (Ok(a), Ok(e)) => (a - e).abs() <= 1e-6 * e.abs().max(1.0),
-            _ => a == e,
-        })
-}
-
 #[test]
 fn renders_the_examples_as_their_committed_diagrams() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).parent().unwrap();
@@ -269,4 +232,43 @@ fn renders_the_examples_as_their_committed_diagrams() {
         }
         assert_eq!(rendered, 6, "{example}: all six views");
     }
+}
+
+#[test]
+fn renders_every_view_it_can_draw_passes_over_the_rest_and_refuses_two_views_for_one_file() {
+    let workspace = parse_ok(
+        "package Every {
+            action def A { action b; }
+            view one : GeneralView { expose A; }
+            view states : StateTransitionView { expose A; }
+            view two : GeneralView { expose A; }
+        }",
+    );
+    let rendering = render_views(&workspace, &LIGHT).unwrap();
+    assert_eq!(rendering.rendered.iter().map(|r| r.file.as_str()).collect::<Vec<_>>(), ["one.svg", "two.svg"]);
+    let skipped: Vec<(&str, &str)> =
+        rendering.skipped.iter().map(|s| (view_heading(&workspace.ast, s.view), s.reason.as_str())).collect();
+    assert_eq!(
+        skipped,
+        [("states", "ortho draws a GeneralView, an InterconnectionView or a SequenceView, not 'StateTransitionView'.")]
+    );
+    let twice = parse_ok(
+        "package Twice {
+            action def A;
+            view 'Functions' : GeneralView { expose A; }
+            view functions : GeneralView { expose A; }
+        }",
+    );
+    let error = render_views(&twice, &LIGHT).err().unwrap();
+    assert!(error.starts_with("'Functions' and 'functions' would both be written to functions.svg"), "{error}");
+}
+
+#[test]
+fn names_the_file_that_declares_a_view_as_seen_from_the_working_folder() {
+    let working = std::env::current_dir().unwrap();
+    let inside = working.join("examples").join("model.sysml");
+    assert_eq!(relative_to_working_folder(&inside.to_string_lossy()), "examples/model.sysml");
+    assert_eq!(relative_to_working_folder("./examples/../model.sysml"), "model.sysml");
+    let beside = working.parent().unwrap().join("other").join("model.sysml");
+    assert_eq!(relative_to_working_folder(&beside.to_string_lossy()), "../other/model.sysml");
 }

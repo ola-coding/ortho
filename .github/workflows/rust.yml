@@ -3,7 +3,8 @@
 # test    Builds and tests it on each system it will ship for.
 # lint    Formatting and clippy, which read the same on every system.
 # oracle  Records what the TypeScript produces at each stage, fails if the committed
-#         diagrams are not what it renders, and checks the port against the rest.
+#         diagrams are not what it renders, and checks the port against the rest,
+#         and that it loads as many of OMG's models as counted.
 #         Recording takes minutes, so it is kept until something it reads changes.
 name: Rust
 
@@ -91,5 +92,5 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: rust
-      - run: cargo test --test oracle -- --ignored
+      - run: cargo test -- --ignored
         working-directory: rust
