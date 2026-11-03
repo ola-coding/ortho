@@ -1,0 +1,110 @@
+# Builds ortho for each system it ships for and, for a version tag, publishes the
+# binaries as a GitHub release.
+#
+# build    One binary per system, smoke-tested where it can run, packed with the
+#          README and licence: a .tar.gz, or a .zip for Windows. Each asset is
+#          named after its target alone, so releases/latest/download/<asset>
+#          always finds the newest.
+# publish  For a tag v<version>, where <version> is Cargo.toml's, creates the
+#          release with every archive and their SHA-256 sums.
+#
+# To release: set the version in Cargo.toml, commit, then
+#   git tag v0.2.0 && git push origin v0.2.0
+# A pull request that changes how the binaries are built runs the build only.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  pull_request:
+    paths:
+      - .github/workflows/release.yml
+      - Cargo.toml
+      - Cargo.lock
+      - rust-toolchain.toml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build (${{ matrix.target }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Linked statically against musl, so one binary runs on any distribution.
+          - { target: x86_64-unknown-linux-musl, os: ubuntu-latest, run: true }
+          - { target: aarch64-unknown-linux-musl, os: ubuntu-24.04-arm, run: true }
+          - { target: x86_64-pc-windows-msvc, os: windows-latest, run: true }
+          - { target: aarch64-apple-darwin, os: macos-latest, run: true }
+          # Built on Apple silicon for Intel Macs, so not run there.
+          - { target: x86_64-apple-darwin, os: macos-latest, run: false }
+    steps:
+      - uses: actions/checkout@v7
+      - run: rustup toolchain install
+      - run: rustup target add ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}
+      - run: cargo build --locked --release --target ${{ matrix.target }}
+      - name: Smoke test
+        if: matrix.run
+        shell: bash
+        run: |
+          ortho=target/${{ matrix.target }}/release/ortho
+          "$ortho" --version
+          "$ortho" render examples/coffee-machine -o smoke
+          for svg in examples/coffee-machine/diagrams/*.svg; do
+            diff <(tr -d '\r' < "$svg") smoke/"$(basename "$svg")"
+          done
+      - name: Pack
+        shell: bash
+        run: |
+          name=ortho-${{ matrix.target }}
+          mkdir -p "dist/$name"
+          cp README.md LICENSE "dist/$name/"
+          if [ "${{ runner.os }}" = Windows ]; then
+            cp target/${{ matrix.target }}/release/ortho.exe "dist/$name/"
+            (cd dist && 7z a -tzip -bso0 "$name.zip" "$name")
+          else
+            cp target/${{ matrix.target }}/release/ortho "dist/$name/"
+            tar -C dist -czf "dist/$name.tar.gz" "$name"
+          fi
+          rm -r "dist/$name"
+      - uses: actions/upload-artifact@v5
+        with:
+          name: ortho-${{ matrix.target }}
+          path: dist/*
+          if-no-files-found: error
+
+  publish:
+    name: Publish the release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - name: The tag is Cargo.toml's version
+        run: |
+          version="$(sed -n 's/^version = "\(.*\)"$/\1/p' Cargo.toml | head -n 1)"
+          if [ "${GITHUB_REF_NAME}" != "v$version" ]; then
+            echo "::error::Tag ${GITHUB_REF_NAME} is not v$version, the version in Cargo.toml."
+            exit 1
+          fi
+      - uses: actions/download-artifact@v5
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd dist
+          sha256sum ortho-* > SHA256SUMS
+          gh release create "${GITHUB_REF_NAME}" ortho-* SHA256SUMS \
+            --repo "${GITHUB_REPOSITORY}" --title "ortho ${GITHUB_REF_NAME#v}" --generate-notes

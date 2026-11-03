@@ -1,0 +1,10 @@
+[package]
+name = "xtask"
+version = "0.0.0"
+edition = "2024"
+description = "The repository's own tasks: cargo xtask <task>"
+publish = false
+
+[dependencies]
+ortho = { path = ".." }
+regex = "1"

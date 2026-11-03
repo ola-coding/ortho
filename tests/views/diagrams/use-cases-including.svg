@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="774.2560000000001" height="370"
+     viewBox="0 0 774.2560000000001 370" font-family="Arial, Helvetica, Liberation Sans, DejaVu Sans, sans-serif">
+  <title>Use cases including (generated from tests/views/views.sysml)</title>
+  <defs>
+    <marker id="openArrow" markerWidth="12" markerHeight="12" refX="10" refY="5"
+            orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    </marker>
+    <marker id="diamond" markerWidth="12" markerHeight="8" refX="0" refY="4"
+            orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,4 L6,0 L12,4 L6,8 z" fill="#1a1a1a" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="774.2560000000001" height="370" fill="white" />
+  <rect x="8" y="8" width="758.2560000000001" height="354" rx="10" ry="10" fill="#f9fbfc" stroke="#40657e" stroke-width="1.25" />
+  <path d="M8,30 L8,18 A10,10 0 0 1 18,8 L194.802,8 L194.802,22 A8,8 0 0 1 186.802,30 Z"
+        fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+  <text x="18" y="23" font-size="11" fill="#1a1a1a"><tspan font-style="italic" fill="#40657e">&#171;view&#187;</tspan><tspan font-weight="600"> Use cases including</tspan></text>
+  <path d="M642.5530000000001,362 L642.5530000000001,353 A6,6 0 0 1 648.5530000000001,347 L766.2560000000001,347 L766.2560000000001,352 A10,10 0 0 1 756.2560000000001,362 Z"
+        fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+  <text x="758.2560000000001" y="358" text-anchor="end" font-size="9" fill="#1a1a1a">tests/views/views.sysml</text>
+  
+    <g><rect x="241.036" y="156" width="120.892" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="301.48199999999997" y="173" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;use case&#187;</text>
+      <text x="301.48199999999997" y="186" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">one : Operate</text></g>
+    <g><rect x="36" y="156" width="121.036" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="96.518" y="173" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;use case&#187;</text>
+      <text x="96.518" y="186" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">two : Operate</text></g>
+    <g><rect x="445.928" y="156" width="132.436" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="512.146" y="173" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;use case&#187;</text>
+      <text x="512.146" y="186" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">three : Operate</text></g>
+    <g><rect x="614.364" y="156" width="123.892" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="676.3100000000001" y="173" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;use case&#187;</text>
+      <text x="676.3100000000001" y="186" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">four : Operate</text></g>
+    <g><rect x="326.808" y="60" width="139.612" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="396.614" y="77" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;subject&#187;</text>
+      <text x="396.614" y="90" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">system : System</text></g>
+    <g stroke="#1a1a1a" stroke-width="1.5" fill="none">
+      <circle cx="396.614" cy="261" r="8" fill="#ccdce5" />
+      <line x1="396.614" y1="269" x2="396.614" y2="288" />
+      <line x1="383.614" y1="276" x2="409.614" y2="276" />
+      <line x1="396.614" y1="288" x2="385.614" y2="304" />
+      <line x1="396.614" y1="288" x2="407.614" y2="304" />
+      <text x="396.614" y="320" text-anchor="middle" stroke="none"
+          font-size="11" fill="#1a1a1a">operator : Operator</text>
+    </g>
+    <g stroke="#1a1a1a" stroke-width="1.5" fill="none">
+      <circle cx="561.399" cy="261" r="8" fill="#ccdce5" />
+      <line x1="561.399" y1="269" x2="561.399" y2="288" />
+      <line x1="548.399" y1="276" x2="574.399" y2="276" />
+      <line x1="561.399" y1="288" x2="550.399" y2="304" />
+      <line x1="561.399" y1="288" x2="572.399" y2="304" />
+      <text x="561.399" y="320" text-anchor="middle" stroke="none"
+          font-size="11" fill="#1a1a1a">bystander : Bystander</text>
+    </g>
+  
+    <polyline points="336.808,156 336.808,100" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="396.614,249 351.928,196" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="147.036,156 336.808,100" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="147.036,196 561.399,249" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="396.614,249 147.036,196" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="456.41999999999996,156 456.41999999999996,100" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="396.614,249 455.928,196" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="624.364,156 456.41999999999996,100" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="396.614,249 624.364,196" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="241.036,176 157.036,176" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-end="url(#openArrow)" />
+    <text x="199.036" y="171" text-anchor="middle" font-size="9"
+          fill="#40657e" paint-order="stroke" stroke="#f9fbfc" stroke-width="3">&#171;include&#187;</text>
+    <polyline points="361.928,176 445.928,176" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-end="url(#openArrow)" />
+    <text x="403.928" y="171" text-anchor="middle" font-size="9"
+          fill="#40657e" paint-order="stroke" stroke="#f9fbfc" stroke-width="3">&#171;include&#187;</text>
+    <polyline points="301.48199999999997,196 301.48199999999997,212 676.3100000000001,212 676.3100000000001,196" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-end="url(#openArrow)" />
+    <text x="488.896" y="207" text-anchor="middle" font-size="9"
+          fill="#40657e" paint-order="stroke" stroke="#f9fbfc" stroke-width="3">&#171;include&#187;</text>
+    <polyline points="96.518,196 96.518,212 512.146,212 512.146,196" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-end="url(#openArrow)" />
+    <text x="304.332" y="207" text-anchor="middle" font-size="9"
+          fill="#40657e" paint-order="stroke" stroke="#f9fbfc" stroke-width="3">&#171;include&#187;</text>
+    <polyline points="676.3100000000001,196 676.3100000000001,212 301.48199999999997,212 301.48199999999997,196" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-end="url(#openArrow)" />
+    <text x="488.896" y="207" text-anchor="middle" font-size="9"
+          fill="#40657e" paint-order="stroke" stroke="#f9fbfc" stroke-width="3">&#171;include&#187;</text>
+</svg>

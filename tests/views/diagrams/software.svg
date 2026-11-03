@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720.652" height="577"
+     viewBox="0 0 720.652 577" font-family="Arial, Helvetica, Liberation Sans, DejaVu Sans, sans-serif">
+  <title>Software (generated from tests/views/views.sysml)</title>
+  <defs>
+    <marker id="openArrow" markerWidth="12" markerHeight="12" refX="10" refY="5"
+            orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    </marker>
+    <marker id="diamond" markerWidth="12" markerHeight="8" refX="0" refY="4"
+            orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,4 L6,0 L12,4 L6,8 z" fill="#1a1a1a" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="720.652" height="577" fill="white" />
+  <rect x="8" y="8" width="704.652" height="561" rx="10" ry="10" fill="#f9fbfc" stroke="#40657e" stroke-width="1.25" />
+  <path d="M8,30 L8,18 A10,10 0 0 1 18,8 L128.615,8 L128.615,22 A8,8 0 0 1 120.61500000000001,30 Z"
+        fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+  <text x="18" y="23" font-size="11" fill="#1a1a1a"><tspan font-style="italic" fill="#40657e">&#171;view&#187;</tspan><tspan font-weight="600"> Software</tspan></text>
+  <path d="M588.9490000000001,569 L588.9490000000001,560 A6,6 0 0 1 594.9490000000001,554 L712.652,554 L712.652,559 A10,10 0 0 1 702.652,569 Z"
+        fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+  <text x="704.652" y="565" text-anchor="end" font-size="9" fill="#1a1a1a">tests/views/views.sysml</text>
+  
+    <g><rect x="146.16800000000006" y="382" width="36.163" height="18"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <rect x="146.16800000000006" y="400" width="428.316" height="135"
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <text x="154.16800000000006" y="395" font-size="11" font-weight="600" fill="#1a1a1a">Api</text></g>
+    <g><rect x="171.16800000000006" y="427" width="378.316" height="83"
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M171.66800000000006,459 L171.66800000000006,427.5 L548.984,427.5 L548.984,459 Z" fill="#ccdce5" />
+      <text x="360.326" y="440" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
+      <text x="360.326" y="453" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">A module whose name is far wider than its package</text>
+      <line x1="171.16800000000006" y1="459" x2="549.484" y2="459"
+          stroke="#40657e" stroke-width="1" />
+      <text x="360.326" y="470" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">ports</text>
+      <text x="179.16800000000006" y="484"
+          font-size="11" fill="#1a1a1a">needs : ~Orders</text>
+      <text x="179.16800000000006" y="499"
+          font-size="11" fill="#1a1a1a">untyped</text></g>
+    <g><rect x="36" y="60" width="49.616" height="18"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <rect x="36" y="78" width="648.652" height="152"
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <text x="44" y="73" font-size="11" font-weight="600" fill="#1a1a1a">Store</text></g>
+    <g><rect x="61" y="105" width="438.652" height="40"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="280.326" y="122" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
+      <text x="280.326" y="135" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">Table :&gt; A module whose name is far wider than its package</text></g>
+    <g><rect x="539.652" y="105" width="120" height="40"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="599.652" y="122" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
+      <text x="599.652" y="135" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">Index</text></g>
+    <g><rect x="220.326" y="165" width="120" height="40"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="280.326" y="182" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
+      <text x="280.326" y="195" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">Log</text></g>
+    <g><rect x="539.652" y="165" width="120" height="40"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="599.652" y="182" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
+      <text x="599.652" y="195" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">Cache</text></g>
+  
+    <polyline points="360.326,230 360.326,382" fill="none" stroke="#1a1a1a" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="331.45900000000006" y="309" text-anchor="middle" font-size="9"
+          fill="#40657e" paint-order="stroke" stroke="#f9fbfc" stroke-width="3">&#171;import&#187;**</text>
+</svg>

@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="666.52" height="468"
+     viewBox="0 0 666.52 468" font-family="Arial, Helvetica, Liberation Sans, DejaVu Sans, sans-serif">
+  <title>Product (generated from tests/views/views.sysml)</title>
+  <defs>
+    <marker id="openArrow" markerWidth="12" markerHeight="12" refX="10" refY="5"
+            orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    </marker>
+    <marker id="diamond" markerWidth="12" markerHeight="8" refX="0" refY="4"
+            orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,4 L6,0 L12,4 L6,8 z" fill="#1a1a1a" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="666.52" height="468" fill="white" />
+  <rect x="8" y="8" width="650.52" height="452" rx="10" ry="10" fill="#f9fbfc" stroke="#40657e" stroke-width="1.25" />
+  <path d="M8,30 L8,18 A10,10 0 0 1 18,8 L121.157,8 L121.157,22 A8,8 0 0 1 113.157,30 Z"
+        fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+  <text x="18" y="23" font-size="11" fill="#1a1a1a"><tspan font-style="italic" fill="#40657e">&#171;view&#187;</tspan><tspan font-weight="600"> Product</tspan></text>
+  <path d="M534.817,460 L534.817,451 A6,6 0 0 1 540.817,445 L658.52,445 L658.52,450 A10,10 0 0 1 648.52,460 Z"
+        fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+  <text x="650.52" y="456" text-anchor="end" font-size="9" fill="#1a1a1a">tests/views/views.sysml</text>
+  
+    <g><rect x="36" y="60" width="594.52" height="366" rx="10" ry="10"
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M36.5,92 L36.5,70 A9.5,9.5 0 0 1 46,60.5 L620.52,60.5 A9.5,9.5 0 0 1 630.02,70 L630.02,92 Z" fill="#ccdce5" />
+      <text x="333.26" y="73" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
+      <text x="333.26" y="86" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">product : Assembly</text>
+      <line x1="36" y1="92" x2="630.52" y2="92"
+          stroke="#40657e" stroke-width="1" /></g>
+    <g><rect x="61" y="140" width="110" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="116" y="157" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
+      <text x="116" y="170" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">bare</text></g>
+    <g><rect x="211" y="158" width="139.36" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="280.68" y="175" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
+      <text x="280.68" y="188" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">extra : Socketed</text>
+      <rect x="275.68" y="193" width="10" height="10" rx="2" ry="2"
+          fill="white" stroke="#40657e" stroke-width="1.25" /></g>
+    <g><rect x="245.68" y="252" width="110" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="300.68" y="269" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
+      <text x="300.68" y="282" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">a : Both [2]</text>
+      <rect x="275.68" y="247" width="10" height="10" rx="2" ry="2"
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <rect x="315.68" y="247" width="10" height="10" rx="2" ry="2"
+          fill="white" stroke="#40657e" stroke-width="1.25" /></g>
+    <g><rect x="240.72533333333334" y="361" width="124.864" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="303.1573333333333" y="378" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
+      <text x="303.1573333333333" y="391" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">b : Right [1..*]</text>
+      <rect x="275.68" y="356" width="10" height="10" rx="2" ry="2"
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <rect x="320.6346666666667" y="356" width="10" height="10" rx="2" ry="2"
+          fill="white" stroke="#40657e" stroke-width="1.25" /></g>
+    <g><rect x="390.36" y="105" width="215.16" height="110" rx="10" ry="10"
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M390.86,137 L390.86,115 A9.5,9.5 0 0 1 400.36,105.5 L595.52,105.5 A9.5,9.5 0 0 1 605.02,115 L605.02,137 Z" fill="#ccdce5" />
+      <text x="497.94" y="118" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
+      <text x="497.94" y="131" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">n : Nested</text>
+      <line x1="390.36" y1="137" x2="605.52" y2="137"
+          stroke="#40657e" stroke-width="1" /></g>
+    <g><rect x="415.36" y="150" width="165.16" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="497.94" y="167" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
+      <text x="497.94" y="180" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">inner : Nested [0..1]</text></g>
+  
+    <polyline points="280.68,203 280.68,247" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="280.68,247 280.68,356" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <text x="260.849" y="321" text-anchor="middle" font-size="9"
+          fill="#40657e" paint-order="stroke" stroke="#f9fbfc" stroke-width="3">: Cable</text>
+  
+    <text x="286.68" y="213" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">plug</text>
+    <text x="253.042" y="244" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">plug</text>
+    <text x="326.68" y="244" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">spare</text>
+    <text x="247.525" y="353" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">spare</text>
+    <text x="331.6346666666667" y="353" font-size="9" fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="2.5">plug</text>
+</svg>

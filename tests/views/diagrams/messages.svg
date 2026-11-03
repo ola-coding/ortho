@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="378" height="354"
+     viewBox="0 0 378 354" font-family="Arial, Helvetica, Liberation Sans, DejaVu Sans, sans-serif">
+  <title>Messages (generated from tests/views/views.sysml)</title>
+  <defs>
+    <marker id="msgArrow" markerWidth="13" markerHeight="11" refX="11" refY="5" orient="auto"
+            markerUnits="userSpaceOnUse">
+      <path d="M1,1 L11,5 L1,9 z" fill="#f9fbfc" stroke="#1a1a1a" stroke-width="1.25" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="378" height="354" fill="white" />
+  <rect x="8" y="8" width="362" height="338" rx="10" ry="10" fill="#f9fbfc" stroke="#40657e" stroke-width="1.25" />
+  <path d="M8,30 L8,18 A10,10 0 0 1 18,8 L133.422,8 L133.422,22 A8,8 0 0 1 125.422,30 Z"
+        fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+  <text x="18" y="23" font-size="11" fill="#1a1a1a"><tspan font-style="italic" fill="#40657e">&#171;view&#187;</tspan><tspan font-weight="600"> Messages</tspan></text>
+  <path d="M246.29700000000003,346 L246.29700000000003,337 A6,6 0 0 1 252.29700000000003,331 L370,331 L370,336 A10,10 0 0 1 360,346 Z"
+        fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+  <text x="362" y="342" text-anchor="end" font-size="9" fill="#1a1a1a">tests/views/views.sysml</text>
+  
+    <g><rect x="24" y="48" width="90" height="36" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="69" y="63" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
+      <text x="69" y="76" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">c</text>
+      <line x1="69" y1="84" x2="69" y2="320"
+          stroke="#1a1a1a" stroke-width="1" stroke-dasharray="4 4" /></g>
+    <g><rect x="144" y="48" width="90" height="36" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="189" y="63" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
+      <text x="189" y="76" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">b : Node</text>
+      <line x1="189" y1="84" x2="189" y2="320"
+          stroke="#1a1a1a" stroke-width="1" stroke-dasharray="4 4" /></g>
+    <g><rect x="264" y="48" width="90" height="36" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="309" y="63" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
+      <text x="309" y="76" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">a : Node</text>
+      <line x1="309" y1="84" x2="309" y2="320"
+          stroke="#1a1a1a" stroke-width="1" stroke-dasharray="4 4" /></g>
+    <g><line x1="69" y1="120" x2="189" y2="120"
+          stroke="#1a1a1a" stroke-width="1.25" marker-end="url(#msgArrow)" />
+      <text x="129" y="114" text-anchor="middle" font-size="10"
+          fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="3">plugged</text></g>
+    <g><line x1="309" y1="160" x2="189" y2="160"
+          stroke="#1a1a1a" stroke-width="1.25" marker-end="url(#msgArrow)" />
+      <text x="249" y="154" text-anchor="middle" font-size="10"
+          fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="3">Ping</text></g>
+    <g><line x1="189" y1="200" x2="309" y2="200"
+          stroke="#1a1a1a" stroke-width="1.25" marker-end="url(#msgArrow)" />
+      <text x="249" y="194" text-anchor="middle" font-size="10"
+          fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="3">&#171;message&#187;</text></g>
+    <g><line x1="309" y1="240" x2="189" y2="240"
+          stroke="#1a1a1a" stroke-width="1.25" marker-end="url(#msgArrow)" />
+      <text x="249" y="234" text-anchor="middle" font-size="10"
+          fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="3">reply of Ping</text></g>
+    <g><line x1="189" y1="280" x2="309" y2="280"
+          stroke="#1a1a1a" stroke-width="1.25" marker-end="url(#msgArrow)" />
+      <text x="249" y="274" text-anchor="middle" font-size="10"
+          fill="#1a1a1a" paint-order="stroke" stroke="#f9fbfc" stroke-width="3">named</text></g>
+</svg>

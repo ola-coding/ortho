@@ -10,19 +10,40 @@ shows one object through several standard views, `ortho` renders six
 architectural views as SVG, straight from SysML v2 text: use case, logical,
 implementation, physical, deployment and process.
 
-It is self-contained — no external programs, no network calls — so the same
-model gives the same SVG on a laptop and in CI.
+It is one self-contained program — no runtime, no external programs, no
+network calls — so the same model gives the same SVG on a laptop and in CI.
 
 ## Install
 
-You need Node.js 24 or newer. Add ortho to your project from GitHub:
+Download ortho for your system from the
+[latest release](https://github.com/ola-coding/ortho/releases/latest):
+
+| System               | File                                      |
+| -------------------- | ----------------------------------------- |
+| Windows              | `ortho-x86_64-pc-windows-msvc.zip`        |
+| macOS, Apple silicon | `ortho-aarch64-apple-darwin.tar.gz`       |
+| macOS, Intel         | `ortho-x86_64-apple-darwin.tar.gz`        |
+| Linux, x86-64        | `ortho-x86_64-unknown-linux-musl.tar.gz`  |
+| Linux, ARM           | `ortho-aarch64-unknown-linux-musl.tar.gz` |
+
+Unpack it and put `ortho` (`ortho.exe` on Windows) in a folder on your `PATH`.
+On Linux or macOS, from a terminal:
 
 ```sh
-npm install --save-dev github:ola-coding/ortho
+curl -L https://github.com/ola-coding/ortho/releases/latest/download/ortho-aarch64-apple-darwin.tar.gz | tar xz
+sudo mv ortho-aarch64-apple-darwin/ortho /usr/local/bin/
 ```
 
-This installs the command as `./node_modules/.bin/ortho`; in npm scripts it is
-simply `ortho`.
+with the file for your system in place of the Apple silicon one. On macOS, a
+file downloaded with a browser is quarantined, and macOS refuses to open it;
+`xattr -d com.apple.quarantine ortho` lifts that. Check that it works with
+`ortho --version`.
+
+Or build it from source with [Rust](https://rustup.rs):
+
+```sh
+cargo install --git https://github.com/ola-coding/ortho
+```
 
 ## Your first diagram
 
@@ -57,7 +78,7 @@ The `view` at the end is the diagram: its name is the heading, and it shows
 what it exposes. Render it:
 
 ```sh
-./node_modules/.bin/ortho render logical.sysml -o diagrams
+ortho render logical.sysml -o diagrams
 ```
 
 Open `diagrams/logical-view-coffee-machine.svg` in a browser: a tree of ten
@@ -78,19 +99,26 @@ ortho render <models...> -o <folder> [--theme <name>]
 
 ## Using it in a project
 
-ortho renders every view a model declares, so one npm script draws them all.
+ortho renders every view a model declares, so one command draws them all.
 Commit your models and the generated SVGs:
 
-```json
-{
-  "scripts": {
-    "diagrams": "ortho render models -o diagrams"
-  }
-}
+```sh
+ortho render models -o diagrams
 ```
 
-Rendering is deterministic, so CI can run `npm run diagrams` and fail if
-`git diff` shows a change: the diagrams can never drift from the models.
+Rendering is deterministic, so CI can render again and fail if Git shows a
+change: the diagrams can never drift from the models. In GitHub Actions:
+
+```yaml
+- name: Diagrams are up to date
+  run: |
+    curl -sSL https://github.com/ola-coding/ortho/releases/latest/download/ortho-x86_64-unknown-linux-musl.tar.gz | tar xz -C "$RUNNER_TEMP"
+    "$RUNNER_TEMP/ortho-x86_64-unknown-linux-musl/ortho" render models -o diagrams
+    test -z "$(git status --porcelain diagrams)" || { git status diagrams; exit 1; }
+```
+
+To keep every run on the same version, use `releases/download/v0.1.0/` in
+place of `releases/latest/download/`.
 
 ## Examples
 
