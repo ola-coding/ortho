@@ -364,25 +364,22 @@ async function dumpViews(name: string, documents: Documents): Promise<void> {
     console.log(`views: ${name}, ${lines.length} declared, ${rendered} rendered`);
 }
 
-/** The views ortho lays out itself, without ELK. */
-const OWN_LAYOUT = new Set(['use-case', 'logical', 'process']);
-
 /**
- * Views no model declares, so the views ortho lays out itself are checked on far
- * more than the examples: one of each element a view may expose on its own, as a
- * GeneralView and as a SequenceView, and one of the elements of each package a
- * GeneralView may expose, taken together, which is how a function tree and the
- * use cases it refines are drawn. Each kind ELK lays out is left for its own step.
+ * Views no model declares, so every view is checked on far more than the
+ * examples: one of each element a view may expose on its own, as a
+ * GeneralView, an InterconnectionView and a SequenceView, and one of the
+ * elements of each package a GeneralView may expose, taken together, which is
+ * how a function tree and the use cases it refines are drawn.
  */
-function dumpGeneratedViews(name: string, documents: Documents, services: Services): void {
+async function dumpGeneratedViews(name: string, documents: Documents, services: Services): Promise<void> {
     const model = { $type: 'Model', packages: documents.flatMap(d => d.parseResult.value.packages) } as unknown as Model;
     const locator = services.workspace.AstNodeLocator;
     const lines: string[] = [];
     for (const document of documents) {
         const file = repoPath(document);
         for (const node of AstUtils.streamAllContents(document.parseResult.value)) {
-            const views: Array<{ definition: 'GeneralView' | 'SequenceView'; exposed: Member[] }> = [];
-            for (const definition of ['GeneralView', 'SequenceView'] as const) {
+            const views: Array<{ definition: 'GeneralView' | 'InterconnectionView' | 'SequenceView'; exposed: Member[] }> = [];
+            for (const definition of ['GeneralView', 'InterconnectionView', 'SequenceView'] as const) {
                 if (STANDARD_VIEWS[definition](node as Member)) {
                     views.push({ definition, exposed: [node as Member] });
                 }
@@ -396,9 +393,6 @@ function dumpGeneratedViews(name: string, documents: Documents, services: Servic
             for (const { definition, exposed } of views) {
                 const view = { $type: 'ViewUsage', definition, exposes: exposed.map(e => ({ element: { ref: e } })) } as unknown as ViewUsage;
                 const kind = diagramKind(view);
-                if (!OWN_LAYOUT.has(kind)) {
-                    continue;
-                }
                 const title = { heading: 'generated', definition, source: file };
                 const line: Record<string, unknown> = { file, node: locator.getAstNodePath(node), definition, exposed: exposed.length, kind };
                 if (kind === 'process') {
@@ -406,10 +400,15 @@ function dumpGeneratedViews(name: string, documents: Documents, services: Servic
                     line.graph = sequence;
                     line.svg = renderSequenceSvg(sequence, title, lightTheme);
                 } else {
-                    const { extract, layout } = graphOf[kind as 'use-case' | 'logical'];
+                    const { extract, layout } = graphOf[kind];
                     const graph = extract(exposed, model);
-                    const laidOut = layout(graph);
+                    elkCalls = [];
+                    const laidOut = await layout(graph);
                     line.graph = graph;
+                    if (elkCalls.length > 0) {
+                        line.elk = elkCalls;
+                    }
+                    elkCalls = undefined;
                     line.layout = laidOut;
                     line.svg = renderSvg(laidOut, title, lightTheme);
                 }
@@ -483,7 +482,7 @@ for (const [name, files] of workspaces) {
     const { documents, services } = await load(files);
     if (dumpLinks(name, documents, services) === 0) {
         await dumpViews(name, documents);
-        dumpGeneratedViews(name, documents, services);
+        await dumpGeneratedViews(name, documents, services);
     }
 }
 

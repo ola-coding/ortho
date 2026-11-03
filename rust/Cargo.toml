@@ -9,6 +9,6 @@ repository = "https://github.com/ola-coding/ortho"
 publish = false
 
 [dependencies]
-org-eclipse-elk-graph-json = "=0.12.1"
+org-eclipse-elk-graph-json = "=0.12.2"
 serde_json = { version = "1", features = ["float_roundtrip"] }
 unicode-normalization = "0.1.26"

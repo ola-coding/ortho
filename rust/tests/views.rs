@@ -205,6 +205,33 @@ fn lists_leaves_beneath_their_parent_and_spreads_any_other_family_in_a_row() {
 }
 
 /// The examples' views ortho lays out itself render as their committed diagrams.
+/// Whether two SVGs are the same text with the same numbers, but for ELK's last
+/// digits: elk-rs takes a few sums through a float as ELK's Java does, where elkjs
+/// keeps doubles, and does not always add in the same order.
+fn same_but_for_rounding(actual: &str, expected: &str) -> bool {
+    fn split(svg: &str) -> Vec<&str> {
+        let mut parts = Vec::new();
+        let mut start = 0;
+        let mut in_number = false;
+        for (i, c) in svg.char_indices() {
+            let numeric = c.is_ascii_digit() || c == '.';
+            if numeric != in_number && i > start {
+                parts.push(&svg[start..i]);
+                start = i;
+            }
+            in_number = numeric;
+        }
+        parts.push(&svg[start..]);
+        parts
+    }
+    let (a, e) = (split(actual), split(expected));
+    a.len() == e.len()
+        && a.iter().zip(&e).all(|(a, e)| match (a.parse::<f64>(), e.parse::<f64>()) {
+            (Ok(a), Ok(e)) => (a - e).abs() <= 1e-6 * e.abs().max(1.0),
+            _ => a == e,
+        })
+}
+
 #[test]
 fn renders_the_examples_as_their_committed_diagrams() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).parent().unwrap();
@@ -228,16 +255,18 @@ fn renders_the_examples_as_their_committed_diagrams() {
                     definition: ast.text(view, ortho::parser::ast::Prop::Definition).map(String::from),
                     source,
                 };
-                let Some(result) = render_view(&workspace, view, &title, &LIGHT) else {
-                    continue;
-                };
+                let result = render_view(&workspace, view, &title, &LIGHT).unwrap();
                 let committed = folder.join("diagrams").join(view_file_name(ast, view));
                 // As Git on Windows may check it out.
                 let expected = std::fs::read_to_string(&committed).unwrap().replace("\r\n", "\n");
-                assert!(result.svg == expected, "{} is not what {example} renders to", committed.display());
+                assert!(
+                    same_but_for_rounding(&result.svg, &expected),
+                    "{} is not what {example} renders to",
+                    committed.display()
+                );
                 rendered += 1;
             }
         }
-        assert_eq!(rendered, 3, "{example}: the use case, logical and process views");
+        assert_eq!(rendered, 6, "{example}: all six views");
     }
 }
