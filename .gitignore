@@ -1,6 +1,5 @@
-node_modules/
-dist/
-*.tsbuildinfo
+# Cargo's build
+/target/
 
 # Generated from marketing/deck.template.html + the committed diagrams
 marketing/ortho-deck.html
@@ -9,9 +8,5 @@ marketing/ortho-deck.artifact.html
 # Ad hoc diagram screenshots and the browser profile used to take them
 .review/
 
-# OMG's SysML v2 models, fetched by npm run omg-models (EPL-2.0, not committed)
+# OMG's SysML v2 models, fetched by cargo xtask omg-models (EPL-2.0, not committed)
 .omg-models/
-
-# The Rust port's build, and what npm run oracle records for it
-rust/target/
-rust/oracle/

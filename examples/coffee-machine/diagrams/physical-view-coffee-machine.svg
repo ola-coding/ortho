@@ -232,7 +232,7 @@
     <text x="168.91400000000007" y="341.5" text-anchor="middle" font-size="9"
           fill="#40657e" paint-order="stroke" stroke="#f9fbfc" stroke-width="3">: ControlLink</text>
     <polyline points="713.2216666666668,244 713.2216666666668,266 124.27600000000007,266 124.27600000000007,635 254.4846666666666,635 254.4846666666666,657" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
-    <text x="91.63800000000012" y="455" text-anchor="middle" font-size="9"
+    <text x="91.638" y="455" text-anchor="middle" font-size="9"
           fill="#40657e" paint-order="stroke" stroke="#f9fbfc" stroke-width="3">: ControlLink</text>
     <polyline points="894.8206666666667,244 894.8206666666667,657" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
     <text x="928.4586666666668" y="455" text-anchor="middle" font-size="9"

@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="782" height="484"
+     viewBox="0 0 782 484" font-family="Arial, Helvetica, Liberation Sans, DejaVu Sans, sans-serif">
+  <title>Deployed (generated from tests/views/views.sysml)</title>
+  <defs>
+    <marker id="openArrow" markerWidth="12" markerHeight="12" refX="10" refY="5"
+            orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    </marker>
+    <marker id="diamond" markerWidth="12" markerHeight="8" refX="0" refY="4"
+            orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,4 L6,0 L12,4 L6,8 z" fill="#1a1a1a" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="782" height="484" fill="white" />
+  <rect x="8" y="8" width="766" height="468" rx="10" ry="10" fill="#f9fbfc" stroke="#40657e" stroke-width="1.25" />
+  <path d="M8,30 L8,18 A10,10 0 0 1 18,8 L130.925,8 L130.925,22 A8,8 0 0 1 122.92500000000001,30 Z"
+        fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+  <text x="18" y="23" font-size="11" fill="#1a1a1a"><tspan font-style="italic" fill="#40657e">&#171;view&#187;</tspan><tspan font-weight="600"> Deployed</tspan></text>
+  <path d="M650.297,476 L650.297,467 A6,6 0 0 1 656.297,461 L774,461 L774,466 A10,10 0 0 1 764,476 Z"
+        fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+  <text x="766" y="472" text-anchor="end" font-size="9" fill="#1a1a1a">tests/views/views.sysml</text>
+  
+    <g><rect x="39" y="63" width="250" height="208" rx="10" ry="10"
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M39.5,95 L39.5,73 A9.5,9.5 0 0 1 49,63.5 L279,63.5 A9.5,9.5 0 0 1 288.5,73 L288.5,95 Z" fill="#ccdce5" />
+      <text x="164" y="76" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
+      <text x="164" y="89" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">again : Loop2</text>
+      <line x1="39" y1="95" x2="289" y2="95"
+          stroke="#40657e" stroke-width="1" /></g>
+    <g><rect x="64" y="108" width="200" height="138" rx="10" ry="10"
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M64.5,140 L64.5,118 A9.5,9.5 0 0 1 74,108.5 L254,108.5 A9.5,9.5 0 0 1 263.5,118 L263.5,140 Z" fill="#ccdce5" />
+      <text x="164" y="121" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
+      <text x="164" y="134" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">back : Loop</text>
+      <line x1="64" y1="140" x2="264" y2="140"
+          stroke="#40657e" stroke-width="1" /></g>
+    <g><rect x="89" y="153" width="150" height="68" rx="10" ry="10"
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M89.5,185 L89.5,163 A9.5,9.5 0 0 1 99,153.5 L229,153.5 A9.5,9.5 0 0 1 238.5,163 L238.5,185 Z" fill="#ccdce5" />
+      <text x="164" y="166" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
+      <text x="164" y="179" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">host : Computer</text>
+      <line x1="89" y1="185" x2="239" y2="185"
+          stroke="#40657e" stroke-width="1" />
+      <text x="164" y="196" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">relationships</text>
+      <text x="97" y="210"
+          font-size="11" fill="#1a1a1a">allocated sw::tool</text></g>
+    <g><rect x="319" y="63" width="424" height="208" rx="10" ry="10"
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M319.5,95 L319.5,73 A9.5,9.5 0 0 1 329,63.5 L733,63.5 A9.5,9.5 0 0 1 742.5,73 L742.5,95 Z" fill="#ccdce5" />
+      <text x="531" y="76" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
+      <text x="531" y="89" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">rack : Rack</text>
+      <line x1="319" y1="95" x2="743" y2="95"
+          stroke="#40657e" stroke-width="1" /></g>
+    <g><rect x="344" y="108" width="200" height="138" rx="10" ry="10"
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M344.5,140 L344.5,118 A9.5,9.5 0 0 1 354,108.5 L534,108.5 A9.5,9.5 0 0 1 543.5,118 L543.5,140 Z" fill="#ccdce5" />
+      <text x="444" y="121" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
+      <text x="444" y="134" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">board : Board</text>
+      <line x1="344" y1="140" x2="544" y2="140"
+          stroke="#40657e" stroke-width="1" /></g>
+    <g><rect x="369" y="153" width="150" height="68" rx="10" ry="10"
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M369.5,185 L369.5,163 A9.5,9.5 0 0 1 379,153.5 L509,153.5 A9.5,9.5 0 0 1 518.5,163 L518.5,185 Z" fill="#ccdce5" />
+      <text x="444" y="166" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
+      <text x="444" y="179" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">cpu : Computer</text>
+      <line x1="369" y1="185" x2="519" y2="185"
+          stroke="#40657e" stroke-width="1" />
+      <text x="444" y="196" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">relationships</text>
+      <text x="377" y="210"
+          font-size="11" fill="#1a1a1a">allocated sw::app</text></g>
+    <g><rect x="568" y="108" width="150" height="68" rx="10" ry="10"
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M568.5,140 L568.5,118 A9.5,9.5 0 0 1 578,108.5 L708,108.5 A9.5,9.5 0 0 1 717.5,118 L717.5,140 Z" fill="#ccdce5" />
+      <text x="643" y="121" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
+      <text x="643" y="134" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">host : Computer</text>
+      <line x1="568" y1="140" x2="718" y2="140"
+          stroke="#40657e" stroke-width="1" />
+      <text x="643" y="151" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">relationships</text>
+      <text x="576" y="165"
+          font-size="11" fill="#1a1a1a">allocated sw::app</text></g>
+    <g><rect x="39" y="301" width="200" height="138"
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M39.5,333 L39.5,301.5 L238.5,301.5 L238.5,333 Z" fill="#ccdce5" />
+      <text x="139" y="314" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
+      <text x="139" y="327" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">Twice</text>
+      <line x1="39" y1="333" x2="239" y2="333"
+          stroke="#40657e" stroke-width="1" /></g>
+    <g><rect x="64" y="346" width="150" height="68" rx="10" ry="10"
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M64.5,378 L64.5,356 A9.5,9.5 0 0 1 74,346.5 L204,346.5 A9.5,9.5 0 0 1 213.5,356 L213.5,378 Z" fill="#ccdce5" />
+      <text x="139" y="359" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
+      <text x="139" y="372" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">host : Computer</text>
+      <line x1="64" y1="378" x2="214" y2="378"
+          stroke="#40657e" stroke-width="1" />
+      <text x="139" y="389" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">relationships</text>
+      <text x="72" y="403"
+          font-size="11" fill="#1a1a1a">allocated sw::tool</text></g>
+    <g><rect x="269" y="301" width="150" height="68" rx="10" ry="10"
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M269.5,333 L269.5,311 A9.5,9.5 0 0 1 279,301.5 L409,301.5 A9.5,9.5 0 0 1 418.5,311 L418.5,333 Z" fill="#ccdce5" />
+      <text x="344" y="314" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
+      <text x="344" y="327" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">loose : Computer</text>
+      <line x1="269" y1="333" x2="419" y2="333"
+          stroke="#40657e" stroke-width="1" />
+      <text x="344" y="344" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">relationships</text>
+      <text x="277" y="358"
+          font-size="11" fill="#1a1a1a">allocated sw::tool</text></g>
+  
+</svg>

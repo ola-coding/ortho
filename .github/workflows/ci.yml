@@ -1,0 +1,126 @@
+# Tests ortho, keeps the example diagrams honest and publishes the pitch deck.
+#
+# test      Builds and tests on each system ortho ships for.
+# lint      Formatting and clippy, which read the same on every system.
+# diagrams  Re-renders every example, and the views written by hand in
+#           tests/views/, and fails if the committed SVGs differ.
+#           Rendering is deterministic, so any difference means a model or the
+#           renderer changed without the diagrams being regenerated.
+# omg       Counts how many of OMG's models load. They are fetched, not committed,
+#           and kept in a cache until the release they are fetched at changes.
+# deck      On main only: builds the deck from those diagrams.
+# deploy    Publishes the deck to GitHub Pages. A stale diagram or a failing test
+#           blocks it.
+#
+# One-time setup: Settings -> Pages -> Build and deployment -> Source: GitHub Actions.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # Superseded pull-request runs are cancelled; runs on main always finish.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  test:
+    name: Tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      # Report every system rather than stopping at the first failure: which
+      # one broke is the point of running three.
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v7
+      - run: rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo test --locked
+
+  lint:
+    name: Formatting and clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo fmt --all --check
+      - run: cargo clippy --locked --workspace --all-targets -- -D warnings
+
+  diagrams:
+    name: Example diagrams are up to date
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo xtask render-examples
+      - name: Fail if a committed diagram is stale or missing
+        run: |
+          changes="$(git status --porcelain -- examples tests/views)"
+          if [ -n "$changes" ]; then
+            echo "$changes"
+            git diff --stat -- examples tests/views
+            echo "::error::The committed diagrams differ from a fresh render. Run 'cargo xtask render-examples' and commit the result."
+            exit 1
+          fi
+
+  omg:
+    name: OMG's models load as counted
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - id: models
+        uses: actions/cache@v6
+        with:
+          path: .omg-models
+          key: omg-models-${{ hashFiles('xtask/src/omg_models.rs') }}
+      - run: rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+      - if: steps.models.outputs.cache-hit != 'true'
+        run: cargo xtask omg-models
+      - run: cargo test --locked -- --ignored
+
+  deck:
+    name: Build pitch deck
+    needs: [test, diagrams]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo xtask deck
+      - name: Assemble site
+        run: |
+          mkdir -p _site
+          cp marketing/ortho-deck.html _site/index.html
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    name: Publish to GitHub Pages
+    needs: deck
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    # Never cancel a deployment part-way through.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
