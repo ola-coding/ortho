@@ -1,4 +1,6 @@
 pub mod elk;
+pub mod tree;
+pub mod use_case;
 
 use crate::model::graph::{Compartment, EdgeKind, NodeShape};
 
@@ -29,6 +31,7 @@ pub struct LaidOutNode {
     pub height: f64,
 }
 
+#[derive(Clone, Copy, Debug)]
 pub struct Point {
     pub x: f64,
     pub y: f64,

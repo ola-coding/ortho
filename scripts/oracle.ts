@@ -8,7 +8,8 @@ import { join, relative, resolve } from 'node:path';
 import { AstUtils, URI } from 'langium';
 import { clearDocuments } from 'langium/test';
 import type { CstNode, LangiumDocument, Reference } from 'langium';
-import type { Model, ViewUsage } from '../src/generated/ast.js';
+import type { Member, Model, ViewUsage } from '../src/generated/ast.js';
+import { isPackageDecl } from '../src/generated/ast.js';
 import { extractDeploymentGraph } from '../src/diagrams/deployment.js';
 import { extractImplementationGraph } from '../src/diagrams/implementation.js';
 import { extractLogicalGraph } from '../src/diagrams/logical.js';
@@ -18,7 +19,7 @@ import { extractUseCaseGraph } from '../src/diagrams/use-case.js';
 import { elk, layoutGraph } from '../src/layout/elk-layout.js';
 import { layoutTree } from '../src/layout/tree-layout.js';
 import { layoutUseCases } from '../src/layout/use-case-layout.js';
-import { declaredViews, diagramKind, exposedElements, viewFileName, whyUndrawable } from '../src/model/views.js';
+import { declaredViews, diagramKind, exposedElements, STANDARD_VIEWS, viewFileName, whyUndrawable } from '../src/model/views.js';
 import { createSysmlServices } from '../src/parser/sysml-module.js';
 import { renderView } from '../src/pipeline.js';
 import { renderSequenceSvg } from '../src/render/sequence-renderer.js';
@@ -34,6 +35,7 @@ const OMG = '.omg-models/sysml/src';
 const CONSTRUCTS = 'rust/tests/constructs.txt';
 const WORKSPACES = 'rust/tests/workspaces.txt';
 const RENDERINGS = 'rust/tests/renderings.json';
+const VIEWS = 'rust/tests/views';
 
 function sysmlFiles(path: string): string[] {
     if (statSync(path).isFile()) {
@@ -362,6 +364,63 @@ async function dumpViews(name: string, documents: Documents): Promise<void> {
     console.log(`views: ${name}, ${lines.length} declared, ${rendered} rendered`);
 }
 
+/** The views ortho lays out itself, without ELK. */
+const OWN_LAYOUT = new Set(['use-case', 'logical', 'process']);
+
+/**
+ * Views no model declares, so the views ortho lays out itself are checked on far
+ * more than the examples: one of each element a view may expose on its own, as a
+ * GeneralView and as a SequenceView, and one of the elements of each package a
+ * GeneralView may expose, taken together, which is how a function tree and the
+ * use cases it refines are drawn. Each kind ELK lays out is left for its own step.
+ */
+function dumpGeneratedViews(name: string, documents: Documents, services: Services): void {
+    const model = { $type: 'Model', packages: documents.flatMap(d => d.parseResult.value.packages) } as unknown as Model;
+    const locator = services.workspace.AstNodeLocator;
+    const lines: string[] = [];
+    for (const document of documents) {
+        const file = repoPath(document);
+        for (const node of AstUtils.streamAllContents(document.parseResult.value)) {
+            const views: Array<{ definition: 'GeneralView' | 'SequenceView'; exposed: Member[] }> = [];
+            for (const definition of ['GeneralView', 'SequenceView'] as const) {
+                if (STANDARD_VIEWS[definition](node as Member)) {
+                    views.push({ definition, exposed: [node as Member] });
+                }
+            }
+            if (isPackageDecl(node)) {
+                const exposed = node.members.filter(m => !isPackageDecl(m) && STANDARD_VIEWS.GeneralView(m));
+                if (exposed.length > 1) {
+                    views.push({ definition: 'GeneralView', exposed });
+                }
+            }
+            for (const { definition, exposed } of views) {
+                const view = { $type: 'ViewUsage', definition, exposes: exposed.map(e => ({ element: { ref: e } })) } as unknown as ViewUsage;
+                const kind = diagramKind(view);
+                if (!OWN_LAYOUT.has(kind)) {
+                    continue;
+                }
+                const title = { heading: 'generated', definition, source: file };
+                const line: Record<string, unknown> = { file, node: locator.getAstNodePath(node), definition, exposed: exposed.length, kind };
+                if (kind === 'process') {
+                    const sequence = extractSequenceModel(exposed);
+                    line.graph = sequence;
+                    line.svg = renderSequenceSvg(sequence, title, lightTheme);
+                } else {
+                    const { extract, layout } = graphOf[kind as 'use-case' | 'logical'];
+                    const graph = extract(exposed, model);
+                    const laidOut = layout(graph);
+                    line.graph = graph;
+                    line.layout = laidOut;
+                    line.svg = renderSvg(laidOut, title, lightTheme);
+                }
+                lines.push(JSON.stringify(line));
+            }
+        }
+    }
+    writeLines(`${OUT}/generated-views/${name}.jsonl`, lines);
+    console.log(`generated views: ${name}, ${lines.length}`);
+}
+
 /** Diagrams written by hand, for what no model draws: each rendered in both themes. */
 function dumpRenderings(): void {
     const cases = JSON.parse(readFileSync(RENDERINGS, 'utf-8')) as Array<{ title: DiagramTitle; diagram?: LaidOutDiagram; sequence?: SequenceModel }>;
@@ -416,13 +475,15 @@ dumpTrees('broken', broken);
 const workspaces: Array<[string, string[]]> = [
     ['omg', omg],
     ...examples.map((example): [string, string[]] => [example, sysmlFiles(`examples/${example}`)]),
-    ...fixtures.map((file): [string, string[]] => [`fixture-${file.replace(/^.*\/|\.sysml$/g, '')}`, [file]])
+    ...fixtures.map((file): [string, string[]] => [`fixture-${file.replace(/^.*\/|\.sysml$/g, '')}`, [file]]),
+    ['by-hand', sysmlFiles(VIEWS)]
 ];
 writeLines(`${OUT}/workspaces.jsonl`, workspaces.map(([name, files]) => JSON.stringify({ name, files })));
 for (const [name, files] of workspaces) {
     const { documents, services } = await load(files);
     if (dumpLinks(name, documents, services) === 0) {
         await dumpViews(name, documents);
+        dumpGeneratedViews(name, documents, services);
     }
 }
 

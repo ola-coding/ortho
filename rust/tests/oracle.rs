@@ -1,11 +1,22 @@
 //! The port against what the TypeScript produces, which `npm run oracle` records in
 //! `rust/oracle/`. Ignored until asked for: `cargo test --test oracle -- --ignored`.
-use ortho::diagrams::sequence::{SequenceLifeline, SequenceMessage, SequenceModel};
+use ortho::diagrams::logical::extract_logical_graph;
+use ortho::diagrams::sequence::{SequenceLifeline, SequenceMessage, SequenceModel, extract_sequence_model};
+use ortho::diagrams::use_case::extract_use_case_graph;
+use ortho::layout::tree::layout_tree;
+use ortho::layout::use_case::layout_use_cases;
 use ortho::layout::{LabelBox, LaidOutDiagram, LaidOutEdge, LaidOutNode, LaidOutPort, Point};
-use ortho::model::graph::{Compartment, EdgeKind, NodeShape};
+use ortho::model::graph::{Compartment, DiagramGraph, EdgeKind, GraphNode, NodeShape};
+use ortho::model::views::{
+    DiagramKind, StandardView, declared_views, diagram_kind, diagram_kind_of, exposed_elements, view_file_name,
+    why_undrawable,
+};
 use ortho::parser::ast::{Ast, Field, NodeId, Prop, Type, Value};
+use ortho::parser::workspace::Severity;
 use ortho::parser::workspace::Workspace;
 use ortho::parser::{parse, position};
+use ortho::pipeline::{render_exposed, render_view};
+use ortho::render::number::Js;
 use ortho::render::sequence::render_sequence_svg;
 use ortho::render::svg::{DiagramTitle, render_svg};
 use ortho::render::theme::{DARK_GLASS, LIGHT};
@@ -489,4 +500,313 @@ fn svgs_of_diagrams_written_by_hand() {
             check_svgs(&name, &stem, |theme| render_svg(&diagram, &title, theme));
         }
     }
+}
+
+// ---------------------------------------------------------------- Views
+
+/// What JSON.stringify writes, field by field in the order the TypeScript builds them.
+struct JsonObject<'a> {
+    out: &'a mut String,
+    empty: bool,
+}
+
+impl<'a> JsonObject<'a> {
+    fn new(out: &'a mut String) -> JsonObject<'a> {
+        out.push('{');
+        JsonObject { out, empty: true }
+    }
+
+    fn key(&mut self, key: &str) -> &mut String {
+        if !self.empty {
+            self.out.push(',');
+        }
+        self.empty = false;
+        write!(self.out, "\"{key}\":").unwrap();
+        self.out
+    }
+
+    fn text(&mut self, key: &str, value: &str) -> &mut Self {
+        write_string(value, self.key(key));
+        self
+    }
+
+    /// Left out when there is none, as JSON.stringify leaves out `undefined`.
+    fn optional(&mut self, key: &str, value: Option<&str>) -> &mut Self {
+        if let Some(value) = value {
+            self.text(key, value);
+        }
+        self
+    }
+
+    fn number(&mut self, key: &str, value: f64) -> &mut Self {
+        assert!(value.is_finite(), "{key} is {value}");
+        write!(self.key(key), "{}", Js(value)).unwrap();
+        self
+    }
+
+    fn list<T>(&mut self, key: &str, items: &[T], write: impl Fn(&T, &mut String)) -> &mut Self {
+        let out = self.key(key);
+        out.push('[');
+        for (i, item) in items.iter().enumerate() {
+            if i > 0 {
+                out.push(',');
+            }
+            write(item, out);
+        }
+        out.push(']');
+        self
+    }
+
+    fn raw(&mut self, key: &str, json: &str) -> &mut Self {
+        self.key(key).push_str(json);
+        self
+    }
+
+    fn end(&mut self) {
+        self.out.push('}');
+    }
+}
+
+fn compartment_json(c: &Compartment, out: &mut String) {
+    JsonObject::new(out).optional("title", c.title.as_deref()).list("lines", &c.lines, |l, o| write_string(l, o)).end();
+}
+
+fn graph_node_json(n: &GraphNode, out: &mut String) {
+    let mut o = JsonObject::new(out);
+    o.text("id", &n.id).text("shape", n.shape.name()).text("keyword", &n.keyword).text("name", &n.name);
+    o.list("compartments", &n.compartments, compartment_json);
+    o.list("ports", &n.ports, |p, out| JsonObject::new(out).text("id", &p.id).text("label", &p.label).end());
+    if let Some(children) = &n.children {
+        o.list("children", children, graph_node_json);
+    }
+    o.number("width", n.width).number("height", n.height).end();
+}
+
+fn graph_json(graph: &DiagramGraph) -> String {
+    let mut out = String::new();
+    let mut o = JsonObject::new(&mut out);
+    o.list("nodes", &graph.nodes, graph_node_json);
+    o.list("edges", &graph.edges, |e, out| {
+        let mut o = JsonObject::new(out);
+        o.text("id", &e.id).text("kind", e.kind.name()).text("sourceId", &e.source_id).text("targetId", &e.target_id);
+        o.optional("sourcePortId", e.source_port_id.as_deref()).optional("targetPortId", e.target_port_id.as_deref());
+        o.optional("label", e.label.as_deref()).end();
+    });
+    o.end();
+    out
+}
+
+fn point_json(p: &Point, out: &mut String) {
+    JsonObject::new(out).number("x", p.x).number("y", p.y).end();
+}
+
+/// A layout ortho makes itself, which has neither ports nor ELK's label boxes.
+fn layout_json(diagram: &LaidOutDiagram) -> String {
+    let mut out = String::new();
+    let mut o = JsonObject::new(&mut out);
+    o.number("width", diagram.width).number("height", diagram.height);
+    o.list("nodes", &diagram.nodes, |n, out| {
+        assert!(n.ports.is_empty(), "{}: ports", n.id);
+        let mut o = JsonObject::new(out);
+        o.text("id", &n.id).text("shape", n.shape.name()).text("keyword", &n.keyword).text("name", &n.name);
+        o.list("compartments", &n.compartments, compartment_json).raw("ports", "[]");
+        o.raw("hasChildren", if n.has_children { "true" } else { "false" });
+        o.number("x", n.x).number("y", n.y).number("width", n.width).number("height", n.height).end();
+    });
+    o.list("edges", &diagram.edges, |e, out| {
+        assert!(e.label_box.is_none(), "{}: label box", e.id);
+        let mut o = JsonObject::new(out);
+        o.text("id", &e.id).text("kind", e.kind.name()).text("sourceId", &e.source_id).text("targetId", &e.target_id);
+        o.optional("label", e.label.as_deref()).list("points", &e.points, point_json).end();
+    });
+    o.end();
+    out
+}
+
+fn sequence_json(model: &SequenceModel) -> String {
+    let mut out = String::new();
+    let mut o = JsonObject::new(&mut out);
+    o.list("lifelines", &model.lifelines, |l, out| {
+        JsonObject::new(out).text("id", &l.id).text("label", &l.label).end()
+    });
+    o.list("messages", &model.messages, |m, out| {
+        JsonObject::new(out)
+            .text("sourceId", &m.source_id)
+            .text("targetId", &m.target_id)
+            .text("label", &m.label)
+            .end();
+    });
+    o.end();
+    out
+}
+
+/// The graph, the layout if ortho makes it, and the light SVG of a view ELK does not
+/// lay out, each as JSON, or nothing for one ELK lays out.
+fn stages(workspace: &Workspace, kind: DiagramKind, exposed: &[NodeId], title: &DiagramTitle) -> Option<Stages> {
+    let ast = &workspace.ast;
+    let (graph, layout) = match kind {
+        DiagramKind::Process => (sequence_json(&extract_sequence_model(ast, exposed)), None),
+        DiagramKind::UseCase => {
+            let graph = extract_use_case_graph(ast, exposed);
+            (graph_json(&graph), Some(layout_json(&layout_use_cases(&graph))))
+        }
+        DiagramKind::Logical => {
+            let graph = extract_logical_graph(ast, exposed, &workspace.packages());
+            (graph_json(&graph), Some(layout_json(&layout_tree(&graph))))
+        }
+        _ => return None,
+    };
+    let svg = render_exposed(workspace, kind, exposed, title, &LIGHT).unwrap().svg;
+    Some(Stages { graph, layout, svg })
+}
+
+struct Stages {
+    graph: String,
+    layout: Option<String>,
+    svg: String,
+}
+
+fn text_difference(name: &str, actual: &str, expected: &str) -> Option<String> {
+    svg_difference(actual, expected).map(|difference| format!("{name}: {difference}"))
+}
+
+/// Recorded workspaces whose models have no errors, which are those whose views were recorded.
+fn view_workspaces() -> Vec<(String, Workspace)> {
+    let mut loaded = Vec::new();
+    for line in read_recorded("workspaces.jsonl").lines() {
+        let record: Json = serde_json::from_str(line).unwrap();
+        let workspace = load(&strings_in(line));
+        if workspace.reported(Severity::Error).is_empty() {
+            loaded.push((text(&record, "name"), workspace));
+        }
+    }
+    loaded
+}
+
+/// Every view the examples and fixtures declare: what it is called, whether it is
+/// drawn and as what, and for those ortho lays out itself each stage, byte for byte
+/// what the TypeScript produces, the SVG in both themes and from the model.
+#[test]
+#[ignore = "needs npm run oracle"]
+fn views_of_recorded_models() {
+    let mut lines = Vec::new();
+    let mut compared = 0;
+    for (name, workspace) in view_workspaces() {
+        let ast = &workspace.ast;
+        let mut taken = std::collections::HashSet::new();
+        for document in &workspace.documents {
+            for view in declared_views(ast, document.root) {
+                let base = format!("{name}/{}", view_file_name(ast, view).trim_end_matches(".svg"));
+                let mut id = base.clone();
+                for n in 2.. {
+                    if taken.insert(id.clone()) {
+                        break;
+                    }
+                    id = format!("{base}-{n}");
+                }
+                let mut line = String::new();
+                let mut o = JsonObject::new(&mut line);
+                o.text("id", &id).text("source", &document.path);
+                o.optional("name", ast.text(view, Prop::Name)).optional("definition", ast.text(view, Prop::Definition));
+                let skipped = why_undrawable(ast, view);
+                match &skipped {
+                    Some(reason) => o.text("skipped", reason),
+                    None => o.text("kind", diagram_kind(ast, view).name()),
+                };
+                o.end();
+                lines.push(line);
+                if skipped.is_some() {
+                    continue;
+                }
+                let title = DiagramTitle {
+                    heading: ast.text(view, Prop::Name).unwrap_or("").to_string(),
+                    definition: ast.text(view, Prop::Definition).map(String::from),
+                    source: document.path.clone(),
+                };
+                let kind = diagram_kind(ast, view);
+                let Some(stages) = stages(&workspace, kind, &exposed_elements(ast, view), &title) else {
+                    continue;
+                };
+                let stem = format!("views/{id}");
+                let difference = text_difference("graph", &stages.graph, &read_recorded(&format!("{stem}.graph.json")))
+                    .or_else(|| {
+                        let layout = stages.layout.as_deref()?;
+                        text_difference("layout", layout, &read_recorded(&format!("{stem}.layout.json")))
+                    });
+                if let Some(difference) = difference {
+                    panic!("{id}, {difference}");
+                }
+                check_svgs(&id, &stem, |theme| render_view(&workspace, view, &title, theme).unwrap().svg);
+                compared += 1;
+            }
+        }
+    }
+    let expected: Vec<String> = read_recorded("views/index.jsonl").lines().map(String::from).collect();
+    if let Some(difference) = first_difference(&lines, &expected) {
+        panic!("views/index.jsonl: {difference}");
+    }
+    assert!(compared > 0, "no view ortho lays out itself recorded");
+    println!("{} views declared, {compared} laid out by ortho, identical at every stage", lines.len());
+}
+
+/// Views no model declares, of each element of every recorded model a view may
+/// expose on its own, and of each package's together, as `npm run oracle` makes
+/// them: every stage byte for byte what the TypeScript produces.
+#[test]
+#[ignore = "needs npm run oracle"]
+fn generated_views_of_recorded_models() {
+    let mut compared = 0;
+    for (name, workspace) in view_workspaces() {
+        let ast = &workspace.ast;
+        let mut lines = Vec::new();
+        for document in &workspace.documents {
+            for node in ast.with_all_contents(document.root).into_iter().skip(1) {
+                let mut views: Vec<(StandardView, Vec<NodeId>)> = Vec::new();
+                for definition in [StandardView::GeneralView, StandardView::SequenceView] {
+                    if definition.may_expose(ast, node) {
+                        views.push((definition, vec![node]));
+                    }
+                }
+                if ast[node].ty == Type::PackageDecl {
+                    let exposed: Vec<NodeId> = ast
+                        .children(node, Prop::Members)
+                        .filter(|m| ast[*m].ty != Type::PackageDecl && StandardView::GeneralView.may_expose(ast, *m))
+                        .collect();
+                    if exposed.len() > 1 {
+                        views.push((StandardView::GeneralView, exposed));
+                    }
+                }
+                for (definition, exposed) in views {
+                    let kind = diagram_kind_of(ast, Some(definition), &exposed);
+                    let title = DiagramTitle {
+                        heading: "generated".to_string(),
+                        definition: Some(definition.name().to_string()),
+                        source: document.path.clone(),
+                    };
+                    let Some(stages) = stages(&workspace, kind, &exposed, &title) else {
+                        continue;
+                    };
+                    let mut line = String::new();
+                    let mut o = JsonObject::new(&mut line);
+                    o.text("file", &document.path).text("node", &ast.node_path(node));
+                    o.text("definition", definition.name()).number("exposed", exposed.len() as f64);
+                    o.text("kind", kind.name()).raw("graph", &stages.graph);
+                    if let Some(layout) = &stages.layout {
+                        o.raw("layout", layout);
+                    }
+                    o.text("svg", &stages.svg).end();
+                    lines.push(line);
+                }
+            }
+        }
+        let expected: Vec<String> =
+            read_recorded(&format!("generated-views/{name}.jsonl")).lines().map(String::from).collect();
+        if let Some(i) = lines.iter().zip(&expected).position(|(a, e)| a != e) {
+            panic!("{name}, line {i}: {}", svg_difference(&lines[i], &expected[i]).unwrap());
+        }
+        assert_eq!(lines.len(), expected.len(), "{name}: how many views");
+        compared += lines.len();
+    }
+    assert!(compared > 0, "no generated view recorded");
+    println!("{compared} generated views, identical at every stage");
 }
