@@ -6,34 +6,38 @@ How ortho works inside, and why. For using it, see [README.md](README.md).
 
 ```text
 .sysml text
-  → parse            Langium-generated parser + custom scoping   (src/parser/)
-  → model            resolved AST, cross-references linked        (src/generated/)
+  → parse            hand-written parser, then name resolution     (src/parser/)
+  → model            the tree, its references linked               (src/parser/ast.rs)
   → extract          one extractor per diagram type               (src/diagrams/)
-  → layout           elkjs, or ortho's own for a fixed shape      (src/layout/)
+  → layout           ELK, or ortho's own for a fixed shape        (src/layout/)
   → render           hand-written SVG serialization               (src/render/)
   → .svg file
 ```
 
-`src/cli.ts` renders every view the model declares, and is the only way in;
-there is no programmatic API. `src/model/views.ts` says which of the six
-diagrams a view is and names its file, and `src/pipeline.ts` runs that
+ortho is written in Rust, one binary with no runtime. `src/main.rs` is the
+`ortho render` command, which renders every view the model declares, and is
+the only way in for users; the library in `src/lib.rs` is there for the tests
+and `xtask/`, not as a public API. `src/model/views.rs` says which of the six
+diagrams a view is and names its file, and `src/pipeline.rs` runs that
 diagram's extractor, layout and renderer on what the view exposes.
 
-- **Langium** does cross-reference resolution and scoping, the bulk of a SysML
-  parser. The grammar is written from the OMG specification, not copied from
-  the EPL-licensed pilot implementation. Existing parsers were tried first:
+- **The parser is ortho's own** (`src/parser/`): a lexer, a recursive-descent
+  parser with one method per rule, and name resolution and checks after it.
+  The grammar is written from the OMG specification, not copied from the
+  EPL-licensed pilot implementation. Existing parsers were tried first:
   `sysml-v2-lsp` offers no parser API, and OpenSysML's does not expose what the
   views draw.
-- **elkjs**, the Eclipse Layout Kernel in plain JavaScript, lays out the
-  implementation, physical and deployment views, whose nested boxes and ports
-  need it — no binary, no service. The other three have a fixed shape, so ortho
-  lays them out itself.
+- **ELK**, the Eclipse Layout Kernel, lays out the implementation, physical and
+  deployment views, whose nested boxes and ports need it. It is
+  [elk-rs](https://github.com/openedges/elk-rs), a port of ELK to Rust compiled
+  into the binary — no Java, no service. The other three have a fixed shape, so
+  ortho lays them out itself.
 - **No renderer dependency.** SVG is written as text: no browser, no DOM, and
   output that is deterministic and diffable.
 
 ## Parsing
 
-**Name resolution** (`src/parser/sysml-scope.ts`) follows SysML v2. A name
+**Name resolution** (`src/parser/scope.rs`) follows SysML v2. A name
 is looked up where it is written, among the namespace's own members and
 aliases, what a definition inherits through `:>`, what a usage's type gives
 it, and what a namespace imports, then in each namespace around it, and last
@@ -41,24 +45,24 @@ among the top-level elements; each `::` segment after that is a member of the
 one before, or a public import of it. A feature chain continues with dots,
 each segment a feature of the one before: its own, its type's, or one of what
 it subsets, references or redefines. An unnamed element answers to the name it
-takes on, `part :>> engine` to engine and `perform a.b` to b (`effectiveName`);
+takes on, `part :>> engine` to engine and `perform a.b` to b (`effective_name`);
 any element answers to its short name too, and a quoted name loses its quotes
-as it is parsed (`sysml-value-converter.ts`). An import's target is a
+as it is parsed (`unquote` in `grammar.rs`). An import's target is a
 reference found the same way, which the implementation view follows for its
 «import» arrows; one ortho does not have, such as the standard library's,
-imports nothing (`sysml-document-validator.ts`). A dependency's ends are
+imports nothing (`validator.rs`). A dependency's ends are
 references too, which the logical view follows for its dashed arrows, so a typo
 in one fails.
 
-**Grammar** (`grammar/sysml.langium`). What the views draw has alternatives
-of its own, close to the spec's; every other definition and usage shares one
-of three, which keep what they name as written. All of them sit in one rule,
-`Element`: its prefix is read once and the keyword after it picks the
-alternative, which keeps choosing among them cheap, also on a broken file.
-Error recovery is off, so a file stops at its first syntax error; recovering
-from one made a single broken file take seconds.
+**Grammar** (`src/parser/grammar.rs`, with the tokens in `lexer.rs`). What the
+views draw has alternatives of its own, close to the spec's; every other
+definition and usage shares one of three, which keep what they name as
+written. All of them sit in one rule, `element`: its prefix is read once and
+the keyword after it picks the alternative, which keeps choosing among them
+cheap, also on a broken file. A file stops at its first syntax error, which
+says where it is and what was expected there.
 
-**Conformance** (`src/parser/sysml-validator.ts`). The grammar enforces what
+**Conformance** (`src/parser/validator.rs`). The grammar enforces what
 it can. After linking, the validator checks the rules it cannot, all listed
 in [LANGUAGE.md](LANGUAGE.md): no reserved word as a name, chains that start
 at a usage, a `perform` of behaviour rather than structure, and a use case's
@@ -66,24 +70,23 @@ subject before its actors. One rule is only a warning, which the CLI prints
 before carrying on: a top-level package named after a standard library package.
 ortho finds the model's, while the pilot may find the library's, so such a model
 renders here and may fail elsewhere. A model may declare any view, so one ortho
-cannot draw is skipped with the reason (`whyUndrawable`).
+cannot draw is skipped with the reason (`why_undrawable`).
 
 ## Layout and rendering
 
-- **Text is measured without a browser.** `src/render/text-metrics.ts` embeds
+- **Text is measured without a browser.** `src/render/text_metrics.rs` embeds
   the widths of Arial and DejaVu Sans, which the SVG's font list draws with on
-  Windows, Linux and Typst. `measureText()` takes the wider for each character,
+  Windows, Linux and Typst. `measure_text()` takes the wider for each character,
   so text fits whichever is drawn and nobody installs a font. Boxes are sized
   with it, never with character counts.
 - **Edges arrive in root coordinates.** ELK reports an edge relative to the
   node that contains it, which for a line from a box's own port to its child
-  is that box. `elk-layout.ts` sets `org.eclipse.elk.json.edgeCoords: ROOT`
-  (elkjs 0.12); without it the edges on the implementation and physical views
-  move.
+  is that box. `src/layout/elk.rs` sets `org.eclipse.elk.json.edgeCoords: ROOT`;
+  without it the edges on the implementation and physical views move.
 - **Containers fit their contents and their name.** A container gets its
   name's width as a minimum and centres narrower contents. Layering downwards,
   ELK reads a container's minimum size and content alignment with their axes
-  swapped, so `elk-layout.ts` gives them swapped.
+  swapped, so `elk.rs` gives them swapped.
 - **Deployment is packed, not layered.** With no edges, ELK's `layered` put
   every box in one row and `box` reorders by size, so the view uses
   `rectpacking`, one level at a time, since packing cannot lay out a
@@ -93,13 +96,13 @@ cannot draw is skipped with the reason (`whyUndrawable`).
   resolves each connection from the part that declares it, so a type fitted
   twice is two boxes, each wired on its own. Drawing definitions merged the
   drone's two radios into one.
-- **The logical view is laid out by ortho** (`src/layout/tree-layout.ts`). A
+- **The logical view is laid out by ortho** (`src/layout/tree.rs`). A
   family of leaves is listed vertically off a spine; any other family is
   spread in a row off a bus, the parent over its middle child, or over the
   middle of the row when there is none. ELK put every leaf in one row: 3322 px
   across for 27 functions. A use case the view exposes stands in a row above,
   centred over the functions that depend on it, and takes no part in the tree.
-- **The use case view is laid out by ortho** (`src/layout/use-case-layout.ts`):
+- **The use case view is laid out by ortho** (`src/layout/use_case.rs`):
   the subject above its use cases, as OMG draws it, and the actors below them.
   OMG draws one use case, its actors beside it; with several sharing both, only
   opposite sides keep every line clear of every box. Each use case stands
@@ -107,7 +110,7 @@ cannot draw is skipped with the reason (`whyUndrawable`).
   left to right, spread the view out with long lines across it.
 - **Realization, APIs and allocation are compartments.** An edge from a
   function to its realizer would need both on one diagram — a seventh view —
-  so the part's box lists them instead; `paddingOf` adds the compartments'
+  so the part's box lists them instead; `padding_of` adds the compartments'
   height so nested parts start below them. A module's API is a *ports*
   compartment too: a square on the border is for a port a wire lands on. A
   host lists what is allocated to it in its *relationships* compartment,
@@ -115,13 +118,13 @@ cannot draw is skipped with the reason (`whyUndrawable`).
 - **Labels** for ports, wires and «import» are real ELK labels, so ELK
   reserves room for them; port labels are painted after every edge.
   Keywords get guillemets; names do not.
-- **Sequence diagrams bypass ELK** (`src/render/sequence-renderer.ts`): gaps
+- **Sequence diagrams bypass ELK** (`src/render/sequence.rs`): gaps
   between lifelines widen only where a label needs it. A message runs from
   lifeline to lifeline, since SysML v2 draws no activation bars.
 - **The notation** is described in [VIEWS.md](VIEWS.md). The frame's tab shows
   the view's definition, which is optional there, only for a view without a
-  name. A box gets its corners and keyword from what it draws (`boxOf`).
-- **Themes are colour only** (`src/render/theme.ts`). Every coordinate is
+  name. A box gets its corners and keyword from what it draws (`box_of`).
+- **Themes are colour only** (`src/render/theme.rs`). Every coordinate is
   fixed before a theme is consulted, and a test asserts both themes place
   everything alike. A theme adds nothing it does not paint, so the light
   diagrams stay byte-for-byte stable.
@@ -151,41 +154,56 @@ also heads the physical view.
 
 ## Working on the code
 
+You need Rust; `rust-toolchain.toml` pins the version, which `rustup`
+installs on the first `cargo` command. The repository's own tasks are written
+in Rust too, in `xtask/`, and run as `cargo xtask <task>`; `cargo xtask` alone
+lists them.
+
 ```sh
-npm install              # also builds dist/ (prepare script)
-npm run build            # langium generate + tsc → dist/
-npm run typecheck        # src, tests and scripts
-npm test                 # vitest
-npm run render:examples  # regenerate every example's diagrams/
-npm run deck             # build the pitch deck into marketing/
-npm run omg-models       # fetch OMG's models, which npm test counts
-npm run library-names    # list the standard library's names
+cargo build                         # target/debug/ortho
+cargo run -- render examples/coffee-machine -o out
+cargo test                          # every test but OMG's models
+cargo fmt --all --check
+cargo clippy --workspace --all-targets -- -D warnings
+cargo xtask render-examples         # regenerate the examples' and tests/views/' diagrams/
+cargo xtask deck                    # build the pitch deck into marketing/
+cargo xtask omg-models              # fetch OMG's models, which needs Git
+cargo test -- --ignored             # count how many of OMG's models load
+cargo xtask library-names           # list the standard library's names
 ```
 
-CI typechecks and tests on Node 24 and 26, fails if a fresh render differs
-from the committed diagrams, and only then publishes the deck to GitHub
-Pages.
+CI (`.github/workflows/ci.yml`) builds and tests on Linux, Windows and
+macOS, runs fmt and clippy, counts OMG's models, fails if a fresh render
+differs from the committed diagrams, and only then, on `main`, publishes the
+deck to GitHub Pages.
 
-- **Grammar changes** need `npm run langium:generate` (part of `build`).
-  `src/generated/` is committed, so a fresh clone typechecks before building.
-- **Never add `chevrotain` as a direct dependency.** Langium pins its range
-  (`~13.2.0` in Langium 4.4); a direct one lets npm hoist a version that
-  breaks `langium generate` with `Error: non exhaustive match`.
+- **The grammar** is `src/parser/grammar.rs`, with its keywords in `lexer.rs`.
+  A new keyword goes in `KEYWORDS`, which the deck highlights from too, and is
+  then reserved: it can no longer be a name.
 - **The examples** cover two different domains, so a rendering change that
   only suits one shows up. Regenerate their SVGs and look at them in a browser
   whenever rendering changes. They carry no requirements, since no view would
   show them.
+- **The views written by hand** in `tests/views/` draw what no example does,
+  such as unnamed functions and a deployment of nested hosts. Their diagrams
+  are committed and checked like the examples', so a change to what they draw
+  shows up in review.
 - **OMG's models** are the example, training and validation models of OMG's
-  release, EPL-2.0 and so fetched, not committed. `tests/omg-models.test.ts`
-  counts how many load, so the count in it changes only on purpose. Without
-  them, as on CI, it is skipped.
-- **The standard library's names** are listed in `src/model/library.ts`,
-  generated from the library `npm run omg-models` fetches, and
-  `sysml-document-validator.ts` tells a library name from a typo by them.
+  release, EPL-2.0 and so fetched, not committed. `tests/omg_models.rs`
+  counts how many load, so the count in it changes only on purpose. It is
+  ignored until asked for with `cargo test -- --ignored`.
+- **The standard library's names** are listed in `src/model/library.rs`,
+  generated by `cargo xtask library-names` from the library `cargo xtask
+  omg-models` fetches, and `validator.rs` tells a library name from a typo by
+  them.
 - **The deck** inlines the committed example diagrams, so render before
-  `npm run deck`; a missing diagram fails the build. The test count is filled
-  in from `vitest list`, but the table comparing the two examples' sizes is
-  typed by hand.
+  `cargo xtask deck`; a missing diagram fails the build. The test count is
+  filled in from `cargo test -- --list`, but the table comparing the two
+  examples' sizes is typed by hand.
+- **ELK** is elk-rs, pinned to an exact version in `Cargo.toml`, since a new
+  one may move boxes. After an update, `cargo xtask render-examples` shows
+  what moved. `tests/elk.rs` checks two small graphs against what elkjs, the
+  JavaScript ELK the TypeScript version used, made of them.
 
 **Repeating the OMG pilot implementation check** from
 [LANGUAGE.md](LANGUAGE.md#how-this-is-checked), without conda or Jupyter:
@@ -206,6 +224,52 @@ Pages.
   LANGUAGE.md and each test fixture `process(text, false)`, which leaves it out
   of the index, so none leans on another's names. Give it a broken model too: a
   check that cannot fail proves nothing.
+
+## Releasing
+
+`.github/workflows/release.yml` builds a binary for Linux (x86-64 and ARM,
+linked statically), Windows (x86-64) and macOS (Apple silicon and Intel). Each
+is run on the examples where the runner can run it, then packed with the
+README and licence. For a tag, it publishes them as a GitHub release, with
+their SHA-256 sums:
+
+```sh
+# Set the version in Cargo.toml, commit, then:
+git tag v0.2.0
+git push origin v0.2.0
+```
+
+The tag has to be `v` and the version in `Cargo.toml`, or nothing is
+published. Each archive is named after its target alone, such as
+`ortho-x86_64-unknown-linux-musl.tar.gz`, so
+`releases/latest/download/<archive>` always finds the newest. A pull request
+that changes the build, such as `Cargo.toml` or the workflow, builds every
+binary without publishing.
+
+## The move to Rust
+
+ortho was written in TypeScript, on Langium and elkjs, and needed Node. It was
+ported to Rust in November 2026 for a single binary that needs nothing else,
+one stage at a time, each checked against what the TypeScript produced at that
+stage before the next was started:
+
+- **Parser:** identical trees on OMG's 252 models, our 17 files, 2,589 tricky
+  constructs and 11,298 broken copies.
+- **Linking:** every reference found Langium's target, with the same
+  diagnostics, on the same models and 4,393 small workspaces.
+- **Rendering:** byte-identical SVGs from the recorded layouts, both themes.
+- **Views:** all six, for the examples and for 2,028 views made of every
+  element of OMG's models and ours that a view could expose. Those without ELK
+  were byte-identical; those with it identical but for rounding in the last
+  digits, since elk-rs takes a few sums through a float as ELK's Java does.
+  elk-rs orders two lines into one nested box the other way round in one of
+  OMG's models, the Room Model, and so moves a box.
+
+The committed diagrams were rendered again by the Rust version, which changed
+one number in the last digits. Two things the TypeScript did were fixed after
+the move: `end a [1];` is now an end named `a` with multiplicity 1, where it
+was a syntax error, and an unnamed use case's subject error names the use
+case it takes its name from, or none, where it said `'undefined'`.
 
 ## Backlog
 
@@ -236,12 +300,10 @@ In priority order:
   an `occurrence def` of `item def` messages.
 - [x] **Update the colouring:** one flat blue tint on a white body, in place of
   the cream.
-- [ ] **Move to Rust,** in `rust/` until it replaces the TypeScript, for a single
-  binary that needs no Node. New features wait for it.
-- [ ] **Prepare for NPX.** Publish ortho on npm, so it runs without the repo.
-  First clean up `package.json`, the README and whatever else publishing
-  needs. The name `ortho` is taken on npm, so publish under a scope, such as
-  `@ola-coding/ortho`.
+- [x] **Move to Rust,** for a single binary that needs no Node, with release
+  binaries for Linux, Windows and macOS. See [The move to Rust](#the-move-to-rust).
+- [ ] **Publish the first release.** Tag `v0.1.0`, so the README's download
+  links work, and check each binary on its system.
 - [ ] **A `--watch` option** that renders again on every save, so an editor's
   SVG preview shows the diagram beside the text.
 - [ ] **Requirements on the parts that satisfy them**, in a compartment like

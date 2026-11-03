@@ -405,10 +405,10 @@
             </div>
             <div class="stack-tight">
               <h3>Every view that shows it updates</h3>
-              <div class="command">npm run diagrams
+              <div class="command">ortho render models <span class="flag">-o</span> diagrams
 git diff --exit-code diagrams/</div>
             </div>
-            <p style="color:var(--ink-soft)">Each view is written in its own model file and rendered from it, so scoping is something you can see in the file tree. The six SVGs on the following sheets were rendered the same way, by the repository's own <code class="inline">npm run render:examples</code>. Nothing was touched by hand.</p>
+            <p style="color:var(--ink-soft)">Each view is written in its own model file and rendered from it, so scoping is something you can see in the file tree. The six SVGs on the following sheets were rendered the same way, by the repository's own <code class="inline">cargo xtask render-examples</code>. Nothing was touched by hand.</p>
           </div>
         </div>
       </div>
@@ -426,13 +426,13 @@ git diff --exit-code diagrams/</div>
       <div class="stack">
         <h2>Text in, SVG out — nothing else in the chain</h2>
         <div class="pipeline">
-          <div class="stage"><b>Parse</b><span>Langium</span></div>
+          <div class="stage"><b>Parse</b><span>SysML v2 text</span></div>
           <div class="arrow">→</div>
           <div class="stage"><b>Resolve</b><span>scopes &amp; references</span></div>
           <div class="arrow">→</div>
           <div class="stage"><b>Extract</b><span>one per view</span></div>
           <div class="arrow">→</div>
-          <div class="stage"><b>Lay out</b><span>elkjs</span></div>
+          <div class="stage"><b>Lay out</b><span>ELK</span></div>
           <div class="arrow">→</div>
           <div class="stage"><b>Render</b><span>SVG text</span></div>
         </div>
@@ -443,7 +443,7 @@ git diff --exit-code diagrams/</div>
           </ul>
           <ul class="points">
             <li><span><strong>Real text metrics.</strong> Font advance widths are embedded, so boxes fit their labels without measuring in a DOM.</span></li>
-            <li><span><strong>Two dependencies</strong> do the heavy lifting: a parser generator and a layout engine. Both plain npm packages.</span></li>
+            <li><span><strong>One engine</strong> does the heavy lifting: ELK, the Eclipse Layout Kernel, compiled in. The parser is ortho's own.</span></li>
           </ul>
         </div>
       </div>
@@ -897,15 +897,15 @@ occurrence def SurveyMission {
     <div class="frame">
       <div class="tag">Self-contained</div>
       <div class="stack">
-        <h2>Runs anywhere Node runs</h2>
+        <h2>One binary, nothing else</h2>
         <div class="cols two">
           <ul class="points">
-            <li><span><strong>No external programs.</strong> No Enterprise Architect, no Graphviz binary, no headless browser. Node 24+ and nothing else.</span></li>
+            <li><span><strong>No external programs.</strong> No Enterprise Architect, no Graphviz, no headless browser, no runtime. One file for Linux, Windows or macOS.</span></li>
             <li><span><strong>No network at render time.</strong> Nothing is uploaded; models never leave the machine. Air-gapped builds work.</span></li>
             <li><span><strong>Deterministic output.</strong> The same model produces the same bytes, so an SVG diff means the architecture actually changed.</span></li>
           </ul>
           <ul class="points">
-            <li><span><strong>Installs as a dev dependency.</strong> It lives in <code class="inline">node_modules</code> and writes only where you point it — the tool's own sources never mix with yours.</span></li>
+            <li><span><strong>Nothing to set up.</strong> Download it from the release page, or build it with <code class="inline">cargo install</code>. It writes only where you point it — the tool never mixes with your files.</span></li>
             <li><span><strong>{{TESTS}} tests</strong> cover the grammar, every view extractor, layout and end-to-end rendering of both reference models.</span></li>
             <li><span><strong>Two themes.</strong> The default draws on paper; <code class="inline">--theme dark-glass</code> renders the same diagram for a dark slide — no page behind it, so the slide shows through.</span></li>
           </ul>
@@ -927,16 +927,16 @@ occurrence def SurveyMission {
         <div class="cols two">
           <div class="stack">
             <div class="stack-tight">
-              <h3>Install</h3>
-              <div class="command">npm install --save-dev github:ola-coding/ortho</div>
+              <h3>Download, for Linux, Windows or macOS</h3>
+              <div class="command">github.com/ola-coding/ortho/releases</div>
             </div>
             <div class="stack-tight">
               <h3>Render</h3>
-              <div class="command">./node_modules/.bin/ortho render models <span class="flag">-o</span> diagrams</div>
+              <div class="command">ortho render models <span class="flag">-o</span> diagrams</div>
             </div>
             <div class="stack-tight">
               <h3>Keep honest</h3>
-              <div class="command">npm run diagrams &amp;&amp; git diff --exit-code</div>
+              <div class="command">ortho render models <span class="flag">-o</span> diagrams &amp;&amp; git diff --exit-code</div>
             </div>
           </div>
           <div class="stack">

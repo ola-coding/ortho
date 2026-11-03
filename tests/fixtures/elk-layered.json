@@ -1,0 +1,209 @@
+{
+"graph": {
+ "id": "root",
+ "layoutOptions": {
+  "org.eclipse.elk.json.edgeCoords": "ROOT",
+  "elk.algorithm": "layered",
+  "elk.direction": "DOWN",
+  "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+  "elk.spacing.nodeNode": "50",
+  "elk.layered.spacing.nodeNodeBetweenLayers": "70",
+  "elk.spacing.edgeNode": "30",
+  "elk.spacing.edgeEdge": "20",
+  "elk.edgeRouting": "ORTHOGONAL"
+ },
+ "children": [
+  {
+   "id": "air",
+   "children": [
+    {
+     "id": "radio",
+     "width": 120,
+     "height": 40,
+     "ports": [
+      {
+       "id": "radio.rf",
+       "width": 10,
+       "height": 10,
+       "labels": [
+        {
+         "id": "radio.rf@label",
+         "text": "p",
+         "width": 20,
+         "height": 11
+        }
+       ],
+       "layoutOptions": {
+        "elk.port.borderOffset": "-5"
+       }
+      }
+     ],
+     "layoutOptions": {
+      "elk.portConstraints": "FREE",
+      "elk.portLabels.placement": "OUTSIDE"
+     }
+    },
+    {
+     "id": "camera",
+     "width": 100,
+     "height": 40,
+     "ports": [
+      {
+       "id": "camera.out",
+       "width": 10,
+       "height": 10,
+       "labels": [
+        {
+         "id": "camera.out@label",
+         "text": "p",
+         "width": 20,
+         "height": 11
+        }
+       ],
+       "layoutOptions": {
+        "elk.port.borderOffset": "-5"
+       }
+      }
+     ],
+     "layoutOptions": {
+      "elk.portConstraints": "FREE",
+      "elk.portLabels.placement": "OUTSIDE"
+     }
+    }
+   ],
+   "ports": [
+    {
+     "id": "air.link",
+     "width": 10,
+     "height": 10,
+     "layoutOptions": {
+      "elk.port.borderOffset": "-5"
+     }
+    }
+   ],
+   "layoutOptions": {
+    "elk.portConstraints": "FREE",
+    "elk.padding": "[top=45,left=25,bottom=25,right=25]",
+    "elk.nodeSize.constraints": "PORTS MINIMUM_SIZE",
+    "elk.nodeSize.minimum": "(40, 110)",
+    "elk.contentAlignment": "H_LEFT V_CENTER",
+    "elk.spacing.nodeNode": "40"
+   }
+  },
+  {
+   "id": "ground",
+   "children": [
+    {
+     "id": "modem",
+     "width": 130,
+     "height": 40,
+     "ports": [
+      {
+       "id": "modem.rf",
+       "width": 10,
+       "height": 10,
+       "labels": [
+        {
+         "id": "modem.rf@label",
+         "text": "p",
+         "width": 20,
+         "height": 11
+        }
+       ],
+       "layoutOptions": {
+        "elk.port.borderOffset": "-5"
+       }
+      }
+     ],
+     "layoutOptions": {
+      "elk.portConstraints": "FREE",
+      "elk.portLabels.placement": "OUTSIDE"
+     }
+    }
+   ],
+   "ports": [
+    {
+     "id": "ground.link",
+     "width": 10,
+     "height": 10,
+     "layoutOptions": {
+      "elk.port.borderOffset": "-5"
+     }
+    }
+   ],
+   "layoutOptions": {
+    "elk.portConstraints": "FREE",
+    "elk.padding": "[top=45,left=25,bottom=25,right=25]",
+    "elk.nodeSize.constraints": "PORTS MINIMUM_SIZE",
+    "elk.nodeSize.minimum": "(40, 110)",
+    "elk.contentAlignment": "H_LEFT V_CENTER",
+    "elk.spacing.nodeNode": "40"
+   }
+  }
+ ],
+ "edges": [
+  {
+   "id": "e1",
+   "sources": [
+    "radio.rf"
+   ],
+   "targets": [
+    "air.link"
+   ]
+  },
+  {
+   "id": "e2",
+   "sources": [
+    "air.link"
+   ],
+   "targets": [
+    "ground.link"
+   ],
+   "labels": [
+    {
+     "id": "e2@label",
+     "text": "wire",
+     "width": 40,
+     "height": 12
+    }
+   ]
+  },
+  {
+   "id": "e3",
+   "sources": [
+    "ground.link"
+   ],
+   "targets": [
+    "modem.rf"
+   ]
+  },
+  {
+   "id": "e4",
+   "sources": [
+    "camera.out"
+   ],
+   "targets": [
+    "radio.rf"
+   ]
+  }
+ ]
+},
+"places": [
+["air",17,12,170,209],
+["air.link",80,204,10,10],
+["radio",25,139,120,40],
+["radio.rf",55,-5,10,10],
+["camera",35,45,100,40],
+["camera.out",45,35,10,10],
+["ground",12,383,180,132],
+["ground.link",85,-5,10,10],
+["modem",25,67,130,40],
+["modem.rf",60,-5,10,10]
+],
+"wires": [
+["e1",[102,146,102,226]],
+["e2",[102,226,102,378]],
+["e3",[102,378,102,445]],
+["e4",[102,102,102,146]]
+]
+}

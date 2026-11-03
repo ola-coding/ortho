@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="788" height="380"
+     viewBox="0 0 788 380" font-family="Arial, Helvetica, Liberation Sans, DejaVu Sans, sans-serif">
+  <title>Refined functions (generated from tests/views/views.sysml)</title>
+  <defs>
+    <marker id="openArrow" markerWidth="12" markerHeight="12" refX="10" refY="5"
+            orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    </marker>
+    <marker id="diamond" markerWidth="12" markerHeight="8" refX="0" refY="4"
+            orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,4 L6,0 L12,4 L6,8 z" fill="#1a1a1a" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="788" height="380" fill="white" />
+  <rect x="8" y="8" width="772" height="364" rx="10" ry="10" fill="#f9fbfc" stroke="#40657e" stroke-width="1.25" />
+  <path d="M8,30 L8,18 A10,10 0 0 1 18,8 L182.042,8 L182.042,22 A8,8 0 0 1 174.042,30 Z"
+        fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+  <text x="18" y="23" font-size="11" fill="#1a1a1a"><tspan font-style="italic" fill="#40657e">&#171;view&#187;</tspan><tspan font-weight="600"> Refined functions</tspan></text>
+  <path d="M656.297,372 L656.297,363 A6,6 0 0 1 662.297,357 L780,357 L780,362 A10,10 0 0 1 770,372 Z"
+        fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+  <text x="772" y="368" text-anchor="end" font-size="9" fill="#1a1a1a">tests/views/views.sysml</text>
+  
+    <g><rect x="36" y="144" width="110" height="40"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="91" y="161" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action def&#187;</text>
+      <text x="91" y="174" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">Left</text></g>
+    <g><rect x="70" y="198" width="110" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="125" y="215" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
+      <text x="125" y="228" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">a1</text></g>
+    <g><rect x="70" y="248" width="110" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="125" y="265" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
+      <text x="125" y="278" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">a2</text></g>
+    <g><rect x="70" y="298" width="110" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="125" y="315" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
+      <text x="125" y="328" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">a3</text></g>
+    <g><rect x="322" y="144" width="110" height="40"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="377" y="161" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action def&#187;</text>
+      <text x="377" y="174" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">Middle</text></g>
+    <g><rect x="236" y="228" width="110" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="291" y="245" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
+      <text x="291" y="258" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">m1</text></g>
+    <g><rect x="270" y="282" width="110" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="325" y="299" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
+      <text x="325" y="312" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">m11</text></g>
+    <g><rect x="408" y="228" width="110" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="463" y="245" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
+      <text x="463" y="258" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">m2</text></g>
+    <g><rect x="442" y="282" width="110" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="497" y="299" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
+      <text x="497" y="312" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">m21</text></g>
+    <g><rect x="608" y="144" width="110" height="40"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="663" y="161" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action def&#187;</text>
+      <text x="663" y="174" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">Right</text></g>
+    <g><rect x="642" y="198" width="110" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="697" y="215" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
+      <text x="697" y="228" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">r1</text></g>
+    <g><rect x="322" y="60" width="110" height="40"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="377" y="77" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;use case def&#187;</text>
+      <text x="377" y="90" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">Unrefined</text></g>
+    <g><rect x="460" y="60" width="110" height="40"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="515" y="77" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;use case def&#187;</text>
+      <text x="515" y="90" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">Survey</text></g>
+    <g><rect x="598" y="60" width="110" height="40"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="653" y="77" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;use case def&#187;</text>
+      <text x="653" y="90" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">Lonely</text></g>
+  
+    <polyline points="54,184 54,218 70,218" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
+    <polyline points="54,184 54,268 70,268" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
+    <polyline points="54,184 54,318 70,318" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
+    <polyline points="254,268 254,302 270,302" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
+    <polyline points="377,184 377,206 291,206 291,228" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
+    <polyline points="426,268 426,302 442,302" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
+    <polyline points="377,184 377,206 463,206 463,228" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
+    <polyline points="626,184 626,218 642,218" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
+    <polyline points="91,144 470,100" fill="none" stroke="#1a1a1a" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <polyline points="663,144 560,100" fill="none" stroke="#1a1a1a" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <polyline points="377,144 377,100" fill="none" stroke="#1a1a1a" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <polyline points="91,184 377,144" fill="none" stroke="#1a1a1a" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+</svg>
