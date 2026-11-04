@@ -14,6 +14,7 @@ use crate::model::views::{
 };
 use crate::parser::ast::{NodeId, Prop};
 use crate::parser::workspace::Workspace;
+use crate::render::page::{page_warning, svg_size};
 use crate::render::sequence::render_sequence_svg;
 use crate::render::svg::{DiagramTitle, render_svg};
 use crate::render::theme::Theme;
@@ -90,6 +91,8 @@ pub struct RenderedView {
     /// The file it is written to, named after the view.
     pub file: String,
     pub result: RenderResult,
+    /// Why it is unreadable on landscape A4, when it is.
+    pub warning: Option<String>,
 }
 
 /// A view ortho does not draw, and why.
@@ -134,7 +137,10 @@ pub fn render_views(workspace: &Workspace, theme: &Theme) -> Result<ModelRenderi
             definition: ast.text(view, Prop::Definition).map(String::from),
             source: relative_to_working_folder(path),
         };
-        rendered.push(RenderedView { view, file, result: render_view(workspace, view, &title, theme)? });
+        let result = render_view(workspace, view, &title, theme)?;
+        let (width, height) = svg_size(&result.svg);
+        let warning = page_warning(view_heading(ast, view), width, height);
+        rendered.push(RenderedView { view, file, result, warning });
     }
     Ok(ModelRendering { rendered, skipped })
 }

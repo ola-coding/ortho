@@ -94,6 +94,9 @@ fn render(models: &[String], out: &str, theme: &Theme) -> Result<(), String> {
         let path = Path::new(out).join(&rendered.file);
         std::fs::write(&path, &rendered.result.svg).map_err(|error| format!("{}: {error}", path.display()))?;
         println!("Wrote {} ({})", path.display(), rendered.result.summary);
+        if let Some(warning) = &rendered.warning {
+            eprintln!("Warning: {warning}");
+        }
     }
     Ok(())
 }
