@@ -315,6 +315,27 @@ In priority order:
   tree can be split; and say in [LANGUAGE.md](LANGUAGE.md) how to keep a view
   small. Still open: whether to aim for landscape (about 1.6:1) or portrait A4
   (about 1:1).
+- [ ] **A clear repository page:** a description that names the six views
+  (the current one still says five, of the 4+1 model), the topics `sysml`,
+  `sysml-v2`, `sysmlv2`, `mbse`, `systems-engineering`, `architecture`,
+  `diagrams`, `svg`, `cli` and `rust`, and the deck as its homepage. Set by
+  hand in the repository's About settings.
+- [ ] **Publish on crates.io** as `ortho`, for `cargo install ortho` and
+  `cargo binstall ortho`: drop `publish = false`, add `rust-version`,
+  `homepage`, an `exclude` list and `[package.metadata.binstall]`, and have
+  the Release workflow run `cargo publish`. The first publish needs a
+  crates.io token as the secret `CARGO_REGISTRY_TOKEN`; after it, trusted
+  publishing replaces the token. Release it as 0.1.1.
+- [ ] **One-line install scripts,** `install.sh` and `install.ps1`, that pick
+  the archive for the system, check it against `SHA256SUMS` and install
+  without sudo. Hand-written, so release.yml stays as it is.
+- [ ] **A Homebrew tap,** `ola-coding/homebrew-tap`, its formula updated by
+  the Release workflow: `brew install ola-coding/tap/ortho`.
+- [ ] **Scoop for Windows,** a self-updating bucket; winget once there are
+  Windows users.
+- [ ] **Be found by SysML v2 users:** a diagram right under the logo, Install
+  as a list of one-liners, badges; then entries in the SysML v2 and MBSE
+  awesome lists and a post to the MBSE community.
 - [ ] **A `--watch` option** that renders again on every save, so an editor's
   SVG preview shows the diagram beside the text.
 - [ ] **Requirements on the parts that satisfy them**, in a compartment like
