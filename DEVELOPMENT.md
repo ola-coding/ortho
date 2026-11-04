@@ -304,8 +304,17 @@ In priority order:
   the cream.
 - [x] **Move to Rust,** for a single binary that needs no Node, with release
   binaries for Linux, Windows and macOS. See [The move to Rust](#the-move-to-rust).
-- [ ] **Publish the first release.** Tag `v0.1.0`, so the README's download
+- [x] **Publish the first release.** Tag `v0.1.0`, so the README's download
   links work, and check each binary on its system.
+- [ ] **Keep wide diagrams readable.** Four views put every sibling in one row,
+  so width grows with each child: 12 packages draw at 13:1, a function tree two
+  levels deep at 15:1. Deployment already packs to a page shape. In order:
+  warn when a diagram is wider than about 3:1; wrap the rows of the logical and
+  use case views; pack the packages no import joins on the implementation view,
+  keeping their declared order; let a view expose a sub-function, so a large
+  tree can be split; and say in [LANGUAGE.md](LANGUAGE.md) how to keep a view
+  small. Still open: whether to aim for landscape (about 1.6:1) or portrait A4
+  (about 1:1).
 - [ ] **A `--watch` option** that renders again on every save, so an editor's
   SVG preview shows the diagram beside the text.
 - [ ] **Requirements on the parts that satisfy them**, in a compartment like
