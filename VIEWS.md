@@ -85,7 +85,9 @@ specializes, such as the vendor's service it is built on:
 `OrderTable :> DynamoDB`. Its box lists the functions it realizes (*perform
 actions*) and its API (*ports*: what it offers, and, conjugated with `~`, what
 it needs). No lines join modules: where they publish and subscribe rather than
-call, a line would claim a coupling that does not exist.
+call, a line would claim a coupling that does not exist. Packages stand in the
+order the model declares them; those no import joins stand in rows, not in one
+long row.
 
 ## Physical view
 

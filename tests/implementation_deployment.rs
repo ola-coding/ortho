@@ -132,6 +132,62 @@ fn keeps_a_package_name_wider_than_its_grid_inside_the_package() {
     assert!(((module.x + module.width / 2.0) - (package.x + package.width / 2.0)).abs() < 0.005);
 }
 
+/// Twelve packages of four modules each.
+fn packages(imports: impl Fn(usize) -> String) -> String {
+    let body: String = (0..12)
+        .map(|i| {
+            let modules: String = (0..4).map(|j| format!("part def M{i}x{j}; ")).collect();
+            format!("package P{i} {{ {} {modules} }}\n", imports(i))
+        })
+        .collect();
+    format!("package S {{ package Base {{ part def Core; }} {body} }}")
+}
+
+/// The packages whose names start with `P`, row by row, each row left to right.
+fn rows_of_packages(laid_out: &LaidOutDiagram) -> Vec<Vec<&str>> {
+    let mut found: Vec<&LaidOutNode> = laid_out.nodes.iter().filter(|n| n.name.starts_with('P')).collect();
+    found.sort_by(|a, b| a.y.total_cmp(&b.y).then(a.x.total_cmp(&b.x)));
+    let mut rows: Vec<Vec<&str>> = Vec::new();
+    let mut top = f64::NAN;
+    for package in found {
+        if package.y != top {
+            rows.push(Vec::new());
+            top = package.y;
+        }
+        rows.last_mut().unwrap().push(&package.name);
+    }
+    rows
+}
+
+#[test]
+fn puts_packages_that_import_nothing_from_each_other_on_several_rows_in_declared_order() {
+    let laid_out = gridded(&implementation(&parse_ok(&packages(|_| String::new()))));
+    let rows = rows_of_packages(&laid_out);
+    assert_eq!(rows.len(), 4, "{rows:?}");
+    let order: Vec<&str> = rows.concat();
+    let declared: Vec<String> = (0..12).map(|i| format!("P{i}")).collect();
+    assert_eq!(order, declared);
+    // Each package holds its own modules, gridded inside it.
+    for i in 0..12 {
+        let package = node(&laid_out, &format!("P{i}"));
+        for j in 0..4 {
+            let module = node(&laid_out, &format!("M{i}x{j}"));
+            assert!(module.x > package.x && module.x + module.width < package.x + package.width);
+            assert!(module.y > package.y && module.y + module.height < package.y + package.height);
+        }
+    }
+    assert!(laid_out.width < 2.0 * laid_out.height, "{} × {}", laid_out.width, laid_out.height);
+}
+
+#[test]
+fn keeps_packages_an_import_joins_in_declared_order() {
+    // Every package imports Base, so ELK lays them out, in the order declared.
+    let laid_out = gridded(&implementation(&parse_ok(&packages(|_| "private import S::Base;".to_string()))));
+    let order: Vec<&str> = rows_of_packages(&laid_out).concat();
+    let declared: Vec<String> = (0..12).map(|i| format!("P{i}")).collect();
+    assert_eq!(order, declared);
+}
+
 /// A cloud solution from a vendor's services: no use cases, no functions.
 const CLOUD: &str = "
     package Aws {

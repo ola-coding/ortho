@@ -40,15 +40,26 @@ pub enum Algorithm {
 #[derive(Clone, Copy, Default)]
 pub struct LayoutOptions {
     pub algorithm: Algorithm,
-    /// Lay out the contents of each innermost container, one whose children hold
-    /// nothing and no edge touches, as a grid ortho computes, instead of ELK's single
-    /// row. For the implementation view, where a package's modules never carry an
-    /// edge, and a long row of them set the whole drawing's width.
+    /// Lay out the contents of each container that no edge or port reaches into as
+    /// a grid ortho computes, in declaration order, instead of ELK's single row; a
+    /// container inside it is a grid of its own. For the implementation view, where
+    /// a package's modules never carry an edge, and packages that import nothing
+    /// from each other stood in one long row that set the whole drawing's width.
     pub grid_leaves: bool,
 }
 
-/// Contents ortho places itself (see `grid_leaves`), relative to the container's top-left.
-type Grid<'a> = Vec<(&'a GraphNode, f64, f64)>;
+/// A box ortho places itself (see `grid_leaves`), relative to the top-left of the
+/// container ELK placed, at the size its own contents give it.
+struct Cell<'a> {
+    node: &'a GraphNode,
+    x: f64,
+    y: f64,
+    width: f64,
+    height: f64,
+}
+
+/// Contents ortho places itself, each container before what it holds.
+type Grid<'a> = Vec<Cell<'a>>;
 
 struct Conversion<'a> {
     packing: bool,
@@ -80,32 +91,51 @@ fn before(sizes: &[f64], index: usize, gap: f64) -> f64 {
 /// A container's contents as a grid, in declaration order: one row of up to three,
 /// else as square as it goes, each box centred in its cell. A container whose name is
 /// wider than its grid keeps the width of its name, with the grid centred under it.
+/// A container among the contents is a grid of its own, sized to it.
 fn grid_of<'a>(n: &GraphNode, children: &'a [GraphNode]) -> (Grid<'a>, f64, f64) {
+    // Each child at its size, with what it holds placed relative to it.
+    let laid: Vec<(f64, f64, Grid<'a>)> = children
+        .iter()
+        .map(|c| match c.children.as_deref() {
+            Some(inner) if !inner.is_empty() => {
+                let (cells, width, height) = grid_of(c, inner);
+                (width, height, cells)
+            }
+            _ => (c.width, c.height, Vec::new()),
+        })
+        .collect();
     let count = children.len();
     let columns = if count <= 3 { count } else { (count as f64).sqrt().ceil() as usize };
     let rows = count.div_ceil(columns);
     let widths: Vec<f64> = (0..columns)
-        .map(|column| children.iter().skip(column).step_by(columns).fold(f64::NEG_INFINITY, |m, c| m.max(c.width)))
+        .map(|column| laid.iter().skip(column).step_by(columns).fold(f64::NEG_INFINITY, |m, c| m.max(c.0)))
         .collect();
     let heights: Vec<f64> = (0..rows)
-        .map(|row| children.iter().skip(row * columns).take(columns).fold(f64::NEG_INFINITY, |m, c| m.max(c.height)))
+        .map(|row| laid.iter().skip(row * columns).take(columns).fold(f64::NEG_INFINITY, |m, c| m.max(c.1)))
         .collect();
     let pad = padding_of(n);
     let grid_width = pad.left + before(&widths, columns, GRID_GAP_X) - GRID_GAP_X + pad.right;
     let width = grid_width.max(n.width);
     let indent = (width - grid_width) / 2.0;
-    let cells = children
-        .iter()
-        .enumerate()
-        .map(|(i, node)| {
-            let (column, row) = (i % columns, i / columns);
-            let x = indent + pad.left + before(&widths, column, GRID_GAP_X) + (widths[column] - node.width) / 2.0;
-            let y = pad.top + before(&heights, row, GRID_GAP_Y) + (heights[row] - node.height) / 2.0;
-            (node, x, y)
-        })
-        .collect();
+    let mut cells = Vec::new();
+    for (i, (node, (cell_width, cell_height, inner))) in children.iter().zip(laid).enumerate() {
+        let (column, row) = (i % columns, i / columns);
+        let x = indent + pad.left + before(&widths, column, GRID_GAP_X) + (widths[column] - cell_width) / 2.0;
+        let y = pad.top + before(&heights, row, GRID_GAP_Y) + (heights[row] - cell_height) / 2.0;
+        cells.push(Cell { node, x, y, width: cell_width, height: cell_height });
+        cells.extend(inner.into_iter().map(|c| Cell { x: x + c.x, y: y + c.y, ..c }));
+    }
     let height = pad.top + before(&heights, rows, GRID_GAP_Y) - GRID_GAP_Y + pad.bottom;
     (cells, width, height)
+}
+
+/// Whether no edge or port reaches anything `n` holds, at any depth.
+fn closed(n: &GraphNode, endpoints: &HashSet<&str>) -> bool {
+    n.children
+        .as_deref()
+        .unwrap_or(&[])
+        .iter()
+        .all(|c| c.ports.is_empty() && !endpoints.contains(c.id.as_str()) && closed(c, endpoints))
 }
 
 fn options(pairs: &[(&str, String)]) -> Map<String, Value> {
@@ -118,13 +148,7 @@ fn to_elk_node<'a>(n: &'a GraphNode, conversion: &mut Conversion<'a>) -> Value {
     node.insert("id".into(), json!(n.id));
     let mut layout_options = options(&[("elk.portConstraints", "FREE".into())]);
     let children = n.children.as_deref().unwrap_or(&[]);
-    let gridded = conversion.grids.is_some()
-        && !children.is_empty()
-        && children.iter().all(|c| {
-            c.children.as_ref().is_none_or(|inner| inner.is_empty())
-                && c.ports.is_empty()
-                && !conversion.endpoints.contains(c.id.as_str())
-        });
+    let gridded = conversion.grids.is_some() && !children.is_empty() && closed(n, &conversion.endpoints);
     if gridded {
         // ELK sees a plain box of the grid's size; flattening fills it in.
         let (cells, width, height) = grid_of(n, children);
@@ -150,6 +174,12 @@ fn to_elk_node<'a>(n: &'a GraphNode, conversion: &mut Conversion<'a>) -> Value {
             ("elk.contentAlignment", if packing { "H_CENTER V_TOP" } else { "H_LEFT V_CENTER" }.into()),
             ("elk.spacing.nodeNode", if packing { "24" } else { "40" }.into()),
         ]));
+        if !packing {
+            layout_options.extend(options(&[
+                ("org.eclipse.elk.alg.layered.considerModelOrder.strategy", "NODES_AND_EDGES".into()),
+                ("org.eclipse.elk.alg.layered.considerModelOrder.components", "MODEL_ORDER".into()),
+            ]));
+        }
         if packing {
             // Packing lays out each level on its own, so every container names the
             // algorithm for its children.
@@ -219,6 +249,8 @@ fn to_elk_graph<'a>(graph: &'a DiagramGraph, layout_options: LayoutOptions) -> (
             "elk.spacing.edgeNode": "30",
             "elk.spacing.edgeEdge": "20",
             "elk.edgeRouting": "ORTHOGONAL",
+            "org.eclipse.elk.alg.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+            "org.eclipse.elk.alg.layered.considerModelOrder.components": "MODEL_ORDER",
         })
     };
     let children: Vec<Value> = graph.nodes.iter().map(|n| to_elk_node(n, &mut conversion)).collect();
@@ -332,17 +364,18 @@ fn laid_out(graph: &DiagramGraph, conversion: &Conversion, result: &Value) -> La
                 height: number_or(c, "height", 40.0),
             });
             let cells = conversion.grids.as_ref().and_then(|grids| grids.get(id));
-            for (cell, cell_x, cell_y) in cells.into_iter().flatten() {
+            for cell in cells.into_iter().flatten() {
+                let n = cell.node;
                 nodes.push(LaidOutNode {
-                    id: cell.id.clone(),
-                    shape: cell.shape,
-                    keyword: cell.keyword.clone(),
-                    name: cell.name.clone(),
-                    compartments: cell.compartments.clone(),
+                    id: n.id.clone(),
+                    shape: n.shape,
+                    keyword: n.keyword.clone(),
+                    name: n.name.clone(),
+                    compartments: n.compartments.clone(),
                     ports: Vec::new(),
-                    has_children: false,
-                    x: x + cell_x,
-                    y: y + cell_y,
+                    has_children: n.children.as_ref().is_some_and(|inner| !inner.is_empty()),
+                    x: x + cell.x,
+                    y: y + cell.y,
                     width: cell.width,
                     height: cell.height,
                 });

@@ -87,6 +87,19 @@ cannot draw is skipped with the reason (`why_undrawable`).
   name's width as a minimum and centres narrower contents. Layering downwards,
   ELK reads a container's minimum size and content alignment with their axes
   swapped, so `elk.rs` gives them swapped.
+- **Packages no import reaches are gridded by ortho.** ELK's `layered` puts
+  boxes with no edge between them side by side, so twelve packages that import
+  nothing from each other stood in one row, 4522 px across. A package that no
+  edge or port reaches into, at any depth, is laid out by `grid_of` in
+  `elk.rs` instead: its contents in a grid, in declared order, each package in
+  it a grid of its own. ELK sees one box of the grid's size. Packages an
+  import joins are still layered by ELK, which needs the arrows.
+- **Declared order is kept.** ELK reorders boxes it is free to place; the
+  layered views set `considerModelOrder` (`NODES_AND_EDGES`, and
+  `MODEL_ORDER` for the parts with no edge between them) on the root and on
+  every container, so siblings stand in the order the model declares them
+  wherever no crossing forbids it. elk-rs names these options
+  `org.eclipse.elk.alg.layered.…`, not ELK's `org.eclipse.elk.layered.…`.
 - **Deployment is packed, not layered.** With no edges, ELK's `layered` put
   every box in one row and `box` reorders by size, so the view uses
   `rectpacking`, one level at a time, since packing cannot lay out a
@@ -329,14 +342,16 @@ In priority order:
 - [x] **Warn of a diagram too big for landscape A4**, the page ortho draws
   for: one whose names, shrunk to fit, would print smaller than 6 pt
   (`src/render/page.rs`).
-- [ ] **Keep wide diagrams readable on landscape A4.** Four views put every
-  sibling in one row, so width grows with each child: 12 packages draw at
-  13:1, a function tree two levels deep at 15:1. Deployment already packs to a
-  page shape. In order: wrap the rows of the logical and use case views; pack
-  the packages no import joins on the implementation view, keeping their
-  declared order; let a view expose a sub-function, so a large tree can be
-  split; and say in [LANGUAGE.md](LANGUAGE.md) how to keep a view small. The
-  survey drone's implementation, physical and process views are too big today.
+- [x] **Packages on several rows, in declared order.** Twelve packages that
+  import nothing from each other drew at 13:1 and now fit landscape A4; boxes on
+  the implementation and physical views keep the model's order.
+- [ ] **Keep wide diagrams readable on landscape A4.** The use case view puts
+  every use case in one row, and its lines cross. Packages that all import one
+  package still stand in one row. Wrapping the logical view's rows was tried and
+  dropped: two rows of a tree read oddly. Still to do: let a view expose a
+  sub-function, so a large tree can be split, and say in
+  [LANGUAGE.md](LANGUAGE.md) how to keep a view small. The survey drone's
+  implementation, physical and process views are too big today.
 - [ ] **Publish on crates.io** as `ortho`, for `cargo install ortho` and
   `cargo binstall ortho`. The Release workflow does it, from 0.1.1; what is
   left is the first publish, with a crates.io token, and then trusted
