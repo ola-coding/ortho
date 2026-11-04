@@ -102,6 +102,11 @@ cannot draw is skipped with the reason (`why_undrawable`).
   middle of the row when there is none. ELK put every leaf in one row: 3322 px
   across for 27 functions. A use case the view exposes stands in a row above,
   centred over the functions that depend on it, and takes no part in the tree.
+  A tree that does not fit landscape A4 is laid out again with its rows
+  capped at narrower and narrower widths; a row over the cap wraps onto
+  several, as evenly as it goes, fed from a trunk down its left. The layout
+  that prints biggest on the page wins, and must beat the unwrapped one by a
+  tenth: the survey drone's seven functions wrap as four and three.
 - **The use case view is laid out by ortho** (`src/layout/use_case.rs`):
   the subject above its use cases, as OMG draws it, and the actors below them.
   OMG draws one use case, its actors beside it; with several sharing both, only
@@ -329,14 +334,17 @@ In priority order:
 - [x] **Warn of a diagram too big for landscape A4**, the page ortho draws
   for: one whose names, shrunk to fit, would print smaller than 6 pt
   (`src/render/page.rs`).
-- [ ] **Keep wide diagrams readable on landscape A4.** Four views put every
-  sibling in one row, so width grows with each child: 12 packages draw at
-  13:1, a function tree two levels deep at 15:1. Deployment already packs to a
-  page shape. In order: wrap the rows of the logical and use case views; pack
-  the packages no import joins on the implementation view, keeping their
+- [x] **Wrap the logical view's rows** when a tree is too big for landscape
+  A4: four functions of three sub-functions each went from 5:1 to 1.6:1.
+- [ ] **Keep wide diagrams readable on landscape A4.** Three views still put
+  every sibling in one row, so width grows with each child: 12 packages draw
+  at 13:1. Deployment already packs to a page shape. In order: pack the
+  packages no import joins on the implementation view, keeping their
   declared order; let a view expose a sub-function, so a large tree can be
-  split; and say in [LANGUAGE.md](LANGUAGE.md) how to keep a view small. The
-  survey drone's implementation, physical and process views are too big today.
+  split; say in [LANGUAGE.md](LANGUAGE.md) how to keep a view small; and find
+  a way to wrap the use case view, whose lines from the subject above and the
+  actors below would cross a second row of use cases. The survey drone's
+  implementation, physical and process views are too big today.
 - [ ] **Publish on crates.io** as `ortho`, for `cargo install ortho` and
   `cargo binstall ortho`. The Release workflow does it, from 0.1.1; what is
   left is the first publish, with a crates.io token, and then trusted

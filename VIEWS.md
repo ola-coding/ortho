@@ -71,7 +71,8 @@ def» and the rest «action»s, each parent above its children on a single stem.
 The stem leaves the parent at a filled diamond, since the parent owns them.
 A use case the view exposes stands above its tree, with a dashed arrow up to
 it. The lowest level of a branch is listed vertically, so a broad tree keeps a
-page's proportions.
+page's proportions. A row of functions still too wide for landscape A4 wraps
+onto several, in order, each hanging off a trunk that runs down its left.
 
 ## Implementation view
 

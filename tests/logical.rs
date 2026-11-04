@@ -5,6 +5,7 @@ use ortho::layout::{LaidOutDiagram, LaidOutNode, Point};
 use ortho::model::graph::{DiagramGraph, EdgeKind, GraphEdge, GraphNode, NodeShape, USAGE_RADIUS};
 use ortho::model::views::exposed_elements;
 use ortho::parser::workspace::{Severity, Workspace};
+use ortho::render::page::scale_to_page;
 use ortho::render::svg::render_svg;
 use ortho::render::theme::LIGHT;
 use std::collections::{HashMap, HashSet};
@@ -280,4 +281,70 @@ fn keeps_the_stem_over_the_middle_of_an_even_row_which_has_no_middle_child() {
     let laid_out = lopsided(&[function("d", 80.0)]);
     let at = |id: &str| middle(node(&laid_out, id));
     assert!(close_to(at("root"), (at("a") + at("d")) / 2.0, 9));
+}
+
+/// A tree of `functions` functions under one root, each with three leaves.
+fn broad(functions: usize) -> LaidOutDiagram {
+    let body: String = (0..functions)
+        .map(|i| format!("action function{i} {{ action first{i}; action second{i}; action third{i}; }}\n"))
+        .collect();
+    let workspace = common::parse_ok(&format!("package Broad {{ action def Root {{ {body} }} }}"));
+    layout_tree(&extract_logical_graph(&workspace.ast, &everything(&workspace), &workspace.packages()))
+}
+
+/// The tops of the rows the root's functions stand in.
+fn rows_of_functions(laid_out: &LaidOutDiagram) -> Vec<f64> {
+    let mut tops: Vec<f64> = laid_out.nodes.iter().filter(|n| n.name.starts_with("function")).map(|n| n.y).collect();
+    tops.sort_by(f64::total_cmp);
+    tops.dedup();
+    tops
+}
+
+#[test]
+fn keeps_a_tree_that_fits_landscape_a4_in_one_row() {
+    let laid_out = broad(4);
+    assert_eq!(rows_of_functions(&laid_out).len(), 1);
+    assert_eq!(scale_to_page(laid_out.width, laid_out.height), 1.0);
+}
+
+#[test]
+fn wraps_a_row_too_wide_for_landscape_a4_onto_several_so_the_tree_fits() {
+    // In one row, eight functions are some 1400 px wide.
+    let laid_out = broad(8);
+    let rows = rows_of_functions(&laid_out);
+    assert_eq!(rows.len(), 2);
+    let on_row = |top: f64| laid_out.nodes.iter().filter(|n| n.name.starts_with("function") && n.y == top).count();
+    assert_eq!((on_row(rows[0]), on_row(rows[1])), (4, 4));
+    assert_eq!(scale_to_page(laid_out.width, laid_out.height), 1.0);
+    // In declared order, row by row.
+    let order: Vec<&str> = {
+        let mut functions: Vec<&LaidOutNode> =
+            laid_out.nodes.iter().filter(|n| n.name.starts_with("function")).collect();
+        functions.sort_by(|a, b| a.y.total_cmp(&b.y).then(a.x.total_cmp(&b.x)));
+        functions.iter().map(|n| n.name.as_str()).collect()
+    };
+    assert_eq!(order, (0..8).map(|i| format!("function{i}")).collect::<Vec<_>>());
+}
+
+#[test]
+fn feeds_a_wrapped_row_from_a_trunk_left_of_every_box() {
+    let laid_out = broad(8);
+    let rows = rows_of_functions(&laid_out);
+    let root = node(&laid_out, "Root");
+    let second: Vec<&LaidOutNode> = laid_out.nodes.iter().filter(|n| n.y == rows[1]).collect();
+    let trunks: HashSet<u64> = second
+        .iter()
+        .map(|n| {
+            let branch = laid_out.edges.iter().find(|e| e.target_id == n.id).unwrap();
+            // Down the stem, along the first row's bus, down the trunk, along this
+            // row's bus, and down to the function.
+            assert_eq!(branch.points.len(), 6, "{}", n.name);
+            assert!(close_to(branch.points[0].x, middle(root), 9));
+            assert_eq!(branch.points[2].x, branch.points[3].x);
+            branch.points[2].x.to_bits()
+        })
+        .collect();
+    assert_eq!(trunks.len(), 1);
+    let trunk = f64::from_bits(*trunks.iter().next().unwrap());
+    assert!(laid_out.nodes.iter().filter(|n| n.name != "Root").all(|n| n.x > trunk));
 }

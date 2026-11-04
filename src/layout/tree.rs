@@ -1,6 +1,7 @@
 //! The logical view's layout: a work-breakdown chart, without ELK.
 use super::{LaidOutDiagram, LaidOutEdge, LaidOutNode, Point};
 use crate::model::graph::{DiagramGraph, EdgeKind, GraphEdge, GraphNode, USAGE_RADIUS, is_use_case_node};
+use crate::render::page::scale_to_page;
 use std::collections::HashMap;
 
 /// Clearance around the drawing; matches ELK's default root padding.
@@ -17,6 +18,16 @@ const LIST_GAP: f64 = 10.0;
 const SPINE_INSET: f64 = 18.0;
 /// Distance from the spine to a listed leaf's left edge.
 const BRANCH: f64 = 16.0;
+/// How far a family wrapped onto several rows stands in from the trunk that feeds
+/// them; the trunk runs down the middle of it.
+const WRAP_INDENT: f64 = 24.0;
+/// Each narrower width tried for a row, as a share of the one before.
+const NARROWING: f64 = 0.9;
+/// A wrapped layout must print a tenth bigger to be taken over a wider one: less
+/// is not worth a tree that no longer reads in one sweep.
+const WORTH_WRAPPING: f64 = 1.1;
+/// The narrowest row tried.
+const MIN_ROW: f64 = 150.0;
 
 #[derive(Clone, Copy)]
 struct Measure {
@@ -73,6 +84,10 @@ struct Tree<'a> {
     children: HashMap<&'a str, Vec<&'a str>>,
     tree_edge: HashMap<&'a str, &'a GraphEdge>,
     measures: HashMap<&'a str, Measure>,
+    /// The widest a row of children may be before it wraps onto another row.
+    max_row: f64,
+    /// The number of children on each row, for a family wrapped onto several.
+    wraps: HashMap<&'a str, Vec<usize>>,
     nodes: Vec<LaidOutNode>,
     edges: Vec<LaidOutEdge>,
     position: HashMap<&'a str, Point>,
@@ -109,34 +124,32 @@ impl<'a> Tree<'a> {
             }
         } else {
             let row: Vec<Measure> = list.iter().map(|k| self.measure(k)).collect();
-            let row_width = row.iter().fold(0.0, |sum, r| sum + r.width) + SIBLING_GAP * (row.len() as f64 - 1.0);
-            let first = self.node(list[0]);
-            let last = self.node(list[list.len() - 1]);
-            let first_centre = row[0].box_left + first.width / 2.0;
-            let end = row[row.len() - 1];
-            let last_centre = row_width - end.width + end.box_left + last.width / 2.0;
-            // An odd row has a middle child, and the stem drops straight onto it:
-            // centring on the row instead is off by however much the box widths
-            // differ, which reads as a wobble. An even row has no middle child, so
-            // the parent stays over the middle of the row.
-            let stem_at = if row.len() % 2 == 1 {
-                let middle = (row.len() - 1) / 2;
-                row[..middle].iter().fold(0.0, |sum, r| sum + r.width + SIBLING_GAP)
-                    + row[middle].box_left
-                    + self.node(list[middle]).width / 2.0
-            } else {
-                (first_centre + last_centre) / 2.0
-            };
+            let sizes = self.rows_of(&row);
+            let wrapped = sizes.len() > 1;
+            let stem_at = self.stem_offset(&list[..sizes[0]], &row[..sizes[0]]);
+            let stem_at = if wrapped { WRAP_INDENT + stem_at } else { stem_at };
             let mut box_left = stem_at - node.width / 2.0;
             let mut row_left = 0.0;
             if box_left < 0.0 {
                 row_left = -box_left;
                 box_left = 0.0;
             }
-            let tallest = row.iter().map(|r| r.height).fold(f64::NEG_INFINITY, f64::max);
+            let mut rows_width: f64 = 0.0;
+            let mut height = node.height;
+            let mut start = 0;
+            for size in &sizes {
+                let chunk = &row[start..start + size];
+                rows_width = rows_width.max(row_width(chunk));
+                height = height + LEVEL_GAP + chunk.iter().map(|r| r.height).fold(f64::NEG_INFINITY, f64::max);
+                start += size;
+            }
+            let rows_width = if wrapped { WRAP_INDENT + rows_width } else { rows_width };
+            if wrapped {
+                self.wraps.insert(id, sizes);
+            }
             Measure {
-                width: (row_left + row_width).max(box_left + node.width),
-                height: node.height + LEVEL_GAP + tallest,
+                width: (row_left + rows_width).max(box_left + node.width),
+                height,
                 box_left,
                 row_left,
                 listed: false,
@@ -144,6 +157,50 @@ impl<'a> Tree<'a> {
         };
         self.measures.insert(id, m);
         m
+    }
+
+    /// Where the parent's stem meets a row of its children, from the row's left.
+    /// An odd row has a middle child, and the stem drops straight onto it:
+    /// centring on the row instead is off by however much the box widths differ,
+    /// which reads as a wobble. An even row has no middle child, so the parent
+    /// stays over the middle of the row.
+    fn stem_offset(&self, list: &[&'a str], row: &[Measure]) -> f64 {
+        if row.len() % 2 == 1 {
+            let middle = (row.len() - 1) / 2;
+            row[..middle].iter().fold(0.0, |sum, r| sum + r.width + SIBLING_GAP)
+                + row[middle].box_left
+                + self.node(list[middle]).width / 2.0
+        } else {
+            let first = self.node(list[0]);
+            let last = self.node(list[list.len() - 1]);
+            let first_centre = row[0].box_left + first.width / 2.0;
+            let end = row[row.len() - 1];
+            let last_centre = row_width(row) - end.width + end.box_left + last.width / 2.0;
+            (first_centre + last_centre) / 2.0
+        }
+    }
+
+    /// How many children go on each row: all on one while they fit `max_row`, else
+    /// as few rows as fit, the children shared out evenly and the earlier rows
+    /// taking any one over.
+    fn rows_of(&self, row: &[Measure]) -> Vec<usize> {
+        let n = row.len();
+        if row_width(row) <= self.max_row {
+            return vec![n];
+        }
+        for count in 2..=n {
+            let sizes: Vec<usize> = (0..count).map(|i| n / count + usize::from(i < n % count)).collect();
+            let mut start = 0;
+            let fits = sizes.iter().all(|size| {
+                let chunk = &row[start..start + size];
+                start += size;
+                WRAP_INDENT + row_width(chunk) <= self.max_row
+            });
+            if fits {
+                return sizes;
+            }
+        }
+        vec![1; n]
     }
 
     fn put(&mut self, node: &'a GraphNode, x: f64, y: f64) {
@@ -179,6 +236,8 @@ impl<'a> Tree<'a> {
                 self.branch(leaf_id, points);
                 y += leaf.height + LIST_GAP;
             }
+        } else if let Some(sizes) = self.wraps.get(id).cloned() {
+            self.place_rows(id, &list, &sizes, left, top);
         } else if !list.is_empty() {
             let bus_y = bottom + LEVEL_GAP / 2.0;
             let row_top = bottom + LEVEL_GAP;
@@ -207,6 +266,57 @@ impl<'a> Tree<'a> {
             }
         }
     }
+
+    /// A family wrapped onto several rows. The stem drops from the parent to the
+    /// first row's bus, as for one row; the bus runs on left to a trunk, down which
+    /// each later row hangs off a bus of its own.
+    fn place_rows(&mut self, id: &'a str, list: &[&'a str], sizes: &[usize], left: f64, top: f64) {
+        let node = self.node(id);
+        let m = self.measures[id];
+        let x = left + m.box_left;
+        let bottom = top + node.height;
+        let trunk_x = left + m.row_left + WRAP_INDENT / 2.0;
+        let rows_left = left + m.row_left + WRAP_INDENT;
+        let first_bus = bottom + LEVEL_GAP / 2.0;
+        let mut stem_x = x + node.width / 2.0;
+        let mut row_top = bottom + LEVEL_GAP;
+        let mut start = 0;
+        for (k, size) in sizes.iter().enumerate() {
+            let chunk = &list[start..start + size];
+            start += size;
+            let bus_y = row_top - LEVEL_GAP / 2.0;
+            let mut lefts = Vec::with_capacity(chunk.len());
+            let mut child_left = rows_left;
+            for child_id in chunk {
+                lefts.push(child_left);
+                child_left += self.measures[child_id].width + SIBLING_GAP;
+            }
+            let centre_of =
+                |tree: &Self, i: usize| lefts[i] + tree.measures[chunk[i]].box_left + tree.node(chunk[i]).width / 2.0;
+            if k == 0 && chunk.len() % 2 == 1 {
+                stem_x = centre_of(self, (chunk.len() - 1) / 2);
+            }
+            let tallest = chunk.iter().map(|c| self.measures[c].height).fold(f64::NEG_INFINITY, f64::max);
+            for (i, child_id) in chunk.iter().enumerate() {
+                self.place(child_id, lefts[i], row_top);
+                let child_x = centre_of(self, i);
+                let mut points = vec![Point { x: stem_x, y: bottom }, Point { x: stem_x, y: first_bus }];
+                if k > 0 {
+                    points.push(Point { x: trunk_x, y: first_bus });
+                    points.push(Point { x: trunk_x, y: bus_y });
+                }
+                points.push(Point { x: child_x, y: bus_y });
+                points.push(Point { x: child_x, y: row_top });
+                self.branch(child_id, points);
+            }
+            row_top += tallest + LEVEL_GAP;
+        }
+    }
+}
+
+/// The width of children side by side.
+fn row_width(row: &[Measure]) -> f64 {
+    row.iter().fold(0.0, |sum, r| sum + r.width) + SIBLING_GAP * (row.len() as f64 - 1.0)
 }
 
 /// Lays out a capability tree as a work-breakdown chart, deterministically and
@@ -215,7 +325,8 @@ impl<'a> Tree<'a> {
 /// single stem dropping to a bus that feeds every child. The parent stands over its
 /// middle child when the row has one, and over the middle of the row when it does
 /// not. Listing the lowest level is what keeps a broad tree page-shaped: a row
-/// holding every leaf is a strip.
+/// holding every leaf is a strip. A tree still too big for landscape A4 has its
+/// widest rows wrapped onto several, at whichever width prints it biggest there.
 ///
 /// A use case the view exposes stands in a row above the trees, over the functions
 /// that depend on it, as OMG's course draws a dependency used for traceability: the
@@ -225,6 +336,28 @@ impl<'a> Tree<'a> {
 /// function a second parent, close a cycle, or be a dependency, is drawn as a
 /// straight line but takes no part in the layout.
 pub fn layout_tree(graph: &DiagramGraph) -> LaidOutDiagram {
+    let mut best = layout_within(graph, f64::INFINITY);
+    let mut best_scale = scale_to_page(best.width, best.height);
+    if best_scale >= 1.0 {
+        return best;
+    }
+    // Narrower and narrower rows, keeping the layout that prints biggest; a wider
+    // one wins a tie, since it wraps less.
+    let mut max_row = best.width * NARROWING;
+    while max_row > MIN_ROW {
+        let laid_out = layout_within(graph, max_row);
+        let scale = scale_to_page(laid_out.width, laid_out.height);
+        if scale > best_scale * WORTH_WRAPPING {
+            best = laid_out;
+            best_scale = scale;
+        }
+        max_row *= NARROWING;
+    }
+    best
+}
+
+/// The tree laid out with no row of children wider than `max_row` where it can wrap.
+fn layout_within(graph: &DiagramGraph, max_row: f64) -> LaidOutDiagram {
     let by_id: HashMap<&str, &GraphNode> = graph.nodes.iter().map(|n| (n.id.as_str(), n)).collect();
     let use_cases: Vec<&GraphNode> = graph.nodes.iter().filter(|n| is_use_case_node(&n.keyword)).collect();
     let mut tree = Tree {
@@ -232,6 +365,8 @@ pub fn layout_tree(graph: &DiagramGraph) -> LaidOutDiagram {
         children: HashMap::new(),
         tree_edge: HashMap::new(),
         measures: HashMap::new(),
+        max_row,
+        wraps: HashMap::new(),
         nodes: Vec::new(),
         edges: Vec::new(),
         position: HashMap::new(),

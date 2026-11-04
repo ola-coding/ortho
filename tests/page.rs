@@ -37,18 +37,19 @@ fn reads_the_size_an_svg_declares() {
 }
 
 #[test]
-fn warns_of_a_view_too_wide_to_read_and_only_of_that_one() {
-    let leaves: String = (0..30).map(|i| format!("action function{i} {{ action a{i}; }}\n")).collect();
+fn warns_of_a_view_too_big_to_read_and_only_of_that_one() {
+    // Leaves are listed one under another, and a list does not wrap.
+    let leaves: String = (0..60).map(|i| format!("action function{i}; ")).collect();
     let workspace = parse_ok(&format!(
-        "package Wide {{
-            action def Broad {{ {leaves} }}
-            action def Narrow {{ action one; action two; }}
-            view 'Broad functions' : GeneralView {{ expose Broad; }}
-            view 'Narrow functions' : GeneralView {{ expose Narrow; }}
+        "package Long {{
+            action def Everything {{ {leaves} }}
+            action def Little {{ action one; action two; }}
+            view 'Every function' : GeneralView {{ expose Everything; }}
+            view 'A few functions' : GeneralView {{ expose Little; }}
         }}"
     ));
     let rendering = render_views(&workspace, &LIGHT).unwrap();
     let warnings: Vec<&str> = rendering.rendered.iter().filter_map(|r| r.warning.as_deref()).collect();
     assert_eq!(warnings.len(), 1, "{warnings:?}");
-    assert!(warnings[0].starts_with("'Broad functions' is too wide"), "{}", warnings[0]);
+    assert!(warnings[0].starts_with("'Every function' is too tall"), "{}", warnings[0]);
 }
