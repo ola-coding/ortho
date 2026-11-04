@@ -1,14 +1,28 @@
 [package]
 name = "ortho"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
+# The oldest Rust that builds ortho, checked by the Release workflow.
+rust-version = "1.90"
 description = "Orthographic projection for architecture: renders the six architectural views as SVG from SysML v2 model files"
 license = "MIT"
 repository = "https://github.com/ola-coding/ortho"
+homepage = "https://ola-coding.github.io/ortho/"
 readme = "README.md"
 keywords = ["sysml", "architecture", "diagrams", "svg", "mbse"]
 categories = ["command-line-utilities", "visualization"]
-publish = false
+# What crates.io gets: what building needs, and the README and licence.
+include = ["/src", "/README.md", "/LICENSE"]
+
+# cargo binstall ortho downloads the release archive for the system rather than
+# building: ortho-<target>.tar.gz (.zip for Windows), as release.yml names them.
+[package.metadata.binstall]
+pkg-url = "{ repo }/releases/download/v{ version }/{ name }-{ target }{ archive-suffix }"
+bin-dir = "{ name }-{ target }/{ bin }{ binary-ext }"
+pkg-fmt = "tgz"
+
+[package.metadata.binstall.overrides.x86_64-pc-windows-msvc]
+pkg-fmt = "zip"
 
 [dependencies]
 clap = { version = "4.6.7", features = ["derive"] }

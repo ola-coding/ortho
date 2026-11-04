@@ -5,8 +5,13 @@
 #          README and licence: a .tar.gz, or a .zip for Windows. Each asset is
 #          named after its target alone, so releases/latest/download/<asset>
 #          always finds the newest.
+# package  Packs the crate as crates.io would get it, and builds it with the
+#          oldest Rust that Cargo.toml's rust-version promises.
 # publish  For a tag v<version>, where <version> is Cargo.toml's, creates the
 #          release with every archive and their SHA-256 sums.
+# crates-io  After the release, publishes the same version on crates.io, for
+#          cargo install ortho and cargo binstall ortho (which fetches the
+#          release's archive, so it runs second).
 #
 # To release: set the version in Cargo.toml, commit, then either
 #   git tag v0.2.0 && git push origin v0.2.0
@@ -87,9 +92,24 @@ jobs:
           path: dist/*
           if-no-files-found: error
 
+  package:
+    name: Package for crates.io
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: rustup toolchain install
+      - name: The oldest Rust that rust-version promises
+        run: |
+          msrv="$(sed -n 's/^rust-version = "\(.*\)"$/\1/p' Cargo.toml)"
+          rustup toolchain install "$msrv" --profile minimal
+          echo "MSRV=$msrv" >> "$GITHUB_ENV"
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo package --locked
+      - run: cargo "+$MSRV" check --locked --package ortho
+
   publish:
     name: Publish the release
-    needs: build
+    needs: [build, package]
     if: startsWith(github.ref, 'refs/tags/v') || (inputs.publish && github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     permissions:
@@ -121,3 +141,26 @@ jobs:
           sha256sum ortho-* > SHA256SUMS
           gh release create "$TAG" ortho-* SHA256SUMS --target "${GITHUB_SHA}" \
             --repo "${GITHUB_REPOSITORY}" --title "ortho ${TAG#v}" --generate-notes
+
+  crates-io:
+    name: Publish on crates.io
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      # A crates.io token, needed for the first publish only. Once the crate
+      # exists, trusted publishing for this workflow replaces it: set that up on
+      # crates.io and delete the secret.
+      HAS_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN != '' }}
+    steps:
+      - uses: actions/checkout@v7
+      - run: rustup toolchain install
+      - name: Token from trusted publishing
+        id: auth
+        if: env.HAS_TOKEN != 'true'
+        uses: rust-lang/crates-io-auth-action@v1
+      - run: cargo publish --locked
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN || steps.auth.outputs.token }}

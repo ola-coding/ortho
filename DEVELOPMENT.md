@@ -248,6 +248,21 @@ tab, with *publish* ticked: it tags that commit `v` and the version in
 that changes the build, such as `Cargo.toml` or the workflow, builds every
 binary without publishing.
 
+After the GitHub release, the workflow publishes the same version on
+[crates.io](https://crates.io/crates/ortho), for `cargo install ortho` and
+`cargo binstall ortho`; binstall fetches the release's archive, which is why
+crates.io comes second. A version on crates.io can be yanked but never
+replaced, so a release that fails there needs a new version. Every run also
+packs the crate as crates.io would get it (only `src/`, the README and the
+licence) and builds it with the Rust that `rust-version` in `Cargo.toml`
+names, so raising that floor is a deliberate change.
+
+crates.io takes a token from the secret `CARGO_REGISTRY_TOKEN` when it is
+set. That is needed for the first publish only: once the crate exists, add
+*trusted publishing* for `ola-coding/ortho` and `release.yml` in its settings
+on crates.io, then delete the secret, and the workflow gets a short-lived
+token from GitHub instead.
+
 ## The move to Rust
 
 ortho was written in TypeScript, on Langium and elkjs, and needed Node. It was
@@ -315,9 +330,18 @@ In priority order:
   tree can be split; and say in [LANGUAGE.md](LANGUAGE.md) how to keep a view
   small. Still open: whether to aim for landscape (about 1.6:1) or portrait A4
   (about 1:1).
+- [ ] **Publish on crates.io** as `ortho`, for `cargo install ortho` and
+  `cargo binstall ortho`. The Release workflow does it, from 0.1.1; what is
+  left is the first publish, with a crates.io token, and then trusted
+  publishing in its place. See [Releasing](#releasing).
 - [ ] **A `--watch` option** that renders again on every save, so an editor's
   SVG preview shows the diagram beside the text.
 - [ ] **Requirements on the parts that satisfy them**, in a compartment like
   *perform actions* rather than a seventh view.
 - [ ] **Item flows on the physical view** (`flow`): what passes between ports,
   not only that they connect.
+
+Later, to make ortho easier to find and install without Rust: a clear
+repository page (description, topics, homepage), one-line install scripts, a
+Homebrew tap, Scoop and winget, and entries in the SysML v2 and MBSE
+awesome lists.
