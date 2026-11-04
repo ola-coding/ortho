@@ -39,10 +39,12 @@ file downloaded with a browser is quarantined, and macOS refuses to open it;
 `xattr -d com.apple.quarantine ortho` lifts that. Check that it works with
 `ortho --version`.
 
-Or build it from source with [Rust](https://rustup.rs):
+With [Rust](https://rustup.rs) installed, ortho is also on
+[crates.io](https://crates.io/crates/ortho):
 
 ```sh
-cargo install --git https://github.com/ola-coding/ortho
+cargo install ortho    # builds it from source
+cargo binstall ortho   # downloads the release binary, with cargo-binstall
 ```
 
 ## Your first diagram
