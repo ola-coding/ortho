@@ -124,6 +124,11 @@ cannot draw is skipped with the reason (`why_undrawable`).
 - **The notation** is described in [VIEWS.md](VIEWS.md). The frame's tab shows
   the view's definition, which is optional there, only for a view without a
   name. A box gets its corners and keyword from what it draws (`box_of`).
+- **Drawn for landscape A4** (`src/render/page.rs`). An SVG shrinks to fit its
+  page, and its text with it, so `ortho render` warns of a view whose names
+  would print smaller than 6 pt on landscape A4, 277 × 190 mm inside 10 mm
+  margins. Names are 12 px, which is 9 pt at full size, so a diagram may be
+  half as big again as the page, about 1570 × 1077 px, and still read.
 - **Themes are colour only** (`src/render/theme.rs`). Every coordinate is
   fixed before a theme is consulted, and a test asserts both themes place
   everything alike. A theme adds nothing it does not paint, so the light
@@ -321,15 +326,17 @@ In priority order:
   binaries for Linux, Windows and macOS. See [The move to Rust](#the-move-to-rust).
 - [x] **Publish the first release.** Tag `v0.1.0`, so the README's download
   links work, and check each binary on its system.
-- [ ] **Keep wide diagrams readable.** Four views put every sibling in one row,
-  so width grows with each child: 12 packages draw at 13:1, a function tree two
-  levels deep at 15:1. Deployment already packs to a page shape. In order:
-  warn when a diagram is wider than about 3:1; wrap the rows of the logical and
-  use case views; pack the packages no import joins on the implementation view,
-  keeping their declared order; let a view expose a sub-function, so a large
-  tree can be split; and say in [LANGUAGE.md](LANGUAGE.md) how to keep a view
-  small. Still open: whether to aim for landscape (about 1.6:1) or portrait A4
-  (about 1:1).
+- [x] **Warn of a diagram too big for landscape A4**, the page ortho draws
+  for: one whose names, shrunk to fit, would print smaller than 6 pt
+  (`src/render/page.rs`).
+- [ ] **Keep wide diagrams readable on landscape A4.** Four views put every
+  sibling in one row, so width grows with each child: 12 packages draw at
+  13:1, a function tree two levels deep at 15:1. Deployment already packs to a
+  page shape. In order: wrap the rows of the logical and use case views; pack
+  the packages no import joins on the implementation view, keeping their
+  declared order; let a view expose a sub-function, so a large tree can be
+  split; and say in [LANGUAGE.md](LANGUAGE.md) how to keep a view small. The
+  survey drone's implementation, physical and process views are too big today.
 - [ ] **Publish on crates.io** as `ortho`, for `cargo install ortho` and
   `cargo binstall ortho`. The Release workflow does it, from 0.1.1; what is
   left is the first publish, with a crates.io token, and then trusted

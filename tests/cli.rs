@@ -57,7 +57,18 @@ fn renders_the_examples_as_their_committed_diagrams() {
         let out = scratch(example);
         let output = ortho(&["render", &format!("examples/{example}"), "-o", path(&out)]);
         assert!(output.status.success(), "{}", stderr(&output));
-        assert_eq!(stderr(&output), "");
+        // The survey drone's three biggest views are more than landscape A4 holds.
+        let too_big: Vec<String> =
+            stderr(&output).lines().map(|line| line.split(" is too ").next().unwrap_or(line).to_string()).collect();
+        let expected: &[&str] = match example {
+            "survey-drone" => &[
+                "Warning: 'Implementation view — Survey Drone'",
+                "Warning: 'Physical view — Survey Drone'",
+                "Warning: 'Process view — Survey Drone'",
+            ],
+            _ => &[],
+        };
+        assert_eq!(too_big, expected, "{example}");
         let committed = repository().join("examples").join(example).join("diagrams");
         let written = files_in(&out);
         assert_eq!(written, files_in(&committed));

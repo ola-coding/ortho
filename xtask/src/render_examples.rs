@@ -26,6 +26,9 @@ pub fn run() -> Result {
         for rendered in &rendering.rendered {
             write(format!("{out}/{}", rendered.file), &rendered.result.svg)?;
             println!("Wrote {out}/{} ({})", rendered.file, rendered.result.summary);
+            if let Some(warning) = &rendered.warning {
+                println!("Warning: {warning}");
+            }
         }
     }
     Ok(())
