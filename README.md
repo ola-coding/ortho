@@ -101,7 +101,8 @@ ortho render <models...> -o <folder> [--theme <name>]
 
 Diagrams are drawn for landscape A4. A view too big for that page, one whose
 names would print smaller than 6 pt once it is shrunk to fit, is still drawn,
-with a warning that says so: split it into smaller views.
+with a warning that says so: split it into smaller views, as
+[LANGUAGE.md](LANGUAGE.md#keeping-a-view-on-one-page) shows.
 
 ## Using it in a project
 

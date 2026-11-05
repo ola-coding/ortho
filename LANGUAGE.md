@@ -120,6 +120,28 @@ A view draws only what it exposes, and a `GeneralView` draws whatever that is.
 ortho skips any other view a model declares, and says why; with nothing left to
 draw, it fails.
 
+### Keeping a view on one page
+
+ortho draws for landscape A4 and warns of a view whose names would print
+smaller than 6 pt once it is shrunk to fit. ortho already sets out what it can
+in rows: use cases, packages that import nothing from each other, and packages
+that all import the same one. What it cannot shorten is a view that simply
+holds too much. Then split the view, since more views, each about one thing,
+read better than one crowded one:
+
+- **Logical view:** expose one branch of a big tree, `expose MakeBeverage::prepareWater;`,
+  in a view of its own, and keep the whole tree's view to its upper levels by
+  exposing a smaller tree. A tree of more than about twenty functions, or more
+  than seven side by side under one parent, rarely fits.
+- **Use case view:** one view for each actor, or each kind of use case,
+  exposing a package of its own.
+- **Implementation view:** expose one package, `expose Software::Onboard;`, in
+  a view for each layer or stack, rather than the whole software at once.
+- **Physical view:** expose one subsystem's `part`, not the whole product.
+- **Process view:** one scenario per view; a scenario with more than about
+  eight lifelines is two scenarios.
+- **Deployment view:** one view for each host, or each kind of host.
+
 ## Use case view
 
 What people ask the system for, and who asks (§7.25).
@@ -183,6 +205,7 @@ package Functions {
 | `action def Name { ... }` in a package | the root of a tree, an «action def» box |
 | `action name;` or `action name { ... }` nested in another | an «action» box under its parent, which owns it: a filled diamond at the parent's end |
 | `action name : Def;` in a package | nothing. It is the usage a `perform` chain starts from. |
+| `expose Tree::branch;` in the view, naming a nested `action` | that branch alone, the function at its root: a tree too big for one page, split |
 | `#refinement dependency Tree to SystemUseCases::Name;` in a package | a dashed arrow from the tree's root up to the use case, when the view exposes both |
 | `expose SystemUseCases::Name;` in the view | the use case, above the trees that refine it. One nothing refines stands alone, a visible gap. |
 

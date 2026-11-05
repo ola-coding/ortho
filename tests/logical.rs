@@ -281,3 +281,27 @@ fn keeps_the_stem_over_the_middle_of_an_even_row_which_has_no_middle_child() {
     let at = |id: &str| middle(node(&laid_out, id));
     assert!(close_to(at("root"), (at("a") + at("d")) / 2.0, 9));
 }
+
+#[test]
+fn draws_a_branch_of_a_tree_alone_when_a_view_exposes_only_that_function() {
+    // A tree too big for one page splits into a view for each branch.
+    let workspace = common::parse_ok(
+        "package P {
+            private import StandardViewDefinitions::*;
+            action def Top {
+                action a { action a1 { action a1x; action a1y; } action a2; }
+                action b { action b1; }
+            }
+            view 'Branch a' : GeneralView { expose Top::a; }
+        }",
+    );
+    let view = views(&workspace)[0];
+    assert_eq!(ortho::model::views::why_undrawable(&workspace.ast, view), None);
+    assert_eq!(ortho::model::views::diagram_kind(&workspace.ast, view), ortho::model::views::DiagramKind::Logical);
+    let graph = extract_logical_graph(&workspace.ast, &exposed_elements(&workspace.ast, view), &workspace.packages());
+    let mut drawn = names(graph.nodes.iter());
+    drawn.sort();
+    assert_eq!(drawn, ["a", "a1", "a1x", "a1y", "a2"]);
+    let laid_out = layout_tree(&graph);
+    assert!(node(&laid_out, "a").y < node(&laid_out, "a1").y);
+}

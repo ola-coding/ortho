@@ -103,7 +103,7 @@ fn loads_any_view_and_says_why_it_cannot_draw_one_other_than_the_three_it_knows(
     );
     assert_eq!(
         why("package M { part p; view v : GeneralView { expose p; } }"),
-        [Some("A GeneralView exposes packages, action definitions or use cases.".into())]
+        [Some("A GeneralView exposes packages, action definitions, the actions in them, or use cases.".into())]
     );
 }
 
