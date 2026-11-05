@@ -101,9 +101,17 @@ impl Tree<'_> {
         (half.max(l_up).max(r_up), half.max(l_down).max(r_down))
     }
 
-    fn width(&self) -> f64 {
+    /// How far the tree reaches left and right of its use case's middle: the use
+    /// cases it includes are centred under it.
+    fn reach(&self) -> (f64, f64) {
         let (left, right) = self.header();
-        (left + right).max(self.includes_width())
+        let half = self.includes_width() / 2.0;
+        (left.max(half), right.max(half))
+    }
+
+    fn width(&self) -> f64 {
+        let (left, right) = self.reach();
+        left + right
     }
 
     fn includes_width(&self) -> f64 {
@@ -111,13 +119,10 @@ impl Tree<'_> {
         self.includes.iter().map(|(t, _)| t.width()).sum::<f64>() + BOX_GAP * n.saturating_sub(1) as f64
     }
 
-    /// Places the tree with its top left corner at (x, y), its use case centred on
-    /// the tree's width.
+    /// Places the tree with its top left corner at (x, y).
     fn place(&self, x: f64, y: f64, out: &mut Group) {
-        let width = self.width();
-        let (left, right) = self.header();
         let (up, down) = self.header_height();
-        let middle_x = x + (width - left - right) / 2.0 + left;
+        let middle_x = x + self.reach().0;
         let middle_y = y + up;
         let u = self.use_case;
         out.nodes.push(laid_out(u, u.id.clone(), middle_x - u.width / 2.0, middle_y - u.height / 2.0));
@@ -150,16 +155,26 @@ impl Tree<'_> {
             }
         }
 
+        // An «include» runs down from the use case's middle, across to the middle of
+        // the one it includes, and down to it: at right angles, as every other line.
         let below = middle_y + down + INCLUDE_GAP;
-        let mut child_x = x + (width - self.includes_width()) / 2.0;
+        let bus = below - INCLUDE_GAP / 2.0;
+        let mut child_x = middle_x - self.includes_width() / 2.0;
         for (tree, include) in &self.includes {
-            let child_middle = child_x + tree.width() / 2.0;
             tree.place(child_x, below, out);
             let parent = &out.nodes[use_case];
             let child = out.nodes.iter().find(|n| n.id == tree.use_case.id).unwrap();
-            let child_top_x = clamp(centre_x(parent), child.x + USAGE_RADIUS, child.x + child.width - USAGE_RADIUS);
-            let start_x = clamp(child_middle, parent.x + USAGE_RADIUS, parent.x + parent.width - USAGE_RADIUS);
-            let points = vec![Point { x: start_x, y: parent.y + parent.height }, Point { x: child_top_x, y: child.y }];
+            let (from, to) = (centre_x(parent), centre_x(child));
+            let points = if (from - to).abs() < 0.5 {
+                vec![Point { x: from, y: parent.y + parent.height }, Point { x: from, y: child.y }]
+            } else {
+                vec![
+                    Point { x: from, y: parent.y + parent.height },
+                    Point { x: from, y: bus },
+                    Point { x: to, y: bus },
+                    Point { x: to, y: child.y },
+                ]
+            };
             out.edge(include, u.id.clone(), tree.use_case.id.clone(), points);
             child_x += tree.width() + BOX_GAP;
         }
