@@ -1,23 +1,40 @@
 //! The use case view's layout, without ELK.
+//!
+//! Each use case is drawn as SysML v2 draws one (Part 1, Table 23 and §8.2.3.25): its
+//! «subject» above it, its actors beside it, primary ones on the left and secondary
+//! ones on the right, and the use cases it includes below it, each joined by an
+//! «include» arrow. The subject and the actors are the use case's own parameters, so
+//! every such group carries its own; a view of several use cases sets the groups out
+//! in rows, in the order the model declares them, as many to a row as landscape A4
+//! takes.
 use super::{LaidOutDiagram, LaidOutEdge, LaidOutNode, Point};
 use crate::model::graph::{DiagramGraph, EdgeKind, GraphEdge, GraphNode, NodeShape, USAGE_RADIUS, is_use_case_node};
-use std::cmp::Ordering;
+use crate::render::page::PAGE_WIDTH;
 use std::collections::{HashMap, HashSet};
 
 /// Clearance around the drawing; matches ELK's default root padding.
 const MARGIN: f64 = 12.0;
-/// Between the subject and the use cases, and between the use cases and the actors.
-const ROW_GAP: f64 = 56.0;
-/// Between two use cases side by side.
-const BOX_GAP: f64 = 36.0;
-/// Between a use case and one it includes: room for «include» and its arrow.
-const INCLUDE_GAP: f64 = 84.0;
-/// Between subjects, and between actors, side by side.
-const SIDE_GAP: f64 = 40.0;
-/// A line to an actor stops this far above its head.
-const HEAD_GAP: f64 = 3.0;
-/// How far below the row an «include» between use cases that are not neighbours runs.
-const DETOUR: f64 = 16.0;
+/// Between the subject and its use case.
+const SUBJECT_GAP: f64 = 48.0;
+/// Between a use case and the use cases it includes: room for «include».
+const INCLUDE_GAP: f64 = 64.0;
+/// Between use cases side by side under the one including them.
+const BOX_GAP: f64 = 32.0;
+/// Between a use case and the actors beside it.
+const SIDE_GAP: f64 = 56.0;
+/// Between actors stacked on the same side of a use case.
+const ACTOR_GAP: f64 = 12.0;
+/// Between groups, side by side and row above row.
+const GROUP_GAP: f64 = 56.0;
+/// The widest a row of groups may be: landscape A4, less the frame around the diagram.
+const ROW_WIDTH: f64 = PAGE_WIDTH - 40.0;
+/// Where an actor's arms are, below the top of its figure, and how tall the figure is.
+const ARMS: f64 = 24.0;
+const ACTOR_HEIGHT: f64 = 76.0;
+/// A line to an actor stops this far from its hand.
+const HAND_GAP: f64 = 3.0;
+/// How far an actor's arm reaches either side of its middle.
+const ARM_REACH: f64 = 13.0;
 
 fn centre_x(n: &LaidOutNode) -> f64 {
     n.x + n.width / 2.0
@@ -27,208 +44,271 @@ fn clamp(v: f64, lo: f64, hi: f64) -> f64 {
     lo.max(hi.min(v))
 }
 
-/// Lexical order of two keys, as JavaScript sorts by a difference.
-fn compare_keys(a: &[f64], b: &[f64]) -> Ordering {
-    match a.iter().zip(b).find(|(x, y)| x != y) {
-        Some((x, y)) => (x - y).partial_cmp(&0.0).unwrap_or(Ordering::Equal),
-        None => Ordering::Equal,
+fn laid_out(n: &GraphNode, id: String, x: f64, y: f64) -> LaidOutNode {
+    LaidOutNode {
+        id,
+        shape: n.shape,
+        keyword: n.keyword.clone(),
+        name: n.name.clone(),
+        compartments: n.compartments.clone(),
+        ports: Vec::new(),
+        has_children: false,
+        x,
+        y,
+        width: n.width,
+        height: n.height,
     }
 }
 
-struct Row<'a> {
-    by_id: HashMap<&'a str, &'a GraphNode>,
-    includes: Vec<&'a GraphEdge>,
-    placed: HashSet<&'a str>,
+/// A use case, the actors drawn beside it, and the use cases it includes below it.
+struct Tree<'g> {
+    use_case: &'g GraphNode,
+    /// The actor and the line joining it, as the graph has it.
+    left: Vec<(&'g GraphNode, &'g GraphEdge)>,
+    right: Vec<(&'g GraphNode, &'g GraphEdge)>,
+    includes: Vec<(Tree<'g>, &'g GraphEdge)>,
 }
 
-impl<'a> Row<'a> {
-    /// A use case with half of what it includes on either side, so a use case
-    /// including two stands between them.
-    fn sequence(&mut self, use_case: &'a GraphNode) -> Vec<&'a GraphNode> {
-        self.placed.insert(&use_case.id);
-        let targets: Vec<&'a GraphNode> = self
-            .includes
-            .iter()
-            .filter(|e| e.source_id == use_case.id)
-            .map(|e| self.by_id[e.target_id.as_str()])
-            .filter(|target| !self.placed.contains(target.id.as_str()))
-            .collect();
-        for target in &targets {
-            self.placed.insert(&target.id);
+impl Tree<'_> {
+    fn column_width(actors: &[(&GraphNode, &GraphEdge)]) -> f64 {
+        actors.iter().map(|(a, _)| a.width).fold(0.0, f64::max)
+    }
+
+    /// How far a stack of actors reaches above and below the middle of the use case
+    /// beside it, its arms centred on that middle.
+    fn stack_reach(n: usize) -> (f64, f64) {
+        if n == 0 {
+            return (0.0, 0.0);
         }
-        let half = targets.len() / 2;
-        let mut row = Vec::new();
-        for target in &targets[..half] {
-            row.extend(self.sequence(target));
+        let half = (n - 1) as f64 / 2.0 * (ACTOR_HEIGHT + ACTOR_GAP);
+        (half + ARMS, half + ACTOR_HEIGHT - ARMS)
+    }
+
+    /// The left and right reach of the use case's own row, from its middle.
+    fn header(&self) -> (f64, f64) {
+        let side = |actors: &[(&GraphNode, &GraphEdge)]| {
+            if actors.is_empty() { 0.0 } else { SIDE_GAP + Self::column_width(actors) }
+        };
+        let half = self.use_case.width / 2.0;
+        (half + side(&self.left), half + side(&self.right))
+    }
+
+    /// The reach above and below the use case's middle of its own row.
+    fn header_height(&self) -> (f64, f64) {
+        let half = self.use_case.height / 2.0;
+        let (l_up, l_down) = Self::stack_reach(self.left.len());
+        let (r_up, r_down) = Self::stack_reach(self.right.len());
+        (half.max(l_up).max(r_up), half.max(l_down).max(r_down))
+    }
+
+    fn width(&self) -> f64 {
+        let (left, right) = self.header();
+        (left + right).max(self.includes_width())
+    }
+
+    fn includes_width(&self) -> f64 {
+        let n = self.includes.len();
+        self.includes.iter().map(|(t, _)| t.width()).sum::<f64>() + BOX_GAP * n.saturating_sub(1) as f64
+    }
+
+    /// Places the tree with its top left corner at (x, y), its use case centred on
+    /// the tree's width.
+    fn place(&self, x: f64, y: f64, out: &mut Group) {
+        let width = self.width();
+        let (left, right) = self.header();
+        let (up, down) = self.header_height();
+        let middle_x = x + (width - left - right) / 2.0 + left;
+        let middle_y = y + up;
+        let u = self.use_case;
+        out.nodes.push(laid_out(u, u.id.clone(), middle_x - u.width / 2.0, middle_y - u.height / 2.0));
+        let use_case = out.nodes.len() - 1;
+
+        for (actors, on_left) in [(&self.left, true), (&self.right, false)] {
+            let column = Self::column_width(actors);
+            let (reach, _) = Self::stack_reach(actors.len());
+            for (i, (actor, line)) in actors.iter().enumerate() {
+                let column_x = if on_left {
+                    middle_x - u.width / 2.0 - SIDE_GAP - column
+                } else {
+                    middle_x + u.width / 2.0 + SIDE_GAP
+                };
+                let top = middle_y - reach + i as f64 * (ACTOR_HEIGHT + ACTOR_GAP);
+                let id = format!("{}@{}", actor.id, u.id);
+                out.nodes.push(laid_out(actor, id.clone(), column_x + (column - actor.width) / 2.0, top));
+                let figure = out.nodes.last().unwrap();
+                let use_case = &out.nodes[use_case];
+                let hand_x = centre_x(figure) + if on_left { ARM_REACH + HAND_GAP } else { -ARM_REACH - HAND_GAP };
+                let hand = Point { x: hand_x, y: top + ARMS };
+                let side = Point {
+                    x: if on_left { use_case.x } else { use_case.x + use_case.width },
+                    y: clamp(hand.y, use_case.y + USAGE_RADIUS, use_case.y + use_case.height - USAGE_RADIUS),
+                };
+                // In the line's own direction, from its source to its target.
+                let points = if line.source_id == actor.id { vec![hand, side] } else { vec![side, hand] };
+                let (source, target) = if line.source_id == actor.id { (id, u.id.clone()) } else { (u.id.clone(), id) };
+                out.edge(line, source, target, points);
+            }
         }
-        row.push(use_case);
-        for target in &targets[half..] {
-            row.extend(self.sequence(target));
+
+        let below = middle_y + down + INCLUDE_GAP;
+        let mut child_x = x + (width - self.includes_width()) / 2.0;
+        for (tree, include) in &self.includes {
+            let child_middle = child_x + tree.width() / 2.0;
+            tree.place(child_x, below, out);
+            let parent = &out.nodes[use_case];
+            let child = out.nodes.iter().find(|n| n.id == tree.use_case.id).unwrap();
+            let child_top_x = clamp(centre_x(parent), child.x + USAGE_RADIUS, child.x + child.width - USAGE_RADIUS);
+            let start_x = clamp(child_middle, parent.x + USAGE_RADIUS, parent.x + parent.width - USAGE_RADIUS);
+            let points = vec![Point { x: start_x, y: parent.y + parent.height }, Point { x: child_top_x, y: child.y }];
+            out.edge(include, u.id.clone(), tree.use_case.id.clone(), points);
+            child_x += tree.width() + BOX_GAP;
         }
-        row
     }
 }
 
-/// Side by side, in the order of their keys, each centred on what it is joined to as
-/// far as the one before it allows.
-fn spread<'g>(
-    at: &mut HashMap<&'g str, Point>,
-    nodes: &[&'g GraphNode],
-    top: impl Fn(&GraphNode) -> f64,
-    key: impl Fn(&HashMap<&'g str, Point>, &GraphNode) -> Vec<f64>,
-    middle: &impl Fn(&HashMap<&'g str, Point>, &str) -> f64,
-) {
-    let mut ordered: Vec<(&'g GraphNode, Vec<f64>)> = nodes.iter().map(|n| (*n, key(at, n))).collect();
-    ordered.sort_by(|a, b| compare_keys(&a.1, &b.1));
-    let mut right = f64::NEG_INFINITY;
-    for (n, _) in ordered {
-        let left = (middle(at, &n.id) - n.width / 2.0).max(right + SIDE_GAP);
-        at.insert(&n.id, Point { x: left, y: top(n) });
-        right = left + n.width;
+/// One use case drawn as the spec draws it, in coordinates of its own.
+#[derive(Default)]
+struct Group {
+    nodes: Vec<LaidOutNode>,
+    edges: Vec<LaidOutEdge>,
+}
+
+impl Group {
+    fn edge(&mut self, e: &GraphEdge, source_id: String, target_id: String, points: Vec<Point>) {
+        self.edges.push(LaidOutEdge {
+            id: format!("{}@{}", e.id, self.edges.len()),
+            kind: e.kind,
+            source_id,
+            target_id,
+            label: e.label.clone(),
+            points,
+            label_box: None,
+        });
+    }
+
+    fn bounds(&self) -> (f64, f64, f64, f64) {
+        let left = self.nodes.iter().map(|n| n.x).fold(f64::INFINITY, f64::min);
+        let top = self.nodes.iter().map(|n| n.y).fold(f64::INFINITY, f64::min);
+        let right = self.nodes.iter().map(|n| n.x + n.width).fold(f64::NEG_INFINITY, f64::max);
+        let bottom = self.nodes.iter().map(|n| n.y + n.height).fold(f64::NEG_INFINITY, f64::max);
+        (left, top, right, bottom)
+    }
+
+    fn shift(&mut self, dx: f64, dy: f64) {
+        for n in &mut self.nodes {
+            n.x += dx;
+            n.y += dy;
+        }
+        for e in &mut self.edges {
+            for p in &mut e.points {
+                p.x += dx;
+                p.y += dy;
+            }
+        }
     }
 }
 
-/// Lays out the use case view as OMG's examples are drawn (§7.25), and without ELK:
-/// the subject above its use cases, each joined to it by a short line, and the actors
-/// below them. OMG draws one use case, its actors beside it; a view of several,
-/// sharing the subject and the actors, keeps every line clear of every box only with
-/// the two facing the row of use cases from opposite sides. Each use case stands
-/// between the use cases it includes, so an «include» joins neighbours.
+/// Lays out the use case view as the spec draws a use case, one group per use case
+/// no other includes, in rows.
 pub fn layout_use_cases(graph: &DiagramGraph) -> LaidOutDiagram {
     let by_id: HashMap<&str, &GraphNode> = graph.nodes.iter().map(|n| (n.id.as_str(), n)).collect();
     let use_cases: Vec<&GraphNode> = graph.nodes.iter().filter(|n| is_use_case_node(&n.keyword)).collect();
-    let subjects: Vec<&GraphNode> = graph.nodes.iter().filter(|n| n.keyword == "subject").collect();
-    let actors: Vec<&GraphNode> = graph.nodes.iter().filter(|n| n.shape == NodeShape::Actor).collect();
     let includes: Vec<&GraphEdge> = graph.edges.iter().filter(|e| e.kind == EdgeKind::Include).collect();
     let lines: Vec<&GraphEdge> = graph.edges.iter().filter(|e| e.kind == EdgeKind::Association).collect();
-
-    // The row: each use case with half of what it includes on either side.
     let included: HashSet<&str> = includes.iter().map(|e| e.target_id.as_str()).collect();
-    let mut sequencer = Row { by_id: by_id.clone(), includes: includes.clone(), placed: HashSet::new() };
-    let mut row: Vec<&GraphNode> = Vec::new();
+
+    // A use case with the actors it is the first in its group to name, and below it
+    // the use cases it includes that are not drawn yet.
+    fn grow<'g>(
+        use_case: &'g GraphNode,
+        by_id: &HashMap<&str, &'g GraphNode>,
+        includes: &[&'g GraphEdge],
+        lines: &[&'g GraphEdge],
+        placed: &mut HashSet<&'g str>,
+        named: &mut HashSet<&'g str>,
+    ) -> Tree<'g> {
+        placed.insert(&use_case.id);
+        let mut tree = Tree { use_case, left: Vec::new(), right: Vec::new(), includes: Vec::new() };
+        for line in lines {
+            // A primary actor's line starts at the actor, a secondary one's at the use case.
+            let (actor, primary) = if line.target_id == use_case.id {
+                (line.source_id.as_str(), true)
+            } else if line.source_id == use_case.id {
+                (line.target_id.as_str(), false)
+            } else {
+                continue;
+            };
+            let actor = by_id[actor];
+            if actor.shape != NodeShape::Actor || !named.insert(&actor.id) {
+                continue;
+            }
+            if primary { tree.left.push((actor, line)) } else { tree.right.push((actor, line)) }
+        }
+        let targets: Vec<&&'g GraphEdge> =
+            includes.iter().filter(|e| e.source_id == use_case.id && !placed.contains(e.target_id.as_str())).collect();
+        for include in targets {
+            let target = by_id[include.target_id.as_str()];
+            if !placed.contains(target.id.as_str()) {
+                let child = grow(target, by_id, includes, lines, placed, named);
+                tree.includes.push((child, include));
+            }
+        }
+        tree
+    }
+
+    // Groups in the order of their first use case, those no other includes first.
+    let mut placed: HashSet<&str> = HashSet::new();
+    let mut groups: Vec<Group> = Vec::new();
     let roots = use_cases.iter().filter(|u| !included.contains(u.id.as_str())).chain(&use_cases);
     for root in roots {
-        if !sequencer.placed.contains(root.id.as_str()) {
-            row.extend(sequencer.sequence(root));
+        if placed.contains(root.id.as_str()) {
+            continue;
         }
-    }
-
-    let joins = |a: &str, b: &str| {
-        includes.iter().any(|e| (e.source_id == a && e.target_id == b) || (e.source_id == b && e.target_id == a))
-    };
-    let subject_height = subjects.iter().map(|s| s.height).fold(0.0, f64::max);
-    let row_top = MARGIN + if subjects.is_empty() { 0.0 } else { subject_height + ROW_GAP };
-    let row_height = row.iter().map(|u| u.height).fold(0.0, f64::max);
-    let mut at: HashMap<&str, Point> = HashMap::new();
-    let mut x = 0.0;
-    for (i, use_case) in row.iter().enumerate() {
-        at.insert(&use_case.id, Point { x, y: row_top + (row_height - use_case.height) / 2.0 });
-        let joined = row.get(i + 1).is_some_and(|next| joins(&use_case.id, &next.id));
-        x += use_case.width + if joined { INCLUDE_GAP } else { BOX_GAP };
-    }
-
-    // The middle of the use cases a subject or an actor is joined to.
-    let middle = |at: &HashMap<&str, Point>, id: &str| -> f64 {
-        let joined: Vec<&GraphNode> = lines
+        let mut named = HashSet::new();
+        let tree = grow(root, &by_id, &includes, &lines, &mut placed, &mut named);
+        let mut group = Group::default();
+        let subject = lines
             .iter()
-            .filter(|e| e.source_id == id || e.target_id == id)
-            .map(|e| by_id[if e.source_id == id { e.target_id.as_str() } else { e.source_id.as_str() }])
-            .filter(|n| at.contains_key(n.id.as_str()))
-            .collect();
-        if joined.is_empty() {
-            0.0
-        } else {
-            joined.iter().fold(0.0, |sum, n| sum + at[n.id.as_str()].x + n.width / 2.0) / joined.len() as f64
+            .find(|e| e.source_id == root.id && by_id[e.target_id.as_str()].keyword == "subject")
+            .map(|e| (by_id[e.target_id.as_str()], *e));
+        let top = subject.map_or(0.0, |(s, _)| s.height + SUBJECT_GAP);
+        tree.place(0.0, top, &mut group);
+        if let Some((s, line)) = subject {
+            let (middle, use_case_top) = (centre_x(&group.nodes[0]), group.nodes[0].y);
+            let x = middle - s.width / 2.0;
+            let id = format!("{}@{}", s.id, root.id);
+            group.nodes.push(laid_out(s, id.clone(), x, 0.0));
+            let at = clamp(middle, x + USAGE_RADIUS, x + s.width - USAGE_RADIUS);
+            let points = vec![Point { x: at, y: use_case_top }, Point { x: at, y: s.height }];
+            group.edge(line, root.id.clone(), id, points);
         }
-    };
-    let subject_top = |s: &GraphNode| MARGIN + subject_height - s.height;
-    spread(&mut at, &subjects, subject_top, |at, s| vec![middle(at, &s.id)], &middle);
-    // A primary actor before a secondary one: the extractor points a secondary
-    // actor's lines at the actor.
-    let secondary = |id: &str| if lines.iter().any(|e| e.target_id == id) { 1.0 } else { 0.0 };
-    let actors_top = row_top + row_height + ROW_GAP;
-    spread(&mut at, &actors, |_| actors_top, |at, a| vec![secondary(&a.id), middle(at, &a.id)], &middle);
+        groups.push(group);
+    }
+    // Groups take the declared order of their use case, whether or not another includes it.
+    let order: HashMap<&str, usize> = use_cases.iter().enumerate().map(|(i, u)| (u.id.as_str(), i)).collect();
+    let first = |g: &Group| g.nodes.iter().filter_map(|n| order.get(n.id.as_str())).min().copied();
+    groups.sort_by_key(|g| first(g));
 
-    let drawn: Vec<&GraphNode> = graph.nodes.iter().filter(|n| at.contains_key(n.id.as_str())).collect();
-    if drawn.is_empty() {
+    if groups.is_empty() {
         return LaidOutDiagram { width: 2.0 * MARGIN, height: 2.0 * MARGIN, nodes: Vec::new(), edges: Vec::new() };
     }
-    let shift = MARGIN - drawn.iter().map(|n| at[n.id.as_str()].x).fold(f64::INFINITY, f64::min);
-    let nodes: Vec<LaidOutNode> = drawn
-        .iter()
-        .map(|n| LaidOutNode {
-            id: n.id.clone(),
-            shape: n.shape,
-            keyword: n.keyword.clone(),
-            name: n.name.clone(),
-            compartments: n.compartments.clone(),
-            ports: Vec::new(),
-            has_children: false,
-            x: at[n.id.as_str()].x + shift,
-            y: at[n.id.as_str()].y,
-            width: n.width,
-            height: n.height,
-        })
-        .collect();
-    let laid_out: HashMap<&str, &LaidOutNode> = nodes.iter().map(|n| (n.id.as_str(), n)).collect();
-    let row_index = |id: &str| row.iter().position(|u| u.id == id).map_or(-1, |i| i as i64);
 
-    // An «include» runs straight to a neighbour, or round below the row to any other.
-    // A subject's or actor's line meets a use case's top or bottom edge, straight up
-    // or down where the two overlap, leaving the subject's bottom edge or the actor's
-    // head.
-    let route = |e: &GraphEdge, source: &LaidOutNode, target: &LaidOutNode| -> Vec<Point> {
-        if e.kind == EdgeKind::Include {
-            if (row_index(&source.id) - row_index(&target.id)).abs() == 1 {
-                let y = source.y + source.height / 2.0;
-                let rightwards = centre_x(target) > centre_x(source);
-                return vec![
-                    Point { x: if rightwards { source.x + source.width } else { source.x }, y },
-                    Point { x: if rightwards { target.x } else { target.x + target.width }, y },
-                ];
-            }
-            let below = row_top + row_height + DETOUR;
-            return vec![
-                Point { x: centre_x(source), y: source.y + source.height },
-                Point { x: centre_x(source), y: below },
-                Point { x: centre_x(target), y: below },
-                Point { x: centre_x(target), y: target.y + target.height },
-            ];
+    // Rows, as many groups to a row as the page takes, each group at the top of its row.
+    let (mut x, mut y, mut row_bottom) = (MARGIN, MARGIN, MARGIN);
+    let mut nodes = Vec::new();
+    let mut edges = Vec::new();
+    for mut group in groups {
+        let (left, top, right, bottom) = group.bounds();
+        if x > MARGIN && x + right - left > ROW_WIDTH {
+            x = MARGIN;
+            y = row_bottom + GROUP_GAP;
         }
-        let from_use_case = source.shape != NodeShape::Actor && source.keyword != "subject";
-        let (use_case, other) = if from_use_case { (source, target) } else { (target, source) };
-        let on_use_case = |x: f64| clamp(x, use_case.x + USAGE_RADIUS, use_case.x + use_case.width - USAGE_RADIUS);
-        let mut ends = if other.shape == NodeShape::Actor {
-            let head = Point { x: centre_x(other), y: other.y - HEAD_GAP };
-            vec![head, Point { x: on_use_case(head.x), y: use_case.y + use_case.height }]
-        } else {
-            let start_x = clamp(centre_x(use_case), other.x + USAGE_RADIUS, other.x + other.width - USAGE_RADIUS);
-            let start = Point { x: start_x, y: other.y + other.height };
-            vec![start, Point { x: on_use_case(start.x), y: use_case.y }]
-        };
-        // In the edge's own direction, from its source to its target.
-        if from_use_case {
-            ends.reverse();
-        }
-        ends
-    };
-
-    let edges: Vec<LaidOutEdge> = graph
-        .edges
-        .iter()
-        .filter_map(|e| {
-            let (source, target) = (laid_out.get(e.source_id.as_str())?, laid_out.get(e.target_id.as_str())?);
-            Some(LaidOutEdge {
-                id: e.id.clone(),
-                kind: e.kind,
-                source_id: e.source_id.clone(),
-                target_id: e.target_id.clone(),
-                label: e.label.clone(),
-                points: route(e, source, target),
-                label_box: None,
-            })
-        })
-        .collect();
+        group.shift(x - left, y - top);
+        x += right - left + GROUP_GAP;
+        row_bottom = row_bottom.max(y + bottom - top);
+        nodes.extend(group.nodes);
+        edges.extend(group.edges);
+    }
 
     LaidOutDiagram {
         width: nodes.iter().map(|n| n.x + n.width).fold(f64::NEG_INFINITY, f64::max) + MARGIN,
