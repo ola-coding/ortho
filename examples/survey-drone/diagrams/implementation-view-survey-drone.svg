@@ -25,465 +25,465 @@
       <rect x="36" y="78" width="1799.755" height="1159"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <text x="44" y="73" font-size="11" font-weight="600" fill="#1a1a1a">Software</text></g>
-    <g><rect x="1621.731" y="371" width="61.551" height="18"
+    <g><rect x="61" y="371" width="61.551" height="18"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <rect x="1621.731" y="389" width="189.024" height="216"
+      <rect x="61" y="389" width="189.024" height="216"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <text x="1629.731" y="384" font-size="11" font-weight="600" fill="#1a1a1a">Ground</text></g>
-    <g><rect x="1646.731" y="416" width="139.024" height="164"
+      <text x="69" y="384" font-size="11" font-weight="600" fill="#1a1a1a">Ground</text></g>
+    <g><rect x="86" y="416" width="139.024" height="164"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <path d="M1647.231,448 L1647.231,416.5 L1785.255,416.5 L1785.255,448 Z" fill="#ccdce5" />
-      <text x="1716.243" y="429" text-anchor="middle"
+      <path d="M86.5,448 L86.5,416.5 L224.524,416.5 L224.524,448 Z" fill="#ccdce5" />
+      <text x="155.512" y="429" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
-      <text x="1716.243" y="442" text-anchor="middle"
+      <text x="155.512" y="442" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">SurveyPlanner</text>
-      <line x1="1646.731" y1="448" x2="1785.755" y2="448"
+      <line x1="86" y1="448" x2="225.024" y2="448"
           stroke="#40657e" stroke-width="1" />
-      <text x="1716.243" y="459" text-anchor="middle"
+      <text x="155.512" y="459" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">perform actions</text>
-      <text x="1654.731" y="473"
+      <text x="94" y="473"
           font-size="11" fill="#1a1a1a">planMission</text>
-      <text x="1654.731" y="488"
+      <text x="94" y="488"
           font-size="11" fill="#1a1a1a">presentInformation</text>
-      <text x="1654.731" y="503"
+      <text x="94" y="503"
           font-size="11" fill="#1a1a1a">acceptOperatorInput</text>
-      <line x1="1646.731" y1="514" x2="1785.755" y2="514"
+      <line x1="86" y1="514" x2="225.024" y2="514"
           stroke="#40657e" stroke-width="1" />
-      <text x="1716.243" y="525" text-anchor="middle"
+      <text x="155.512" y="525" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">ports</text>
-      <text x="1654.731" y="539"
+      <text x="94" y="539"
           font-size="11" fill="#1a1a1a">route : ~RouteTopic</text>
-      <text x="1654.731" y="554"
+      <text x="94" y="554"
           font-size="11" fill="#1a1a1a">mission : MissionTopic</text>
-      <text x="1654.731" y="569"
+      <text x="94" y="569"
           font-size="11" fill="#1a1a1a">video : ~VideoTopic</text></g>
-    <g><rect x="685.8240000000001" y="105" width="69.339" height="18"
+    <g><rect x="290.0240000000001" y="105" width="69.339" height="18"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <rect x="685.8240000000001" y="123" width="895.9069999999999" height="482"
+      <rect x="290.0240000000001" y="123" width="895.9069999999999" height="482"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <text x="693.8240000000001" y="118" font-size="11" font-weight="600" fill="#1a1a1a">Onboard</text></g>
-    <g><rect x="1104.44" y="150" width="79.184" height="18"
+      <text x="298.0240000000001" y="118" font-size="11" font-weight="600" fill="#1a1a1a">Onboard</text></g>
+    <g><rect x="371.9770000000001" y="150" width="79.184" height="18"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <rect x="1104.44" y="168" width="395.33799999999997" height="186"
+      <rect x="371.9770000000001" y="168" width="395.33799999999997" height="186"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <text x="1112.44" y="163" font-size="11" font-weight="600" fill="#1a1a1a">Autonomy</text></g>
-    <g><rect x="1129.44" y="195" width="148.242" height="134"
+      <text x="379.9770000000001" y="163" font-size="11" font-weight="600" fill="#1a1a1a">Autonomy</text></g>
+    <g><rect x="396.9770000000001" y="195" width="148.242" height="134"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <path d="M1129.94,227 L1129.94,195.5 L1277.182,195.5 L1277.182,227 Z" fill="#ccdce5" />
-      <text x="1203.5610000000001" y="208" text-anchor="middle"
+      <path d="M397.4770000000001,227 L397.4770000000001,195.5 L544.719,195.5 L544.719,227 Z" fill="#ccdce5" />
+      <text x="471.09800000000007" y="208" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
-      <text x="1203.5610000000001" y="221" text-anchor="middle"
+      <text x="471.09800000000007" y="221" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">RoutePlanner</text>
-      <line x1="1129.44" y1="227" x2="1277.682" y2="227"
+      <line x1="396.9770000000001" y1="227" x2="545.219" y2="227"
           stroke="#40657e" stroke-width="1" />
-      <text x="1203.5610000000001" y="238" text-anchor="middle"
+      <text x="471.09800000000007" y="238" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">perform actions</text>
-      <text x="1137.44" y="252"
+      <text x="404.9770000000001" y="252"
           font-size="11" fill="#1a1a1a">planRoute</text>
-      <line x1="1129.44" y1="263" x2="1277.682" y2="263"
+      <line x1="396.9770000000001" y1="263" x2="545.219" y2="263"
           stroke="#40657e" stroke-width="1" />
-      <text x="1203.5610000000001" y="274" text-anchor="middle"
+      <text x="471.09800000000007" y="274" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">ports</text>
-      <text x="1137.44" y="288"
+      <text x="404.9770000000001" y="288"
           font-size="11" fill="#1a1a1a">route : RouteTopic</text>
-      <text x="1137.44" y="303"
+      <text x="404.9770000000001" y="303"
           font-size="11" fill="#1a1a1a">world : ~WorldTopic</text>
-      <text x="1137.44" y="318"
+      <text x="404.9770000000001" y="318"
           font-size="11" fill="#1a1a1a">mission : ~MissionTopic</text></g>
-    <g><rect x="1317.682" y="210" width="157.096" height="104"
+    <g><rect x="585.219" y="210" width="157.096" height="104"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <path d="M1318.182,242 L1318.182,210.5 L1474.278,210.5 L1474.278,242 Z" fill="#ccdce5" />
-      <text x="1396.23" y="223" text-anchor="middle"
+      <path d="M585.719,242 L585.719,210.5 L741.815,210.5 L741.815,242 Z" fill="#ccdce5" />
+      <text x="663.767" y="223" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
-      <text x="1396.23" y="236" text-anchor="middle"
+      <text x="663.767" y="236" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">ObstacleAvoidance</text>
-      <line x1="1317.682" y1="242" x2="1474.778" y2="242"
+      <line x1="585.219" y1="242" x2="742.315" y2="242"
           stroke="#40657e" stroke-width="1" />
-      <text x="1396.23" y="253" text-anchor="middle"
+      <text x="663.767" y="253" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">perform actions</text>
-      <text x="1325.682" y="267"
+      <text x="593.219" y="267"
           font-size="11" fill="#1a1a1a">avoidObstacles</text>
-      <line x1="1317.682" y1="278" x2="1474.778" y2="278"
+      <line x1="585.219" y1="278" x2="742.315" y2="278"
           stroke="#40657e" stroke-width="1" />
-      <text x="1396.23" y="289" text-anchor="middle"
+      <text x="663.767" y="289" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">ports</text>
-      <text x="1325.682" y="303"
+      <text x="593.219" y="303"
           font-size="11" fill="#1a1a1a">world : ~WorldTopic</text></g>
-    <g><rect x="1047.487" y="406" width="83.221" height="18"
+    <g><rect x="315.0240000000001" y="406" width="83.221" height="18"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <rect x="1047.487" y="424" width="509.2439999999999" height="156"
+      <rect x="315.0240000000001" y="424" width="509.2439999999999" height="156"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <text x="1055.487" y="419" font-size="11" font-weight="600" fill="#1a1a1a">Perception</text></g>
-    <g><rect x="1072.487" y="451" width="129.45999999999998" height="104"
+      <text x="323.0240000000001" y="419" font-size="11" font-weight="600" fill="#1a1a1a">Perception</text></g>
+    <g><rect x="340.0240000000001" y="451" width="129.45999999999998" height="104"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <path d="M1072.987,483 L1072.987,451.5 L1201.4470000000001,451.5 L1201.4470000000001,483 Z" fill="#ccdce5" />
-      <text x="1137.217" y="464" text-anchor="middle"
+      <path d="M340.5240000000001,483 L340.5240000000001,451.5 L468.9840000000001,451.5 L468.9840000000001,483 Z" fill="#ccdce5" />
+      <text x="404.75400000000013" y="464" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
-      <text x="1137.217" y="477" text-anchor="middle"
+      <text x="404.75400000000013" y="477" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">VideoStreamer</text>
-      <line x1="1072.487" y1="483" x2="1201.9470000000001" y2="483"
+      <line x1="340.0240000000001" y1="483" x2="469.4840000000001" y2="483"
           stroke="#40657e" stroke-width="1" />
-      <text x="1137.217" y="494" text-anchor="middle"
+      <text x="404.75400000000013" y="494" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">perform actions</text>
-      <text x="1080.487" y="508"
+      <text x="348.0240000000001" y="508"
           font-size="11" fill="#1a1a1a">streamVideo</text>
-      <line x1="1072.487" y1="519" x2="1201.9470000000001" y2="519"
+      <line x1="340.0240000000001" y1="519" x2="469.4840000000001" y2="519"
           stroke="#40657e" stroke-width="1" />
-      <text x="1137.217" y="530" text-anchor="middle"
+      <text x="404.75400000000013" y="530" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">ports</text>
-      <text x="1080.487" y="544"
+      <text x="348.0240000000001" y="544"
           font-size="11" fill="#1a1a1a">video : VideoTopic</text></g>
-    <g><rect x="1241.9470000000001" y="451" width="120" height="104"
+    <g><rect x="509.4840000000001" y="451" width="120" height="104"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <path d="M1242.4470000000001,483 L1242.4470000000001,451.5 L1361.4470000000001,451.5 L1361.4470000000001,483 Z" fill="#ccdce5" />
-      <text x="1301.9470000000001" y="464" text-anchor="middle"
+      <path d="M509.9840000000001,483 L509.9840000000001,451.5 L628.9840000000002,451.5 L628.9840000000002,483 Z" fill="#ccdce5" />
+      <text x="569.4840000000002" y="464" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
-      <text x="1301.9470000000001" y="477" text-anchor="middle"
+      <text x="569.4840000000002" y="477" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">SensorFusion</text>
-      <line x1="1241.9470000000001" y1="483" x2="1361.9470000000001" y2="483"
+      <line x1="509.4840000000001" y1="483" x2="629.4840000000002" y2="483"
           stroke="#40657e" stroke-width="1" />
-      <text x="1301.9470000000001" y="494" text-anchor="middle"
+      <text x="569.4840000000002" y="494" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">perform actions</text>
-      <text x="1249.9470000000001" y="508"
+      <text x="517.4840000000002" y="508"
           font-size="11" fill="#1a1a1a">fuseSensorData</text>
-      <line x1="1241.9470000000001" y1="519" x2="1361.9470000000001" y2="519"
+      <line x1="509.4840000000001" y1="519" x2="629.4840000000002" y2="519"
           stroke="#40657e" stroke-width="1" />
-      <text x="1301.9470000000001" y="530" text-anchor="middle"
+      <text x="569.4840000000002" y="530" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">ports</text>
-      <text x="1249.9470000000001" y="544"
+      <text x="517.4840000000002" y="544"
           font-size="11" fill="#1a1a1a">world : WorldTopic</text></g>
-    <g><rect x="1401.9470000000001" y="451" width="129.784" height="104"
+    <g><rect x="669.4840000000002" y="451" width="129.784" height="104"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <path d="M1402.4470000000001,483 L1402.4470000000001,451.5 L1531.2310000000002,451.5 L1531.2310000000002,483 Z" fill="#ccdce5" />
-      <text x="1466.8390000000002" y="464" text-anchor="middle"
+      <path d="M669.9840000000002,483 L669.9840000000002,451.5 L798.7680000000001,451.5 L798.7680000000001,483 Z" fill="#ccdce5" />
+      <text x="734.3760000000002" y="464" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
-      <text x="1466.8390000000002" y="477" text-anchor="middle"
+      <text x="734.3760000000002" y="477" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">WorldModel</text>
-      <line x1="1401.9470000000001" y1="483" x2="1531.7310000000002" y2="483"
+      <line x1="669.4840000000002" y1="483" x2="799.2680000000001" y2="483"
           stroke="#40657e" stroke-width="1" />
-      <text x="1466.8390000000002" y="494" text-anchor="middle"
+      <text x="734.3760000000002" y="494" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">perform actions</text>
-      <text x="1409.9470000000001" y="508"
+      <text x="677.4840000000002" y="508"
           font-size="11" fill="#1a1a1a">maintainWorldModel</text>
-      <line x1="1401.9470000000001" y1="519" x2="1531.7310000000002" y2="519"
+      <line x1="669.4840000000002" y1="519" x2="799.2680000000001" y2="519"
           stroke="#40657e" stroke-width="1" />
-      <text x="1466.8390000000002" y="530" text-anchor="middle"
+      <text x="734.3760000000002" y="530" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">ports</text>
-      <text x="1409.9470000000001" y="544"
+      <text x="677.4840000000002" y="544"
           font-size="11" fill="#1a1a1a">world : WorldTopic</text></g>
-    <g><rect x="710.8240000000001" y="157.5" width="68.27199999999999" height="18"
+    <g><rect x="807.315" y="157.5" width="68.27199999999999" height="18"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <rect x="710.8240000000001" y="175.5" width="353.616" height="171"
+      <rect x="807.315" y="175.5" width="353.616" height="171"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <text x="718.8240000000001" y="170.5" font-size="11" font-weight="600" fill="#1a1a1a">Services</text></g>
-    <g><rect x="735.8240000000001" y="210" width="127.199" height="104"
+      <text x="815.315" y="170.5" font-size="11" font-weight="600" fill="#1a1a1a">Services</text></g>
+    <g><rect x="832.315" y="210" width="127.199" height="104"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <path d="M736.3240000000001,242 L736.3240000000001,210.5 L862.523,210.5 L862.523,242 Z" fill="#ccdce5" />
-      <text x="799.4235000000001" y="223" text-anchor="middle"
+      <path d="M832.815,242 L832.815,210.5 L959.014,210.5 L959.014,242 Z" fill="#ccdce5" />
+      <text x="895.9145000000001" y="223" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
-      <text x="799.4235000000001" y="236" text-anchor="middle"
+      <text x="895.9145000000001" y="236" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">Diagnostics</text>
-      <line x1="735.8240000000001" y1="242" x2="863.023" y2="242"
+      <line x1="832.315" y1="242" x2="959.514" y2="242"
           stroke="#40657e" stroke-width="1" />
-      <text x="799.4235000000001" y="253" text-anchor="middle"
+      <text x="895.9145000000001" y="253" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">perform actions</text>
-      <text x="743.8240000000001" y="267"
+      <text x="840.315" y="267"
           font-size="11" fill="#1a1a1a">monitorHealth</text>
-      <line x1="735.8240000000001" y1="278" x2="863.023" y2="278"
+      <line x1="832.315" y1="278" x2="959.514" y2="278"
           stroke="#40657e" stroke-width="1" />
-      <text x="799.4235000000001" y="289" text-anchor="middle"
+      <text x="895.9145000000001" y="289" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">ports</text>
-      <text x="743.8240000000001" y="303"
+      <text x="840.315" y="303"
           font-size="11" fill="#1a1a1a">health : HealthTopic</text></g>
-    <g><rect x="903.0230000000001" y="202.5" width="136.417" height="119"
+    <g><rect x="999.5140000000001" y="202.5" width="136.417" height="119"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <path d="M903.5230000000001,234.5 L903.5230000000001,203 L1038.94,203 L1038.94,234.5 Z" fill="#ccdce5" />
-      <text x="971.2315000000001" y="215.5" text-anchor="middle"
+      <path d="M1000.0140000000001,234.5 L1000.0140000000001,203 L1135.431,203 L1135.431,234.5 Z" fill="#ccdce5" />
+      <text x="1067.7225" y="215.5" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
-      <text x="971.2315000000001" y="228.5" text-anchor="middle"
+      <text x="1067.7225" y="228.5" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">DataLogger</text>
-      <line x1="903.0230000000001" y1="234.5" x2="1039.44" y2="234.5"
+      <line x1="999.5140000000001" y1="234.5" x2="1135.931" y2="234.5"
           stroke="#40657e" stroke-width="1" />
-      <text x="971.2315000000001" y="245.5" text-anchor="middle"
+      <text x="1067.7225" y="245.5" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">perform actions</text>
-      <text x="911.0230000000001" y="259.5"
+      <text x="1007.5140000000001" y="259.5"
           font-size="11" fill="#1a1a1a">recordFlightData</text>
-      <line x1="903.0230000000001" y1="270.5" x2="1039.44" y2="270.5"
+      <line x1="999.5140000000001" y1="270.5" x2="1135.931" y2="270.5"
           stroke="#40657e" stroke-width="1" />
-      <text x="971.2315000000001" y="281.5" text-anchor="middle"
+      <text x="1067.7225" y="281.5" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">ports</text>
-      <text x="911.0230000000001" y="295.5"
+      <text x="1007.5140000000001" y="295.5"
           font-size="11" fill="#1a1a1a">health : ~HealthTopic</text>
-      <text x="911.0230000000001" y="310.5"
+      <text x="1007.5140000000001" y="310.5"
           font-size="11" fill="#1a1a1a">video : ~VideoTopic</text></g>
-    <g><rect x="998.7381666666668" y="657" width="88.171" height="18"
+    <g><rect x="467.8988333333334" y="657" width="88.171" height="18"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <rect x="998.7381666666668" y="675" width="405.118" height="259"
+      <rect x="467.8988333333334" y="675" width="405.118" height="259"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <text x="1006.7381666666668" y="670" font-size="11" font-weight="600" fill="#1a1a1a">Middleware</text></g>
-    <g><rect x="1028.347166666667" y="727.5" width="148.341" height="68"
+      <text x="475.8988333333334" y="670" font-size="11" font-weight="600" fill="#1a1a1a">Middleware</text></g>
+    <g><rect x="497.5078333333334" y="727.5" width="148.341" height="68"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <path d="M1028.847166666667,759.5 L1028.847166666667,728 L1176.1881666666668,728 L1176.1881666666668,759.5 Z" fill="#ccdce5" />
-      <text x="1102.5176666666669" y="740.5" text-anchor="middle"
+      <path d="M498.0078333333334,759.5 L498.0078333333334,728 L645.3488333333335,728 L645.3488333333335,759.5 Z" fill="#ccdce5" />
+      <text x="571.6783333333334" y="740.5" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
-      <text x="1102.5176666666669" y="753.5" text-anchor="middle"
+      <text x="571.6783333333334" y="753.5" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">ZenohRouter</text>
-      <line x1="1028.347166666667" y1="759.5" x2="1176.6881666666668" y2="759.5"
+      <line x1="497.5078333333334" y1="759.5" x2="645.8488333333335" y2="759.5"
           stroke="#40657e" stroke-width="1" />
-      <text x="1102.5176666666669" y="770.5" text-anchor="middle"
+      <text x="571.6783333333334" y="770.5" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">ports</text>
-      <text x="1036.347166666667" y="784.5"
+      <text x="505.5078333333334" y="784.5"
           font-size="11" fill="#1a1a1a">transport : TransportApi</text></g>
-    <g><rect x="1225.9556666666667" y="702" width="148.242" height="119"
+    <g><rect x="695.1163333333334" y="702" width="148.242" height="119"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <path d="M1226.4556666666667,734 L1226.4556666666667,702.5 L1373.6976666666667,702.5 L1373.6976666666667,734 Z" fill="#ccdce5" />
-      <text x="1300.0766666666668" y="715" text-anchor="middle"
+      <path d="M695.6163333333334,734 L695.6163333333334,702.5 L842.8583333333333,702.5 L842.8583333333333,734 Z" fill="#ccdce5" />
+      <text x="769.2373333333334" y="715" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
-      <text x="1300.0766666666668" y="728" text-anchor="middle"
+      <text x="769.2373333333334" y="728" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">MavlinkBridge</text>
-      <line x1="1225.9556666666667" y1="734" x2="1374.1976666666667" y2="734"
+      <line x1="695.1163333333334" y1="734" x2="843.3583333333333" y2="734"
           stroke="#40657e" stroke-width="1" />
-      <text x="1300.0766666666668" y="745" text-anchor="middle"
+      <text x="769.2373333333334" y="745" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">perform actions</text>
-      <text x="1233.9556666666667" y="759"
+      <text x="703.1163333333334" y="759"
           font-size="11" fill="#1a1a1a">exchangeTelemetry</text>
-      <line x1="1225.9556666666667" y1="770" x2="1374.1976666666667" y2="770"
+      <line x1="695.1163333333334" y1="770" x2="843.3583333333333" y2="770"
           stroke="#40657e" stroke-width="1" />
-      <text x="1300.0766666666668" y="781" text-anchor="middle"
+      <text x="769.2373333333334" y="781" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">ports</text>
-      <text x="1233.9556666666667" y="795"
+      <text x="703.1163333333334" y="795"
           font-size="11" fill="#1a1a1a">mavlink : ~MavlinkApi</text>
-      <text x="1233.9556666666667" y="810"
+      <text x="703.1163333333334" y="810"
           font-size="11" fill="#1a1a1a">mission : ~MissionTopic</text></g>
-    <g><rect x="1023.7381666666668" y="841" width="157.559" height="68"
+    <g><rect x="492.8988333333334" y="841" width="157.559" height="68"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <path d="M1024.2381666666668,873 L1024.2381666666668,841.5 L1180.7971666666667,841.5 L1180.7971666666667,873 Z" fill="#ccdce5" />
-      <text x="1102.5176666666669" y="854" text-anchor="middle"
+      <path d="M493.3988333333334,873 L493.3988333333334,841.5 L649.9578333333334,841.5 L649.9578333333334,873 Z" fill="#ccdce5" />
+      <text x="571.6783333333334" y="854" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
-      <text x="1102.5176666666669" y="867" text-anchor="middle"
+      <text x="571.6783333333334" y="867" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">GStreamer</text>
-      <line x1="1023.7381666666668" y1="873" x2="1181.2971666666667" y2="873"
+      <line x1="492.8988333333334" y1="873" x2="650.4578333333334" y2="873"
           stroke="#40657e" stroke-width="1" />
-      <text x="1102.5176666666669" y="884" text-anchor="middle"
+      <text x="571.6783333333334" y="884" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">ports</text>
-      <text x="1031.7381666666668" y="898"
+      <text x="500.8988333333334" y="898"
           font-size="11" fill="#1a1a1a">transport : ~TransportApi</text></g>
-    <g><rect x="1221.2971666666667" y="841" width="157.559" height="68"
+    <g><rect x="690.4578333333334" y="841" width="157.559" height="68"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <path d="M1221.7971666666667,873 L1221.7971666666667,841.5 L1378.3561666666667,841.5 L1378.3561666666667,873 Z" fill="#ccdce5" />
-      <text x="1300.0766666666668" y="854" text-anchor="middle"
+      <path d="M690.9578333333334,873 L690.9578333333334,841.5 L847.5168333333334,841.5 L847.5168333333334,873 Z" fill="#ccdce5" />
+      <text x="769.2373333333334" y="854" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
-      <text x="1300.0766666666668" y="867" text-anchor="middle"
+      <text x="769.2373333333334" y="867" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">WireGuardTunnel</text>
-      <line x1="1221.2971666666667" y1="873" x2="1378.8561666666667" y2="873"
+      <line x1="690.4578333333334" y1="873" x2="848.0168333333334" y2="873"
           stroke="#40657e" stroke-width="1" />
-      <text x="1300.0766666666668" y="884" text-anchor="middle"
+      <text x="769.2373333333334" y="884" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">ports</text>
-      <text x="1229.2971666666667" y="898"
+      <text x="698.4578333333334" y="898"
           font-size="11" fill="#1a1a1a">transport : ~TransportApi</text></g>
-    <g><rect x="990.9281666666668" y="986" width="103.285" height="18"
+    <g><rect x="460.08883333333347" y="986" width="103.285" height="18"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <rect x="990.9281666666668" y="1004" width="420.738" height="208"
+      <rect x="460.08883333333347" y="1004" width="420.738" height="208"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <text x="998.9281666666668" y="999" font-size="11" font-weight="600" fill="#1a1a1a">LinuxPlatform</text></g>
-    <g><rect x="1020.5371666666668" y="1031" width="156.151" height="68"
+      <text x="468.08883333333347" y="999" font-size="11" font-weight="600" fill="#1a1a1a">LinuxPlatform</text></g>
+    <g><rect x="489.69783333333345" y="1031" width="156.151" height="68"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <path d="M1021.0371666666668,1063 L1021.0371666666668,1031.5 L1176.1881666666668,1031.5 L1176.1881666666668,1063 Z" fill="#ccdce5" />
-      <text x="1098.6126666666669" y="1044" text-anchor="middle"
+      <path d="M490.19783333333345,1063 L490.19783333333345,1031.5 L645.3488333333335,1031.5 L645.3488333333335,1063 Z" fill="#ccdce5" />
+      <text x="567.7733333333334" y="1044" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
-      <text x="1098.6126666666669" y="1057" text-anchor="middle"
+      <text x="567.7733333333334" y="1057" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">ContainerRuntime</text>
-      <line x1="1020.5371666666668" y1="1063" x2="1176.6881666666668" y2="1063"
+      <line x1="489.69783333333345" y1="1063" x2="645.8488333333335" y2="1063"
           stroke="#40657e" stroke-width="1" />
-      <text x="1098.6126666666669" y="1074" text-anchor="middle"
+      <text x="567.7733333333334" y="1074" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">ports</text>
-      <text x="1028.537166666667" y="1088"
+      <text x="497.69783333333345" y="1088"
           font-size="11" fill="#1a1a1a">containers : ContainerApi</text></g>
-    <g><rect x="1221.2971666666667" y="1031" width="165.369" height="68"
+    <g><rect x="690.4578333333335" y="1031" width="165.369" height="68"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <path d="M1221.7971666666667,1063 L1221.7971666666667,1031.5 L1386.1661666666666,1031.5 L1386.1661666666666,1063 Z" fill="#ccdce5" />
-      <text x="1303.9816666666668" y="1044" text-anchor="middle"
+      <path d="M690.9578333333335,1063 L690.9578333333335,1031.5 L855.3268333333335,1031.5 L855.3268333333335,1063 Z" fill="#ccdce5" />
+      <text x="773.1423333333335" y="1044" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
-      <text x="1303.9816666666668" y="1057" text-anchor="middle"
+      <text x="773.1423333333335" y="1057" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">OtaUpdateAgent</text>
-      <line x1="1221.2971666666667" y1="1063" x2="1386.6661666666666" y2="1063"
+      <line x1="690.4578333333335" y1="1063" x2="855.8268333333335" y2="1063"
           stroke="#40657e" stroke-width="1" />
-      <text x="1303.9816666666668" y="1074" text-anchor="middle"
+      <text x="773.1423333333335" y="1074" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">ports</text>
-      <text x="1229.2971666666667" y="1088"
+      <text x="698.4578333333335" y="1088"
           font-size="11" fill="#1a1a1a">containers : ~ContainerApi</text></g>
-    <g><rect x="1015.9281666666668" y="1119" width="165.369" height="68"
+    <g><rect x="485.08883333333347" y="1119" width="165.369" height="68"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <path d="M1016.4281666666668,1151 L1016.4281666666668,1119.5 L1180.7971666666667,1119.5 L1180.7971666666667,1151 Z" fill="#ccdce5" />
-      <text x="1098.6126666666669" y="1132" text-anchor="middle"
+      <path d="M485.58883333333347,1151 L485.58883333333347,1119.5 L649.9578333333335,1119.5 L649.9578333333335,1151 Z" fill="#ccdce5" />
+      <text x="567.7733333333334" y="1132" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
-      <text x="1098.6126666666669" y="1145" text-anchor="middle"
+      <text x="567.7733333333334" y="1145" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">MinimalLinux</text>
-      <line x1="1015.9281666666668" y1="1151" x2="1181.2971666666667" y2="1151"
+      <line x1="485.08883333333347" y1="1151" x2="650.4578333333335" y2="1151"
           stroke="#40657e" stroke-width="1" />
-      <text x="1098.6126666666669" y="1162" text-anchor="middle"
+      <text x="567.7733333333334" y="1162" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">ports</text>
-      <text x="1023.9281666666668" y="1176"
+      <text x="493.08883333333347" y="1176"
           font-size="11" fill="#1a1a1a">containers : ~ContainerApi</text></g>
-    <g><rect x="1243.9816666666668" y="1133" width="120" height="40"
+    <g><rect x="713.1423333333335" y="1133" width="120" height="40"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <text x="1303.9816666666668" y="1150" text-anchor="middle"
+      <text x="773.1423333333335" y="1150" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
-      <text x="1303.9816666666668" y="1163" text-anchor="middle"
+      <text x="773.1423333333335" y="1163" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">SecureBoot</text></g>
-    <g><rect x="61" y="262" width="52.025" height="18"
+    <g><rect x="1225.931" y="262" width="52.025" height="18"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <rect x="61" y="280" width="584.8240000000001" height="325"
+      <rect x="1225.931" y="280" width="584.8240000000001" height="325"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <text x="69" y="275" font-size="11" font-weight="600" fill="#1a1a1a">Flight</text></g>
-    <g><rect x="86" y="314.5" width="151.608" height="119"
+      <text x="1233.931" y="275" font-size="11" font-weight="600" fill="#1a1a1a">Flight</text></g>
+    <g><rect x="1250.931" y="314.5" width="151.608" height="119"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <path d="M86.5,346.5 L86.5,315 L237.108,315 L237.108,346.5 Z" fill="#ccdce5" />
-      <text x="161.804" y="327.5" text-anchor="middle"
+      <path d="M1251.431,346.5 L1251.431,315 L1402.039,315 L1402.039,346.5 Z" fill="#ccdce5" />
+      <text x="1326.7350000000001" y="327.5" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
-      <text x="161.804" y="340.5" text-anchor="middle"
+      <text x="1326.7350000000001" y="340.5" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">MissionExecutor</text>
-      <line x1="86" y1="346.5" x2="237.608" y2="346.5"
+      <line x1="1250.931" y1="346.5" x2="1402.539" y2="346.5"
           stroke="#40657e" stroke-width="1" />
-      <text x="161.804" y="357.5" text-anchor="middle"
+      <text x="1326.7350000000001" y="357.5" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">perform actions</text>
-      <text x="94" y="371.5"
+      <text x="1258.931" y="371.5"
           font-size="11" fill="#1a1a1a">guide</text>
-      <line x1="86" y1="382.5" x2="237.608" y2="382.5"
+      <line x1="1250.931" y1="382.5" x2="1402.539" y2="382.5"
           stroke="#40657e" stroke-width="1" />
-      <text x="161.804" y="393.5" text-anchor="middle"
+      <text x="1326.7350000000001" y="393.5" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">ports</text>
-      <text x="94" y="407.5"
+      <text x="1258.931" y="407.5"
           font-size="11" fill="#1a1a1a">target : TargetApi</text>
-      <text x="94" y="422.5"
+      <text x="1258.931" y="422.5"
           font-size="11" fill="#1a1a1a">vehicleState : ~StateApi</text></g>
-    <g><rect x="282.217" y="314.5" width="142.39" height="119"
+    <g><rect x="1447.1480000000001" y="314.5" width="142.39" height="119"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <path d="M282.717,346.5 L282.717,315 L424.10699999999997,315 L424.10699999999997,346.5 Z" fill="#ccdce5" />
-      <text x="353.412" y="327.5" text-anchor="middle"
+      <path d="M1447.6480000000001,346.5 L1447.6480000000001,315 L1589.038,315 L1589.038,346.5 Z" fill="#ccdce5" />
+      <text x="1518.343" y="327.5" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
-      <text x="353.412" y="340.5" text-anchor="middle"
+      <text x="1518.343" y="340.5" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">StateEstimator</text>
-      <line x1="282.217" y1="346.5" x2="424.60699999999997" y2="346.5"
+      <line x1="1447.1480000000001" y1="346.5" x2="1589.538" y2="346.5"
           stroke="#40657e" stroke-width="1" />
-      <text x="353.412" y="357.5" text-anchor="middle"
+      <text x="1518.343" y="357.5" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">perform actions</text>
-      <text x="290.217" y="371.5"
+      <text x="1455.1480000000001" y="371.5"
           font-size="11" fill="#1a1a1a">navigate</text>
-      <line x1="282.217" y1="382.5" x2="424.60699999999997" y2="382.5"
+      <line x1="1447.1480000000001" y1="382.5" x2="1589.538" y2="382.5"
           stroke="#40657e" stroke-width="1" />
-      <text x="353.412" y="393.5" text-anchor="middle"
+      <text x="1518.343" y="393.5" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">ports</text>
-      <text x="290.217" y="407.5"
+      <text x="1455.1480000000001" y="407.5"
           font-size="11" fill="#1a1a1a">vehicleState : StateApi</text>
-      <text x="290.217" y="422.5"
+      <text x="1455.1480000000001" y="422.5"
           font-size="11" fill="#1a1a1a">sensors : ~SensorApi</text></g>
-    <g><rect x="469.216" y="307" width="151.608" height="134"
+    <g><rect x="1634.147" y="307" width="151.608" height="134"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <path d="M469.716,339 L469.716,307.5 L620.3240000000001,307.5 L620.3240000000001,339 Z" fill="#ccdce5" />
-      <text x="545.02" y="320" text-anchor="middle"
+      <path d="M1634.647,339 L1634.647,307.5 L1785.2549999999999,307.5 L1785.2549999999999,339 Z" fill="#ccdce5" />
+      <text x="1709.951" y="320" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
-      <text x="545.02" y="333" text-anchor="middle"
+      <text x="1709.951" y="333" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">FlightControl</text>
-      <line x1="469.216" y1="339" x2="620.8240000000001" y2="339"
+      <line x1="1634.147" y1="339" x2="1785.7549999999999" y2="339"
           stroke="#40657e" stroke-width="1" />
-      <text x="545.02" y="350" text-anchor="middle"
+      <text x="1709.951" y="350" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">perform actions</text>
-      <text x="477.216" y="364"
+      <text x="1642.147" y="364"
           font-size="11" fill="#1a1a1a">control</text>
-      <line x1="469.216" y1="375" x2="620.8240000000001" y2="375"
+      <line x1="1634.147" y1="375" x2="1785.7549999999999" y2="375"
           stroke="#40657e" stroke-width="1" />
-      <text x="545.02" y="386" text-anchor="middle"
+      <text x="1709.951" y="386" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">ports</text>
-      <text x="477.216" y="400"
+      <text x="1642.147" y="400"
           font-size="11" fill="#1a1a1a">vehicleState : ~StateApi</text>
-      <text x="477.216" y="415"
+      <text x="1642.147" y="415"
           font-size="11" fill="#1a1a1a">target : ~TargetApi</text>
-      <text x="477.216" y="430"
+      <text x="1642.147" y="430"
           font-size="11" fill="#1a1a1a">hal : ~HalApi</text></g>
-    <g><rect x="99.54650000000001" y="479" width="124.515" height="83"
+    <g><rect x="1264.4775" y="479" width="124.515" height="83"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <path d="M100.04650000000001,511 L100.04650000000001,479.5 L223.56150000000002,479.5 L223.56150000000002,511 Z" fill="#ccdce5" />
-      <text x="161.804" y="492" text-anchor="middle"
+      <path d="M1264.9775,511 L1264.9775,479.5 L1388.4925,479.5 L1388.4925,511 Z" fill="#ccdce5" />
+      <text x="1326.735" y="492" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
-      <text x="161.804" y="505" text-anchor="middle"
+      <text x="1326.735" y="505" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">SensorDrivers</text>
-      <line x1="99.54650000000001" y1="511" x2="224.06150000000002" y2="511"
+      <line x1="1264.4775" y1="511" x2="1388.9925" y2="511"
           stroke="#40657e" stroke-width="1" />
-      <text x="161.804" y="522" text-anchor="middle"
+      <text x="1326.735" y="522" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">ports</text>
-      <text x="107.54650000000001" y="536"
+      <text x="1272.4775" y="536"
           font-size="11" fill="#1a1a1a">sensors : SensorApi</text>
-      <text x="107.54650000000001" y="551"
+      <text x="1272.4775" y="551"
           font-size="11" fill="#1a1a1a">hal : ~HalApi</text></g>
-    <g><rect x="277.608" y="461" width="151.608" height="119"
+    <g><rect x="1442.539" y="461" width="151.608" height="119"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <path d="M278.108,493 L278.108,461.5 L428.716,461.5 L428.716,493 Z" fill="#ccdce5" />
-      <text x="353.41200000000003" y="474" text-anchor="middle"
+      <path d="M1443.039,493 L1443.039,461.5 L1593.647,461.5 L1593.647,493 Z" fill="#ccdce5" />
+      <text x="1518.343" y="474" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
-      <text x="353.41200000000003" y="487" text-anchor="middle"
+      <text x="1518.343" y="487" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">MavlinkInterface</text>
-      <line x1="277.608" y1="493" x2="429.216" y2="493"
+      <line x1="1442.539" y1="493" x2="1594.147" y2="493"
           stroke="#40657e" stroke-width="1" />
-      <text x="353.41200000000003" y="504" text-anchor="middle"
+      <text x="1518.343" y="504" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">perform actions</text>
-      <text x="285.608" y="518"
+      <text x="1450.539" y="518"
           font-size="11" fill="#1a1a1a">exchangeTelemetry</text>
-      <line x1="277.608" y1="529" x2="429.216" y2="529"
+      <line x1="1442.539" y1="529" x2="1594.147" y2="529"
           stroke="#40657e" stroke-width="1" />
-      <text x="353.41200000000003" y="540" text-anchor="middle"
+      <text x="1518.343" y="540" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">ports</text>
-      <text x="285.608" y="554"
+      <text x="1450.539" y="554"
           font-size="11" fill="#1a1a1a">mavlink : MavlinkApi</text>
-      <text x="285.608" y="569"
+      <text x="1450.539" y="569"
           font-size="11" fill="#1a1a1a">vehicleState : ~StateApi</text></g>
-    <g><rect x="145.44100000000003" y="657" width="105.771" height="18"
+    <g><rect x="1310.372" y="657" width="105.771" height="18"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <rect x="145.44100000000003" y="675" width="415.942" height="135"
+      <rect x="1310.372" y="675" width="415.942" height="135"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <text x="153.44100000000003" y="670" font-size="11" font-weight="600" fill="#1a1a1a">FlightPlatform</text></g>
-    <g><rect x="170.44100000000003" y="702" width="172.42" height="83"
+      <text x="1318.372" y="670" font-size="11" font-weight="600" fill="#1a1a1a">FlightPlatform</text></g>
+    <g><rect x="1335.372" y="702" width="172.42" height="83"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <path d="M170.94100000000003,734 L170.94100000000003,702.5 L342.361,702.5 L342.361,734 Z" fill="#ccdce5" />
-      <text x="256.651" y="715" text-anchor="middle"
+      <path d="M1335.872,734 L1335.872,702.5 L1507.2920000000001,702.5 L1507.2920000000001,734 Z" fill="#ccdce5" />
+      <text x="1421.582" y="715" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
-      <text x="256.651" y="728" text-anchor="middle"
+      <text x="1421.582" y="728" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">HardwareAbstraction</text>
-      <line x1="170.44100000000003" y1="734" x2="342.861" y2="734"
+      <line x1="1335.372" y1="734" x2="1507.7920000000001" y2="734"
           stroke="#40657e" stroke-width="1" />
-      <text x="256.651" y="745" text-anchor="middle"
+      <text x="1421.582" y="745" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">ports</text>
-      <text x="178.44100000000003" y="759"
+      <text x="1343.372" y="759"
           font-size="11" fill="#1a1a1a">hal : HalApi</text>
-      <text x="178.44100000000003" y="774"
+      <text x="1343.372" y="774"
           font-size="11" fill="#1a1a1a">scheduler : ~SchedulerApi</text></g>
-    <g><rect x="382.861" y="709.5" width="153.522" height="68"
+    <g><rect x="1547.7920000000001" y="709.5" width="153.522" height="68"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <path d="M383.361,741.5 L383.361,710 L535.883,710 L535.883,741.5 Z" fill="#ccdce5" />
-      <text x="459.62199999999996" y="722.5" text-anchor="middle"
+      <path d="M1548.2920000000001,741.5 L1548.2920000000001,710 L1700.814,710 L1700.814,741.5 Z" fill="#ccdce5" />
+      <text x="1624.553" y="722.5" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
-      <text x="459.62199999999996" y="735.5" text-anchor="middle"
+      <text x="1624.553" y="735.5" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">RealTimeKernel</text>
-      <line x1="382.861" y1="741.5" x2="536.383" y2="741.5"
+      <line x1="1547.7920000000001" y1="741.5" x2="1701.314" y2="741.5"
           stroke="#40657e" stroke-width="1" />
-      <text x="459.62199999999996" y="752.5" text-anchor="middle"
+      <text x="1624.553" y="752.5" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">ports</text>
-      <text x="390.861" y="766.5"
+      <text x="1555.7920000000001" y="766.5"
           font-size="11" fill="#1a1a1a">scheduler : SchedulerApi</text></g>
   
-    <polyline points="1716.243,605 1716.243,647 1268.8168333333333,647 1268.8168333333333,657" fill="none" stroke="#1a1a1a" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
-    <text x="1691.876" y="634" text-anchor="middle" font-size="9"
+    <polyline points="155.51199999999994,605 155.51199999999994,647 602.9381666666668,647 602.9381666666668,657" fill="none" stroke="#1a1a1a" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="131.14500000000004" y="634" text-anchor="middle" font-size="9"
           fill="#40657e" paint-order="stroke" stroke="#f9fbfc" stroke-width="3">&#171;import&#187;</text>
-    <polyline points="1133.7775000000001,605 1133.7775000000001,657" fill="none" stroke="#1a1a1a" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
-    <text x="1109.4105" y="634" text-anchor="middle" font-size="9"
+    <polyline points="737.9775000000001,605 737.9775000000001,657" fill="none" stroke="#1a1a1a" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="713.6105" y="634" text-anchor="middle" font-size="9"
           fill="#40657e" paint-order="stroke" stroke="#f9fbfc" stroke-width="3">&#171;import&#187;</text>
-    <polyline points="1302.109,354 1302.109,406" fill="none" stroke="#1a1a1a" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
-    <text x="1277.742" y="383" text-anchor="middle" font-size="9"
+    <polyline points="569.6460000000001,354 569.6460000000001,406" fill="none" stroke="#1a1a1a" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="545.279" y="383" text-anchor="middle" font-size="9"
           fill="#40657e" paint-order="stroke" stroke="#f9fbfc" stroke-width="3">&#171;import&#187;</text>
-    <polyline points="1201.2971666666667,934 1201.2971666666667,986" fill="none" stroke="#1a1a1a" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
-    <text x="1176.9301666666668" y="963" text-anchor="middle" font-size="9"
+    <polyline points="670.4578333333334,934 670.4578333333335,986" fill="none" stroke="#1a1a1a" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="646.0908333333334" y="963" text-anchor="middle" font-size="9"
           fill="#40657e" paint-order="stroke" stroke="#f9fbfc" stroke-width="3">&#171;import&#187;</text>
-    <polyline points="353.41200000000003,605 353.41200000000003,657" fill="none" stroke="#1a1a1a" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
-    <text x="329.045" y="634" text-anchor="middle" font-size="9"
+    <polyline points="1518.343,605 1518.343,657" fill="none" stroke="#1a1a1a" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <text x="1493.976" y="634" text-anchor="middle" font-size="9"
           fill="#40657e" paint-order="stroke" stroke="#f9fbfc" stroke-width="3">&#171;import&#187;</text>
 </svg>

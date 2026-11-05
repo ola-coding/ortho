@@ -154,3 +154,24 @@ fn keeps_the_parts_of_an_assembly_below_the_compartment_of_what_it_performs() {
     assert_eq!(housing.compartments, [compartment("perform actions", &["serve"])]);
     assert!(inner.y > housing.y + BOX_HEADER_HEIGHT + compartments_height(&housing.compartments));
 }
+
+#[test]
+fn keeps_parts_wired_to_one_hub_in_declared_order() {
+    let parts: String = (0..8).map(|i| format!("part p{i} : Unit; ")).collect();
+    let wires: String = (0..8).map(|i| format!("connect hub.feed to p{i}.supply; ")).collect();
+    let workspace = parse_ok(&format!(
+        "package H {{
+            port def P;
+            part def Unit {{ port supply : P; }}
+            part def Hub {{ port feed : P; }}
+            part def Machine {{ part hub : Hub; {parts} {wires} }}
+            part machine : Machine;
+            view 'Star' : InterconnectionView {{ expose machine; }}
+        }}"
+    ));
+    let laid_out = laid_out(&graph_of(&workspace));
+    let mut fed: Vec<&LaidOutNode> = laid_out.nodes.iter().filter(|n| n.name.starts_with('p')).collect();
+    fed.sort_by(|a, b| a.y.total_cmp(&b.y).then(a.x.total_cmp(&b.x)));
+    let order: Vec<&str> = fed.iter().map(|n| n.name.split(' ').next().unwrap()).collect();
+    assert_eq!(order, ["p0", "p1", "p2", "p3", "p4", "p5", "p6", "p7"]);
+}
