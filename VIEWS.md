@@ -47,11 +47,13 @@ a box's name, and the keyword says what the box is.
 
 How the system is used, and by whom — nothing about how it works.
 
-The subject, a «subject» box, stands above its use cases, as OMG draws it,
-joined to each by a line. The use cases, «use case» boxes, stand in a row, each
-beside the use cases it includes, with a solid «include» arrow between them.
-The actors, stick figures, stand below: first the primary ones, declared on a
-use case definition, then the secondary ones, added on a single use case.
+Each use case is drawn as SysML v2 draws one (Part 1, Table 23): the use case,
+a «use case» box, with its subject, a «subject» box, above it, its primary
+actors, stick figures, to its left, its secondary ones to its right, and the
+use cases it includes below it, each joined by a solid «include» arrow. The
+subject and the actors are the use case's own, so each use case draws its own
+copy of them, and no line crosses another. The groups stand in rows as wide as
+landscape A4, in the order the model declares them.
 
 ## Logical view
 

@@ -5,13 +5,75 @@
   </picture>
 </h1>
 
-**Orthographic projection for architecture.** Just as a technical drawing
-shows one object through several standard views, `ortho` renders six
-architectural views as SVG, straight from SysML v2 text: use case, logical,
-implementation, physical, deployment and process.
+**Architecture diagrams from SysML v2 text.** Write your model in the SysML v2
+textual notation, commit it next to your code, and `ortho` draws six
+architectural views of it as SVG, in SysML v2's own graphical notation: use
+case, logical, implementation, physical, deployment and process. Just as a
+technical drawing shows one object through several standard views, so the
+diagrams show one model.
 
-It is one self-contained program — no runtime, no external programs, no
-network calls — so the same model gives the same SVG on a laptop and in CI.
+<p align="center">
+  <img src="examples/coffee-machine/diagrams/physical-view-coffee-machine.svg"
+       alt="ortho's physical view of a coffee machine: parts with ports, wired together, each listing the functions it performs"
+       width="820">
+</p>
+
+## Why ortho
+
+- **The model is the source, the diagrams follow.** Every view is drawn from
+  the text, so a diagram cannot drift from the model, and a review shows the
+  change to both.
+- **Standard SysML v2.** ortho reads the textual notation of OMG SysML v2.0
+  and loads all 252 of OMG's example, training and validation models. A view is
+  declared with the standard view definitions, so another SysML v2 tool can
+  read the same model.
+- **SysML v2's graphical notation** (§8.2.3): definitions and usages, «part»
+  and «action» keywords, ports on the border, «include» and «import» arrows.
+- **One program, nothing else.** No modelling tool, no licence server, no
+  Java, no browser and no network calls. The same model gives the same SVG on
+  a laptop and in CI.
+- **Drawn to be read on paper and slides.** Diagrams are sized for landscape
+  A4, ortho warns of one too big to read there, and a dark theme suits slides.
+
+## The six views
+
+One model, six views of it, each answering one question. These are the
+[coffee machine example](examples/coffee-machine/); click a diagram to see it
+full size.
+
+<table>
+  <tr>
+    <td align="center" valign="top"><a href="VIEWS.md#use-case-view"><b>Use case</b></a><br>
+      <a href="examples/coffee-machine/diagrams/use-case-view-coffee-machine.svg"><img src="examples/coffee-machine/diagrams/use-case-view-coffee-machine.svg" alt="Use case view of the coffee machine" width="420"></a></td>
+    <td align="center" valign="top"><a href="VIEWS.md#logical-view"><b>Logical</b></a><br>
+      <a href="examples/coffee-machine/diagrams/logical-view-coffee-machine.svg"><img src="examples/coffee-machine/diagrams/logical-view-coffee-machine.svg" alt="Logical view of the coffee machine" width="420"></a></td>
+  </tr>
+  <tr>
+    <td align="center" valign="top"><a href="VIEWS.md#implementation-view"><b>Implementation</b></a><br>
+      <a href="examples/coffee-machine/diagrams/implementation-view-coffee-machine.svg"><img src="examples/coffee-machine/diagrams/implementation-view-coffee-machine.svg" alt="Implementation view of the coffee machine" width="340"></a></td>
+    <td align="center" valign="top"><a href="VIEWS.md#physical-view"><b>Physical</b></a><br>
+      <a href="examples/coffee-machine/diagrams/physical-view-coffee-machine.svg"><img src="examples/coffee-machine/diagrams/physical-view-coffee-machine.svg" alt="Physical view of the coffee machine" width="420"></a></td>
+  </tr>
+  <tr>
+    <td align="center" valign="top"><a href="VIEWS.md#deployment-view"><b>Deployment</b></a><br>
+      <a href="examples/coffee-machine/diagrams/deployment-view-coffee-machine.svg"><img src="examples/coffee-machine/diagrams/deployment-view-coffee-machine.svg" alt="Deployment view of the coffee machine" width="200"></a></td>
+    <td align="center" valign="top"><a href="VIEWS.md#process-view"><b>Process</b></a><br>
+      <a href="examples/coffee-machine/diagrams/process-view-coffee-machine.svg"><img src="examples/coffee-machine/diagrams/process-view-coffee-machine.svg" alt="Process view of the coffee machine" width="420"></a></td>
+  </tr>
+</table>
+
+| View | Shows | Drawn from what you write |
+| --- | --- | --- |
+| Use case | How the system is used, and by whom | `use case`, `subject`, `actor`, `include` |
+| Logical | What the system does: a tree of functions, and the use case each refines | `action def`, `action`, `#refinement dependency` |
+| Implementation | The static structure of the software: packages, modules, their APIs and the functions they perform | `package`, `part def`, `port`, `perform` |
+| Physical | The product itself: its parts, their ports and how they are wired | `part`, `port`, `connect`, `interface` |
+| Deployment | Which hardware runs which software | `allocate` |
+| Process | How the software modules talk at run time, as a sequence of messages | `occurrence def`, `message` |
+
+Every view stands alone: a model needs only the views it wants, and a view
+names another only where it refers to something in it. [VIEWS.md](VIEWS.md)
+says what each view is for, and [LANGUAGE.md](LANGUAGE.md) what to write for it.
 
 ## Install
 
@@ -139,6 +201,19 @@ folder:
 
 The [pitch deck](https://ola-coding.github.io/ortho/) shows every view of
 both, with the model source beside each diagram.
+
+## What ortho does not do
+
+- **It is not an editor.** Write the model in any text editor; ortho only
+  draws it.
+- **It draws six views, not every SysML v2 diagram.** Requirements, states,
+  calculations and constraints parse, so a full model loads, but no view draws
+  them yet ([LANGUAGE.md](LANGUAGE.md#parsed-not-drawn)).
+- **It does not load the standard library.** It knows the library's names, so
+  a model may use them, and shows them as written.
+
+ortho is young, at version 0.1. The [backlog](DEVELOPMENT.md#backlog) lists
+what comes next, and issues are welcome.
 
 ## Learn more
 

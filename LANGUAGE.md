@@ -173,9 +173,9 @@ package SystemUseCases {
 | You write | The view draws |
 |---|---|
 | `use case name : Def;` | a «use case» box, `name : Def`. A `use case def` is drawn itself, as a «use case def» box, only when no usage is typed by it. |
-| `subject name : System;` in a use case (def) | a «subject» box above the use cases, joined by a line to each it is the subject of |
-| `actor name : Type;` | a stick figure, `name : Type`, below the use cases: primary on a `use case def`, secondary on a single use case and drawn after the primary ones |
-| `include name;` | a solid «include» arrow to that use case, beside it. The target is a use case usage, never a definition. |
+| `subject name : System;` in a use case (def) | a «subject» box above each use case it is the subject of, joined to it by a line |
+| `actor name : Type;` | a stick figure, `name : Type`, beside each use case it takes part in: primary ones, on a `use case def`, to its left, and secondary ones, added on a single use case, to its right |
+| `include name;` | a solid «include» arrow down to that use case, below it. The target is a use case usage, never a definition. |
 | `include use case name : Def;` | the same arrow, to a «use case» box of its own. This declares a use case rather than naming one, so next to a `use case name;` it is a second one. |
 
 The subject is a use case's first parameter, so a use case that declares an

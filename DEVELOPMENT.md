@@ -366,6 +366,10 @@ In priority order:
   view. Wrapping the logical view's rows was tried and dropped: two rows of a
   tree read oddly. The survey drone's implementation, physical and process
   views still hold more than one page.
+- [x] **A clear repository page.** The README opens with a diagram, says
+  why ortho suits model-based systems engineering, shows the six views of the
+  coffee machine side by side, and says what ortho does not do. The GitHub
+  description, topics and homepage are set by hand in the repository's About.
 - [ ] **Publish on crates.io** as `ortho`, for `cargo install ortho` and
   `cargo binstall ortho`. The Release workflow does it, from 0.1.1; what is
   left is the first publish, with a crates.io token, and then trusted
@@ -377,7 +381,6 @@ In priority order:
 - [ ] **Item flows on the physical view** (`flow`): what passes between ports,
   not only that they connect.
 
-Later, to make ortho easier to find and install without Rust: a clear
-repository page (description, topics, homepage), one-line install scripts, a
-Homebrew tap, Scoop and winget, and entries in the SysML v2 and MBSE
-awesome lists.
+Later, to make ortho easier to find and install without Rust: one-line
+install scripts, a Homebrew tap, Scoop and winget, and entries in the SysML v2
+and MBSE awesome lists.
