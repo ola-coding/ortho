@@ -94,6 +94,15 @@ cannot draw is skipped with the reason (`why_undrawable`).
   `elk.rs` instead: its contents in a grid, in declared order, each package in
   it a grid of its own. ELK sees one box of the grid's size. Packages an
   import joins are still layered by ELK, which needs the arrows.
+- **Packages that all import one package are a block.** ELK layers them side
+  by side too: nine stood 3412 px across. More than three siblings joined by
+  one line each to the same box, the same way, are one box to ELK
+  (`bundle_node` in `elk.rs`): ortho grids them in declared order, with as many
+  columns as bring the block nearest half again as wide as the page, and gives
+  the box a port for each line. A line leaves a box in the bottom row straight
+  down, and one from a row above runs down the gap beside its column; ELK
+  routes it on from the port. Pinning siblings to layers with hidden edges
+  instead set them out in a staircase.
 - **Declared order is kept.** ELK reorders boxes it is free to place; the
   layered views set `considerModelOrder` (`NODES_AND_EDGES`, and
   `MODEL_ORDER` for the parts with no edge between them) on the root and on
@@ -350,12 +359,13 @@ In priority order:
   the implementation and physical views keep the model's order.
 - [x] **Draw the use case view as SysML v2 does,** one use case to a group, the
   groups in rows: no line crosses another.
-- [ ] **Keep wide diagrams readable on landscape A4.** Packages that all import one
-  package still stand in one row. Wrapping the logical view's rows was tried and
-  dropped: two rows of a tree read oddly. Still to do: let a view expose a
-  sub-function, so a large tree can be split, and say in
-  [LANGUAGE.md](LANGUAGE.md) how to keep a view small. The survey drone's
-  implementation, physical and process views are too big today.
+- [x] **Keep wide diagrams readable on landscape A4.** Packages that all import
+  one package stand in a block of rows, each import down the gap beside its
+  column; a view may expose one branch of a function tree; and
+  [LANGUAGE.md](LANGUAGE.md#keeping-a-view-on-one-page) says how to split a
+  view. Wrapping the logical view's rows was tried and dropped: two rows of a
+  tree read oddly. The survey drone's implementation, physical and process
+  views still hold more than one page.
 - [ ] **Publish on crates.io** as `ortho`, for `cargo install ortho` and
   `cargo binstall ortho`. The Release workflow does it, from 0.1.1; what is
   left is the first publish, with a crates.io token, and then trusted

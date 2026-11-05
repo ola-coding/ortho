@@ -26,6 +26,7 @@ impl StandardView {
         match self {
             StandardView::GeneralView => {
                 matches!(ty, Type::PackageDecl | Type::ActionDef | Type::UseCaseDef | Type::UseCaseUsage)
+                    || is_sub_function(ast, element)
             }
             StandardView::InterconnectionView => ty == Type::PartUsage,
             // A scenario: an `occurrence def`, or an `action def`, which is one too.
@@ -39,11 +40,19 @@ impl StandardView {
     /// What a view of this definition may expose, as its error says it.
     fn exposes(self) -> &'static str {
         match self {
-            StandardView::GeneralView => "packages, action definitions or use cases",
+            StandardView::GeneralView => "packages, action definitions, the actions in them, or use cases",
             StandardView::InterconnectionView => "parts",
             StandardView::SequenceView => "an occurrence definition",
         }
     }
+}
+
+/// Whether `element` is a function inside a function tree, `action a1;` in
+/// `action def A { action a { action a1; } }`: an action of its own, not a use of an
+/// `action def`. A view exposing one draws its branch of the tree alone, so a tree
+/// too big for a page can be split into a view for each branch.
+pub fn is_sub_function(ast: &Ast, element: NodeId) -> bool {
+    ast[element].ty == Type::ActionUsage && ast.text(element, Prop::Type).is_none()
 }
 
 /// Which of ortho's six diagrams a view is.
@@ -144,7 +153,7 @@ pub fn diagram_kind_of(ast: &Ast, definition: Option<StandardView>, exposed: &[N
         Some(StandardView::SequenceView) => return DiagramKind::Process,
         _ => {}
     }
-    if exposed.iter().any(|element| ast[*element].ty == Type::ActionDef) {
+    if exposed.iter().any(|element| ast[*element].ty == Type::ActionDef || is_sub_function(ast, *element)) {
         return DiagramKind::Logical;
     }
     let contents: Vec<Type> =

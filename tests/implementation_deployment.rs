@@ -9,6 +9,7 @@ use ortho::model::views::{DiagramKind, diagram_kind};
 use ortho::parser::ast::{Prop, Type};
 use ortho::parser::workspace::Workspace;
 use ortho::pipeline::render_views;
+use ortho::render::page::page_warning;
 use ortho::render::svg::render_svg;
 use ortho::render::text_metrics::{Weight, measure_text};
 use ortho::render::theme::LIGHT;
@@ -180,12 +181,41 @@ fn puts_packages_that_import_nothing_from_each_other_on_several_rows_in_declared
 }
 
 #[test]
-fn keeps_packages_an_import_joins_in_declared_order() {
-    // Every package imports Base, so ELK lays them out, in the order declared.
+fn puts_packages_that_all_import_one_package_on_several_rows_in_declared_order() {
+    // Every package imports Base: ELK would lay them out in one layer, one row.
     let laid_out = gridded(&implementation(&parse_ok(&packages(|_| "private import S::Base;".to_string()))));
-    let order: Vec<&str> = rows_of_packages(&laid_out).concat();
+    let rows = rows_of_packages(&laid_out);
+    assert!(rows.len() > 2, "{rows:?}");
     let declared: Vec<String> = (0..12).map(|i| format!("P{i}")).collect();
-    assert_eq!(order, declared);
+    assert_eq!(rows.concat(), declared);
+    // Readable on landscape A4, where one row of twelve was not.
+    assert_eq!(page_warning("", laid_out.width, laid_out.height), None);
+
+    // Each import leaves its package's bottom edge and reaches Base's top, at right
+    // angles, clear of every other package on the way.
+    let base = node(&laid_out, "Base");
+    let packages: Vec<&LaidOutNode> = laid_out.nodes.iter().filter(|n| n.name.starts_with('P')).collect();
+    let imports: Vec<_> = laid_out.edges.iter().filter(|e| e.kind == EdgeKind::Import).collect();
+    assert_eq!(imports.len(), 12);
+    for import in imports {
+        let from = node(&laid_out, import.source_id.rsplit("::").next().unwrap());
+        let (first, last) = (import.points[0], import.points[import.points.len() - 1]);
+        assert_eq!(first.y, from.y + from.height, "{}", from.name);
+        assert!(first.x > from.x && first.x < from.x + from.width, "{}", from.name);
+        assert!((last.y - base.y).abs() < 1.0 && last.x > base.x && last.x < base.x + base.width);
+        for leg in import.points.windows(2) {
+            let (a, b) = (leg[0], leg[1]);
+            assert!(a.x == b.x || a.y == b.y, "{} runs aslant", from.name);
+            for other in packages.iter().filter(|p| p.id != from.id) {
+                for i in 0..=100 {
+                    let x = a.x + (b.x - a.x) * i as f64 / 100.0;
+                    let y = a.y + (b.y - a.y) * i as f64 / 100.0;
+                    let inside = x > other.x && x < other.x + other.width && y > other.y && y < other.y + other.height;
+                    assert!(!inside, "{}'s import crosses {}", from.name, other.name);
+                }
+            }
+        }
+    }
 }
 
 /// A cloud solution from a vendor's services: no use cases, no functions.
