@@ -166,10 +166,12 @@ fn joins_actors_and_the_subject_to_their_use_cases_and_points_an_include_at_what
     );
     let laid_out = layout_use_cases(&graph);
     let at = |id: &str| laid_out.nodes.iter().find(|n| n.id == id).unwrap();
-    // The subject above the row of use cases, the actor below it.
-    assert!(at("subject:machine : Machine").y < at("M::order").y);
-    assert!(at("actor:M::User").y > at("M::order").y);
-    assert_eq!(at("M::order").y, at("M::pay").y);
+    // The order with its own subject above it and its actor to its left, and below
+    // it the payment it includes, drawn with the order's.
+    assert!(at("subject:machine : Machine@M::order").y < at("M::order").y);
+    assert!(at("actor:M::User@M::order").x < at("M::order").x);
+    assert!(at("M::pay").y > at("M::order").y);
+    assert_eq!(laid_out.nodes.len(), 4);
 }
 
 #[test]

@@ -115,12 +115,15 @@ cannot draw is skipped with the reason (`why_undrawable`).
   middle of the row when there is none. ELK put every leaf in one row: 3322 px
   across for 27 functions. A use case the view exposes stands in a row above,
   centred over the functions that depend on it, and takes no part in the tree.
-- **The use case view is laid out by ortho** (`src/layout/use_case.rs`):
-  the subject above its use cases, as OMG draws it, and the actors below them.
-  OMG draws one use case, its actors beside it; with several sharing both, only
-  opposite sides keep every line clear of every box. Each use case stands
-  between those it includes, so an «include» joins neighbours. ELK, layering
-  left to right, spread the view out with long lines across it.
+- **The use case view is laid out by ortho** (`src/layout/use_case.rs`), each
+  use case as SysML v2 draws one (Part 1, Table 23, §8.2.3.25): its «subject»
+  above it, primary actors to its left and secondary ones to its right, and the
+  use cases it includes below it, joined by «include» arrows at right angles.
+  The subject and the actors are a use case's own parameters, so each group
+  draws its own; groups stand in rows as wide as landscape A4, in declared
+  order. One row of use cases sharing one subject and one set of actors grew a
+  line per use case, and those crossed. ELK, layering left to right, spread the
+  view out with long lines across it.
 - **Realization, APIs and allocation are compartments.** An edge from a
   function to its realizer would need both on one diagram — a seventh view —
   so the part's box lists them instead; `padding_of` adds the compartments'
@@ -345,8 +348,9 @@ In priority order:
 - [x] **Packages on several rows, in declared order.** Twelve packages that
   import nothing from each other drew at 13:1 and now fit landscape A4; boxes on
   the implementation and physical views keep the model's order.
-- [ ] **Keep wide diagrams readable on landscape A4.** The use case view puts
-  every use case in one row, and its lines cross. Packages that all import one
+- [x] **Draw the use case view as SysML v2 does,** one use case to a group, the
+  groups in rows: no line crosses another.
+- [ ] **Keep wide diagrams readable on landscape A4.** Packages that all import one
   package still stand in one row. Wrapping the logical view's rows was tried and
   dropped: two rows of a tree read oddly. Still to do: let a view expose a
   sub-function, so a large tree can be split, and say in
