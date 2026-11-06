@@ -1,6 +1,6 @@
 [package]
 name = "ortho"
-version = "0.1.1"
+version = "0.2.0"
 edition = "2024"
 # The oldest Rust that builds ortho, checked by the Release workflow.
 rust-version = "1.90"
@@ -9,7 +9,7 @@ license = "MIT"
 repository = "https://github.com/ola-coding/ortho"
 homepage = "https://ola-coding.github.io/ortho/"
 readme = "README.md"
-keywords = ["sysml", "architecture", "diagrams", "svg", "mbse"]
+keywords = ["sysml-v2", "architecture", "diagrams", "svg", "mbse"]
 categories = ["command-line-utilities", "visualization"]
 # What crates.io gets: what building needs, and the README and licence.
 include = ["/src", "/README.md", "/LICENSE"]
