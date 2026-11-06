@@ -379,7 +379,7 @@ In priority order:
   daltskin/SysML-v2-Resources, jgsystemsconsulting/awesome-mbse) and a post
   in the SysML Forum, made from the maintainer's own account. Tag and
   describe ortho as SysML v2, never plain SysML, which reads as v1.
-- [ ] **A `--watch` option** that renders again on every save, so an editor's
+- [x] **A `--watch` option** that renders again on every save, so an editor's
   SVG preview shows the diagram beside the text.
 - [ ] **Requirements on the parts that satisfy them**, in a compartment like
   *perform actions* rather than a seventh view.

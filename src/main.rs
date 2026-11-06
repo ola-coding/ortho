@@ -1,4 +1,4 @@
-//! `ortho render`: every view a model declares, one SVG each.
+//! `ortho render`: every view a model declares, one SVG each, once or on every save.
 use clap::{Parser, Subcommand};
 use ortho::model::views::view_heading;
 use ortho::parser::workspace::parse_sysml_files;
@@ -6,6 +6,7 @@ use ortho::pipeline::render_views;
 use ortho::render::theme::{THEME_NAMES, Theme};
 use std::path::Path;
 use std::process::ExitCode;
+use std::time::{Duration, SystemTime};
 
 #[derive(Parser)]
 #[command(name = "ortho", version, about = "Render diagrams from SysML v2 model files")]
@@ -27,12 +28,18 @@ enum Command {
         /// Paint the diagrams with a theme
         #[arg(long, value_name = "NAME", default_value = "light", value_parser = THEME_NAMES)]
         theme: String,
+        /// Keep running, and render again whenever a model file changes
+        #[arg(short, long)]
+        watch: bool,
     },
 }
 
 fn main() -> ExitCode {
-    let Command::Render { models, out, theme } = Cli::parse().command;
+    let Command::Render { models, out, theme, watch: watching } = Cli::parse().command;
     let theme = Theme::named(&theme).expect("clap admits only the themes there are");
+    if watching {
+        watch(&models, &out, theme);
+    }
     match render(&models, &out, theme) {
         Ok(()) => ExitCode::SUCCESS,
         Err(message) => {
@@ -56,7 +63,8 @@ fn expand_input(path: &str) -> Result<Vec<String>, String> {
     Ok(names.into_iter().map(|name| Path::new(path).join(name).to_string_lossy().into_owned()).collect())
 }
 
-fn render(models: &[String], out: &str, theme: &Theme) -> Result<(), String> {
+/// The .sysml files the inputs name, each once, with forward slashes.
+fn model_files(models: &[String]) -> Result<Vec<String>, String> {
     let mut files: Vec<String> = Vec::new();
     for model in models {
         for file in expand_input(model)? {
@@ -69,6 +77,11 @@ fn render(models: &[String], out: &str, theme: &Theme) -> Result<(), String> {
     if files.is_empty() {
         return Err("No .sysml files found in the given inputs.".to_string());
     }
+    Ok(files)
+}
+
+fn render(models: &[String], out: &str, theme: &Theme) -> Result<(), String> {
+    let files = model_files(models)?;
 
     // A model that does not load is reported, not a crash.
     let parsed = parse_sysml_files(&files)?;
@@ -99,4 +112,56 @@ fn render(models: &[String], out: &str, theme: &Theme) -> Result<(), String> {
         }
     }
     Ok(())
+}
+
+/// How often `--watch` looks at the model files.
+const POLL: Duration = Duration::from_millis(250);
+
+/// What a model file looked like when last seen: when it was changed and how long it
+/// was, or nothing while it cannot be read, as during an editor's save.
+type Seen = Vec<(String, Option<(SystemTime, u64)>)>;
+
+/// The model files the inputs name now, so a file added to a folder is seen too.
+fn look(models: &[String]) -> Seen {
+    let files = model_files(models).unwrap_or_default();
+    files
+        .into_iter()
+        .map(|file| {
+            let state = std::fs::metadata(&file).ok().and_then(|meta| Some((meta.modified().ok()?, meta.len())));
+            (file, state)
+        })
+        .collect()
+}
+
+/// Renders, then renders again on every change to the model files, until stopped
+/// with Ctrl+C. Files are looked at rather than subscribed to, which works the same
+/// on every system and network drive, with no dependency. A model that does not load
+/// is reported and waited on, not the end: the next save may fix it.
+fn watch(models: &[String], out: &str, theme: &Theme) -> ! {
+    let mut seen = look(models);
+    loop {
+        if let Err(message) = render(models, out, theme) {
+            eprintln!("{message}");
+        }
+        println!("Watching {} file(s) for changes. Press Ctrl+C to stop.", seen.len());
+        // Waits for a change, then for the files to settle, since an editor may save
+        // in more than one write.
+        loop {
+            std::thread::sleep(POLL);
+            let now = look(models);
+            if now != seen {
+                seen = now;
+                break;
+            }
+        }
+        loop {
+            std::thread::sleep(POLL);
+            let now = look(models);
+            if now == seen {
+                break;
+            }
+            seen = now;
+        }
+        println!();
+    }
 }
