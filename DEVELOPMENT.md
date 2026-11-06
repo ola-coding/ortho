@@ -287,11 +287,11 @@ packs the crate as crates.io would get it (only `src/`, the README and the
 licence) and builds it with the Rust that `rust-version` in `Cargo.toml`
 names, so raising that floor is a deliberate change.
 
-crates.io takes a token from the secret `CARGO_REGISTRY_TOKEN` when it is
-set. That is needed for the first publish only: once the crate exists, add
-*trusted publishing* for `ola-coding/ortho` and `release.yml` in its settings
-on crates.io, then delete the secret, and the workflow gets a short-lived
-token from GitHub instead.
+crates.io gets a short-lived token from GitHub through *trusted publishing*,
+set up for `ola-coding/ortho` and `release.yml` in the crate's settings on
+crates.io. The workflow still takes a token from the secret
+`CARGO_REGISTRY_TOKEN` if one is set, which only the first publish needed;
+there is none now.
 
 ## The move to Rust
 
@@ -370,10 +370,15 @@ In priority order:
   why ortho suits model-based systems engineering, shows the six views of the
   coffee machine side by side, and says what ortho does not do. The GitHub
   description, topics and homepage are set by hand in the repository's About.
-- [ ] **Publish on crates.io** as `ortho`, for `cargo install ortho` and
-  `cargo binstall ortho`. The Release workflow does it, from 0.2.0; what is
-  left is the first publish, with a crates.io token, and then trusted
-  publishing in its place. See [Releasing](#releasing).
+- [x] **Publish on crates.io** as `ortho`, for `cargo install ortho` and
+  `cargo binstall ortho`. 0.2.0 is there; the Release workflow publishes
+  each release with trusted publishing, and the token is gone. See
+  [Releasing](#releasing).
+- [ ] **Be found by SysML v2 users:** an entry in each SysML v2 awesome list
+  (jgsystemsconsulting/awesome-sysml-v2, mycr0ft/awesome-sysml,
+  daltskin/SysML-v2-Resources, jgsystemsconsulting/awesome-mbse) and a post
+  in the SysML Forum, made from the maintainer's own account. Tag and
+  describe ortho as SysML v2, never plain SysML, which reads as v1.
 - [ ] **A `--watch` option** that renders again on every save, so an editor's
   SVG preview shows the diagram beside the text.
 - [ ] **Requirements on the parts that satisfy them**, in a compartment like
@@ -382,5 +387,4 @@ In priority order:
   not only that they connect.
 
 Later, to make ortho easier to find and install without Rust: one-line
-install scripts, a Homebrew tap, Scoop and winget, and entries in the SysML v2
-and MBSE awesome lists.
+install scripts, a Homebrew tap, Scoop and winget.
