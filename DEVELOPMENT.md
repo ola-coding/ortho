@@ -371,7 +371,7 @@ In priority order:
   coffee machine side by side, and says what ortho does not do. The GitHub
   description, topics and homepage are set by hand in the repository's About.
 - [ ] **Publish on crates.io** as `ortho`, for `cargo install ortho` and
-  `cargo binstall ortho`. The Release workflow does it, from 0.1.1; what is
+  `cargo binstall ortho`. The Release workflow does it, from 0.2.0; what is
   left is the first publish, with a crates.io token, and then trusted
   publishing in its place. See [Releasing](#releasing).
 - [ ] **A `--watch` option** that renders again on every save, so an editor's
