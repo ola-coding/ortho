@@ -1,0 +1,50 @@
+{
+  "name": "ortho",
+  "displayName": "Ortho for SysML v2",
+  "description": "SysML v2 syntax highlighting, with live architecture diagrams from ortho to come",
+  "version": "0.0.1",
+  "private": true,
+  "publisher": "ola-coding",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ola-coding/ortho",
+    "directory": "editors/vscode"
+  },
+  "homepage": "https://github.com/ola-coding/ortho/tree/main/editors/vscode",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Visualization"
+  ],
+  "keywords": [
+    "sysml-v2",
+    "mbse",
+    "architecture",
+    "diagrams"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "sysml",
+        "aliases": [
+          "SysML v2",
+          "sysml"
+        ],
+        "extensions": [
+          ".sysml"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "sysml",
+        "scopeName": "source.sysml",
+        "path": "./syntaxes/sysml.tmLanguage.json"
+      }
+    ]
+  }
+}
