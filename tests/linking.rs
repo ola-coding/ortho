@@ -749,7 +749,10 @@ fn refining(exposed: &str, refinement: &str) -> String {
 #[test]
 fn warns_of_a_tree_that_refines_no_use_case_on_a_view_that_shows_use_cases() {
     let workspace = build(&refining("expose MakeBeverage; expose SystemUseCases::OperateMachine;", ""));
-    assert_eq!(reported(&workspace, Severity::Warning), [unrefined("MakeBeverage")]);
+    assert_eq!(
+        reported(&workspace, Severity::Warning),
+        [unrefined_use_case("OperateMachine"), unrefined("MakeBeverage")]
+    );
     assert_eq!(reported(&workspace, Severity::Error), Vec::<String>::new());
 }
 
@@ -772,7 +775,37 @@ fn a_refinement_from_the_tree_or_a_use_of_it_refines_the_tree_also_on_a_view_of_
     }
     // A branch whose tree refines nothing: the warning is at the tree.
     let branch = refining("expose MakeBeverage::prepareWater; expose SystemUseCases::OperateMachine;", "");
-    assert_eq!(reported(&build(&branch), Severity::Warning), [unrefined("MakeBeverage")]);
+    assert_eq!(
+        reported(&build(&branch), Severity::Warning),
+        [unrefined_use_case("OperateMachine"), unrefined("MakeBeverage")]
+    );
+}
+
+fn unrefined_use_case(name: &str) -> String {
+    format!(
+        "No function tree refines '{name}', though a logical view draws it beside trees. Add a #refinement dependency to it from the tree that details it."
+    )
+}
+
+#[test]
+fn warns_of_a_use_case_no_tree_refines_on_a_logical_view_that_draws_trees() {
+    let text = |exposed: &str| {
+        format!(
+            "package SystemUseCases {{ use case def OperateMachine; use case def ServiceMachine; }}
+            package Functions {{
+                private import StandardViewDefinitions::*;
+                private import ModelingMetadata::*;
+                action def MakeBeverage {{ action heatWater; }}
+                #refinement dependency MakeBeverage to SystemUseCases::OperateMachine;
+                view logical : GeneralView {{ {exposed} }}
+            }}"
+        )
+    };
+    let both = "expose MakeBeverage; expose SystemUseCases::OperateMachine; expose SystemUseCases::ServiceMachine;";
+    assert_eq!(reported(&build(&text(both)), Severity::Warning), [unrefined_use_case("ServiceMachine")]);
+    // A use case the logical view does not draw asks nothing of it.
+    let one = "expose MakeBeverage; expose SystemUseCases::OperateMachine;";
+    assert_eq!(reported(&build(&text(one)), Severity::Warning), Vec::<String>::new());
 }
 
 fn foreign(end: &str, problem: &str) -> String {
@@ -904,9 +937,14 @@ fn coffee_machine_without(deleted: &str, folder: &str) -> (Vec<String>, String) 
 
 /// The line, from 1, of the coffee machine's logical.sysml that reads `written`.
 fn coffee_machine_logical_line(written: &str) -> usize {
+    coffee_machine_line("logical.sysml", written)
+}
+
+/// The line, from 1, of one of the coffee machine's files that reads `written`.
+fn coffee_machine_line(file: &str, written: &str) -> usize {
     let root = Path::new(env!("CARGO_MANIFEST_DIR"));
-    let logical = std::fs::read_to_string(root.join("examples/coffee-machine/logical.sysml")).unwrap();
-    logical.lines().position(|line| line.trim() == written).unwrap() + 1
+    let text = std::fs::read_to_string(root.join("examples/coffee-machine").join(file)).unwrap();
+    text.lines().position(|line| line.trim() == written).unwrap() + 1
 }
 
 #[test]
@@ -922,7 +960,16 @@ fn warns_at_the_tree_when_the_coffee_machine_loses_a_refinement() {
     let refinement = "#refinement dependency MakeBeverage to SystemUseCases::OperateMachine;";
     let (warnings, logical) = coffee_machine_without(refinement, "unrefined");
     let line = coffee_machine_logical_line("action def MakeBeverage {");
-    assert_eq!(warnings, [format!("{logical} line {line}: {}", unrefined("MakeBeverage"))]);
+    // Both ends of the lost refinement: the tree, and the use case it detailed.
+    let use_cases = logical.replace("logical.sysml", "use-case.sysml");
+    let use_case_line = coffee_machine_line("use-case.sysml", "use case def OperateMachine {");
+    assert_eq!(
+        warnings,
+        [
+            format!("{logical} line {line}: {}", unrefined("MakeBeverage")),
+            format!("{use_cases} line {use_case_line}: {}", unrefined_use_case("OperateMachine")),
+        ]
+    );
 }
 
 #[test]

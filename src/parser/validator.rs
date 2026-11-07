@@ -22,6 +22,7 @@ use std::collections::HashSet;
 pub struct Gaps {
     unperformed: HashSet<NodeId>,
     unrefined: HashSet<NodeId>,
+    unrefined_use_cases: HashSet<NodeId>,
     /// `allocate` ends, the software's or the host's, that no other view draws.
     foreign_software: HashSet<NodeId>,
     foreign_hosts: HashSet<NodeId>,
@@ -35,6 +36,7 @@ impl Gaps {
         Gaps {
             unperformed: unperformed_functions(ast, roots),
             unrefined: unrefined_trees(ast, roots),
+            unrefined_use_cases: unrefined_use_cases(ast, roots),
             foreign_software,
             foreign_hosts,
             unhosted: unhosted_software(ast, roots),
@@ -69,6 +71,9 @@ pub fn validate(ast: &Ast, root: NodeId, _text: &str, log: &[Logged], gaps: &Gap
         }
         if gaps.unrefined.contains(&node) {
             warn_unrefined(ast, node, &mut diagnostics);
+        }
+        if gaps.unrefined_use_cases.contains(&node) {
+            warn_unrefined_use_case(ast, node, &mut diagnostics);
         }
         match ast[node].ty {
             Type::ConnectorEnd => check_end_starts_at_accessible_feature(ast, node, &mut diagnostics),
@@ -474,6 +479,42 @@ fn unrefined_trees(ast: &Ast, roots: &[NodeId]) -> HashSet<NodeId> {
     }
     let refined = refined_trees(ast, roots);
     drawn.into_iter().filter(|tree| !refined.contains(tree)).collect()
+}
+
+/// The use cases a logical view draws beside function trees that no tree refines:
+/// the other end of `unrefined_trees`. A use case that nothing details would stand
+/// alone on the view, without a tree under it.
+fn unrefined_use_cases(ast: &Ast, roots: &[NodeId]) -> HashSet<NodeId> {
+    let mut drawn = Vec::new();
+    // A logical view always draws a tree: one that exposes none is a use case view.
+    for view in views_of(ast, roots, DiagramKind::Logical) {
+        let members = exposed_members(ast, &exposed_elements(ast, view));
+        drawn.extend(members.into_iter().filter(|member| is_use_case(ast, *member)));
+    }
+    let is_tree = |node: NodeId| matches!(ast[node].ty, Type::ActionDef | Type::ActionUsage);
+    let mut refined = HashSet::new();
+    for dependency in roots.iter().flat_map(|root| ast.with_all_contents(*root)) {
+        if ast[dependency].ty != Type::Dependency {
+            continue;
+        }
+        let ends =
+            |prop: Prop| ast.references_of(dependency, prop).into_iter().filter_map(|end| ast.reference_target(end));
+        if ends(Prop::Clients).any(is_tree) {
+            refined.extend(ends(Prop::Suppliers));
+        }
+    }
+    drawn.into_iter().filter(|use_case| !refined.contains(use_case)).collect()
+}
+
+fn warn_unrefined_use_case(ast: &Ast, use_case: NodeId, diagnostics: &mut Vec<Diagnostic>) {
+    let named = effective_name(ast, use_case).map_or("This use case".to_string(), |name| format!("'{name}'"));
+    diagnostics.push(Diagnostic {
+        severity: Severity::Warning,
+        offset: offset_of(ast, use_case, Prop::Name),
+        message: format!(
+            "No function tree refines {named}, though a logical view draws it beside trees. Add a #refinement dependency to it from the tree that details it."
+        ),
+    });
 }
 
 /// What a dependency on a use case names as its client, and for a typed action

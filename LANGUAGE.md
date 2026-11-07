@@ -216,7 +216,7 @@ package Functions {
 | `action name : Def;` in a package | nothing. It is the usage a `perform` chain starts from. |
 | `expose Tree::branch;` in the view, naming a nested `action` | that branch alone, the function at its root: a tree too big for one page, split |
 | `#refinement dependency Tree to SystemUseCases::Name;` in a package | a dashed arrow from the tree's root up to the use case, when the view exposes both |
-| `expose SystemUseCases::Name;` in the view | the use case, above the trees that refine it. One nothing refines stands alone, a visible gap. |
+| `expose SystemUseCases::Name;` in the view | the use case, above the trees that refine it. One nothing refines stands alone, and ortho warns of it. |
 
 **Refining a use case** (§7.3). A function tree says which use case it details
 with a dependency, tagged from the standard library's `ModelingMetadata`, whose
@@ -225,7 +225,8 @@ is optional, but its ends are checked: once it names a use case, that use case
 has to be loaded. A logical view that shows use cases is there to tie its trees
 to them, though, so ortho warns of a tree it draws that refines no use case,
 and renders anyway. For a view of a single branch, the tree the branch belongs
-to has to refine one.
+to has to refine one. The other way round, ortho warns of a use case the view
+draws that no tree refines.
 
 ```sysml
 package SystemUseCases {

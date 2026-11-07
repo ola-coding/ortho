@@ -66,21 +66,28 @@ says where it is and what was expected there.
 it can. After linking, the validator checks the rules it cannot, all listed
 in [LANGUAGE.md](LANGUAGE.md): no reserved word as a name, chains that start
 at a usage, a `perform` of behaviour rather than structure, a part or actor
-typed by a part definition, and a use case's subject before its actors. Five
-rules are only warnings, which the CLI prints before carrying on. One is a
-top-level package named after a standard library package: ortho finds the
-model's, while the pilot may find the library's, so such a model renders here
-and may fail elsewhere. The other four are rules of
-ortho's method between two views (`Gaps`; see below): a function in scope that
-no module or part of a solution view performs (`unperformed_functions`, with
-what those views draw in `solution_owners`), a tree that refines no use case,
-though a logical view draws it beside use cases (`unrefined_trees`), an
-`allocate` end that neither the implementation nor the physical view draws
-(`foreign_allocation_ends`), and software no deployment view allocates
-(`unhosted_software`). Told to fix an error, an agent may delete the
-line the error points at; the model still loads, so without these warnings its
-diagrams would look complete. A model may declare any view, so one ortho
-cannot draw is skipped with the reason (`why_undrawable`).
+typed by a part definition, and a use case's subject before its actors. Six
+rules are only warnings, which the CLI prints before carrying on:
+
+- a top-level package named after a standard library package: ortho finds the
+  model's, while the pilot may find the library's, so such a model renders
+  here and may fail elsewhere;
+- a function in scope that no module or part of a solution view performs
+  (`unperformed_functions`, with what those views draw in `solution_owners`);
+- a tree a logical view draws beside use cases that refines none
+  (`unrefined_trees`);
+- a use case a logical view draws that no tree refines
+  (`unrefined_use_cases`);
+- an `allocate` end that neither the implementation nor the physical view
+  draws (`foreign_allocation_ends`);
+- software that no deployment view allocates to a host (`unhosted_software`).
+
+All but the first are rules of ortho's method between two views, found once
+for the whole model (`Gaps`; see *Errors and warnings*). Told to fix an error,
+an agent may delete the line the error points at; the model still loads, so
+without these warnings its diagrams would look complete. A model may declare
+any view, so one ortho cannot draw is skipped with the reason
+(`why_undrawable`).
 
 **Errors and warnings.** The standard says when a model is well-formed, not
 when it is complete: `perform`, `allocate` and `#refinement` are all optional,
@@ -98,7 +105,7 @@ two apart:
 
 | When the model declares… | ortho warns of… |
 |---|---|
-| use cases and a logical view | a tree drawn beside use cases that refines none |
+| use cases and a logical view | a tree drawn beside use cases that refines none, and a use case drawn beside trees that none refines |
 | a logical view, and an implementation or physical view | a function in scope that no module or part those views draw performs |
 | a deployment view | an `allocate` end that is not a module of an implementation view or a part of a physical view, and a module no host runs |
 
@@ -440,8 +447,9 @@ In priority order:
   deployment view, every module usage in the tree of deployable parts is
   allocated to a host (`unhosted_software`). A module used inside another
   module runs where that one does.
-- [ ] **Warn of a use case no tree refines** on a logical view that draws
-  trees. LANGUAGE.md now calls one "a visible gap"; it changes with it.
+- [x] **Warn of a use case no tree refines** on a logical view
+  (`unrefined_use_cases`), where LANGUAGE.md called one "a visible gap". A
+  deleted refinement now warns at both its ends, the tree and the use case.
 - [ ] **Suggest the name meant** when a reference does not resolve, from the
   names in scope that come closest: *Could not resolve reference to Feature
   named 'storeBeans'. Did you mean 'storeMrBeans'?* It saves an agent, or a
