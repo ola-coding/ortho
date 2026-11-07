@@ -840,6 +840,25 @@ fn checks_an_allocate_end_only_once_the_model_declares_the_view_it_comes_from() 
     assert_eq!(reported(&build(&deployed("", allocations)), Severity::Warning), Vec::<String>::new());
 }
 
+#[test]
+fn refuses_a_part_or_an_actor_typed_by_behaviour_or_data() {
+    let typed = |usage: &str, definition: &str| {
+        errors_of(&format!("package P {{ {definition} D; part def Owner {{ {usage} x : D; }} }}"))
+    };
+    assert_eq!(typed("part", "action def"), ["'D' is an action definition. A part is typed by a part definition."]);
+    assert_eq!(
+        typed("actor", "use case def"),
+        ["'D' is a use case definition. An actor is typed by a part definition."]
+    );
+    for definition in ["attribute def", "enum def", "occurrence def", "port def"] {
+        assert_eq!(typed("part", definition).len(), 1, "{definition}");
+    }
+    // A part definition's kinds, and an item definition, which a part definition specializes.
+    for definition in ["part def", "interface def", "connection def", "allocation def", "item def"] {
+        assert_eq!(typed("part", definition), Vec::<String>::new(), "{definition}");
+    }
+}
+
 /// The coffee machine's warnings once `deleted` is gone from its files, as an agent
 /// may delete the line an error points at, and its logical.sysml as named in them.
 fn coffee_machine_without(deleted: &str, folder: &str) -> (Vec<String>, String) {

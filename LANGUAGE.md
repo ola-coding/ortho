@@ -73,6 +73,15 @@ no top-level package after a standard library package, such as `UseCases`,
 `Requirements` or `Views`: it hides the library's, and other tools may find the
 library's instead. ortho warns of one, and renders anyway.
 
+**Typing** (§8.3). A part is typed by a part definition, and so is an actor,
+which is a part: `part controller : Board`, not `part controller : Brew`
+where `Brew` is an `action def`. An interface, connection or allocation
+definition is one kind of part definition, and an item definition, which a
+part definition specializes, is accepted too. A part typed by behaviour or
+data, an action, use case, occurrence, enum or attribute definition, or by a
+port definition, is an error. A port, an action and a use case can only name
+their own kind of definition at all.
+
 **Comments** (§8.2.2.4). `// ...` and `//* ... */` are notes, which no tool
 keeps. `/* ... */`, `doc /* ... */` and `comment about x /* ... */` are part of
 the model; no view draws them.

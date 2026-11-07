@@ -65,11 +65,12 @@ says where it is and what was expected there.
 **Conformance** (`src/parser/validator.rs`). The grammar enforces what
 it can. After linking, the validator checks the rules it cannot, all listed
 in [LANGUAGE.md](LANGUAGE.md): no reserved word as a name, chains that start
-at a usage, a `perform` of behaviour rather than structure, and a use case's
-subject before its actors. Four rules are only warnings, which the CLI prints
-before carrying on. One is a top-level package named after a standard library
-package: ortho finds the model's, while the pilot may find the library's, so
-such a model renders here and may fail elsewhere. The other three are rules of
+at a usage, a `perform` of behaviour rather than structure, a part or actor
+typed by a part definition, and a use case's subject before its actors. Four
+rules are only warnings, which the CLI prints before carrying on. One is a
+top-level package named after a standard library package: ortho finds the
+model's, while the pilot may find the library's, so such a model renders here
+and may fail elsewhere. The other three are rules of
 ortho's method between two views (`Gaps`; see below): a function in scope that
 no module or part of a solution view performs (`unperformed_functions`, with
 what those views draw in `solution_owners`), a tree that refines no use case,
@@ -429,9 +430,11 @@ In priority order:
   whose software is not a module an implementation view draws, or whose host
   is not a part a physical view draws (`foreign_allocation_ends`). Each end is
   checked once the model declares the view it comes from.
-- [ ] **An error for a usage typed by the wrong kind of definition,** such as
+- [x] **An error for a usage typed by the wrong kind of definition,** such as
   `part a : A` where `A` is an `action def`, which the standard forbids and
-  ortho draws today.
+  ortho drew (`check_typed_by_part_definition`). A part or actor typed by an
+  item definition is let through, as OMG's own examples do it. An attribute,
+  item or occurrence keeps its type as written, unresolved, so is not checked.
 - [ ] **Warn of software that runs nowhere:** once a model declares a
   deployment view, every module usage is allocated to a host.
 - [ ] **Warn of a use case no tree refines** on a logical view that draws

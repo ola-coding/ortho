@@ -69,6 +69,7 @@ pub fn validate(ast: &Ast, root: NodeId, _text: &str, log: &[Logged], gaps: &Gap
             Type::PackageDecl => check_package_not_named_after_library(ast, node, &mut diagnostics),
             Type::PerformUsage => check_perform_target(ast, node, &mut diagnostics),
             Type::UseCaseDef | Type::UseCaseUsage => check_subject_before_actors(ast, node, &mut diagnostics),
+            Type::PartUsage | Type::ActorUsage => check_typed_by_part_definition(ast, node, &mut diagnostics),
             _ => {}
         }
     }
@@ -163,6 +164,49 @@ fn check_perform_target(ast: &Ast, perform: NodeId, diagnostics: &mut Vec<Diagno
             message: format!("'{}' is not an action or a use case, so it cannot be performed.", written.join(".")),
         });
     }
+}
+
+/// A part is typed by a part definition: the standard requires one among its
+/// definitions (`validatePartUsagePartDefinition`), and an actor is a part. A part
+/// definition's own kinds count, interfaces, connections, allocations, views and
+/// renderings among them. So does an item definition, which a part definition
+/// specializes, and a metadata definition, one kind of it: OMG's own examples
+/// type parts by one, and ortho loads every one of them. What is caught is a part
+/// typed by behaviour or data, an action or an attribute definition, say. Only a
+/// part with one type, written as a reference, is
+/// checked: further types are kept as written, and one of them may be the part
+/// definition. A port, an action or a use case already resolves only to its own
+/// kind of definition.
+fn check_typed_by_part_definition(ast: &Ast, part: NodeId, diagnostics: &mut Vec<Diagnostic>) {
+    if ast.texts(part, Prop::Types).next().is_some() {
+        return;
+    }
+    let Some(definition) = ast.target(part, Prop::Type).filter(|definition| ast[*definition].ty.is_definition()) else {
+        return;
+    };
+    let kind = match ast[definition].ty {
+        Type::PartDef | Type::InterfaceDef => return,
+        Type::OtherDefinition => match ast.text(definition, Prop::Kind) {
+            Some("connection" | "allocation" | "view" | "rendering" | "item" | "metadata") | None => return,
+            Some(kind) => kind,
+        },
+        Type::ActionDef => "action",
+        Type::UseCaseDef => "use case",
+        Type::PortDef => "port",
+        Type::AttributeDef => "attribute",
+        _ => return,
+    };
+    let usage = if ast[part].ty == Type::ActorUsage { "An actor" } else { "A part" };
+    let name = ast.text(definition, Prop::Name).unwrap_or("");
+    diagnostics.push(Diagnostic {
+        severity: Severity::Error,
+        offset: offset_of(ast, part, Prop::Type),
+        message: format!("'{name}' is {} {kind} definition. {usage} is typed by a part definition.", article(kind)),
+    });
+}
+
+fn article(word: &str) -> &'static str {
+    if word.starts_with(['a', 'e', 'i', 'o']) { "an" } else { "a" }
 }
 
 fn is_structure(ast: &Ast, node: NodeId) -> bool {
