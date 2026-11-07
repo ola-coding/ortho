@@ -808,6 +808,67 @@ fn warns_of_a_use_case_no_tree_refines_on_a_logical_view_that_draws_trees() {
     assert_eq!(reported(&build(&text(one)), Severity::Warning), Vec::<String>::new());
 }
 
+/// A function tree, and a part that performs `chain` in it.
+fn performing(chain: &str) -> Vec<String> {
+    errors_of(&format!(
+        "package Functions {{
+            action def MakeBeverage {{
+                action prepareCoffee {{ action storeMrBeans; action grindBeans; action doseGrounds; }}
+            }}
+            action beverage : MakeBeverage;
+            part def BeanHopper {{ perform {chain}; }}
+        }}"
+    ))
+}
+
+#[test]
+fn suggests_the_name_meant_in_a_chain_from_what_the_segment_before_has() {
+    // A rename: the old name is two letters from the new one, found through beverage's type.
+    assert_eq!(
+        performing("beverage.prepareCoffee.storeBeans"),
+        [format!("{} Did you mean 'storeMrBeans'?", unresolved("Feature", "storeBeans"))]
+    );
+    // Case does not count, and a tie names both.
+    assert_eq!(
+        performing("beverage.prepareCoffee.GRINDBEANS"),
+        [format!("{} Did you mean 'grindBeans'?", unresolved("Feature", "GRINDBEANS"))]
+    );
+    let tied = errors_of(
+        "package P {
+            action def A { action stepA; action stepB; }
+            action a : A;
+            part def X { perform a.stepC; }
+        }",
+    );
+    assert_eq!(tied, [format!("{} Did you mean 'stepA' or 'stepB'?", unresolved("Feature", "stepC"))]);
+}
+
+#[test]
+fn lists_what_the_segment_before_has_when_no_name_is_close() {
+    assert_eq!(
+        performing("beverage.prepareCoffee.fillHopper"),
+        [format!("{} 'prepareCoffee' has storeMrBeans, grindBeans, doseGrounds.", unresolved("Feature", "fillHopper"))]
+    );
+    let many = errors_of(
+        "package P {
+            action def A { action a1; action a2; action a3; action a4; action a5; action a6; action a7; action a8; action a9; action a10; }
+            action a : A;
+            part def X { perform a.unrelatedName; }
+        }",
+    );
+    assert_eq!(
+        many,
+        [format!("{} 'a' has a1, a2, a3, a4, a5, a6, a7, a8 and 2 more.", unresolved("Feature", "unrelatedName"))]
+    );
+}
+
+#[test]
+fn gives_no_hint_for_a_name_found_through_packages_and_imports() {
+    // A chain's first segment, and a type, are looked up through packages and imports.
+    assert_eq!(performing("bevrage.prepareCoffee"), [unresolved("Feature", "bevrage")]);
+    assert_eq!(errors_of("package P { part def Board; part b : Bord; }"), [unresolved("Definition", "Bord")]);
+}
+
 fn foreign(end: &str, problem: &str) -> String {
     format!("'{end}' {problem}. A deployment view allocates what the other views draw, and adds nothing of its own.")
 }

@@ -62,7 +62,10 @@ package Power {
 features, and a chain starts at a usage: `Hardware::machine.controller`, not
 `Hardware::CoffeeMachine::controller`. So a file that others refer to declares
 one usage of each whole for them to start from: `part sw { ... }`,
-`part machine : CoffeeMachine` or `action beverage : MakeBeverage`.
+`part machine : CoffeeMachine` or `action beverage : MakeBeverage`. A
+segment after the first that names nothing is an error, which says what the
+segment before has: the name closest to the one written, `Did you mean
+'storeMrBeans'?`, or else its features by name.
 
 **Names** (§8.2.2.1.2). A name in single quotes may hold anything, as in
 `'Brew unit'`, and is the same name without them. An unquoted name may not be
