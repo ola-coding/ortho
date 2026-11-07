@@ -81,6 +81,16 @@ impl Workspace {
         self.documents.iter().flat_map(|document| self.ast.children(document.root, Prop::Packages)).collect()
     }
 
+    /// The file that declares an element, and the line its declaration starts on.
+    pub fn declared_at(&self, id: NodeId) -> Option<(&str, usize)> {
+        let mut root = id;
+        while let Some(parent) = self.ast[root].parent {
+            root = parent;
+        }
+        let document = self.documents.iter().find(|document| document.root == root)?;
+        Some((&document.path, position(&document.text, self.ast[id].offset as usize).0))
+    }
+
     pub fn is_model(&self, id: NodeId) -> bool {
         self.ast[id].ty == Type::Model
     }

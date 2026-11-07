@@ -77,19 +77,26 @@ nav button:focus-visible {
 main {
   padding: 12px;
 }
-main.stale img {
+main.stale svg {
   opacity: 0.45;
 }
-main img {
+main svg {
   display: block;
   max-width: 100%;
   height: auto;
   margin: 0 auto;
   cursor: zoom-in;
 }
-main.actual-size img {
+main.actual-size svg {
   max-width: none;
   cursor: zoom-out;
+}
+/* A box opens the line that declares it. */
+main svg [data-line] {
+  cursor: pointer;
+}
+main svg [data-line]:hover {
+  filter: brightness(0.93);
 }
 .summary {
   margin: 8px 0 0;

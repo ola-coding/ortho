@@ -5,6 +5,7 @@ use crate::diagrams::logical::extract_logical_graph;
 use crate::diagrams::physical::extract_physical_graph;
 use crate::diagrams::sequence::extract_sequence_model;
 use crate::diagrams::use_case::extract_use_case_graph;
+use crate::layout::SourceMark;
 use crate::layout::elk::{Algorithm, LayoutOptions, layout_graph};
 use crate::layout::tree::layout_tree;
 use crate::layout::use_case::layout_use_cases;
@@ -52,7 +53,10 @@ pub fn render_exposed(
             (graph, laid_out)
         }
         DiagramKind::Process => {
-            let sequence = extract_sequence_model(ast, exposed);
+            let mut sequence = extract_sequence_model(ast, exposed);
+            for lifeline in &mut sequence.lifelines {
+                lifeline.source = source_mark(workspace, lifeline.element);
+            }
             return Ok(RenderResult {
                 svg: render_sequence_svg(&sequence, title, theme),
                 summary: format!("{} lifeline(s), {} message(s)", sequence.lifelines.len(), sequence.messages.len()),
@@ -68,10 +72,21 @@ pub fn render_exposed(
             elk(extract_deployment_graph(ast, exposed, &workspace.packages()), options)?
         }
     };
+    let mut laid_out = laid_out;
+    for node in &mut laid_out.nodes {
+        node.source = source_mark(workspace, node.element);
+    }
     Ok(RenderResult {
         svg: render_svg(&laid_out, title, theme),
         summary: format!("{} node(s), {} edge(s)", laid_out.nodes.len(), graph.edges.len()),
     })
+}
+
+/// Where an element a box stands for is declared, the file named from the working
+/// folder as the diagram's title names it.
+fn source_mark(workspace: &Workspace, element: Option<NodeId>) -> Option<SourceMark> {
+    let (file, line) = workspace.declared_at(element?)?;
+    Some(SourceMark { file: relative_to_working_folder(file), line })
 }
 
 /// Renders a view as the diagram its kind calls for, of what it exposes.

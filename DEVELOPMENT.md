@@ -436,11 +436,10 @@ Open, in priority order:
   - [x] An *Open example* command for the coffee machine and survey drone.
   - [x] The ortho binary inside the extension, one VSIX per system, and on
     the PATH of VS Code's terminals, where agents check their work.
+  - [x] Click a box in a diagram to open the line that declares it: each
+    box's group carries `data-file` and `data-line`.
   - [ ] Publish on the VS Code Marketplace and Open VSX, which Cursor and
     VSCodium use.
-  - [ ] Click a box in a diagram to open the line that declares it, which
-    takes a reviewer from a diagram that looks wrong to the text. ortho first
-    has to write each box's file and line into the SVG.
   - [ ] Show what a change did to each view: the diagrams before and after an
     agent's edit, matched by the same file and line marks.
 - [ ] **Be found by SysML v2 users:** an entry in each SysML v2 awesome list

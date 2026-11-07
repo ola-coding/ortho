@@ -106,6 +106,7 @@ fn part_box(ast: &Ast, id: String, part: NodeId, ty: Option<NodeId>) -> GraphNod
         .collect();
     let (width, height) = box_size(&name, &performs, MIN_WIDTH, HEADER_HEIGHT, keyword);
     GraphNode {
+        element: Some(part),
         id,
         shape,
         keyword: keyword.to_string(),

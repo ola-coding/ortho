@@ -16,7 +16,9 @@ const {
   chooseOrtho,
   orthoFolder,
   makeExecutable,
+  markedSource,
 } = require('./ortho');
+const fs = require('node:fs');
 const { instructionFiles } = require('./instructions');
 const { EXAMPLES, freeName, firstFile } = require('./examples');
 
@@ -194,6 +196,15 @@ async function exists(uri) {
   }
 }
 
+/** A diagram ortho wrote, as text, to show inline where a click on a box can be heard. */
+function readSvg(/** @type {string} */ file) {
+  try {
+    return fs.readFileSync(file, 'utf8');
+  } catch {
+    return '';
+  }
+}
+
 /** The model a file belongs to: every .sysml file in its folder, read as one model. */
 function modelOf(/** @type {vscode.Uri} */ uri) {
   return path.dirname(uri.fsPath);
@@ -214,6 +225,9 @@ class Preview {
     /** The folder whose model is shown. */
     /** @type {string | undefined} */
     this.folder = undefined;
+    /** Where ortho ran for the model shown, which the boxes name their files from. */
+    /** @type {string | undefined} */
+    this.cwd = undefined;
     this.rendering = false;
     this.again = false;
     /** @type {Map<string, string>} each model's render whose diagrams are on screen */
@@ -282,6 +296,7 @@ class Preview {
     });
     panel.webview.onDidReceiveMessage((message) => {
       if (message?.type === 'renderAgain') this.render();
+      if (message?.type === 'open') this.openSource(message.file, message.line);
       if (message?.type === 'install') vscode.env.openExternal(vscode.Uri.parse(INSTALL_URL));
       if (message?.type === 'settings') vscode.commands.executeCommand('workbench.action.openSettings', 'ortho.path');
     });
@@ -294,6 +309,26 @@ class Preview {
     if (this.panel) this.panel.title = `Ortho: ${path.basename(folder)}`;
     this.clearProblems();
     this.render();
+  }
+
+  /**
+   * Opens the line a clicked box marks, in the editor beside the preview: the one
+   * showing the model, else the first column.
+   * @param {unknown} file
+   * @param {unknown} line
+   */
+  async openSource(file, line) {
+    if (!this.folder || !this.cwd) return;
+    const source = markedSource(this.cwd, this.folder, file, line);
+    if (!source) return;
+    const column =
+      vscode.window.visibleTextEditors.find((editor) => editor.document.languageId === 'sysml')?.viewColumn ??
+      vscode.ViewColumn.One;
+    const editor = await vscode.window.showTextDocument(vscode.Uri.file(source.file), { viewColumn: column });
+    const text = editor.document.lineAt(Math.min(source.line - 1, editor.document.lineCount - 1));
+    const start = new vscode.Position(text.lineNumber, text.firstNonWhitespaceCharacterIndex);
+    editor.selection = new vscode.Selection(start, text.range.end);
+    editor.revealRange(text.range, vscode.TextEditorRevealType.InCenterIfOutsideViewport);
   }
 
   outRoot() {
@@ -338,6 +373,8 @@ class Preview {
     // workspace folder, as `examples/survey-drone/logical.sysml`.
     const cwd = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(folder))?.uri.fsPath ?? folder;
     const run = await runOrtho(ortho, folder, out, theme, cwd);
+    // The boxes name their files from where ortho ran.
+    if (folder === this.folder) this.cwd = cwd;
     const report = readReport(run.stdout, run.stderr);
     if (report.written.length > 0) this.shown.set(base, stamp);
     keepOnly(base, this.shown.get(base) ?? '');
@@ -353,7 +390,7 @@ class Preview {
       title: titles[index],
       heading: viewTitle(written.file),
       summary: written.summary,
-      src: webview.asWebviewUri(vscode.Uri.file(path.join(out, path.basename(written.file)))).toString(),
+      svg: readSvg(path.join(out, path.basename(written.file))),
     }));
     const failed = run.code !== 0;
     const errors = report.problems.filter((problem) => problem.severity === 'error');

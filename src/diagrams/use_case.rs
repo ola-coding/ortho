@@ -21,8 +21,16 @@ fn effective_members(ast: &Ast, use_case: NodeId) -> Vec<NodeId> {
     members
 }
 
-fn plain_node(id: String, shape: NodeShape, keyword: &str, name: String, width: f64, height: f64) -> GraphNode {
+fn plain_node(
+    element: NodeId,
+    id: String,
+    shape: NodeShape,
+    keyword: &str,
+    name: String,
+    (width, height): (f64, f64),
+) -> GraphNode {
     GraphNode {
+        element: Some(element),
         id,
         shape,
         keyword: keyword.to_string(),
@@ -44,19 +52,20 @@ pub fn use_case_node(ast: &Ast, use_case: NodeId) -> GraphNode {
     };
     let (shape, keyword) = box_of(ast, use_case);
     let (width, height) = box_size(&name, &[], 110.0, 40.0, keyword);
-    plain_node(qualified_name(ast, use_case), shape, keyword, name, width, height)
+    plain_node(use_case, qualified_name(ast, use_case), shape, keyword, name, (width, height))
 }
 
 /// The «subject» box, drawn once however many use cases share it.
 fn subject_node(ast: &Ast, subject: NodeId, label: &str) -> GraphNode {
     let (shape, keyword) = box_of(ast, subject);
     let (width, height) = box_size(label, &[], 110.0, 40.0, keyword);
-    plain_node(format!("subject:{label}"), shape, keyword, label.to_string(), width, height)
+    plain_node(subject, format!("subject:{label}"), shape, keyword, label.to_string(), (width, height))
 }
 
-fn actor_node(id: String, label: String) -> GraphNode {
+/// An actor, marked with the first usage that names it.
+fn actor_node(actor: NodeId, id: String, label: String) -> GraphNode {
     let width = 48f64.max(measure_text(&label, 11.0, Weight::Regular) + 10.0);
-    plain_node(id, NodeShape::Actor, "", label, width, 76.0)
+    plain_node(actor, id, NodeShape::Actor, "", label, (width, 76.0))
 }
 
 fn is_use_case(ast: &Ast, node: NodeId) -> bool {
@@ -154,7 +163,7 @@ pub fn extract_use_case_graph(ast: &Ast, exposed: &[NodeId]) -> DiagramGraph {
             let at = match actor_nodes.get(&key) {
                 Some(at) => *at,
                 None => {
-                    nodes.push(actor_node(format!("actor:{key}"), usage_label(ast, actor)));
+                    nodes.push(actor_node(actor, format!("actor:{key}"), usage_label(ast, actor)));
                     actor_nodes.insert(key.clone(), nodes.len() - 1);
                     nodes.len() - 1
                 }

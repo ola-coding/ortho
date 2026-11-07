@@ -18,6 +18,7 @@ const {
   chooseOrtho,
   orthoFolder,
   makeExecutable,
+  markedSource,
 } = require('../src/ortho');
 
 const repository = path.resolve(__dirname, '..', '..', '..');
@@ -121,6 +122,20 @@ test('makes the binary it carries runnable', { skip: process.platform === 'win32
   assert.equal(fs.statSync(file).mode & 0o777, 0o755);
 });
 
+test('opens only a .sysml file of the model shown, from a box it marks', () => {
+  const cwd = path.join(path.sep, 'work');
+  const folder = path.join(cwd, 'examples', 'drone');
+  const file = path.join(folder, 'logical.sysml');
+  assert.deepEqual(markedSource(cwd, folder, 'examples/drone/logical.sysml', '12'), { file, line: 12 });
+  assert.equal(markedSource(cwd, folder, 'examples/other/logical.sysml', '12'), undefined);
+  assert.equal(markedSource(cwd, folder, 'examples/drone/sub/logical.sysml', '12'), undefined);
+  assert.equal(markedSource(cwd, folder, 'examples/drone/../../secret.sysml', '1'), undefined);
+  assert.equal(markedSource(cwd, folder, 'examples/drone/notes.txt', '1'), undefined);
+  assert.equal(markedSource(cwd, folder, 'examples/drone/logical.sysml', 'x'), undefined);
+  assert.equal(markedSource(cwd, folder, 'examples/drone/logical.sysml', '0'), undefined);
+  assert.equal(markedSource(cwd, folder, null, '1'), undefined);
+});
+
 test('reports an ortho that cannot be found', async () => {
   const run = await runOrtho(path.join(os.tmpdir(), 'no-such-ortho'), '.', os.tmpdir(), 'light');
   assert.equal(run.missing, true);
@@ -141,6 +156,21 @@ test('renders an example with the real ortho', { skip: !ortho && 'set ORTHO_BIN'
   assert.match(fs.readFileSync(String(logical?.file), 'utf8'), /examples\/coffee-machine\/logical\.sysml/);
   assert.deepEqual(report.problems, []);
   fs.rmSync(out, { recursive: true });
+});
+
+test('marks every box with a model file the preview can open', { skip: !ortho && 'set ORTHO_BIN' }, async () => {
+  const out = fs.mkdtempSync(path.join(os.tmpdir(), 'ortho-marks-'));
+  const folder = path.join(repository, 'examples', 'coffee-machine');
+  const run = await runOrtho(ortho, folder, out, 'light', repository);
+  assert.equal(run.code, 0, run.stderr);
+  const svg = fs.readFileSync(path.join(out, 'logical-view-coffee-machine.svg'), 'utf8');
+  const marks = [...svg.matchAll(/data-file="([^"]+)" data-line="(\d+)"/g)];
+  assert.ok(marks.length > 10);
+  for (const [, file, line] of marks) {
+    const source = markedSource(repository, folder, file, line);
+    assert.ok(source, `${file} line ${line}`);
+    assert.match(fs.readFileSync(source.file, 'utf8').split('\n')[source.line - 1], /\b(action|use case)\b/);
+  }
 });
 
 test('reads the real ortho on a broken model', { skip: !ortho && 'set ORTHO_BIN' }, async () => {

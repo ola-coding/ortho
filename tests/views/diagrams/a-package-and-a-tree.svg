@@ -20,25 +20,25 @@
         fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
   <text x="400" y="184" text-anchor="end" font-size="9" fill="#1a1a1a">tests/views/views.sysml</text>
   
-    <g><rect x="36" y="60" width="110" height="40"
+    <g data-file="tests/views/views.sysml" data-line="60"><rect x="36" y="60" width="110" height="40"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="91" y="77" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action def&#187;</text>
       <text x="91" y="90" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">Tree</text></g>
-    <g><rect x="70" y="114" width="110" height="40" rx="10" ry="10"
+    <g data-file="tests/views/views.sysml" data-line="61"><rect x="70" y="114" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="125" y="131" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="125" y="144" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">branch</text></g>
-    <g><rect x="236" y="60" width="110" height="40" rx="10" ry="10"
+    <g data-file="tests/views/views.sysml" data-line="64"><rect x="236" y="60" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="291" y="77" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="291" y="90" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">own</text></g>
-    <g><rect x="270" y="114" width="110" height="40" rx="10" ry="10"
+    <g data-file="tests/views/views.sysml" data-line="65"><rect x="270" y="114" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="325" y="131" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>

@@ -9,8 +9,9 @@ It is at an early stage. What it does now:
 - **Shows the diagrams beside the model.** Click the preview button at the
   top right of a `.sysml` file, or press Ctrl+K V (Cmd+K V on a Mac). A panel
   opens with a tab for each view the model declares, and draws them again
-  every time you save. Click a diagram to switch between fitting the panel
-  and actual size.
+  every time you save. Click a box to open the line that declares it, beside
+  the preview. Click anywhere else in a diagram to switch between fitting the
+  panel and actual size.
 - **Puts ortho's problems in the Problems panel,** underlined in the file: a
   name that does not resolve, a syntax error, a warning. While the model does
   not load, the last diagrams stay in the panel, faded, until it does.

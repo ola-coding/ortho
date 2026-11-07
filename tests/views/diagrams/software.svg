@@ -20,12 +20,12 @@
         fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
   <text x="704.652" y="565" text-anchor="end" font-size="9" fill="#1a1a1a">tests/views/views.sysml</text>
   
-    <g><rect x="146.16800000000006" y="382" width="36.163" height="18"
+    <g data-file="tests/views/views.sysml" data-line="123"><rect x="146.16800000000006" y="382" width="36.163" height="18"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <rect x="146.16800000000006" y="400" width="428.316" height="135"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <text x="154.16800000000006" y="395" font-size="11" font-weight="600" fill="#1a1a1a">Api</text></g>
-    <g><rect x="171.16800000000006" y="427" width="378.316" height="83"
+    <g data-file="tests/views/views.sysml" data-line="125"><rect x="171.16800000000006" y="427" width="378.316" height="83"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M171.66800000000006,459 L171.66800000000006,427.5 L548.984,427.5 L548.984,459 Z" fill="#ccdce5" />
       <text x="360.326" y="440" text-anchor="middle"
@@ -40,30 +40,30 @@
           font-size="11" fill="#1a1a1a">needs : ~Orders</text>
       <text x="179.16800000000006" y="499"
           font-size="11" fill="#1a1a1a">untyped</text></g>
-    <g><rect x="36" y="60" width="49.616" height="18"
+    <g data-file="tests/views/views.sysml" data-line="130"><rect x="36" y="60" width="49.616" height="18"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <rect x="36" y="78" width="648.652" height="152"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <text x="44" y="73" font-size="11" font-weight="600" fill="#1a1a1a">Store</text></g>
-    <g><rect x="61" y="105" width="438.652" height="40"
+    <g data-file="tests/views/views.sysml" data-line="135"><rect x="61" y="105" width="438.652" height="40"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="280.326" y="122" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
       <text x="280.326" y="135" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">Table :&gt; A module whose name is far wider than its package</text></g>
-    <g><rect x="539.652" y="105" width="120" height="40"
+    <g data-file="tests/views/views.sysml" data-line="136"><rect x="539.652" y="105" width="120" height="40"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="599.652" y="122" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
       <text x="599.652" y="135" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">Index</text></g>
-    <g><rect x="220.326" y="165" width="120" height="40"
+    <g data-file="tests/views/views.sysml" data-line="137"><rect x="220.326" y="165" width="120" height="40"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="280.326" y="182" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
       <text x="280.326" y="195" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">Log</text></g>
-    <g><rect x="539.652" y="165" width="120" height="40"
+    <g data-file="tests/views/views.sysml" data-line="138"><rect x="539.652" y="165" width="120" height="40"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="599.652" y="182" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>

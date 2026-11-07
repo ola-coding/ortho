@@ -16,7 +16,7 @@
         fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
   <text x="1449.146" y="502" text-anchor="end" font-size="9" fill="#1a1a1a">examples/coffee-machine/process.sysml</text>
   
-    <g><rect x="24" y="48" width="90" height="36" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/process.sysml" data-line="17"><rect x="24" y="48" width="90" height="36" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="69" y="63" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
@@ -24,7 +24,7 @@
           font-size="12" font-weight="600" fill="#1a1a1a">user</text>
       <line x1="69" y1="84" x2="69" y2="480"
           stroke="#1a1a1a" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g><rect x="149.032" y="48" width="116.616" height="36" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/process.sysml" data-line="18"><rect x="149.032" y="48" width="116.616" height="36" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="207.34" y="63" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
@@ -32,7 +32,7 @@
           font-size="12" font-weight="600" fill="#1a1a1a">uiApp : UiApp</text>
       <line x1="207.34" y1="84" x2="207.34" y2="480"
           stroke="#1a1a1a" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g><rect x="318.04200000000003" y="48" width="216.756" height="36" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/process.sysml" data-line="19"><rect x="318.04200000000003" y="48" width="216.756" height="36" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="426.42" y="63" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
@@ -40,7 +40,7 @@
           font-size="12" font-weight="600" fill="#1a1a1a">recipeEngine : RecipeEngine</text>
       <line x1="426.42" y1="84" x2="426.42" y2="480"
           stroke="#1a1a1a" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g><rect x="564.798" y="48" width="346.056" height="36" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/process.sysml" data-line="20"><rect x="564.798" y="48" width="346.056" height="36" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="737.826" y="63" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
@@ -48,7 +48,7 @@
           font-size="12" font-weight="600" fill="#1a1a1a">temperatureController : TemperatureController</text>
       <line x1="737.826" y1="84" x2="737.826" y2="480"
           stroke="#1a1a1a" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g><rect x="940.8539999999999" y="48" width="240.72" height="36" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/process.sysml" data-line="21"><rect x="940.8539999999999" y="48" width="240.72" height="36" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="1061.214" y="63" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
@@ -56,7 +56,7 @@
           font-size="12" font-weight="600" fill="#1a1a1a">brewController : BrewController</text>
       <line x1="1061.214" y1="84" x2="1061.214" y2="480"
           stroke="#1a1a1a" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g><rect x="1211.5739999999998" y="48" width="229.572" height="36" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/process.sysml" data-line="22"><rect x="1211.5739999999998" y="48" width="229.572" height="36" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="1326.36" y="63" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>

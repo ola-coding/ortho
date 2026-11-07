@@ -20,19 +20,19 @@
         fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
   <text x="480.84" y="268" text-anchor="end" font-size="9" fill="#1a1a1a">tests/views/views.sysml</text>
   
-    <g><rect x="36" y="60" width="424.84" height="40"
+    <g data-file="tests/views/views.sysml" data-line="10"><rect x="36" y="60" width="424.84" height="40"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="248.42" y="77" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action def&#187;</text>
       <text x="248.42" y="90" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">A function whose name is far wider than anything below it</text></g>
-    <g><rect x="193.42" y="144" width="110" height="40" rx="10" ry="10"
+    <g data-file="tests/views/views.sysml" data-line="11"><rect x="193.42" y="144" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="248.42" y="161" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="248.42" y="174" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">narrow</text></g>
-    <g><rect x="227.42" y="198" width="110" height="40" rx="10" ry="10"
+    <g data-file="tests/views/views.sysml" data-line="12"><rect x="227.42" y="198" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="282.41999999999996" y="215" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>

@@ -20,6 +20,7 @@ fn host_node(ast: &Ast, host: NodeId, allocated: &[String]) -> GraphNode {
     let (shape, keyword) = box_of(ast, host);
     let (width, height) = box_size(&name, &compartments, 150.0, 40.0, keyword);
     GraphNode {
+        element: Some(host),
         id: qualified_name(ast, host),
         shape,
         keyword: keyword.to_string(),
@@ -42,6 +43,7 @@ fn device_frame(ast: &Ast, id: String, device: NodeId) -> GraphNode {
     };
     let (shape, keyword) = box_of(ast, device);
     GraphNode {
+        element: Some(device),
         id,
         shape,
         keyword: keyword.to_string(),

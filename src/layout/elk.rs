@@ -501,6 +501,8 @@ fn cell_node(cell: &Cell, x: f64, y: f64) -> LaidOutNode {
         y,
         width: cell.width,
         height: cell.height,
+        element: n.element,
+        source: None,
     }
 }
 
@@ -571,6 +573,8 @@ fn laid_out(graph: &DiagramGraph, conversion: &Conversion, result: &Value) -> La
                 y,
                 width: number_or(c, "width", 80.0),
                 height: number_or(c, "height", 40.0),
+                element: source.and_then(|s| s.element),
+                source: None,
             });
             let cells = conversion.grids.as_ref().and_then(|grids| grids.get(id));
             nodes.extend(cells.into_iter().flatten().map(|cell| cell_node(cell, x + cell.x, y + cell.y)));

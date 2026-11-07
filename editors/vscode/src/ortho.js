@@ -164,6 +164,24 @@ function runOrtho(ortho, model, out, theme, cwd) {
 }
 
 /**
+ * The model file a box in a diagram marks, `data-file` and `data-line`, as a path and
+ * a line, 1-based. ortho names the file from where it ran, `cwd`. A mark naming
+ * anything but a .sysml file of the model shown is not followed.
+ * @param {string} cwd
+ * @param {string} folder the model's folder
+ * @param {unknown} file
+ * @param {unknown} line
+ * @returns {{ file: string, line: number } | undefined}
+ */
+function markedSource(cwd, folder, file, line) {
+  if (typeof file !== 'string' || !file.endsWith('.sysml')) return undefined;
+  const resolved = path.resolve(cwd, file);
+  if (path.relative(folder, resolved) !== path.basename(resolved)) return undefined;
+  const number = Number(line);
+  return Number.isInteger(number) && number >= 1 ? { file: resolved, line: number } : undefined;
+}
+
+/**
  * Removes every render in `base` but `keep`, so a model's diagrams stay only while
  * they are the latest that rendered.
  * @param {string} base
@@ -186,4 +204,5 @@ module.exports = {
   chooseOrtho,
   orthoFolder,
   makeExecutable,
+  markedSource,
 };

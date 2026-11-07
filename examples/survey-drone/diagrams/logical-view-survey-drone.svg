@@ -20,163 +20,163 @@
         fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
   <text x="1536.88" y="502" text-anchor="end" font-size="9" fill="#1a1a1a">examples/survey-drone/logical.sysml</text>
   
-    <g><rect x="687.3380000000001" y="144" width="169.288" height="40"
+    <g data-file="examples/survey-drone/logical.sysml" data-line="12"><rect x="687.3380000000001" y="144" width="169.288" height="40"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="771.9820000000001" y="161" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action def&#187;</text>
       <text x="771.9820000000001" y="174" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">PerformAerialSurvey</text></g>
-    <g><rect x="36" y="228" width="130.312" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/logical.sysml" data-line="15"><rect x="36" y="228" width="130.312" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="101.156" y="245" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="101.156" y="258" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">operateVehicle</text></g>
-    <g><rect x="70" y="282" width="127.204" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/logical.sysml" data-line="16"><rect x="70" y="282" width="127.204" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="133.602" y="299" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="133.602" y="312" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">produceThrust</text></g>
-    <g><rect x="70" y="332" width="114.988" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/logical.sysml" data-line="17"><rect x="70" y="332" width="114.988" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="127.494" y="349" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="127.494" y="362" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">supplyPower</text></g>
-    <g><rect x="70" y="382" width="153.1" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/logical.sysml" data-line="18"><rect x="70" y="382" width="153.1" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="146.55" y="399" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="146.55" y="412" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">provideComputing</text></g>
-    <g><rect x="251.1" y="228" width="202.66" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/logical.sysml" data-line="24"><rect x="251.1" y="228" width="202.66" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="352.43" y="245" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="352.43" y="258" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">guideNavigateAndControl</text></g>
-    <g><rect x="285.1" y="282" width="110" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/logical.sysml" data-line="25"><rect x="285.1" y="282" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="340.1" y="299" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="340.1" y="312" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">guide</text></g>
-    <g><rect x="285.1" y="332" width="110" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/logical.sysml" data-line="26"><rect x="285.1" y="332" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="340.1" y="349" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="340.1" y="362" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">navigate</text></g>
-    <g><rect x="285.1" y="382" width="110" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/logical.sysml" data-line="27"><rect x="285.1" y="382" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="340.1" y="399" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="340.1" y="412" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">control</text></g>
-    <g><rect x="285.1" y="432" width="131.152" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/logical.sysml" data-line="28"><rect x="285.1" y="432" width="131.152" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="350.67600000000004" y="449" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="350.67600000000004" y="462" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">avoidObstacles</text></g>
-    <g><rect x="481.76" y="228" width="110" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/logical.sysml" data-line="31"><rect x="481.76" y="228" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="536.76" y="245" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="536.76" y="258" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">perceive</text></g>
-    <g><rect x="515.76" y="282" width="118.516" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/logical.sysml" data-line="32"><rect x="515.76" y="282" width="118.516" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="575.018" y="299" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="575.018" y="312" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">captureVideo</text></g>
-    <g><rect x="515.76" y="332" width="135.55599999999998" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/logical.sysml" data-line="33"><rect x="515.76" y="332" width="135.55599999999998" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="583.538" y="349" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="583.538" y="362" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">fuseSensorData</text></g>
-    <g><rect x="515.76" y="382" width="168.892" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/logical.sysml" data-line="34"><rect x="515.76" y="382" width="168.892" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="600.206" y="399" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="600.206" y="412" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">maintainWorldModel</text></g>
-    <g><rect x="712.652" y="228" width="118.66" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/logical.sysml" data-line="37"><rect x="712.652" y="228" width="118.66" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="771.9820000000001" y="245" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="771.9820000000001" y="258" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">communicate</text></g>
-    <g><rect x="746.652" y="282" width="113.908" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/logical.sysml" data-line="38"><rect x="746.652" y="282" width="113.908" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="803.606" y="299" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="803.606" y="312" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">streamVideo</text></g>
-    <g><rect x="746.652" y="332" width="161.596" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/logical.sysml" data-line="39"><rect x="746.652" y="332" width="161.596" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="827.45" y="349" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="827.45" y="362" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">exchangeTelemetry</text></g>
-    <g><rect x="936.248" y="228" width="110" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/logical.sysml" data-line="42"><rect x="936.248" y="228" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="991.248" y="245" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="991.248" y="258" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">plan</text></g>
-    <g><rect x="970.248" y="282" width="110" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/logical.sysml" data-line="43"><rect x="970.248" y="282" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="1025.248" y="299" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="1025.248" y="312" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">planMission</text></g>
-    <g><rect x="970.248" y="332" width="110" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/logical.sysml" data-line="44"><rect x="970.248" y="332" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="1025.248" y="349" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="1025.248" y="362" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">planRoute</text></g>
-    <g><rect x="1108.248" y="228" width="173.872" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/logical.sysml" data-line="47"><rect x="1108.248" y="228" width="173.872" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="1195.184" y="245" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="1195.184" y="258" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">interactWithOperator</text></g>
-    <g><rect x="1142.248" y="282" width="159.832" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/logical.sysml" data-line="48"><rect x="1142.248" y="282" width="159.832" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="1222.164" y="299" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="1222.164" y="312" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">presentInformation</text></g>
-    <g><rect x="1142.248" y="332" width="169.516" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/logical.sysml" data-line="49"><rect x="1142.248" y="332" width="169.516" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="1227.006" y="349" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="1227.006" y="362" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">acceptOperatorInput</text></g>
-    <g><rect x="1339.7640000000001" y="228" width="143.524" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/logical.sysml" data-line="55"><rect x="1339.7640000000001" y="228" width="143.524" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="1411.526" y="245" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="1411.526" y="258" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">superviseSystem</text></g>
-    <g><rect x="1373.7640000000001" y="282" width="125.98" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/logical.sysml" data-line="56"><rect x="1373.7640000000001" y="282" width="125.98" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="1436.7540000000001" y="299" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="1436.7540000000001" y="312" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">monitorHealth</text></g>
-    <g><rect x="1373.7640000000001" y="332" width="143.11599999999999" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/logical.sysml" data-line="57"><rect x="1373.7640000000001" y="332" width="143.11599999999999" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="1445.3220000000001" y="349" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="1445.3220000000001" y="362" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">recordFlightData</text></g>
-    <g><rect x="716.9820000000001" y="60" width="110" height="40"
+    <g data-file="examples/survey-drone/use-case.sysml" data-line="13"><rect x="716.9820000000001" y="60" width="110" height="40"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="771.9820000000001" y="77" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;use case def&#187;</text>

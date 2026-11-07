@@ -63,6 +63,8 @@ pub struct GraphNode {
     pub children: Option<Vec<GraphNode>>,
     pub width: f64,
     pub height: f64,
+    /// The element whose declaration the box stands for, which the SVG marks it with.
+    pub element: Option<NodeId>,
 }
 
 #[derive(Clone, Debug)]

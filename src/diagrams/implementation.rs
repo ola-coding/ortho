@@ -53,6 +53,7 @@ fn module_node(ast: &Ast, def: NodeId) -> GraphNode {
     let name = module_heading(ast, def);
     let (width, height) = box_size(&name, &compartments, 120.0, 40.0, keyword);
     GraphNode {
+        element: Some(def),
         id: qualified_name(ast, def),
         shape,
         keyword: keyword.to_string(),
@@ -92,6 +93,7 @@ fn package_node(ast: &Ast, package: NodeId) -> GraphNode {
     }
     let name = ast.text(package, Prop::Name).unwrap_or("");
     GraphNode {
+        element: Some(package),
         id: qualified_name(ast, package),
         shape: NodeShape::Package,
         keyword: String::new(),

@@ -16,7 +16,7 @@
         fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
   <text x="362" y="342" text-anchor="end" font-size="9" fill="#1a1a1a">tests/views/views.sysml</text>
   
-    <g><rect x="24" y="48" width="90" height="36" rx="10" ry="10"
+    <g data-file="tests/views/views.sysml" data-line="107"><rect x="24" y="48" width="90" height="36" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="69" y="63" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
@@ -24,7 +24,7 @@
           font-size="12" font-weight="600" fill="#1a1a1a">c</text>
       <line x1="69" y1="84" x2="69" y2="320"
           stroke="#1a1a1a" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g><rect x="144" y="48" width="90" height="36" rx="10" ry="10"
+    <g data-file="tests/views/views.sysml" data-line="105"><rect x="144" y="48" width="90" height="36" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="189" y="63" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
@@ -32,7 +32,7 @@
           font-size="12" font-weight="600" fill="#1a1a1a">b : Node</text>
       <line x1="189" y1="84" x2="189" y2="320"
           stroke="#1a1a1a" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g><rect x="264" y="48" width="90" height="36" rx="10" ry="10"
+    <g data-file="tests/views/views.sysml" data-line="104"><rect x="264" y="48" width="90" height="36" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="309" y="63" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>

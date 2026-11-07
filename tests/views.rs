@@ -232,6 +232,51 @@ fn renders_the_examples_as_their_committed_diagrams() {
     }
 }
 
+/// Each box an SVG marks with where it is declared: the file, the line, and the name
+/// drawn in it, bold for a box and plain for an actor.
+fn marked_boxes(svg: &str) -> Vec<(String, usize, String)> {
+    let mut boxes = Vec::new();
+    for group in svg.split("<g data-file=\"").skip(1) {
+        let (file, rest) = group.split_once('"').unwrap();
+        let line = rest.split_once("data-line=\"").unwrap().1.split_once('"').unwrap().0.parse().unwrap();
+        let body = &rest[..rest.find("</g>").unwrap()];
+        let texts: Vec<&str> = body.split("<text").skip(1).collect();
+        let named = texts.iter().find(|text| text.contains("font-weight=\"600\"")).or(texts.first()).unwrap();
+        let name = named.split_once('>').unwrap().1.split_once("</text>").unwrap().0;
+        boxes.push((file.to_string(), line, name.to_string()));
+    }
+    boxes
+}
+
+#[test]
+fn marks_every_box_with_the_line_that_declares_it() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"));
+    for example in ["examples/coffee-machine", "examples/survey-drone"] {
+        let mut files: Vec<String> = std::fs::read_dir(root.join(example))
+            .unwrap()
+            .map(|entry| entry.unwrap().path())
+            .filter(|path| path.extension().is_some_and(|e| e == "sysml"))
+            .map(|path| path.to_string_lossy().into_owned())
+            .collect();
+        files.sort();
+        let workspace = parse_sysml_files(&files).unwrap().workspace;
+        for view in render_views(&workspace, &LIGHT).unwrap().rendered {
+            let boxes = marked_boxes(&view.result.svg);
+            // The summary counts the boxes first: `12 node(s), …` or `6 lifeline(s), …`.
+            let drawn: usize = view.result.summary.split_once(' ').unwrap().0.parse().unwrap();
+            assert_eq!(boxes.len(), drawn, "{example}: every box of {} is marked", view.file);
+            for (file, line, name) in boxes {
+                assert!(file.starts_with(&format!("{example}/")), "{file} is named from the working folder");
+                let text = std::fs::read_to_string(root.join(&file)).unwrap();
+                let declared = text.lines().nth(line - 1).unwrap();
+                // `uiApp : UiApp` is declared as `part uiApp : UiApp;`, `brew [2]` as `part brew[2]`.
+                let own = name.split([' ', ':', '[']).next().unwrap();
+                assert!(declared.contains(own), "{file} line {line}, `{declared}`, does not declare '{name}'");
+            }
+        }
+    }
+}
+
 #[test]
 fn renders_every_view_it_can_draw_passes_over_the_rest_and_refuses_two_views_for_one_file() {
     let workspace = parse_ok(

@@ -165,6 +165,11 @@ ortho render <models...> -o <folder> [--theme <name>] [--watch]
   `.sysml` file added to a folder you named is picked up too, and a model that
   does not load is reported and waited on. Stop it with Ctrl+C.
 
+Each box in a diagram carries the file and line that declare its element,
+as `data-file` and `data-line` on its group, the file named from the folder
+ortho ran in. A viewer can take you from a box to the text, as the VS Code
+extension does when you click one.
+
 Diagrams are drawn for landscape A4. A view too big for that page, one whose
 names would print smaller than 6 pt once it is shrunk to fit, is still drawn,
 with a warning that says so: split it into smaller views, as

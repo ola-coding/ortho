@@ -20,85 +20,85 @@
         fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
   <text x="772" y="368" text-anchor="end" font-size="9" fill="#1a1a1a">tests/views/views.sysml</text>
   
-    <g><rect x="36" y="144" width="110" height="40"
+    <g data-file="tests/views/views.sysml" data-line="36"><rect x="36" y="144" width="110" height="40"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="91" y="161" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action def&#187;</text>
       <text x="91" y="174" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">Left</text></g>
-    <g><rect x="70" y="198" width="110" height="40" rx="10" ry="10"
+    <g data-file="tests/views/views.sysml" data-line="37"><rect x="70" y="198" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="125" y="215" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="125" y="228" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">a1</text></g>
-    <g><rect x="70" y="248" width="110" height="40" rx="10" ry="10"
+    <g data-file="tests/views/views.sysml" data-line="38"><rect x="70" y="248" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="125" y="265" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="125" y="278" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">a2</text></g>
-    <g><rect x="70" y="298" width="110" height="40" rx="10" ry="10"
+    <g data-file="tests/views/views.sysml" data-line="39"><rect x="70" y="298" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="125" y="315" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="125" y="328" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">a3</text></g>
-    <g><rect x="322" y="144" width="110" height="40"
+    <g data-file="tests/views/views.sysml" data-line="41"><rect x="322" y="144" width="110" height="40"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="377" y="161" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action def&#187;</text>
       <text x="377" y="174" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">Middle</text></g>
-    <g><rect x="236" y="228" width="110" height="40" rx="10" ry="10"
+    <g data-file="tests/views/views.sysml" data-line="42"><rect x="236" y="228" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="291" y="245" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="291" y="258" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">m1</text></g>
-    <g><rect x="270" y="282" width="110" height="40" rx="10" ry="10"
+    <g data-file="tests/views/views.sysml" data-line="43"><rect x="270" y="282" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="325" y="299" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="325" y="312" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">m11</text></g>
-    <g><rect x="408" y="228" width="110" height="40" rx="10" ry="10"
+    <g data-file="tests/views/views.sysml" data-line="45"><rect x="408" y="228" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="463" y="245" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="463" y="258" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">m2</text></g>
-    <g><rect x="442" y="282" width="110" height="40" rx="10" ry="10"
+    <g data-file="tests/views/views.sysml" data-line="46"><rect x="442" y="282" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="497" y="299" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="497" y="312" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">m21</text></g>
-    <g><rect x="608" y="144" width="110" height="40"
+    <g data-file="tests/views/views.sysml" data-line="49"><rect x="608" y="144" width="110" height="40"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="663" y="161" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action def&#187;</text>
       <text x="663" y="174" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">Right</text></g>
-    <g><rect x="642" y="198" width="110" height="40" rx="10" ry="10"
+    <g data-file="tests/views/views.sysml" data-line="50"><rect x="642" y="198" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="697" y="215" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="697" y="228" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">r1</text></g>
-    <g><rect x="322" y="60" width="110" height="40"
+    <g data-file="tests/views/views.sysml" data-line="34"><rect x="322" y="60" width="110" height="40"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="377" y="77" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;use case def&#187;</text>
       <text x="377" y="90" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">Unrefined</text></g>
-    <g><rect x="460" y="60" width="110" height="40"
+    <g data-file="tests/views/views.sysml" data-line="35"><rect x="460" y="60" width="110" height="40"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="515" y="77" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;use case def&#187;</text>
       <text x="515" y="90" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">Survey</text></g>
-    <g><rect x="598" y="60" width="110" height="40"
+    <g data-file="tests/views/views.sysml" data-line="33"><rect x="598" y="60" width="110" height="40"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="653" y="77" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;use case def&#187;</text>

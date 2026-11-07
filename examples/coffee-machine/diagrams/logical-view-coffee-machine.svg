@@ -20,145 +20,145 @@
         fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
   <text x="1181.208" y="502" text-anchor="end" font-size="9" fill="#1a1a1a">examples/coffee-machine/logical.sysml</text>
   
-    <g><rect x="377.874" y="144" width="128.14" height="40"
+    <g data-file="examples/coffee-machine/logical.sysml" data-line="13"><rect x="377.874" y="144" width="128.14" height="40"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="441.944" y="161" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action def&#187;</text>
       <text x="441.944" y="174" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">MakeBeverage</text></g>
-    <g><rect x="36" y="228" width="122.512" height="40" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/logical.sysml" data-line="17"><rect x="36" y="228" width="122.512" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="97.256" y="245" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="97.256" y="258" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">prepareWater</text></g>
-    <g><rect x="70" y="282" width="110" height="40" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/logical.sysml" data-line="18"><rect x="70" y="282" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="125" y="299" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="125" y="312" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">storeWater</text></g>
-    <g><rect x="70" y="332" width="110" height="40" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/logical.sysml" data-line="19"><rect x="70" y="332" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="125" y="349" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="125" y="362" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">pumpWater</text></g>
-    <g><rect x="70" y="382" width="110" height="40" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/logical.sysml" data-line="20"><rect x="70" y="382" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="125" y="399" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="125" y="412" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">heatWater</text></g>
-    <g><rect x="208" y="228" width="125.152" height="40" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/logical.sysml" data-line="23"><rect x="208" y="228" width="125.152" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="270.576" y="245" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="270.576" y="258" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">prepareCoffee</text></g>
-    <g><rect x="242" y="282" width="110" height="40" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/logical.sysml" data-line="24"><rect x="242" y="282" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="297" y="299" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="297" y="312" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">storeBeans</text></g>
-    <g><rect x="242" y="332" width="110" height="40" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/logical.sysml" data-line="25"><rect x="242" y="332" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="297" y="349" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="297" y="362" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">grindBeans</text></g>
-    <g><rect x="242" y="382" width="116.944" height="40" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/logical.sysml" data-line="26"><rect x="242" y="382" width="116.944" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="300.472" y="399" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="300.472" y="412" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">doseGrounds</text></g>
-    <g><rect x="242" y="432" width="110" height="40" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/logical.sysml" data-line="27"><rect x="242" y="432" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="297" y="449" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="297" y="462" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">extractShot</text></g>
-    <g><rect x="386.944" y="228" width="110" height="40" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/logical.sysml" data-line="32"><rect x="386.944" y="228" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="441.944" y="245" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="441.944" y="258" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">prepareMilk</text></g>
-    <g><rect x="420.944" y="282" width="110" height="40" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/logical.sysml" data-line="33"><rect x="420.944" y="282" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="475.944" y="299" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="475.944" y="312" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">drawMilk</text></g>
-    <g><rect x="420.944" y="332" width="110" height="40" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/logical.sysml" data-line="34"><rect x="420.944" y="332" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="475.944" y="349" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="475.944" y="362" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">frothMilk</text></g>
-    <g><rect x="558.944" y="228" width="129.136" height="40" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/logical.sysml" data-line="37"><rect x="558.944" y="228" width="129.136" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="623.512" y="245" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="623.512" y="258" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">serveBeverage</text></g>
-    <g><rect x="716.0799999999999" y="228" width="132.412" height="40" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/logical.sysml" data-line="42"><rect x="716.0799999999999" y="228" width="132.412" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="782.286" y="245" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="782.286" y="258" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">controlMachine</text></g>
-    <g><rect x="750.0799999999999" y="282" width="132.364" height="40" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/logical.sysml" data-line="43"><rect x="750.0799999999999" y="282" width="132.364" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="816.262" y="299" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="816.262" y="312" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">selectBeverage</text></g>
-    <g><rect x="750.0799999999999" y="332" width="137.68" height="40" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/logical.sysml" data-line="44"><rect x="750.0799999999999" y="332" width="137.68" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="818.92" y="349" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="818.92" y="362" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">sequenceRecipe</text></g>
-    <g><rect x="750.0799999999999" y="382" width="173.176" height="40" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/logical.sysml" data-line="45"><rect x="750.0799999999999" y="382" width="173.176" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="836.6679999999999" y="399" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="836.6679999999999" y="412" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">regulateTemperature</text></g>
-    <g><rect x="750.0799999999999" y="432" width="163.336" height="40" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/logical.sysml" data-line="46"><rect x="750.0799999999999" y="432" width="163.336" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="831.7479999999999" y="449" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="831.7479999999999" y="462" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">interlockBrewGroup</text></g>
-    <g><rect x="979.2560000000001" y="144" width="143.692" height="40"
+    <g data-file="examples/coffee-machine/logical.sysml" data-line="59"><rect x="979.2560000000001" y="144" width="143.692" height="40"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="1051.102" y="161" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action def&#187;</text>
       <text x="1051.102" y="174" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">MaintainMachine</text></g>
-    <g><rect x="1013.2560000000001" y="198" width="147.952" height="40" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/logical.sysml" data-line="62"><rect x="1013.2560000000001" y="198" width="147.952" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="1087.232" y="215" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="1087.232" y="228" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">signalDescaleDue</text></g>
-    <g><rect x="1013.2560000000001" y="248" width="139.708" height="40" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/logical.sysml" data-line="66"><rect x="1013.2560000000001" y="248" width="139.708" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="1083.1100000000001" y="265" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
       <text x="1083.1100000000001" y="278" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">runDescaleCycle</text></g>
-    <g><rect x="372.288" y="60" width="139.312" height="40"
+    <g data-file="examples/coffee-machine/use-case.sysml" data-line="11"><rect x="372.288" y="60" width="139.312" height="40"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="441.944" y="77" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;use case def&#187;</text>
       <text x="441.944" y="90" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">OperateMachine</text></g>
-    <g><rect x="983.912" y="60" width="134.38" height="40"
+    <g data-file="examples/coffee-machine/use-case.sysml" data-line="18"><rect x="983.912" y="60" width="134.38" height="40"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="1051.102" y="77" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;use case def&#187;</text>

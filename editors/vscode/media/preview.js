@@ -11,7 +11,7 @@
 
   /** @type {{ folder?: string, selected?: string, actualSize?: boolean }} */
   const state = vscode.getState() || {};
-  /** @type {{ title: string, heading: string, summary: string, src: string }[]} */
+  /** @type {{ title: string, heading: string, summary: string, svg: string }[]} */
   let views = [];
 
   function save() {
@@ -41,14 +41,33 @@
     diagram.replaceChildren();
     diagram.classList.toggle('actual-size', Boolean(state.actualSize));
     if (!view) return;
-    const image = element('img', { src: view.src, alt: view.heading });
-    image.title = 'Click to switch between fitting the panel and actual size';
-    image.addEventListener('click', () => {
+    const parsed = new DOMParser().parseFromString(view.svg, 'image/svg+xml').documentElement;
+    if (parsed.nodeName !== 'svg') {
+      diagram.append(element('p', { class: 'empty' }, `${view.heading} could not be read.`));
+      return;
+    }
+    const svg = /** @type {SVGSVGElement} */ (document.importNode(parsed, true));
+    svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', view.heading);
+    for (const box of svg.querySelectorAll('[data-line]')) {
+      const file = box.getAttribute('data-file') || '';
+      const tip = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+      tip.textContent = `Open ${file.split('/').pop()} line ${box.getAttribute('data-line')}`;
+      box.prepend(tip);
+    }
+    svg.addEventListener('click', (event) => {
+      // A box opens the line that declares it; anywhere else switches between
+      // fitting the panel and actual size.
+      const box = /** @type {Element} */ (event.target).closest('[data-line]');
+      if (box) {
+        vscode.postMessage({ type: 'open', file: box.getAttribute('data-file'), line: box.getAttribute('data-line') });
+        return;
+      }
       state.actualSize = !state.actualSize;
       save();
       diagram.classList.toggle('actual-size', state.actualSize);
     });
-    diagram.append(image, element('p', { class: 'summary' }, view.summary));
+    diagram.append(svg, element('p', { class: 'summary' }, view.summary));
   }
 
   function showTabs() {
