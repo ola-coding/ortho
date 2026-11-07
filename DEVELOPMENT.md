@@ -204,9 +204,9 @@ cargo xtask vscode-grammar          # write the VS Code extension's grammar
 ```
 
 CI (`.github/workflows/ci.yml`) builds and tests on Linux, Windows and
-macOS, runs fmt and clippy, counts OMG's models, fails if a fresh render
-differs from the committed diagrams or the VS Code grammar from a fresh
-one, and only then, on `main`, publishes the
+macOS, runs fmt and clippy, tests the VS Code extension, counts OMG's
+models, fails if a fresh render differs from the committed diagrams or the
+VS Code grammar from a fresh one, and only then, on `main`, publishes the
 deck to GitHub Pages.
 
 - **The grammar** is `src/parser/grammar.rs`, with its keywords in `lexer.rs`.
@@ -216,6 +216,11 @@ deck to GitHub Pages.
 - **The VS Code extension** is in `editors/vscode/`, with its own version and
   its own [README](editors/vscode/README.md). Its grammar,
   `syntaxes/sysml.tmLanguage.json`, is written from `KEYWORDS`, never by hand.
+  Its code is plain JavaScript with no dependencies and no build step;
+  `src/ortho.js`, which runs ortho and reads what it prints, is tested with
+  Node (`npm test` in `editors/vscode`, with `ORTHO_BIN` set to run the real
+  ortho too). Anything that changes what `ortho render` prints, its `Wrote`
+  lines or its `file line n: message` problems, must keep those tests passing.
 - **The examples** cover two different domains, so a rendering change that
   only suits one shows up. Regenerate their SVGs and look at them in a browser
   whenever rendering changes. They carry no requirements, since no view would
@@ -393,9 +398,9 @@ In priority order:
   - [x] SysML v2 keyword highlighting, written from ortho's own keyword list.
     It uses the language id `sysml`, so it works beside other SysML v2
     extensions such as SysIDE.
-  - [ ] A live preview: the views' SVGs in a panel beside the model, rendered
+  - [x] A live preview: the views' SVGs in a panel beside the model, rendered
     again by `ortho render` on every save, and ortho's errors in the Problems
-    panel.
+    panel. It needs ortho installed, until the step that bundles it.
   - [ ] An *Open example* command for the coffee machine and survey drone.
   - [ ] An *Add AI instructions* command that writes a skill file for Claude
     Code and instructions for Copilot from [LANGUAGE.md](LANGUAGE.md).
