@@ -1,7 +1,7 @@
 {
   "name": "ortho",
   "displayName": "Ortho for SysML v2",
-  "description": "SysML v2 syntax highlighting, with live architecture diagrams from ortho to come",
+  "description": "SysML v2 highlighting and a live preview of the architectural views ortho draws from your model",
   "version": "0.0.1",
   "private": true,
   "publisher": "ola-coding",
@@ -25,6 +25,13 @@
     "architecture",
     "diagrams"
   ],
+  "main": "./src/extension.js",
+  "activationEvents": [
+    "onWebviewPanel:ortho.preview"
+  ],
+  "scripts": {
+    "test": "node --test"
+  },
   "contributes": {
     "languages": [
       {
@@ -45,6 +52,83 @@
         "scopeName": "source.sysml",
         "path": "./syntaxes/sysml.tmLanguage.json"
       }
-    ]
+    ],
+    "commands": [
+      {
+        "command": "ortho.openPreview",
+        "title": "Open Preview to the Side",
+        "category": "Ortho",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "ortho.renderAgain",
+        "title": "Render Again",
+        "category": "Ortho",
+        "icon": "$(refresh)"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "ortho.openPreview",
+          "when": "resourceLangId == sysml",
+          "group": "navigation"
+        },
+        {
+          "command": "ortho.renderAgain",
+          "when": "activeWebviewPanelId == ortho.preview",
+          "group": "navigation"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "ortho.openPreview",
+          "when": "resourceLangId == sysml",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "ortho.openPreview",
+          "when": "resourceLangId == sysml"
+        },
+        {
+          "command": "ortho.renderAgain",
+          "when": "activeWebviewPanelId == ortho.preview"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "ortho.openPreview",
+        "key": "ctrl+k v",
+        "mac": "cmd+k v",
+        "when": "editorLangId == sysml"
+      }
+    ],
+    "configuration": {
+      "title": "Ortho",
+      "properties": {
+        "ortho.path": {
+          "type": "string",
+          "default": "ortho",
+          "markdownDescription": "The `ortho` command, or the full path to the ortho binary. Install ortho with `cargo install ortho`, or download it from the [releases](https://github.com/ola-coding/ortho/releases).",
+          "scope": "machine-overridable"
+        },
+        "ortho.theme": {
+          "type": "string",
+          "default": "light",
+          "enum": [
+            "light",
+            "dark-glass"
+          ],
+          "enumDescriptions": [
+            "White boxes with a blue tint, for documents and print.",
+            "Dark glass, for slides."
+          ],
+          "description": "The theme ortho paints the diagrams with."
+        }
+      }
+    }
   }
 }

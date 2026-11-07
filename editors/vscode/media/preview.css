@@ -1,0 +1,101 @@
+body {
+  margin: 0;
+  padding: 0;
+  color: var(--vscode-foreground);
+  background: var(--vscode-editor-background);
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+}
+header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  padding: 6px 12px;
+  background: var(--vscode-editor-background);
+  border-bottom: 1px solid var(--vscode-panel-border, transparent);
+}
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+nav button {
+  padding: 3px 10px;
+  border: 1px solid var(--vscode-button-border, transparent);
+  border-radius: 2px;
+  color: var(--vscode-button-secondaryForeground);
+  background: var(--vscode-button-secondaryBackground);
+  font: inherit;
+  cursor: pointer;
+}
+nav button:hover {
+  background: var(--vscode-button-secondaryHoverBackground);
+}
+nav button[aria-selected='true'] {
+  color: var(--vscode-button-foreground);
+  background: var(--vscode-button-background);
+}
+nav button:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: 1px;
+}
+#status {
+  margin-left: auto;
+  color: var(--vscode-descriptionForeground);
+  white-space: nowrap;
+}
+#messages:empty {
+  display: none;
+}
+#messages {
+  margin: 8px 12px 0;
+}
+.message {
+  margin: 0 0 6px;
+  padding: 6px 10px;
+  border-left: 3px solid var(--vscode-editorInfo-foreground);
+  background: var(--vscode-textBlockQuote-background);
+  white-space: pre-wrap;
+}
+.message.error {
+  border-left-color: var(--vscode-editorError-foreground);
+}
+.message button {
+  margin: 6px 6px 0 0;
+  padding: 3px 10px;
+  border: none;
+  border-radius: 2px;
+  color: var(--vscode-button-foreground);
+  background: var(--vscode-button-background);
+  font: inherit;
+  cursor: pointer;
+}
+main {
+  padding: 12px;
+}
+main.stale img {
+  opacity: 0.45;
+}
+main img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+  cursor: zoom-in;
+}
+main.actual-size img {
+  max-width: none;
+  cursor: zoom-out;
+}
+.summary {
+  margin: 8px 0 0;
+  text-align: center;
+  color: var(--vscode-descriptionForeground);
+}
+.empty {
+  color: var(--vscode-descriptionForeground);
+}
