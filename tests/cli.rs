@@ -195,3 +195,65 @@ fn refuses_two_views_for_one_file() {
         stderr(&output)
     );
 }
+
+/// ortho run with `--watch` on `folder`, writing to its `diagrams/`, stopped when dropped.
+struct Watching(std::process::Child);
+
+impl Watching {
+    fn start(folder: &Path) -> Watching {
+        let child = Command::new(env!("CARGO_BIN_EXE_ortho"))
+            .args(["render", path(folder), "-o", path(&folder.join("diagrams")), "--watch"])
+            .stdout(std::process::Stdio::null())
+            .stderr(std::process::Stdio::null())
+            .spawn()
+            .unwrap();
+        Watching(child)
+    }
+}
+
+impl Drop for Watching {
+    fn drop(&mut self) {
+        let _ = self.0.kill();
+        let _ = self.0.wait();
+    }
+}
+
+/// The file once it holds what `ready` looks for, waiting up to ten seconds.
+fn eventually(file: &Path, ready: impl Fn(&str) -> bool) -> String {
+    for _ in 0..100 {
+        if let Ok(text) = std::fs::read_to_string(file)
+            && ready(&text)
+        {
+            return text;
+        }
+        std::thread::sleep(std::time::Duration::from_millis(100));
+    }
+    panic!("{} was not written as expected", file.display());
+}
+
+const FUNCTIONS: &str = "package P { action def Brew; view functions : GeneralView { expose Brew; } }";
+
+#[test]
+fn watches_and_renders_again_on_every_save() {
+    let folder = model("watch", FUNCTIONS);
+    let _watching = Watching::start(&folder);
+    let svg = folder.join("diagrams").join("functions.svg");
+    eventually(&svg, |text| text.contains("Brew"));
+
+    std::fs::write(folder.join("model.sysml"), FUNCTIONS.replace("Brew", "Grind")).unwrap();
+    eventually(&svg, |text| text.contains("Grind") && !text.contains("Brew"));
+
+    // A file added to the folder is part of the model from then on.
+    let more = "package Q { action def Heat; view heating : GeneralView { expose Heat; } }";
+    std::fs::write(folder.join("more.sysml"), more).unwrap();
+    eventually(&folder.join("diagrams").join("heating.svg"), |text| text.contains("Heat"));
+}
+
+#[test]
+fn watching_outlasts_a_model_that_does_not_load() {
+    let folder = model("watch-broken", "package P { part a : Missing; }");
+    let _watching = Watching::start(&folder);
+    std::thread::sleep(std::time::Duration::from_millis(600));
+    std::fs::write(folder.join("model.sysml"), FUNCTIONS).unwrap();
+    eventually(&folder.join("diagrams").join("functions.svg"), |text| text.contains("Brew"));
+}

@@ -151,7 +151,7 @@ functions, headed "Logical view — Coffee Machine".
 ## Options
 
 ```text
-ortho render <models...> -o <folder> [--theme <name>]
+ortho render <models...> -o <folder> [--theme <name>] [--watch]
 ```
 
 - `<models...>`: `.sysml` files, or folders of them, read as one model.
@@ -160,6 +160,10 @@ ortho render <models...> -o <folder> [--theme <name>]
   `view <logical> 'Logical view'`, `logical.svg`. Missing folders are created.
 - `--theme`: `light` (default) or `dark-glass`, a transparent version for dark
   slides. PowerPoint, Keynote and Google Slides all insert SVG directly.
+- `-w, --watch`: keep running and render again whenever a model file is saved,
+  so an SVG preview open beside the model in your editor follows the text. A
+  `.sysml` file added to a folder you named is picked up too, and a model that
+  does not load is reported and waited on. Stop it with Ctrl+C.
 
 Diagrams are drawn for landscape A4. A view too big for that page, one whose
 names would print smaller than 6 pt once it is shrunk to fit, is still drawn,
