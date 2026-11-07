@@ -385,6 +385,10 @@ In priority order:
   `cargo binstall ortho`. 0.2.0 is there; the Release workflow publishes
   each release with trusted publishing, and the token is gone. See
   [Releasing](#releasing).
+- [ ] **Suggest the name meant** when a reference does not resolve, from the
+  names in scope that come closest: *Could not resolve reference to Feature
+  named 'storeBeans'. Did you mean 'storeMrBeans'?* It saves an agent, or a
+  person, a search through the model.
 - [ ] **Be found by SysML v2 users:** an entry in each SysML v2 awesome list
   (jgsystemsconsulting/awesome-sysml-v2, mycr0ft/awesome-sysml,
   daltskin/SysML-v2-Resources, jgsystemsconsulting/awesome-mbse) and a post
@@ -394,20 +398,32 @@ In priority order:
   SVG preview shows the diagram beside the text.
 - [ ] **Create a VS Code extension,** in `editors/vscode/` in this
   repository, so a systems engineer writes SysML v2 with the diagrams beside
-  the text:
+  the text. AI agents will write most of the models, so it helps check and
+  review them rather than type them: rename, completion and other editing help
+  are left to the agents and to SysIDE, since ortho's checks catch what an
+  agent misses.
   - [x] SysML v2 keyword highlighting, written from ortho's own keyword list.
     It uses the language id `sysml`, so it works beside other SysML v2
     extensions such as SysIDE.
   - [x] A live preview: the views' SVGs in a panel beside the model, rendered
     again by `ortho render` on every save, and ortho's errors in the Problems
     panel. It needs ortho installed, until the step that bundles it.
-  - [ ] An *Open example* command for the coffee machine and survey drone.
   - [ ] An *Add AI instructions* command that writes a skill file for Claude
-    Code and instructions for Copilot from [LANGUAGE.md](LANGUAGE.md).
+    Code and instructions for Copilot from [LANGUAGE.md](LANGUAGE.md). They
+    tell the agent to run `ortho render` and fix what it reports before it
+    finishes.
+  - [ ] An *Open example* command for the coffee machine and survey drone.
   - [ ] The ortho binary inside the extension: one package per system, built
     by CI from the release binaries, with a setting to use another ortho.
+    Agents check their work with it too, so it has to be where their shell
+    finds it, not only where the preview does.
   - [ ] Publish on the VS Code Marketplace and Open VSX, which Cursor and
     VSCodium use.
+  - [ ] Click a box in a diagram to open the line that declares it, which
+    takes a reviewer from a diagram that looks wrong to the text. ortho first
+    has to write each box's file and line into the SVG.
+  - [ ] Show what a change did to each view: the diagrams before and after an
+    agent's edit, matched by the same file and line marks.
 - [ ] **Requirements on the parts that satisfy them**, in a compartment like
   *perform actions* rather than a seventh view.
 - [ ] **Item flows on the physical view** (`flow`): what passes between ports,
