@@ -65,12 +65,55 @@ says where it is and what was expected there.
 **Conformance** (`src/parser/validator.rs`). The grammar enforces what
 it can. After linking, the validator checks the rules it cannot, all listed
 in [LANGUAGE.md](LANGUAGE.md): no reserved word as a name, chains that start
-at a usage, a `perform` of behaviour rather than structure, and a use case's
-subject before its actors. One rule is only a warning, which the CLI prints
-before carrying on: a top-level package named after a standard library package.
-ortho finds the model's, while the pilot may find the library's, so such a model
-renders here and may fail elsewhere. A model may declare any view, so one ortho
-cannot draw is skipped with the reason (`why_undrawable`).
+at a usage, a `perform` of behaviour rather than structure, a part or actor
+typed by a part definition, and a use case's subject before its actors. Six
+rules are only warnings, which the CLI prints before carrying on:
+
+- a top-level package named after a standard library package: ortho finds the
+  model's, while the pilot may find the library's, so such a model renders
+  here and may fail elsewhere;
+- a function in scope that no module or part of a solution view performs
+  (`unperformed_functions`, with what those views draw in `solution_owners`);
+- a tree a logical view draws beside use cases that refines none
+  (`unrefined_trees`);
+- a use case a logical view draws that no tree refines
+  (`unrefined_use_cases`);
+- an `allocate` end that neither the implementation nor the physical view
+  draws (`foreign_allocation_ends`);
+- software that no deployment view allocates to a host (`unhosted_software`).
+
+All but the first are rules of ortho's method between two views, found once
+for the whole model (`Gaps`; see *Errors and warnings*). Told to fix an error,
+an agent may delete the line the error points at; the model still loads, so
+without these warnings its diagrams would look complete. A model may declare
+any view, so one ortho cannot draw is skipped with the reason
+(`why_undrawable`).
+
+**Errors and warnings.** The standard says when a model is well-formed, not
+when it is complete: `perform`, `allocate` and `#refinement` are all optional,
+and a view is a filter on the one model (§9.2.20), so a model with only an
+implementation view, for a cloud solution, is valid SysML v2. ortho keeps the
+two apart:
+
+- **An error** is what the standard forbids, or a name that resolves to
+  nothing. The model does not load, and nothing is drawn.
+- **A warning** is a rule of ortho's method: two views that both exist and
+  disagree. The model renders anyway, so a systems engineer can work in any
+  order, and an agent knows what to fix.
+- **A view that is missing** is neither. Every view is optional; a check
+  between two views applies only once the model declares both.
+
+| When the model declares… | ortho warns of… |
+|---|---|
+| use cases and a logical view | a tree drawn beside use cases that refines none, and a use case drawn beside trees that none refines |
+| a logical view, and an implementation or physical view | a function in scope that no module or part those views draw performs |
+| a deployment view | an `allocate` end that is not a module of an implementation view or a part of a physical view, and a module no host runs |
+
+A function is in scope when a logical view draws it and, in a model with use
+cases, its tree refines one. A catalogue of functions kept beside the product's
+trees needs no solution until a use case asks for it. SysML v2's own way to say
+which functions one product of a range addresses is variability, `variation`
+and `variant` (§7.6), which ortho parses but does not yet read.
 
 ## Layout and rendering
 
@@ -374,6 +417,43 @@ In priority order:
   `cargo binstall ortho`. 0.2.0 is there; the Release workflow publishes
   each release with trusted publishing, and the token is gone. See
   [Releasing](#releasing).
+- [x] **Warn of a function nothing performs,** in a model that performs
+  others (`unperformed_functions`). Told to fix an error, an agent may delete
+  the `perform` the error points at. The coffee machine without its bean
+  hopper's `perform` drew all six views without a word, though nothing stored
+  the beans any more.
+- [x] **Warn of a tree that refines no use case,** where a logical view draws
+  it beside use cases (`unrefined_trees`). The coffee machine without
+  `MakeBeverage`'s `#refinement dependency` drew its logical view without a
+  word, the arrow up to `OperateMachine` simply gone. A refinement stays
+  optional on a view that shows no use cases.
+- [x] **Every function in scope has a solution** (see
+  [Errors and warnings](#parsing)): the `perform` warning applies once the
+  model declares an implementation or physical view, rather than once it
+  performs any function, and only a module or part those views draw counts as
+  performing. In a model with a use case view, only trees that refine a use
+  case are in scope. `perform` stays optional without a solution view, and
+  LANGUAGE.md's examples needed no change.
+- [x] **A deployment view adds nothing of its own:** warn of an `allocate`
+  whose software is not a module an implementation view draws, or whose host
+  is not a part a physical view draws (`foreign_allocation_ends`). Each end is
+  checked once the model declares the view it comes from.
+- [x] **An error for a usage typed by the wrong kind of definition,** such as
+  `part a : A` where `A` is an `action def`, which the standard forbids and
+  ortho drew (`check_typed_by_part_definition`). A part or actor typed by an
+  item definition is let through, as OMG's own examples do it. An attribute,
+  item or occurrence keeps its type as written, unresolved, so is not checked.
+- [x] **Warn of software that runs nowhere:** once a model declares a
+  deployment view, every module usage in the tree of deployable parts is
+  allocated to a host (`unhosted_software`). A module used inside another
+  module runs where that one does.
+- [x] **Warn of a use case no tree refines** on a logical view
+  (`unrefined_use_cases`), where LANGUAGE.md called one "a visible gap". A
+  deleted refinement now warns at both its ends, the tree and the use case.
+- [ ] **Suggest the name meant** when a reference does not resolve, from the
+  names in scope that come closest: *Could not resolve reference to Feature
+  named 'storeBeans'. Did you mean 'storeMrBeans'?* It saves an agent, or a
+  person, a search through the model.
 - [ ] **Be found by SysML v2 users:** an entry in each SysML v2 awesome list
   (jgsystemsconsulting/awesome-sysml-v2, mycr0ft/awesome-sysml,
   daltskin/SysML-v2-Resources, jgsystemsconsulting/awesome-mbse) and a post

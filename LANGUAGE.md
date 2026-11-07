@@ -73,6 +73,15 @@ no top-level package after a standard library package, such as `UseCases`,
 `Requirements` or `Views`: it hides the library's, and other tools may find the
 library's instead. ortho warns of one, and renders anyway.
 
+**Typing** (§8.3). A part is typed by a part definition, and so is an actor,
+which is a part: `part controller : Board`, not `part controller : Brew`
+where `Brew` is an `action def`. An interface, connection or allocation
+definition is one kind of part definition, and an item definition, which a
+part definition specializes, is accepted too. A part typed by behaviour or
+data, an action, use case, occurrence, enum or attribute definition, or by a
+port definition, is an error. A port, an action and a use case can only name
+their own kind of definition at all.
+
 **Comments** (§8.2.2.4). `// ...` and `//* ... */` are notes, which no tool
 keeps. `/* ... */`, `doc /* ... */` and `comment about x /* ... */` are part of
 the model; no view draws them.
@@ -207,13 +216,17 @@ package Functions {
 | `action name : Def;` in a package | nothing. It is the usage a `perform` chain starts from. |
 | `expose Tree::branch;` in the view, naming a nested `action` | that branch alone, the function at its root: a tree too big for one page, split |
 | `#refinement dependency Tree to SystemUseCases::Name;` in a package | a dashed arrow from the tree's root up to the use case, when the view exposes both |
-| `expose SystemUseCases::Name;` in the view | the use case, above the trees that refine it. One nothing refines stands alone, a visible gap. |
+| `expose SystemUseCases::Name;` in the view | the use case, above the trees that refine it. One nothing refines stands alone, and ortho warns of it. |
 
 **Refining a use case** (§7.3). A function tree says which use case it details
 with a dependency, tagged from the standard library's `ModelingMetadata`, whose
 source is "a more precise and/or accurate representation" than its target. It
 is optional, but its ends are checked: once it names a use case, that use case
-has to be loaded.
+has to be loaded. A logical view that shows use cases is there to tie its trees
+to them, though, so ortho warns of a tree it draws that refines no use case,
+and renders anyway. For a view of a single branch, the tree the branch belongs
+to has to refine one. The other way round, ortho warns of a use case the view
+draws that no tree refines.
 
 ```sysml
 package SystemUseCases {
@@ -434,6 +447,18 @@ after its module, `part recipeEngine : RecipeEngine`: this view lists it by name
 alone, and the implementation view draws the module. Two usages of one module
 need names of their own.
 
+The view adds nothing of its own: it maps what the other views draw onto each
+other. Once a model declares an implementation view, ortho warns of software
+that is not a usage of a module that view draws; once it declares a physical
+view, of a host that is not a part that view draws. A port stands for the part
+it is on.
+
+Every program runs somewhere. Once a model declares a deployment view and an
+implementation view, ortho warns of a usage of a module in the tree of
+deployable parts, `part sw { part recipeEngine : RecipeEngine; }`, that no
+deployment view allocates to a host. A module used inside another module runs
+where that one does, and needs no allocation of its own.
+
 ## Process view
 
 One scenario: who sends what to whom, in order (§7.9, §7.16).
@@ -493,6 +518,17 @@ package Hardware {
 
 It is many to many: a program and a device may realize one function together,
 and a part may realize several.
+
+Once a model declares a logical view and an implementation or physical view,
+every function has to have a solution. ortho warns of each function at the
+bottom of a tree a logical view draws that no module of the implementation
+view, and no part of the physical view, performs, either itself or through a
+function above it, and renders anyway. A `perform` in a part that no view
+draws does not count. Performing a typed action, `perform beverage;`, performs
+its definition's whole tree. In a model with a use case view, only a tree that
+refines a use case needs a solution, so a catalogue of functions can sit beside
+the product's until a use case asks for one. A model with no implementation or
+physical view gets no warning, since `perform` is optional.
 
 A `perform` may also name a use case, listed the same way. One that names
 structure, such as a part or a port, is an error.
