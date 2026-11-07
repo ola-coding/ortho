@@ -121,7 +121,7 @@ pub struct ModelRendering {
     pub skipped: Vec<SkippedView>,
 }
 
-/// Renders every view a model declares, each to a file named after it, headed by its
+/// Renders every view a model declares, in the order of their kinds, each to a file named after it, headed by its
 /// name and naming the file that declares it, relative to the working folder. A view
 /// ortho does not draw is passed over with the reason; two views that would be written
 /// to the same file are an error.
@@ -145,6 +145,9 @@ pub fn render_views(workspace: &Workspace, theme: &Theme) -> Result<ModelRenderi
             }
         }
     }
+    // Written, and so listed and shown, use case view first and process view last,
+    // whatever the files are called; views of one kind keep their files' order.
+    by_file.sort_by_key(|(_, view, _)| diagram_kind(ast, *view));
     let mut rendered = Vec::with_capacity(by_file.len());
     for (file, view, path) in by_file {
         let title = DiagramTitle {

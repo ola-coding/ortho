@@ -278,6 +278,20 @@ fn marks_every_box_with_the_line_that_declares_it() {
 }
 
 #[test]
+fn writes_the_views_from_use_case_to_process_whatever_the_files_are_called() {
+    // Alphabetically, the process view's file comes first and the use case view's last.
+    let sources = vec![
+        ("a.sysml".to_string(), "package P { part def A; part def B; occurrence def Run { part a : A; part b : B; message m from a to b; } view process : SequenceView { expose Run; } }".to_string()),
+        ("b.sysml".to_string(), "package L { action def F { action g; } view logical : GeneralView { expose F; } }".to_string()),
+        ("c.sysml".to_string(), "package U { part def S; use case def Do { subject s : S; } view 'use cases' : GeneralView { expose Do; } }".to_string()),
+    ];
+    let workspace = ortho::parser::workspace::Workspace::build(sources).unwrap();
+    let rendered = render_views(&workspace, &LIGHT).unwrap().rendered;
+    let kinds: Vec<DiagramKind> = rendered.iter().map(|view| diagram_kind(&workspace.ast, view.view)).collect();
+    assert_eq!(kinds, [DiagramKind::UseCase, DiagramKind::Logical, DiagramKind::Process]);
+}
+
+#[test]
 fn renders_every_view_it_can_draw_passes_over_the_rest_and_refuses_two_views_for_one_file() {
     let workspace = parse_ok(
         "package Every {
