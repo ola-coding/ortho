@@ -584,12 +584,13 @@ fn leaves_alone_any_other_package_and_the_library_itself() {
 
 fn unperformed(name: &str) -> String {
     format!(
-        "No part or module performs '{name}'. Perform it, or a function above it, in the part or module that realizes it."
+        "No part or module of the implementation or physical view performs '{name}'. Perform it, or a function above it, in the one that realizes it."
     )
 }
 
-/// A function tree a logical view draws, and the parts in `hardware`, which may perform its functions.
-fn realized(hardware: &str) -> String {
+/// A function tree a logical view draws, `solution` beside it, and the part
+/// definitions in `hardware`, which may perform its functions.
+fn realized_with(solution: &str, hardware: &str) -> String {
     format!(
         "package Functions {{
             private import StandardViewDefinitions::*;
@@ -599,6 +600,7 @@ fn realized(hardware: &str) -> String {
             }}
             action beverage : MakeBeverage;
             view logical : GeneralView {{ expose MakeBeverage; }}
+            {solution}
         }}
         package Hardware {{
             private import Functions::*;
@@ -607,8 +609,13 @@ fn realized(hardware: &str) -> String {
     )
 }
 
+/// The same, with an implementation view that draws the definitions in `hardware` as modules.
+fn realized(hardware: &str) -> String {
+    realized_with("view modules : GeneralView { expose Hardware; }", hardware)
+}
+
 #[test]
-fn warns_of_a_function_nothing_performs_once_the_model_performs_others() {
+fn warns_of_a_function_no_module_or_part_of_the_solution_performs() {
     // What is left once an agent deletes the grinder's perform to silence an error.
     let workspace = build(&realized(
         "part def Tank { perform beverage.prepareWater.storeWater; }
@@ -617,12 +624,70 @@ fn warns_of_a_function_nothing_performs_once_the_model_performs_others() {
     ));
     assert_eq!(reported(&workspace, Severity::Warning), [unperformed("grindBeans")]);
     assert_eq!(reported(&workspace, Severity::Error), Vec::<String>::new());
+    // Every function needs a solution, not only once others have one.
+    let none = build(&realized("part def Tank; part def Heater; part def Grinder;"));
+    assert_eq!(
+        reported(&none, Severity::Warning),
+        [unperformed("storeWater"), unperformed("heatWater"), unperformed("grindBeans")]
+    );
 }
 
 #[test]
-fn a_model_that_performs_none_of_its_functions_is_not_warned_as_perform_is_optional() {
-    let workspace = build(&realized("part def Tank; part def Heater; part def Grinder;"));
+fn a_model_without_an_implementation_or_physical_view_needs_no_performs() {
+    let workspace = build(&realized_with("", "part def Tank; part def Heater; part def Grinder;"));
     assert_eq!(reported(&workspace, Severity::Warning), Vec::<String>::new());
+}
+
+#[test]
+fn a_perform_counts_only_where_a_solution_view_draws_it() {
+    let performs = "part def Tank { perform beverage.prepareWater.storeWater; }
+                    part def Heater { perform beverage.prepareWater.heatWater; }";
+    // A module in a package the implementation view does not expose.
+    let elsewhere = realized_with(
+        "view modules : GeneralView { expose Hardware; }
+         package Spare { part def Grinder { perform beverage.prepareCoffee.grindBeans; } }",
+        performs,
+    );
+    assert_eq!(reported(&build(&elsewhere), Severity::Warning), [unperformed("grindBeans")]);
+    // A part the physical view draws, nested or not.
+    let physical = |nested: &str| {
+        realized_with(
+            "view physical : InterconnectionView { expose Hardware::machine; }",
+            &format!(
+                "{performs}
+                 part def Grinder {{ perform beverage.prepareCoffee.grindBeans; }}
+                 part def Machine {{ part tank : Tank; part heater : Heater; {nested} }}
+                 part machine : Machine;"
+            ),
+        )
+    };
+    assert_eq!(reported(&build(&physical("")), Severity::Warning), [unperformed("grindBeans")]);
+    assert_eq!(reported(&build(&physical("part grinder : Grinder;")), Severity::Warning), Vec::<String>::new());
+}
+
+#[test]
+fn in_a_model_with_use_cases_only_a_tree_that_refines_one_needs_a_solution() {
+    let text = |use_case_view: &str| {
+        format!(
+            "package SystemUseCases {{ use case def Operate; }}
+            package Functions {{
+                private import StandardViewDefinitions::*;
+                private import ModelingMetadata::*;
+                action def MakeBeverage {{ action heatWater; }}
+                action def Clean {{ action rinse; }}
+                action beverage : MakeBeverage;
+                #refinement dependency MakeBeverage to SystemUseCases::Operate;
+                view logical : GeneralView {{ expose MakeBeverage; expose Clean; }}
+                view modules : GeneralView {{ expose Functions; }}
+                {use_case_view}
+                part def Heater {{ perform beverage.heatWater; }}
+            }}"
+        )
+    };
+    // Clean, a catalogue tree no use case asks for, needs no solution yet.
+    let scoped = build(&text("view useCases : GeneralView { expose SystemUseCases; }"));
+    assert_eq!(reported(&scoped, Severity::Warning), Vec::<String>::new());
+    assert_eq!(reported(&build(&text("")), Severity::Warning), [unperformed("rinse")]);
 }
 
 #[test]
@@ -647,6 +712,7 @@ fn only_the_functions_a_logical_view_draws_have_to_be_performed() {
                 action def Clean {{ action rinse; }}
                 action beverage : MakeBeverage;
                 view logical : GeneralView {{ {exposed} }}
+                view modules : GeneralView {{ expose Functions; }}
                 part def Heater {{ perform beverage.heatWater; }}
                 part def Grinder {{ perform beverage.grindBeans; }}
             }}"
@@ -683,7 +749,10 @@ fn refining(exposed: &str, refinement: &str) -> String {
 #[test]
 fn warns_of_a_tree_that_refines_no_use_case_on_a_view_that_shows_use_cases() {
     let workspace = build(&refining("expose MakeBeverage; expose SystemUseCases::OperateMachine;", ""));
-    assert_eq!(reported(&workspace, Severity::Warning), [unrefined("MakeBeverage")]);
+    assert_eq!(
+        reported(&workspace, Severity::Warning),
+        [unrefined_use_case("OperateMachine"), unrefined("MakeBeverage")]
+    );
     assert_eq!(reported(&workspace, Severity::Error), Vec::<String>::new());
 }
 
@@ -706,7 +775,143 @@ fn a_refinement_from_the_tree_or_a_use_of_it_refines_the_tree_also_on_a_view_of_
     }
     // A branch whose tree refines nothing: the warning is at the tree.
     let branch = refining("expose MakeBeverage::prepareWater; expose SystemUseCases::OperateMachine;", "");
-    assert_eq!(reported(&build(&branch), Severity::Warning), [unrefined("MakeBeverage")]);
+    assert_eq!(
+        reported(&build(&branch), Severity::Warning),
+        [unrefined_use_case("OperateMachine"), unrefined("MakeBeverage")]
+    );
+}
+
+fn unrefined_use_case(name: &str) -> String {
+    format!(
+        "No function tree refines '{name}', though a logical view draws it beside trees. Add a #refinement dependency to it from the tree that details it."
+    )
+}
+
+#[test]
+fn warns_of_a_use_case_no_tree_refines_on_a_logical_view_that_draws_trees() {
+    let text = |exposed: &str| {
+        format!(
+            "package SystemUseCases {{ use case def OperateMachine; use case def ServiceMachine; }}
+            package Functions {{
+                private import StandardViewDefinitions::*;
+                private import ModelingMetadata::*;
+                action def MakeBeverage {{ action heatWater; }}
+                #refinement dependency MakeBeverage to SystemUseCases::OperateMachine;
+                view logical : GeneralView {{ {exposed} }}
+            }}"
+        )
+    };
+    let both = "expose MakeBeverage; expose SystemUseCases::OperateMachine; expose SystemUseCases::ServiceMachine;";
+    assert_eq!(reported(&build(&text(both)), Severity::Warning), [unrefined_use_case("ServiceMachine")]);
+    // A use case the logical view does not draw asks nothing of it.
+    let one = "expose MakeBeverage; expose SystemUseCases::OperateMachine;";
+    assert_eq!(reported(&build(&text(one)), Severity::Warning), Vec::<String>::new());
+}
+
+fn foreign(end: &str, problem: &str) -> String {
+    format!("'{end}' {problem}. A deployment view allocates what the other views draw, and adds nothing of its own.")
+}
+
+const NOT_A_MODULE: &str = "is not a module the implementation view draws";
+const NOT_A_PART: &str = "is not a part the physical view draws";
+
+/// Software, hardware, and a deployment view of `allocations`, beside `views`. The
+/// deployment package declares a program and a board of its own, out of thin air.
+fn deployed(views: &str, allocations: &str) -> String {
+    format!(
+        "package Software {{
+            part def RecipeEngine;
+            part def UiApp {{ part engine : RecipeEngine; }}
+            part sw {{ part recipeEngine : RecipeEngine; part uiApp : UiApp; }}
+        }}
+        package Hardware {{
+            port def Bus;
+            part def Board {{ port bus : Bus; }}
+            part def Display;
+            part def Machine {{ part controller : Board; part display : Display; }}
+            part machine : Machine;
+        }}
+        package Deployment {{
+            private import Software::*;
+            private import Hardware::*;
+            private import StandardViewDefinitions::*;
+            part ghostApp;
+            part spareBoard;
+            {allocations}
+            view deployment : GeneralView {{ expose Deployment; }}
+            {views}
+        }}"
+    )
+}
+
+const BOTH_VIEWS: &str = "view modules : GeneralView { expose Software; }
+                          view physical : InterconnectionView { expose machine; }";
+
+#[test]
+fn warns_of_an_allocate_end_that_no_other_view_draws() {
+    let workspace = build(&deployed(
+        BOTH_VIEWS,
+        "allocate sw.recipeEngine to machine.controller;
+         allocate ghostApp to machine.display;
+         allocate sw.uiApp to spareBoard;",
+    ));
+    assert_eq!(
+        reported(&workspace, Severity::Warning),
+        [foreign("ghostApp", NOT_A_MODULE), foreign("spareBoard", NOT_A_PART)]
+    );
+    // A port stands for the part it is on.
+    let port = build(&deployed(
+        BOTH_VIEWS,
+        "allocate sw.recipeEngine to machine.controller.bus; allocate sw.uiApp to machine.display;",
+    ));
+    assert_eq!(reported(&port, Severity::Warning), Vec::<String>::new());
+}
+
+#[test]
+fn checks_an_allocate_end_only_once_the_model_declares_the_view_it_comes_from() {
+    let allocations = "allocate ghostApp to spareBoard;
+                       allocate sw.recipeEngine to machine.controller;
+                       allocate sw.uiApp to machine.display;";
+    let modules_only = build(&deployed("view modules : GeneralView { expose Software; }", allocations));
+    assert_eq!(reported(&modules_only, Severity::Warning), [foreign("ghostApp", NOT_A_MODULE)]);
+    let physical_only = build(&deployed("view physical : InterconnectionView { expose machine; }", allocations));
+    assert_eq!(reported(&physical_only, Severity::Warning), [foreign("spareBoard", NOT_A_PART)]);
+    assert_eq!(reported(&build(&deployed("", allocations)), Severity::Warning), Vec::<String>::new());
+}
+
+#[test]
+fn refuses_a_part_or_an_actor_typed_by_behaviour_or_data() {
+    let typed = |usage: &str, definition: &str| {
+        errors_of(&format!("package P {{ {definition} D; part def Owner {{ {usage} x : D; }} }}"))
+    };
+    assert_eq!(typed("part", "action def"), ["'D' is an action definition. A part is typed by a part definition."]);
+    assert_eq!(
+        typed("actor", "use case def"),
+        ["'D' is a use case definition. An actor is typed by a part definition."]
+    );
+    for definition in ["attribute def", "enum def", "occurrence def", "port def"] {
+        assert_eq!(typed("part", definition).len(), 1, "{definition}");
+    }
+    // A part definition's kinds, and an item definition, which a part definition specializes.
+    for definition in ["part def", "interface def", "connection def", "allocation def", "item def"] {
+        assert_eq!(typed("part", definition), Vec::<String>::new(), "{definition}");
+    }
+}
+
+fn unhosted(name: &str) -> String {
+    format!(
+        "'{name}' runs on no host: no deployment view allocates it. Allocate it to the part of the physical view that runs it."
+    )
+}
+
+#[test]
+fn warns_of_software_that_no_deployment_view_allocates_to_a_host() {
+    let one = "allocate sw.recipeEngine to machine.controller;";
+    // UiApp's own engine runs where uiApp runs, so only uiApp is missing.
+    assert_eq!(reported(&build(&deployed(BOTH_VIEWS, one)), Severity::Warning), [unhosted("uiApp")]);
+    // Without an implementation view there is no software to account for.
+    let physical_only = deployed("view physical : InterconnectionView { expose machine; }", one);
+    assert_eq!(reported(&build(&physical_only), Severity::Warning), Vec::<String>::new());
 }
 
 /// The coffee machine's warnings once `deleted` is gone from its files, as an agent
@@ -732,9 +937,14 @@ fn coffee_machine_without(deleted: &str, folder: &str) -> (Vec<String>, String) 
 
 /// The line, from 1, of the coffee machine's logical.sysml that reads `written`.
 fn coffee_machine_logical_line(written: &str) -> usize {
+    coffee_machine_line("logical.sysml", written)
+}
+
+/// The line, from 1, of one of the coffee machine's files that reads `written`.
+fn coffee_machine_line(file: &str, written: &str) -> usize {
     let root = Path::new(env!("CARGO_MANIFEST_DIR"));
-    let logical = std::fs::read_to_string(root.join("examples/coffee-machine/logical.sysml")).unwrap();
-    logical.lines().position(|line| line.trim() == written).unwrap() + 1
+    let text = std::fs::read_to_string(root.join("examples/coffee-machine").join(file)).unwrap();
+    text.lines().position(|line| line.trim() == written).unwrap() + 1
 }
 
 #[test]
@@ -750,7 +960,16 @@ fn warns_at_the_tree_when_the_coffee_machine_loses_a_refinement() {
     let refinement = "#refinement dependency MakeBeverage to SystemUseCases::OperateMachine;";
     let (warnings, logical) = coffee_machine_without(refinement, "unrefined");
     let line = coffee_machine_logical_line("action def MakeBeverage {");
-    assert_eq!(warnings, [format!("{logical} line {line}: {}", unrefined("MakeBeverage"))]);
+    // Both ends of the lost refinement: the tree, and the use case it detailed.
+    let use_cases = logical.replace("logical.sysml", "use-case.sysml");
+    let use_case_line = coffee_machine_line("use-case.sysml", "use case def OperateMachine {");
+    assert_eq!(
+        warnings,
+        [
+            format!("{logical} line {line}: {}", unrefined("MakeBeverage")),
+            format!("{use_cases} line {use_case_line}: {}", unrefined_use_case("OperateMachine")),
+        ]
+    );
 }
 
 #[test]
