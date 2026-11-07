@@ -25,6 +25,8 @@ pub struct Gaps {
     /// `allocate` ends, the software's or the host's, that no other view draws.
     foreign_software: HashSet<NodeId>,
     foreign_hosts: HashSet<NodeId>,
+    /// Software that no deployment view allocates to a host.
+    unhosted: HashSet<NodeId>,
 }
 
 impl Gaps {
@@ -35,6 +37,7 @@ impl Gaps {
             unrefined: unrefined_trees(ast, roots),
             foreign_software,
             foreign_hosts,
+            unhosted: unhosted_software(ast, roots),
         }
     }
 }
@@ -54,6 +57,9 @@ pub fn validate(ast: &Ast, root: NodeId, _text: &str, log: &[Logged], gaps: &Gap
     for node in ast.with_all_contents(root) {
         if gaps.foreign_software.contains(&node) {
             warn_foreign_end(ast, node, "is not a module the implementation view draws", &mut diagnostics);
+        }
+        if gaps.unhosted.contains(&node) {
+            warn_unhosted(ast, node, &mut diagnostics);
         }
         if gaps.foreign_hosts.contains(&node) {
             warn_foreign_end(ast, node, "is not a part the physical view draws", &mut diagnostics);
@@ -338,6 +344,49 @@ fn foreign_allocation_ends(ast: &Ast, roots: &[NodeId]) -> (HashSet<NodeId>, Has
         }
     }
     (software, hosts)
+}
+
+/// The software that runs on no host: once a model declares a deployment view and
+/// an implementation view, every usage of a module the implementation view draws,
+/// in the tree of deployable parts a package declares, `part sw { part
+/// recipeEngine : RecipeEngine; }`, is allocated to a host. A module used inside
+/// another module runs where that one does, so it is not one of them.
+fn unhosted_software(ast: &Ast, roots: &[NodeId]) -> HashSet<NodeId> {
+    let deployments = views_of(ast, roots, DiagramKind::Deployment);
+    if deployments.is_empty() {
+        return HashSet::new();
+    }
+    // Without an implementation view there are no modules, so no software either.
+    let modules = implementation_modules(ast, roots);
+    let in_package = |node: NodeId| ast[node].parent.is_some_and(|owner| ast[owner].ty == Type::PackageDecl);
+    let deployable = |usage: NodeId| {
+        ast[usage].ty == Type::PartUsage
+            && ast.target(usage, Prop::Type).is_some_and(|module| modules.contains(&module))
+            && (in_package(usage)
+                || ast[usage].parent.is_some_and(|owner| ast[owner].ty == Type::PartUsage && in_package(owner)))
+    };
+    let allocated: HashSet<NodeId> = deployments
+        .into_iter()
+        .flat_map(|view| exposed_elements(ast, view))
+        .flat_map(|element| ast.with_all_contents(element))
+        .filter(|node| ast[*node].ty == Type::AllocationUsage)
+        .filter_map(|allocation| ast.child(allocation, Prop::Source))
+        .filter_map(|end| ast.references_of(end, Prop::Segments).pop())
+        .filter_map(|segment| ast.reference_target(segment))
+        .collect();
+    let all = roots.iter().flat_map(|root| ast.with_all_contents(*root));
+    all.filter(|usage| deployable(*usage) && !allocated.contains(usage)).collect()
+}
+
+fn warn_unhosted(ast: &Ast, software: NodeId, diagnostics: &mut Vec<Diagnostic>) {
+    let named = effective_name(ast, software).map_or("This software".to_string(), |name| format!("'{name}'"));
+    diagnostics.push(Diagnostic {
+        severity: Severity::Warning,
+        offset: offset_of(ast, software, Prop::Name),
+        message: format!(
+            "{named} runs on no host: no deployment view allocates it. Allocate it to the part of the physical view that runs it."
+        ),
+    });
 }
 
 fn warn_foreign_end(ast: &Ast, end: NodeId, problem: &str, diagnostics: &mut Vec<Diagnostic>) {

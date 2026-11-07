@@ -452,6 +452,12 @@ that is not a usage of a module that view draws; once it declares a physical
 view, of a host that is not a part that view draws. A port stands for the part
 it is on.
 
+Every program runs somewhere. Once a model declares a deployment view and an
+implementation view, ortho warns of a usage of a module in the tree of
+deployable parts, `part sw { part recipeEngine : RecipeEngine; }`, that no
+deployment view allocates to a host. A module used inside another module runs
+where that one does, and needs no allocation of its own.
+
 ## Process view
 
 One scenario: who sends what to whom, in order (§7.9, §7.16).

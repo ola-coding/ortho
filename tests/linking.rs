@@ -787,7 +787,8 @@ const NOT_A_PART: &str = "is not a part the physical view draws";
 fn deployed(views: &str, allocations: &str) -> String {
     format!(
         "package Software {{
-            part def RecipeEngine; part def UiApp;
+            part def RecipeEngine;
+            part def UiApp {{ part engine : RecipeEngine; }}
             part sw {{ part recipeEngine : RecipeEngine; part uiApp : UiApp; }}
         }}
         package Hardware {{
@@ -826,13 +827,18 @@ fn warns_of_an_allocate_end_that_no_other_view_draws() {
         [foreign("ghostApp", NOT_A_MODULE), foreign("spareBoard", NOT_A_PART)]
     );
     // A port stands for the part it is on.
-    let port = build(&deployed(BOTH_VIEWS, "allocate sw.recipeEngine to machine.controller.bus;"));
+    let port = build(&deployed(
+        BOTH_VIEWS,
+        "allocate sw.recipeEngine to machine.controller.bus; allocate sw.uiApp to machine.display;",
+    ));
     assert_eq!(reported(&port, Severity::Warning), Vec::<String>::new());
 }
 
 #[test]
 fn checks_an_allocate_end_only_once_the_model_declares_the_view_it_comes_from() {
-    let allocations = "allocate ghostApp to spareBoard;";
+    let allocations = "allocate ghostApp to spareBoard;
+                       allocate sw.recipeEngine to machine.controller;
+                       allocate sw.uiApp to machine.display;";
     let modules_only = build(&deployed("view modules : GeneralView { expose Software; }", allocations));
     assert_eq!(reported(&modules_only, Severity::Warning), [foreign("ghostApp", NOT_A_MODULE)]);
     let physical_only = build(&deployed("view physical : InterconnectionView { expose machine; }", allocations));
@@ -857,6 +863,22 @@ fn refuses_a_part_or_an_actor_typed_by_behaviour_or_data() {
     for definition in ["part def", "interface def", "connection def", "allocation def", "item def"] {
         assert_eq!(typed("part", definition), Vec::<String>::new(), "{definition}");
     }
+}
+
+fn unhosted(name: &str) -> String {
+    format!(
+        "'{name}' runs on no host: no deployment view allocates it. Allocate it to the part of the physical view that runs it."
+    )
+}
+
+#[test]
+fn warns_of_software_that_no_deployment_view_allocates_to_a_host() {
+    let one = "allocate sw.recipeEngine to machine.controller;";
+    // UiApp's own engine runs where uiApp runs, so only uiApp is missing.
+    assert_eq!(reported(&build(&deployed(BOTH_VIEWS, one)), Severity::Warning), [unhosted("uiApp")]);
+    // Without an implementation view there is no software to account for.
+    let physical_only = deployed("view physical : InterconnectionView { expose machine; }", one);
+    assert_eq!(reported(&build(&physical_only), Severity::Warning), Vec::<String>::new());
 }
 
 /// The coffee machine's warnings once `deleted` is gone from its files, as an agent

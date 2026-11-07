@@ -66,17 +66,18 @@ says where it is and what was expected there.
 it can. After linking, the validator checks the rules it cannot, all listed
 in [LANGUAGE.md](LANGUAGE.md): no reserved word as a name, chains that start
 at a usage, a `perform` of behaviour rather than structure, a part or actor
-typed by a part definition, and a use case's subject before its actors. Four
+typed by a part definition, and a use case's subject before its actors. Five
 rules are only warnings, which the CLI prints before carrying on. One is a
 top-level package named after a standard library package: ortho finds the
 model's, while the pilot may find the library's, so such a model renders here
-and may fail elsewhere. The other three are rules of
+and may fail elsewhere. The other four are rules of
 ortho's method between two views (`Gaps`; see below): a function in scope that
 no module or part of a solution view performs (`unperformed_functions`, with
 what those views draw in `solution_owners`), a tree that refines no use case,
-though a logical view draws it beside use cases (`unrefined_trees`), and an
+though a logical view draws it beside use cases (`unrefined_trees`), an
 `allocate` end that neither the implementation nor the physical view draws
-(`foreign_allocation_ends`). Told to fix an error, an agent may delete the
+(`foreign_allocation_ends`), and software no deployment view allocates
+(`unhosted_software`). Told to fix an error, an agent may delete the
 line the error points at; the model still loads, so without these warnings its
 diagrams would look complete. A model may declare any view, so one ortho
 cannot draw is skipped with the reason (`why_undrawable`).
@@ -435,8 +436,10 @@ In priority order:
   ortho drew (`check_typed_by_part_definition`). A part or actor typed by an
   item definition is let through, as OMG's own examples do it. An attribute,
   item or occurrence keeps its type as written, unresolved, so is not checked.
-- [ ] **Warn of software that runs nowhere:** once a model declares a
-  deployment view, every module usage is allocated to a host.
+- [x] **Warn of software that runs nowhere:** once a model declares a
+  deployment view, every module usage in the tree of deployable parts is
+  allocated to a host (`unhosted_software`). A module used inside another
+  module runs where that one does.
 - [ ] **Warn of a use case no tree refines** on a logical view that draws
   trees. LANGUAGE.md now calls one "a visible gap"; it changes with it.
 - [ ] **Suggest the name meant** when a reference does not resolve, from the
