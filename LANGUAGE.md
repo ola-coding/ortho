@@ -497,12 +497,16 @@ package Hardware {
 It is many to many: a program and a device may realize one function together,
 and a part may realize several.
 
-A model that performs any of the functions its logical views draw should
-perform them all. ortho warns of each function at the bottom of a tree that
-nothing performs, either itself or through a function above it, and renders
-anyway. Performing a typed action, `perform beverage;`, performs its
-definition's whole tree. A model that performs none of its functions gets no
-warning, since `perform` is optional.
+Once a model declares a logical view and an implementation or physical view,
+every function has to have a solution. ortho warns of each function at the
+bottom of a tree a logical view draws that no module of the implementation
+view, and no part of the physical view, performs, either itself or through a
+function above it, and renders anyway. A `perform` in a part that no view
+draws does not count. Performing a typed action, `perform beverage;`, performs
+its definition's whole tree. In a model with a use case view, only a tree that
+refines a use case needs a solution, so a catalogue of functions can sit beside
+the product's until a use case asks for one. A model with no implementation or
+physical view gets no warning, since `perform` is optional.
 
 A `perform` may also name a use case, listed the same way. One that names
 structure, such as a part or a port, is an error.

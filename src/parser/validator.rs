@@ -10,7 +10,7 @@ use super::scope::Logged;
 use super::workspace::{Diagnostic, Severity};
 use crate::model::graph::effective_name;
 use crate::model::library::{LIBRARY, LibraryPackage};
-use crate::model::packages::exposed_members;
+use crate::model::packages::{collect_packages, exposed_members};
 use crate::model::views::{
     DiagramKind, declared_views, diagram_kind, exposed_elements, is_sub_function, why_undrawable,
 };
@@ -156,29 +156,40 @@ fn is_structure(ast: &Ast, node: NodeId) -> bool {
         || (ast[node].ty == OtherUsage && matches!(ast.text(node, Prop::Kind), Some("item" | "occurrence" | "enum")))
 }
 
-/// The functions at the bottom of the trees the logical views draw that nothing
-/// performs, in a model that performs any of them.
+/// The functions in scope that no part or module of the solution performs.
 ///
-/// `perform` is optional, so a model that performs none of its functions is not
-/// warned of. One that performs some has to perform them all: asked to fix an
-/// error, an agent may delete the `perform` it points at, and the model would
-/// then draw as if complete, with nothing realizing that function. Performing a
-/// function performs everything under it, and performing a typed action,
-/// `perform beverage;`, performs its definition's tree. A typed action inside a
-/// tree stands for its definition's tree, which is checked where a view draws it.
+/// A logical view and a solution view, an implementation or physical one, have to
+/// agree: once a model declares both, every function at the bottom of a tree a
+/// logical view draws needs a module the implementation view draws, or a part the
+/// physical view draws, to perform it. A model without a solution view is not
+/// warned of, as `perform` is optional; neither is one without a logical view, such
+/// as a cloud solution drawn as an implementation view alone. In a model with a use
+/// case view, only a tree that refines a use case is in scope, so a catalogue of
+/// functions needs no solution until a use case asks for it.
+///
+/// Performing a function performs everything under it, and performing a typed
+/// action, `perform beverage;`, performs its definition's tree. A typed action
+/// inside a tree stands for its definition's tree, which is checked where a view
+/// draws it.
 fn unperformed_functions(ast: &Ast, roots: &[NodeId]) -> HashSet<NodeId> {
+    if !has_view(ast, roots, &[DiagramKind::Implementation, DiagramKind::Physical]) {
+        return HashSet::new();
+    }
+    let owners = solution_owners(ast, roots);
+    let scoped_by_use_cases = has_view(ast, roots, &[DiagramKind::UseCase]);
+    let refined = refined_trees(ast, roots);
     let mut seen = HashSet::new();
     let mut leaves = Vec::new();
-    for view in logical_views(ast, roots) {
+    for view in views_of(ast, roots, DiagramKind::Logical) {
         for member in exposed_members(ast, &exposed_elements(ast, view)) {
-            if is_function(ast, member) {
+            if is_function(ast, member) && (!scoped_by_use_cases || refined.contains(&top_of_tree(ast, member))) {
                 collect_leaves(ast, member, &mut seen, &mut leaves);
             }
         }
     }
     let mut performed = HashSet::new();
     for perform in roots.iter().flat_map(|root| ast.with_all_contents(*root)) {
-        if ast[perform].ty != Type::PerformUsage {
+        if ast[perform].ty != Type::PerformUsage || !ast[perform].parent.is_some_and(|owner| owners.contains(&owner)) {
             continue;
         }
         let last = ast.child(perform, Prop::Target).and_then(|end| ast.references_of(end, Prop::Segments).pop());
@@ -190,8 +201,53 @@ fn unperformed_functions(ast: &Ast, roots: &[NodeId]) -> HashSet<NodeId> {
     let is_performed = |leaf: &NodeId| {
         std::iter::successors(Some(*leaf), |node| ast[*node].parent).any(|node| performed.contains(&node))
     };
-    let (done, undone): (Vec<NodeId>, Vec<NodeId>) = leaves.into_iter().partition(is_performed);
-    if done.is_empty() { HashSet::new() } else { undone.into_iter().collect() }
+    leaves.into_iter().filter(|leaf| !is_performed(leaf)).collect()
+}
+
+/// What may perform a function: the modules an implementation view draws, the part
+/// definitions in the packages it exposes, and the parts a physical view draws, with
+/// their definitions and what those specialize, whose performs the parts list too.
+fn solution_owners(ast: &Ast, roots: &[NodeId]) -> HashSet<NodeId> {
+    let mut owners = HashSet::new();
+    for view in views_of(ast, roots, DiagramKind::Implementation) {
+        let exposed = exposed_elements(ast, view);
+        let packages: Vec<NodeId> =
+            exposed.into_iter().filter(|element| ast[*element].ty == Type::PackageDecl).collect();
+        for package in collect_packages(ast, &packages) {
+            owners.extend(ast.children(package, Prop::Members).filter(|member| ast[*member].ty == Type::PartDef));
+        }
+    }
+    for view in views_of(ast, roots, DiagramKind::Physical) {
+        for part in exposed_elements(ast, view) {
+            drawn_parts(ast, part, &mut owners);
+        }
+    }
+    owners
+}
+
+/// A part, its definition and what that specializes, and the parts nested in them.
+fn drawn_parts(ast: &Ast, part: NodeId, owners: &mut HashSet<NodeId>) {
+    if !owners.insert(part) {
+        return;
+    }
+    let mut definitions = Vec::new();
+    let mut next: Vec<NodeId> = ast.target(part, Prop::Type).into_iter().collect();
+    while let Some(definition) = next.pop() {
+        if owners.insert(definition) {
+            definitions.push(definition);
+            next.extend(
+                ast.references_of(definition, Prop::Supertypes).into_iter().filter_map(|s| ast.reference_target(s)),
+            );
+        }
+    }
+    let nested: Vec<NodeId> = std::iter::once(part)
+        .chain(definitions)
+        .flat_map(|owner| ast.children(owner, Prop::Members))
+        .filter(|member| ast[*member].ty == Type::PartUsage)
+        .collect();
+    for child in nested {
+        drawn_parts(ast, child, owners);
+    }
 }
 
 /// The functions with none under them, from `function` down, each once.
@@ -218,7 +274,7 @@ fn warn_unperformed(ast: &Ast, function: NodeId, diagnostics: &mut Vec<Diagnosti
         severity: Severity::Warning,
         offset: offset_of(ast, function, Prop::Name),
         message: format!(
-            "No part or module performs {named}. Perform it, or a function above it, in the part or module that realizes it."
+            "No part or module of the implementation or physical view performs {named}. Perform it, or a function above it, in the one that realizes it."
         ),
     });
 }
@@ -233,14 +289,21 @@ fn warn_unperformed(ast: &Ast, function: NodeId, diagnostics: &mut Vec<Diagnosti
 /// top, also where a view draws one of its branches; a dependency from a typed
 /// action, `beverage : MakeBeverage`, refines its definition's tree.
 fn unrefined_trees(ast: &Ast, roots: &[NodeId]) -> HashSet<NodeId> {
-    let is_use_case = |node: NodeId| matches!(ast[node].ty, Type::UseCaseDef | Type::UseCaseUsage);
     let mut drawn = Vec::new();
-    for view in logical_views(ast, roots) {
+    for view in views_of(ast, roots, DiagramKind::Logical) {
         let members = exposed_members(ast, &exposed_elements(ast, view));
-        if members.iter().any(|member| is_use_case(*member)) {
+        if members.iter().any(|member| is_use_case(ast, *member)) {
             drawn.extend(members.into_iter().filter(|member| is_function(ast, *member)).map(|f| top_of_tree(ast, f)));
         }
     }
+    let refined = refined_trees(ast, roots);
+    drawn.into_iter().filter(|tree| !refined.contains(tree)).collect()
+}
+
+/// What a dependency on a use case names as its client, and for a typed action
+/// its definition: the trees that refine a use case.
+fn refined_trees(ast: &Ast, roots: &[NodeId]) -> HashSet<NodeId> {
+    let is_use_case = |node: NodeId| is_use_case(ast, node);
     let mut refined = HashSet::new();
     for dependency in roots.iter().flat_map(|root| ast.with_all_contents(*root)) {
         if ast[dependency].ty != Type::Dependency {
@@ -255,7 +318,11 @@ fn unrefined_trees(ast: &Ast, roots: &[NodeId]) -> HashSet<NodeId> {
             }
         }
     }
-    drawn.into_iter().filter(|tree| !refined.contains(tree)).collect()
+    refined
+}
+
+fn is_use_case(ast: &Ast, node: NodeId) -> bool {
+    matches!(ast[node].ty, Type::UseCaseDef | Type::UseCaseUsage)
 }
 
 /// The function at the top of the tree `function` is in.
@@ -280,12 +347,14 @@ fn warn_unrefined(ast: &Ast, tree: NodeId, diagnostics: &mut Vec<Diagnostic>) {
     });
 }
 
-/// The logical views ortho draws.
-fn logical_views(ast: &Ast, roots: &[NodeId]) -> Vec<NodeId> {
+/// The views of `kind` that ortho draws.
+fn views_of(ast: &Ast, roots: &[NodeId], kind: DiagramKind) -> Vec<NodeId> {
     let views = roots.iter().flat_map(|root| declared_views(ast, *root));
-    views
-        .filter(|view| diagram_kind(ast, *view) == DiagramKind::Logical && why_undrawable(ast, *view).is_none())
-        .collect()
+    views.filter(|view| diagram_kind(ast, *view) == kind && why_undrawable(ast, *view).is_none()).collect()
+}
+
+fn has_view(ast: &Ast, roots: &[NodeId], kinds: &[DiagramKind]) -> bool {
+    kinds.iter().any(|kind| !views_of(ast, roots, *kind).is_empty())
 }
 
 /// Whether a logical view draws `node` as a function: an action definition, or an

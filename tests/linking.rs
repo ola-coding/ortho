@@ -584,12 +584,13 @@ fn leaves_alone_any_other_package_and_the_library_itself() {
 
 fn unperformed(name: &str) -> String {
     format!(
-        "No part or module performs '{name}'. Perform it, or a function above it, in the part or module that realizes it."
+        "No part or module of the implementation or physical view performs '{name}'. Perform it, or a function above it, in the one that realizes it."
     )
 }
 
-/// A function tree a logical view draws, and the parts in `hardware`, which may perform its functions.
-fn realized(hardware: &str) -> String {
+/// A function tree a logical view draws, `solution` beside it, and the part
+/// definitions in `hardware`, which may perform its functions.
+fn realized_with(solution: &str, hardware: &str) -> String {
     format!(
         "package Functions {{
             private import StandardViewDefinitions::*;
@@ -599,6 +600,7 @@ fn realized(hardware: &str) -> String {
             }}
             action beverage : MakeBeverage;
             view logical : GeneralView {{ expose MakeBeverage; }}
+            {solution}
         }}
         package Hardware {{
             private import Functions::*;
@@ -607,8 +609,13 @@ fn realized(hardware: &str) -> String {
     )
 }
 
+/// The same, with an implementation view that draws the definitions in `hardware` as modules.
+fn realized(hardware: &str) -> String {
+    realized_with("view modules : GeneralView { expose Hardware; }", hardware)
+}
+
 #[test]
-fn warns_of_a_function_nothing_performs_once_the_model_performs_others() {
+fn warns_of_a_function_no_module_or_part_of_the_solution_performs() {
     // What is left once an agent deletes the grinder's perform to silence an error.
     let workspace = build(&realized(
         "part def Tank { perform beverage.prepareWater.storeWater; }
@@ -617,12 +624,70 @@ fn warns_of_a_function_nothing_performs_once_the_model_performs_others() {
     ));
     assert_eq!(reported(&workspace, Severity::Warning), [unperformed("grindBeans")]);
     assert_eq!(reported(&workspace, Severity::Error), Vec::<String>::new());
+    // Every function needs a solution, not only once others have one.
+    let none = build(&realized("part def Tank; part def Heater; part def Grinder;"));
+    assert_eq!(
+        reported(&none, Severity::Warning),
+        [unperformed("storeWater"), unperformed("heatWater"), unperformed("grindBeans")]
+    );
 }
 
 #[test]
-fn a_model_that_performs_none_of_its_functions_is_not_warned_as_perform_is_optional() {
-    let workspace = build(&realized("part def Tank; part def Heater; part def Grinder;"));
+fn a_model_without_an_implementation_or_physical_view_needs_no_performs() {
+    let workspace = build(&realized_with("", "part def Tank; part def Heater; part def Grinder;"));
     assert_eq!(reported(&workspace, Severity::Warning), Vec::<String>::new());
+}
+
+#[test]
+fn a_perform_counts_only_where_a_solution_view_draws_it() {
+    let performs = "part def Tank { perform beverage.prepareWater.storeWater; }
+                    part def Heater { perform beverage.prepareWater.heatWater; }";
+    // A module in a package the implementation view does not expose.
+    let elsewhere = realized_with(
+        "view modules : GeneralView { expose Hardware; }
+         package Spare { part def Grinder { perform beverage.prepareCoffee.grindBeans; } }",
+        performs,
+    );
+    assert_eq!(reported(&build(&elsewhere), Severity::Warning), [unperformed("grindBeans")]);
+    // A part the physical view draws, nested or not.
+    let physical = |nested: &str| {
+        realized_with(
+            "view physical : InterconnectionView { expose Hardware::machine; }",
+            &format!(
+                "{performs}
+                 part def Grinder {{ perform beverage.prepareCoffee.grindBeans; }}
+                 part def Machine {{ part tank : Tank; part heater : Heater; {nested} }}
+                 part machine : Machine;"
+            ),
+        )
+    };
+    assert_eq!(reported(&build(&physical("")), Severity::Warning), [unperformed("grindBeans")]);
+    assert_eq!(reported(&build(&physical("part grinder : Grinder;")), Severity::Warning), Vec::<String>::new());
+}
+
+#[test]
+fn in_a_model_with_use_cases_only_a_tree_that_refines_one_needs_a_solution() {
+    let text = |use_case_view: &str| {
+        format!(
+            "package SystemUseCases {{ use case def Operate; }}
+            package Functions {{
+                private import StandardViewDefinitions::*;
+                private import ModelingMetadata::*;
+                action def MakeBeverage {{ action heatWater; }}
+                action def Clean {{ action rinse; }}
+                action beverage : MakeBeverage;
+                #refinement dependency MakeBeverage to SystemUseCases::Operate;
+                view logical : GeneralView {{ expose MakeBeverage; expose Clean; }}
+                view modules : GeneralView {{ expose Functions; }}
+                {use_case_view}
+                part def Heater {{ perform beverage.heatWater; }}
+            }}"
+        )
+    };
+    // Clean, a catalogue tree no use case asks for, needs no solution yet.
+    let scoped = build(&text("view useCases : GeneralView { expose SystemUseCases; }"));
+    assert_eq!(reported(&scoped, Severity::Warning), Vec::<String>::new());
+    assert_eq!(reported(&build(&text("")), Severity::Warning), [unperformed("rinse")]);
 }
 
 #[test]
@@ -647,6 +712,7 @@ fn only_the_functions_a_logical_view_draws_have_to_be_performed() {
                 action def Clean {{ action rinse; }}
                 action beverage : MakeBeverage;
                 view logical : GeneralView {{ {exposed} }}
+                view modules : GeneralView {{ expose Functions; }}
                 part def Heater {{ perform beverage.heatWater; }}
                 part def Grinder {{ perform beverage.grindBeans; }}
             }}"

@@ -70,9 +70,9 @@ subject before its actors. Three rules are only warnings, which the CLI prints
 before carrying on. One is a top-level package named after a standard library
 package: ortho finds the model's, while the pilot may find the library's, so
 such a model renders here and may fail elsewhere. The other two find what a
-deleted line leaves behind (`Gaps`): a function at the bottom of a logical
-view's tree that nothing performs, in a model that performs others
-(`unperformed_functions`), and a tree that refines no use case, though a
+deleted line leaves behind (`Gaps`): a function in scope that no module or
+part of a solution view performs (`unperformed_functions`, with what those
+views draw in `solution_owners`), and a tree that refines no use case, though a
 logical view draws it beside use cases (`unrefined_trees`). Told to fix an
 error, an agent may delete the line the error points at; the model still
 loads, so without these warnings its diagrams would look complete. A model may
@@ -417,12 +417,13 @@ In priority order:
   `MakeBeverage`'s `#refinement dependency` drew its logical view without a
   word, the arrow up to `OperateMachine` simply gone. A refinement stays
   optional on a view that shows no use cases.
-- [ ] **Every function in scope has a solution** (see
+- [x] **Every function in scope has a solution** (see
   [Errors and warnings](#parsing)): the `perform` warning applies once the
   model declares an implementation or physical view, rather than once it
   performs any function, and only a module or part those views draw counts as
-  performing. LANGUAGE.md's "`perform` is optional" and its examples change
-  with it.
+  performing. In a model with a use case view, only trees that refine a use
+  case are in scope. `perform` stays optional without a solution view, and
+  LANGUAGE.md's examples needed no change.
 - [ ] **A deployment view adds nothing of its own:** warn of an `allocate`
   whose software is not a module an implementation view draws, or whose host
   is not a part a physical view draws.
