@@ -440,8 +440,6 @@ Open, in priority order:
     box's group carries `data-file` and `data-line`.
   - [ ] Publish on the VS Code Marketplace and Open VSX, which Cursor and
     VSCodium use.
-  - [ ] Show what a change did to each view: the diagrams before and after an
-    agent's edit, matched by the same file and line marks.
 - [ ] **Be found by SysML v2 users:** an entry in each SysML v2 awesome list
   (jgsystemsconsulting/awesome-sysml-v2, mycr0ft/awesome-sysml,
   daltskin/SysML-v2-Resources, jgsystemsconsulting/awesome-mbse) and a post
