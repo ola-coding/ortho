@@ -66,18 +66,19 @@ says where it is and what was expected there.
 it can. After linking, the validator checks the rules it cannot, all listed
 in [LANGUAGE.md](LANGUAGE.md): no reserved word as a name, chains that start
 at a usage, a `perform` of behaviour rather than structure, and a use case's
-subject before its actors. Three rules are only warnings, which the CLI prints
+subject before its actors. Four rules are only warnings, which the CLI prints
 before carrying on. One is a top-level package named after a standard library
 package: ortho finds the model's, while the pilot may find the library's, so
-such a model renders here and may fail elsewhere. The other two find what a
-deleted line leaves behind (`Gaps`): a function in scope that no module or
-part of a solution view performs (`unperformed_functions`, with what those
-views draw in `solution_owners`), and a tree that refines no use case, though a
-logical view draws it beside use cases (`unrefined_trees`). Told to fix an
-error, an agent may delete the line the error points at; the model still
-loads, so without these warnings its diagrams would look complete. A model may
-declare any view, so one ortho cannot draw is skipped with the reason
-(`why_undrawable`).
+such a model renders here and may fail elsewhere. The other three are rules of
+ortho's method between two views (`Gaps`; see below): a function in scope that
+no module or part of a solution view performs (`unperformed_functions`, with
+what those views draw in `solution_owners`), a tree that refines no use case,
+though a logical view draws it beside use cases (`unrefined_trees`), and an
+`allocate` end that neither the implementation nor the physical view draws
+(`foreign_allocation_ends`). Told to fix an error, an agent may delete the
+line the error points at; the model still loads, so without these warnings its
+diagrams would look complete. A model may declare any view, so one ortho
+cannot draw is skipped with the reason (`why_undrawable`).
 
 **Errors and warnings.** The standard says when a model is well-formed, not
 when it is complete: `perform`, `allocate` and `#refinement` are all optional,
@@ -424,9 +425,10 @@ In priority order:
   performing. In a model with a use case view, only trees that refine a use
   case are in scope. `perform` stays optional without a solution view, and
   LANGUAGE.md's examples needed no change.
-- [ ] **A deployment view adds nothing of its own:** warn of an `allocate`
+- [x] **A deployment view adds nothing of its own:** warn of an `allocate`
   whose software is not a module an implementation view draws, or whose host
-  is not a part a physical view draws.
+  is not a part a physical view draws (`foreign_allocation_ends`). Each end is
+  checked once the model declares the view it comes from.
 - [ ] **An error for a usage typed by the wrong kind of definition,** such as
   `part a : A` where `A` is an `action def`, which the standard forbids and
   ortho draws today.

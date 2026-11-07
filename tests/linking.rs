@@ -775,6 +775,71 @@ fn a_refinement_from_the_tree_or_a_use_of_it_refines_the_tree_also_on_a_view_of_
     assert_eq!(reported(&build(&branch), Severity::Warning), [unrefined("MakeBeverage")]);
 }
 
+fn foreign(end: &str, problem: &str) -> String {
+    format!("'{end}' {problem}. A deployment view allocates what the other views draw, and adds nothing of its own.")
+}
+
+const NOT_A_MODULE: &str = "is not a module the implementation view draws";
+const NOT_A_PART: &str = "is not a part the physical view draws";
+
+/// Software, hardware, and a deployment view of `allocations`, beside `views`. The
+/// deployment package declares a program and a board of its own, out of thin air.
+fn deployed(views: &str, allocations: &str) -> String {
+    format!(
+        "package Software {{
+            part def RecipeEngine; part def UiApp;
+            part sw {{ part recipeEngine : RecipeEngine; part uiApp : UiApp; }}
+        }}
+        package Hardware {{
+            port def Bus;
+            part def Board {{ port bus : Bus; }}
+            part def Display;
+            part def Machine {{ part controller : Board; part display : Display; }}
+            part machine : Machine;
+        }}
+        package Deployment {{
+            private import Software::*;
+            private import Hardware::*;
+            private import StandardViewDefinitions::*;
+            part ghostApp;
+            part spareBoard;
+            {allocations}
+            view deployment : GeneralView {{ expose Deployment; }}
+            {views}
+        }}"
+    )
+}
+
+const BOTH_VIEWS: &str = "view modules : GeneralView { expose Software; }
+                          view physical : InterconnectionView { expose machine; }";
+
+#[test]
+fn warns_of_an_allocate_end_that_no_other_view_draws() {
+    let workspace = build(&deployed(
+        BOTH_VIEWS,
+        "allocate sw.recipeEngine to machine.controller;
+         allocate ghostApp to machine.display;
+         allocate sw.uiApp to spareBoard;",
+    ));
+    assert_eq!(
+        reported(&workspace, Severity::Warning),
+        [foreign("ghostApp", NOT_A_MODULE), foreign("spareBoard", NOT_A_PART)]
+    );
+    // A port stands for the part it is on.
+    let port = build(&deployed(BOTH_VIEWS, "allocate sw.recipeEngine to machine.controller.bus;"));
+    assert_eq!(reported(&port, Severity::Warning), Vec::<String>::new());
+}
+
+#[test]
+fn checks_an_allocate_end_only_once_the_model_declares_the_view_it_comes_from() {
+    let allocations = "allocate ghostApp to spareBoard;";
+    let modules_only = build(&deployed("view modules : GeneralView { expose Software; }", allocations));
+    assert_eq!(reported(&modules_only, Severity::Warning), [foreign("ghostApp", NOT_A_MODULE)]);
+    let physical_only = build(&deployed("view physical : InterconnectionView { expose machine; }", allocations));
+    assert_eq!(reported(&physical_only, Severity::Warning), [foreign("spareBoard", NOT_A_PART)]);
+    assert_eq!(reported(&build(&deployed("", allocations)), Severity::Warning), Vec::<String>::new());
+}
+
 /// The coffee machine's warnings once `deleted` is gone from its files, as an agent
 /// may delete the line an error points at, and its logical.sysml as named in them.
 fn coffee_machine_without(deleted: &str, folder: &str) -> (Vec<String>, String) {

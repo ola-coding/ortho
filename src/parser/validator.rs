@@ -22,11 +22,20 @@ use std::collections::HashSet;
 pub struct Gaps {
     unperformed: HashSet<NodeId>,
     unrefined: HashSet<NodeId>,
+    /// `allocate` ends, the software's or the host's, that no other view draws.
+    foreign_software: HashSet<NodeId>,
+    foreign_hosts: HashSet<NodeId>,
 }
 
 impl Gaps {
     pub fn of(ast: &Ast, roots: &[NodeId]) -> Gaps {
-        Gaps { unperformed: unperformed_functions(ast, roots), unrefined: unrefined_trees(ast, roots) }
+        let (foreign_software, foreign_hosts) = foreign_allocation_ends(ast, roots);
+        Gaps {
+            unperformed: unperformed_functions(ast, roots),
+            unrefined: unrefined_trees(ast, roots),
+            foreign_software,
+            foreign_hosts,
+        }
     }
 }
 
@@ -43,6 +52,12 @@ pub fn validate(ast: &Ast, root: NodeId, _text: &str, log: &[Logged], gaps: &Gap
         }
     }
     for node in ast.with_all_contents(root) {
+        if gaps.foreign_software.contains(&node) {
+            warn_foreign_end(ast, node, "is not a module the implementation view draws", &mut diagnostics);
+        }
+        if gaps.foreign_hosts.contains(&node) {
+            warn_foreign_end(ast, node, "is not a part the physical view draws", &mut diagnostics);
+        }
         if gaps.unperformed.contains(&node) {
             warn_unperformed(ast, node, &mut diagnostics);
         }
@@ -208,21 +223,89 @@ fn unperformed_functions(ast: &Ast, roots: &[NodeId]) -> HashSet<NodeId> {
 /// definitions in the packages it exposes, and the parts a physical view draws, with
 /// their definitions and what those specialize, whose performs the parts list too.
 fn solution_owners(ast: &Ast, roots: &[NodeId]) -> HashSet<NodeId> {
-    let mut owners = HashSet::new();
+    let mut owners = implementation_modules(ast, roots);
+    owners.extend(physical_parts(ast, roots));
+    owners
+}
+
+/// The modules the implementation views draw: the part definitions in the packages
+/// they expose, nested packages' included.
+fn implementation_modules(ast: &Ast, roots: &[NodeId]) -> HashSet<NodeId> {
+    let mut modules = HashSet::new();
     for view in views_of(ast, roots, DiagramKind::Implementation) {
         let exposed = exposed_elements(ast, view);
         let packages: Vec<NodeId> =
             exposed.into_iter().filter(|element| ast[*element].ty == Type::PackageDecl).collect();
         for package in collect_packages(ast, &packages) {
-            owners.extend(ast.children(package, Prop::Members).filter(|member| ast[*member].ty == Type::PartDef));
+            modules.extend(ast.children(package, Prop::Members).filter(|member| ast[*member].ty == Type::PartDef));
         }
     }
+    modules
+}
+
+/// The parts the physical views draw, with their definitions and what those specialize.
+fn physical_parts(ast: &Ast, roots: &[NodeId]) -> HashSet<NodeId> {
+    let mut parts = HashSet::new();
     for view in views_of(ast, roots, DiagramKind::Physical) {
         for part in exposed_elements(ast, view) {
-            drawn_parts(ast, part, &mut owners);
+            drawn_parts(ast, part, &mut parts);
         }
     }
-    owners
+    parts
+}
+
+/// The `allocate` ends of the deployment views that no other view draws: software
+/// that is not a usage of a module the implementation view draws, and hosts that
+/// are not parts the physical view draws. A deployment view maps the other two onto
+/// each other and adds nothing of its own; an end is checked only once the model
+/// declares the view it comes from.
+fn foreign_allocation_ends(ast: &Ast, roots: &[NodeId]) -> (HashSet<NodeId>, HashSet<NodeId>) {
+    let (mut software, mut hosts) = (HashSet::new(), HashSet::new());
+    let deployments = views_of(ast, roots, DiagramKind::Deployment);
+    if deployments.is_empty() {
+        return (software, hosts);
+    }
+    let modules = has_view(ast, roots, &[DiagramKind::Implementation]).then(|| implementation_modules(ast, roots));
+    let parts = has_view(ast, roots, &[DiagramKind::Physical]).then(|| physical_parts(ast, roots));
+    let named =
+        |end: NodeId| ast.references_of(end, Prop::Segments).pop().and_then(|segment| ast.reference_target(segment));
+    let allocations = deployments
+        .into_iter()
+        .flat_map(|view| exposed_elements(ast, view))
+        .flat_map(|element| ast.with_all_contents(element))
+        .filter(|node| ast[*node].ty == Type::AllocationUsage);
+    for allocation in allocations {
+        if let (Some(modules), Some(end)) = (&modules, ast.child(allocation, Prop::Source))
+            && let Some(usage) = named(end)
+            && !ast.target(usage, Prop::Type).is_some_and(|module| modules.contains(&module))
+        {
+            software.insert(end);
+        }
+        if let (Some(parts), Some(end)) = (&parts, ast.child(allocation, Prop::Target))
+            && let Some(mut host) = named(end)
+        {
+            // A port stands for the part it is on.
+            if ast[host].ty == Type::PortUsage {
+                host = ast[host].parent.unwrap_or(host);
+            }
+            if !parts.contains(&host) {
+                hosts.insert(end);
+            }
+        }
+    }
+    (software, hosts)
+}
+
+fn warn_foreign_end(ast: &Ast, end: NodeId, problem: &str, diagnostics: &mut Vec<Diagnostic>) {
+    let written: Vec<&str> = ast.texts(end, Prop::Segments).collect();
+    diagnostics.push(Diagnostic {
+        severity: Severity::Warning,
+        offset: ast[end].offset as usize,
+        message: format!(
+            "'{}' {problem}. A deployment view allocates what the other views draw, and adds nothing of its own.",
+            written.join(".")
+        ),
+    });
 }
 
 /// A part, its definition and what that specializes, and the parts nested in them.

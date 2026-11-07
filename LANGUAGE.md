@@ -437,6 +437,12 @@ after its module, `part recipeEngine : RecipeEngine`: this view lists it by name
 alone, and the implementation view draws the module. Two usages of one module
 need names of their own.
 
+The view adds nothing of its own: it maps what the other views draw onto each
+other. Once a model declares an implementation view, ortho warns of software
+that is not a usage of a module that view draws; once it declares a physical
+view, of a host that is not a part that view draws. A port stands for the part
+it is on.
+
 ## Process view
 
 One scenario: who sends what to whom, in order (§7.9, §7.16).
