@@ -374,116 +374,53 @@ case it takes its name from, or none, where it said `'undefined'`.
 
 ## Backlog
 
-In priority order:
+Done, one line each; the commits and the sections above hold the detail:
 
 - [x] **Raise the Node floor** to 24; CI tests 24 and 26.
 - [x] **Align the logical view's stem** with the middle child.
-- [x] **Align with the SysML v2 spec:** [LANGUAGE.md](LANGUAGE.md), a stricter
-  grammar and a validator.
-- [x] **Realization through `perform`**, drawn as *perform actions*
-  compartments.
+- [x] **Align with the SysML v2 spec:** LANGUAGE.md, a stricter grammar.
+- [x] **Realization through `perform`**, as *perform actions* compartments.
 - [x] **Dark glass theme** for slides.
 - [x] **APIs on the software modules**, drawn as *ports* compartments.
-- [x] **Update the dependencies:** Langium 4.4, Commander 15, Vitest 5,
-  elkjs 0.12 and TypeScript 7.
+- [x] **Update the TypeScript version's dependencies.**
 - [x] **Declare each view with the spec's view definitions.**
-- [x] **Imports that make names visible:** `Pkg::*` and `Pkg::Element`, public
-  ones passed on.
-- [x] **Read standard SysML v2:** all 252 of OMG's example, training and
-  validation models load.
+- [x] **Imports that make names visible:** `Pkg::*` and `Pkg::Element`.
+- [x] **Read standard SysML v2:** all 252 of OMG's models load.
 - [x] **Render every view a model declares**, each to an SVG named after it.
 - [x] **Follow SysML v2's graphical notation.**
 - [x] **Text that fits its box on Windows, Linux and Typst.**
 - [x] **Tie the logical view to the use cases:** each function tree refines one.
 - [x] **Warn of a package named after a standard library package.**
-- [x] **Update the models** to the stricter reading of SysML v2: software usages
-  named after their modules, `include x`, `interface` usages, and scenarios as
-  an `occurrence def` of `item def` messages.
-- [x] **Update the colouring:** one flat blue tint on a white body, in place of
-  the cream.
-- [x] **Move to Rust,** for a single binary that needs no Node, with release
-  binaries for Linux, Windows and macOS. See [The move to Rust](#the-move-to-rust).
-- [x] **Publish the first release.** Tag `v0.1.0`, so the README's download
-  links work, and check each binary on its system.
-- [x] **Warn of a diagram too big for landscape A4**, the page ortho draws
-  for: one whose names, shrunk to fit, would print smaller than 6 pt
-  (`src/render/page.rs`).
-- [x] **Packages on several rows, in declared order.** Twelve packages that
-  import nothing from each other drew at 13:1 and now fit landscape A4; boxes on
-  the implementation and physical views keep the model's order.
-- [x] **Draw the use case view as SysML v2 does,** one use case to a group, the
-  groups in rows: no line crosses another.
-- [x] **Keep wide diagrams readable on landscape A4.** Packages that all import
-  one package stand in a block of rows, each import down the gap beside its
-  column; a view may expose one branch of a function tree; and
-  [LANGUAGE.md](LANGUAGE.md#keeping-a-view-on-one-page) says how to split a
-  view. Wrapping the logical view's rows was tried and dropped: two rows of a
-  tree read oddly. The survey drone's implementation, physical and process
-  views still hold more than one page.
-- [x] **A clear repository page.** The README opens with a diagram, says
-  why ortho suits model-based systems engineering, shows the six views of the
-  coffee machine side by side, and says what ortho does not do. The GitHub
-  description, topics and homepage are set by hand in the repository's About.
-- [x] **Publish on crates.io** as `ortho`, for `cargo install ortho` and
-  `cargo binstall ortho`. 0.2.0 is there; the Release workflow publishes
-  each release with trusted publishing, and the token is gone. See
-  [Releasing](#releasing).
-- [x] **Warn of a function nothing performs,** in a model that performs
-  others (`unperformed_functions`). Told to fix an error, an agent may delete
-  the `perform` the error points at. The coffee machine without its bean
-  hopper's `perform` drew all six views without a word, though nothing stored
-  the beans any more.
-- [x] **Warn of a tree that refines no use case,** where a logical view draws
-  it beside use cases (`unrefined_trees`). The coffee machine without
-  `MakeBeverage`'s `#refinement dependency` drew its logical view without a
-  word, the arrow up to `OperateMachine` simply gone. A refinement stays
-  optional on a view that shows no use cases.
-- [x] **Every function in scope has a solution** (see
-  [Errors and warnings](#parsing)): the `perform` warning applies once the
-  model declares an implementation or physical view, rather than once it
-  performs any function, and only a module or part those views draw counts as
-  performing. In a model with a use case view, only trees that refine a use
-  case are in scope. `perform` stays optional without a solution view, and
-  LANGUAGE.md's examples needed no change.
-- [x] **A deployment view adds nothing of its own:** warn of an `allocate`
-  whose software is not a module an implementation view draws, or whose host
-  is not a part a physical view draws (`foreign_allocation_ends`). Each end is
-  checked once the model declares the view it comes from.
-- [x] **An error for a usage typed by the wrong kind of definition,** such as
-  `part a : A` where `A` is an `action def`, which the standard forbids and
-  ortho drew (`check_typed_by_part_definition`). A part or actor typed by an
-  item definition is let through, as OMG's own examples do it. An attribute,
-  item or occurrence keeps its type as written, unresolved, so is not checked.
-- [x] **Warn of software that runs nowhere:** once a model declares a
-  deployment view, every module usage in the tree of deployable parts is
-  allocated to a host (`unhosted_software`). A module used inside another
-  module runs where that one does.
-- [x] **Warn of a use case no tree refines** on a logical view
-  (`unrefined_use_cases`), where LANGUAGE.md called one "a visible gap". A
-  deleted refinement now warns at both its ends, the tree and the use case.
-- [ ] **Suggest the name meant** when a reference does not resolve, from the
-  names in scope that come closest: *Could not resolve reference to Feature
-  named 'storeBeans'. Did you mean 'storeMrBeans'?* It saves an agent, or a
-  person, a search through the model.
-- [ ] **Be found by SysML v2 users:** an entry in each SysML v2 awesome list
-  (jgsystemsconsulting/awesome-sysml-v2, mycr0ft/awesome-sysml,
-  daltskin/SysML-v2-Resources, jgsystemsconsulting/awesome-mbse) and a post
-  in the SysML Forum, made from the maintainer's own account. Tag and
-  describe ortho as SysML v2, never plain SysML, which reads as v1.
-- [x] **A `--watch` option** that renders again on every save, so an editor's
-  SVG preview shows the diagram beside the text.
+- [x] **Update the models** to the stricter reading of SysML v2.
+- [x] **Update the colouring:** one flat blue tint on a white body.
+- [x] **Move to Rust;** see [The move to Rust](#the-move-to-rust).
+- [x] **Publish the first release,** `v0.1.0`, checked on each system.
+- [x] **Warn of a diagram too big for landscape A4** (`src/render/page.rs`).
+- [x] **Packages on several rows, in declared order.**
+- [x] **Draw the use case view as SysML v2 does,** in rows, no line crossing.
+- [x] **Keep wide diagrams readable on A4;** wrapping tree rows was dropped.
+- [x] **A clear repository page.**
+- [x] **Publish on crates.io** as `ortho`; see [Releasing](#releasing).
+- [x] **A `--watch` option** that renders again on every save.
+- [x] **Warn of a function nothing performs** (`unperformed_functions`).
+- [x] **Warn of a tree that refines no use case** (`unrefined_trees`).
+- [x] **Every function in scope has a solution;** see *Errors and warnings*.
+- [x] **A deployment view adds nothing of its own** (`foreign_allocation_ends`).
+- [x] **Refuse a part typed by behaviour or data.**
+- [x] **Warn of software that runs nowhere** (`unhosted_software`).
+- [x] **Warn of a use case no tree refines** (`unrefined_use_cases`).
+- [x] **Suggest the name meant** in a chain (`chain_hint`); not for plain names.
+
+Open, in priority order:
+
 - [ ] **Create a VS Code extension,** in `editors/vscode/` in this
   repository, so a systems engineer writes SysML v2 with the diagrams beside
   the text. AI agents will write most of the models, so it helps check and
   review them rather than type them: rename, completion and other editing help
   are left to the agents and to SysIDE, since ortho's checks catch what an
   agent misses.
-  - [x] SysML v2 keyword highlighting, written from ortho's own keyword list.
-    It uses the language id `sysml`, so it works beside other SysML v2
-    extensions such as SysIDE.
-  - [x] A live preview: the views' SVGs in a panel beside the model, rendered
-    again by `ortho render` on every save, and ortho's errors in the Problems
-    panel. It needs ortho installed, until the step that bundles it.
+  - [x] SysML v2 keyword highlighting, written from ortho's keyword list.
+  - [x] A live preview, rendered on every save, with ortho's problems.
   - [ ] An *Add AI instructions* command that writes a skill file for Claude
     Code and instructions for Copilot from [LANGUAGE.md](LANGUAGE.md). They
     tell the agent to run `ortho render` and fix what it reports before it
@@ -500,6 +437,11 @@ In priority order:
     has to write each box's file and line into the SVG.
   - [ ] Show what a change did to each view: the diagrams before and after an
     agent's edit, matched by the same file and line marks.
+- [ ] **Be found by SysML v2 users:** an entry in each SysML v2 awesome list
+  (jgsystemsconsulting/awesome-sysml-v2, mycr0ft/awesome-sysml,
+  daltskin/SysML-v2-Resources, jgsystemsconsulting/awesome-mbse) and a post
+  in the SysML Forum, made from the maintainer's own account. Tag and
+  describe ortho as SysML v2, never plain SysML, which reads as v1.
 - [ ] **Requirements on the parts that satisfy them**, in a compartment like
   *perform actions* rather than a seventh view.
 - [ ] **Item flows on the physical view** (`flow`): what passes between ports,
