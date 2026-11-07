@@ -1,8 +1,9 @@
 //! Writes the VS Code extension's SysML v2 grammar, `editors/vscode/syntaxes/sysml.tmLanguage.json`,
 //! from ortho's own keyword list, so the editor colours exactly the words ortho reserves,
-//! and copies LANGUAGE.md to `editors/vscode/ai/LANGUAGE.md`, which the extension's
-//! *Add AI instructions* command hands to agents. CI runs it and fails if either
-//! committed file differs.
+//! copies LANGUAGE.md to `editors/vscode/ai/LANGUAGE.md`, which the extension's
+//! *Add AI instructions* command hands to agents, and copies each example's model to
+//! `editors/vscode/examples/`, which its *Open example* command copies for the user.
+//! CI runs it and fails if any committed file differs.
 //!
 //! The grammar follows the lexer (`src/parser/lexer.rs`): `//` starts a note to the end
 //! of the line, `//* */` is a note over lines, `/* */` is a comment, `"..."` a string and
@@ -13,6 +14,7 @@ use serde_json::{Value, json};
 
 const OUT: &str = "editors/vscode/syntaxes/sysml.tmLanguage.json";
 const LANGUAGE_OUT: &str = "editors/vscode/ai/LANGUAGE.md";
+const EXAMPLES_OUT: &str = "editors/vscode/examples";
 /// Where a link to another file of the repository points, once the page is copied out of it.
 const REPOSITORY: &str = "https://github.com/ola-coding/ortho/blob/main/";
 
@@ -135,6 +137,31 @@ pub fn run() -> Result {
     std::fs::create_dir_all("editors/vscode/ai").map_err(|error| error.to_string())?;
     write(LANGUAGE_OUT, &language_copy(&language))?;
     println!("Wrote {LANGUAGE_OUT}");
+    copy_examples()?;
+    println!("Wrote {EXAMPLES_OUT}");
+    Ok(())
+}
+
+/// Each example's `.sysml` files, as they are, without the diagrams: the preview draws
+/// those. The folder is written afresh, so a file removed from an example goes too.
+fn copy_examples() -> Result {
+    let error = |error: std::io::Error| error.to_string();
+    if std::path::Path::new(EXAMPLES_OUT).exists() {
+        std::fs::remove_dir_all(EXAMPLES_OUT).map_err(error)?;
+    }
+    let mut examples: Vec<_> =
+        std::fs::read_dir("examples").map_err(error)?.collect::<std::io::Result<_>>().map_err(error)?;
+    examples.sort_by_key(|entry| entry.file_name());
+    for example in examples.iter().filter(|entry| entry.path().is_dir()) {
+        let out = std::path::Path::new(EXAMPLES_OUT).join(example.file_name());
+        std::fs::create_dir_all(&out).map_err(error)?;
+        for file in std::fs::read_dir(example.path()).map_err(error)? {
+            let path = file.map_err(error)?.path();
+            if path.extension().is_some_and(|extension| extension == "sysml") {
+                std::fs::copy(&path, out.join(path.file_name().expect("a file has a name"))).map_err(error)?;
+            }
+        }
+    }
     Ok(())
 }
 

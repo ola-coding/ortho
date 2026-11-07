@@ -8,8 +8,11 @@ const crypto = require('node:crypto');
 const path = require('node:path');
 const { readReport, viewTitle, tabTitles, runOrtho, keepOnly } = require('./ortho');
 const { instructionFiles } = require('./instructions');
+const { EXAMPLES, freeName, firstFile } = require('./examples');
 
 const INSTALL_URL = 'https://github.com/ola-coding/ortho#install';
+/** The file of an example just copied into a folder another window opens, to open there. */
+const OPEN_ON_START = 'ortho.openOnStart';
 
 /** @param {vscode.ExtensionContext} context */
 function activate(context) {
@@ -23,6 +26,7 @@ function activate(context) {
     ),
     vscode.commands.registerCommand('ortho.renderAgain', () => preview.render()),
     vscode.commands.registerCommand('ortho.addAiInstructions', () => addAiInstructions(context)),
+    vscode.commands.registerCommand('ortho.openExample', () => openExample(context)),
     // A preview open when VS Code closed opens again on the same model.
     vscode.window.registerWebviewPanelSerializer(Preview.viewType, {
       async deserializeWebviewPanel(panel, /** @type {{ folder?: unknown } | undefined} */ state) {
@@ -30,9 +34,71 @@ function activate(context) {
       },
     }),
   );
+  openCopiedExample(context);
 }
 
 function deactivate() {}
+
+/**
+ * Copies an example the extension carries into a folder the user picks, then opens its
+ * use case view with the preview beside it. A copy outside the open workspace opens as
+ * a folder of its own, where the extension, starting there, opens the file.
+ * @param {vscode.ExtensionContext} context
+ */
+async function openExample(context) {
+  const picked = await vscode.window.showQuickPick(
+    EXAMPLES.map((example) => ({ label: example.label, detail: example.detail, example })),
+    { placeHolder: 'Which example should be copied and opened?' },
+  );
+  if (!picked) return;
+  const { example } = picked;
+  const parents = await vscode.window.showOpenDialog({
+    canSelectFiles: false,
+    canSelectFolders: true,
+    canSelectMany: false,
+    openLabel: 'Copy Here',
+    title: `Where should the ${example.label.toLowerCase()} example go?`,
+    defaultUri: vscode.workspace.workspaceFolders?.[0]?.uri,
+  });
+  if (!parents?.[0]) return;
+  const parent = parents[0];
+  const taken = new Set((await vscode.workspace.fs.readDirectory(parent)).map(([name]) => name));
+  const target = vscode.Uri.joinPath(parent, freeName(example.name, (name) => taken.has(name)));
+  const source = vscode.Uri.joinPath(context.extensionUri, 'examples', example.name);
+  const files = (await vscode.workspace.fs.readDirectory(source)).map(([name]) => name);
+  await vscode.workspace.fs.createDirectory(target);
+  for (const file of files) {
+    await vscode.workspace.fs.copy(vscode.Uri.joinPath(source, file), vscode.Uri.joinPath(target, file));
+  }
+  const first = vscode.Uri.joinPath(target, firstFile(files));
+  if (vscode.workspace.getWorkspaceFolder(first)) {
+    await showWithPreview(first);
+    return;
+  }
+  await context.globalState.update(OPEN_ON_START, first.toString());
+  const open = vscode.workspace.workspaceFolders?.length ? { forceNewWindow: true } : {};
+  await vscode.commands.executeCommand('vscode.openFolder', target, open);
+}
+
+/**
+ * Opens the example the last Open example copied, once the window that opens its
+ * folder starts. Any other window leaves it to that one.
+ * @param {vscode.ExtensionContext} context
+ */
+async function openCopiedExample(context) {
+  const copied = context.globalState.get(OPEN_ON_START);
+  if (typeof copied !== 'string') return;
+  const first = vscode.Uri.parse(copied);
+  if (!vscode.workspace.getWorkspaceFolder(first)) return;
+  await context.globalState.update(OPEN_ON_START, undefined);
+  await showWithPreview(first);
+}
+
+/** @param {vscode.Uri} uri */
+async function showWithPreview(uri) {
+  await vscode.window.showTextDocument(uri);
+  await vscode.commands.executeCommand('ortho.openPreview', uri);
+}
 
 /**
  * Writes the AI instructions into a workspace folder: a skill for Claude Code and

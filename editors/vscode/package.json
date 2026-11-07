@@ -27,7 +27,8 @@
   ],
   "main": "./src/extension.js",
   "activationEvents": [
-    "onWebviewPanel:ortho.preview"
+    "onWebviewPanel:ortho.preview",
+    "workspaceContains:**/*.sysml"
   ],
   "scripts": {
     "test": "node --test"
@@ -69,6 +70,11 @@
       {
         "command": "ortho.addAiInstructions",
         "title": "Add AI Instructions",
+        "category": "Ortho"
+      },
+      {
+        "command": "ortho.openExample",
+        "title": "Open Example",
         "category": "Ortho"
       }
     ],

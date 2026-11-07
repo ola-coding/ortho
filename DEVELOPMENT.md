@@ -243,7 +243,7 @@ cargo xtask deck                    # build the pitch deck into marketing/
 cargo xtask omg-models              # fetch OMG's models, which needs Git
 cargo test -- --ignored             # count how many of OMG's models load
 cargo xtask library-names           # list the standard library's names
-cargo xtask vscode-grammar          # the extension's grammar, LANGUAGE.md copy
+cargo xtask vscode-grammar          # the extension's grammar, LANGUAGE.md and example copies
 ```
 
 CI (`.github/workflows/ci.yml`) builds and tests on Linux, Windows and
@@ -259,8 +259,10 @@ deck to GitHub Pages.
 - **The VS Code extension** is in `editors/vscode/`, with its own version and
   its own [README](editors/vscode/README.md). Its grammar,
   `syntaxes/sysml.tmLanguage.json`, is written from `KEYWORDS`, never by hand,
-  and its `ai/LANGUAGE.md`, which the AI instructions carry, is copied from
-  LANGUAGE.md: run `cargo xtask vscode-grammar` after changing either.
+  its `ai/LANGUAGE.md`, which the AI instructions carry, is copied from
+  LANGUAGE.md, and its `examples/`, which *Open Example* copies, from each
+  example's `.sysml` files: run `cargo xtask vscode-grammar` after changing
+  any of them.
   Its code is plain JavaScript with no dependencies and no build step;
   `src/ortho.js`, which runs ortho and reads what it prints, is tested with
   Node (`npm test` in `editors/vscode`, with `ORTHO_BIN` set to run the real
@@ -424,7 +426,7 @@ Open, in priority order:
   - [x] SysML v2 keyword highlighting, written from ortho's keyword list.
   - [x] A live preview, rendered on every save, with ortho's problems.
   - [x] *Add AI instructions*: a Claude Code skill and Copilot instructions.
-  - [ ] An *Open example* command for the coffee machine and survey drone.
+  - [x] An *Open example* command for the coffee machine and survey drone.
   - [ ] The ortho binary inside the extension: one package per system, built
     by CI from the release binaries, with a setting to use another ortho.
     Agents check their work with it too, so it has to be where their shell

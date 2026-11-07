@@ -6,7 +6,7 @@
 //! - `omg-models`: OMG's SysML v2 models, into `.omg-models/`.
 //! - `library-names`: the standard library's names, into `src/model/library.rs`.
 //! - `vscode-grammar`: the VS Code extension's SysML v2 grammar, from ortho's keywords,
-//!   and its copy of LANGUAGE.md.
+//!   and its copies of LANGUAGE.md and of the examples.
 use std::path::Path;
 use std::process::ExitCode;
 
@@ -29,7 +29,7 @@ const TASKS: &[Task] = &[
     (
         "vscode-grammar",
         vscode_grammar::run,
-        "write the VS Code extension's grammar from ortho's keywords, and its copy of LANGUAGE.md",
+        "write the VS Code extension's grammar from ortho's keywords, and its copies of LANGUAGE.md and the examples",
     ),
 ];
 
