@@ -43,8 +43,9 @@ other SysML v2 extensions, such as SysIDE.
 
 It is not on the Marketplace yet. To try it from a clone of the repository:
 
-- **Run it:** open `editors/vscode` in VS Code and press F5. A second window
-  opens on the coffee machine example with the extension loaded.
+- **Run it:** open the repository, or `editors/vscode`, in VS Code and press
+  F5. A second window opens on the coffee machine example with the extension
+  loaded.
 - **Or install it** by linking the folder into VS Code's extensions, then
   restart VS Code:
 
