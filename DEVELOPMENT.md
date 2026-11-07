@@ -200,16 +200,22 @@ cargo xtask deck                    # build the pitch deck into marketing/
 cargo xtask omg-models              # fetch OMG's models, which needs Git
 cargo test -- --ignored             # count how many of OMG's models load
 cargo xtask library-names           # list the standard library's names
+cargo xtask vscode-grammar          # write the VS Code extension's grammar
 ```
 
 CI (`.github/workflows/ci.yml`) builds and tests on Linux, Windows and
 macOS, runs fmt and clippy, counts OMG's models, fails if a fresh render
-differs from the committed diagrams, and only then, on `main`, publishes the
+differs from the committed diagrams or the VS Code grammar from a fresh
+one, and only then, on `main`, publishes the
 deck to GitHub Pages.
 
 - **The grammar** is `src/parser/grammar.rs`, with its keywords in `lexer.rs`.
   A new keyword goes in `KEYWORDS`, which the deck highlights from too, and is
-  then reserved: it can no longer be a name.
+  then reserved: it can no longer be a name. Run `cargo xtask vscode-grammar`
+  after, so the VS Code extension colours it.
+- **The VS Code extension** is in `editors/vscode/`, with its own version and
+  its own [README](editors/vscode/README.md). Its grammar,
+  `syntaxes/sysml.tmLanguage.json`, is written from `KEYWORDS`, never by hand.
 - **The examples** cover two different domains, so a rendering change that
   only suits one shows up. Regenerate their SVGs and look at them in a browser
   whenever rendering changes. They carry no requirements, since no view would
@@ -381,6 +387,22 @@ In priority order:
   describe ortho as SysML v2, never plain SysML, which reads as v1.
 - [x] **A `--watch` option** that renders again on every save, so an editor's
   SVG preview shows the diagram beside the text.
+- [ ] **Create a VS Code extension,** in `editors/vscode/` in this
+  repository, so a systems engineer writes SysML v2 with the diagrams beside
+  the text:
+  - [x] SysML v2 keyword highlighting, written from ortho's own keyword list.
+    It uses the language id `sysml`, so it works beside other SysML v2
+    extensions such as SysIDE.
+  - [ ] A live preview: the views' SVGs in a panel beside the model, rendered
+    again by `ortho render` on every save, and ortho's errors in the Problems
+    panel.
+  - [ ] An *Open example* command for the coffee machine and survey drone.
+  - [ ] An *Add AI instructions* command that writes a skill file for Claude
+    Code and instructions for Copilot from [LANGUAGE.md](LANGUAGE.md).
+  - [ ] The ortho binary inside the extension: one package per system, built
+    by CI from the release binaries, with a setting to use another ortho.
+  - [ ] Publish on the VS Code Marketplace and Open VSX, which Cursor and
+    VSCodium use.
 - [ ] **Requirements on the parts that satisfy them**, in a compartment like
   *perform actions* rather than a seventh view.
 - [ ] **Item flows on the physical view** (`flow`): what passes between ports,

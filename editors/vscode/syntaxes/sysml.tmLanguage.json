@@ -1,0 +1,142 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "comment": "Written by `cargo xtask vscode-grammar` from ortho's keyword list. Do not edit by hand.",
+  "name": "SysML v2",
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#declarations"
+    },
+    {
+      "include": "#metadata"
+    },
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#strings"
+    },
+    {
+      "include": "#names"
+    },
+    {
+      "include": "#numbers"
+    },
+    {
+      "include": "#operators"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "begin": "//\\*",
+          "end": "\\*/",
+          "name": "comment.block.note.sysml"
+        },
+        {
+          "match": "//.*$",
+          "name": "comment.line.double-slash.sysml"
+        },
+        {
+          "begin": "/\\*",
+          "end": "\\*/",
+          "name": "comment.block.sysml"
+        }
+      ]
+    },
+    "declarations": {
+      "patterns": [
+        {
+          "captures": {
+            "1": {
+              "name": "keyword.other.sysml"
+            },
+            "2": {
+              "name": "punctuation.definition.short-name.sysml"
+            },
+            "3": {
+              "name": "punctuation.definition.short-name.sysml"
+            },
+            "4": {
+              "name": "entity.name.type.sysml"
+            }
+          },
+          "comment": "The name a definition or package declares: part def Motor, package Power.",
+          "match": "\\b(def|package)\\s+(?:(<)\\s*(?:[A-Za-z_][A-Za-z0-9_]*|'(?:[^'\\\\\\r\\n]|\\\\.)*')\\s*(>)\\s*)?((?:[A-Za-z_][A-Za-z0-9_]*|'(?:[^'\\\\\\r\\n]|\\\\.)*'))"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "match": "\\b(?:true|false|null)\\b",
+          "name": "constant.language.sysml"
+        },
+        {
+          "match": "\\b(?:and|or|xor|not|implies|hastype|istype|as|meta|all)\\b",
+          "name": "keyword.operator.word.sysml"
+        },
+        {
+          "match": "\\b(?:private|protected|public|abstract|variation|individual|ordered|nonunique|derived|constant|in|out|inout|end|ref|default|standard|library)\\b",
+          "name": "storage.modifier.sysml"
+        },
+        {
+          "match": "\\b(?:about|accept|action|actor|after|alias|allocate|allocation|analysis|assert|assign|assume|at|attribute|bind|binding|by|calc|case|comment|concern|connect|connection|constraint|crosses|decide|def|defined|dependency|do|doc|else|entry|enum|event|exhibit|exit|expose|filter|first|flow|for|fork|frame|from|if|import|include|interface|item|join|language|locale|loop|merge|message|metadata|new|objective|occurrence|of|package|parallel|part|perform|port|redefines|references|render|rendering|rep|require|requirement|return|satisfy|send|snapshot|specializes|stakeholder|state|subject|subsets|succession|terminate|then|timeslice|to|transition|typed|until|use|variant|verification|verify|via|view|viewpoint|when|while)\\b",
+          "name": "keyword.other.sysml"
+        }
+      ]
+    },
+    "metadata": {
+      "patterns": [
+        {
+          "match": "[#@](?:[A-Za-z_][A-Za-z0-9_]*|'(?:[^'\\\\\\r\\n]|\\\\.)*')",
+          "name": "entity.name.tag.sysml"
+        }
+      ]
+    },
+    "names": {
+      "patterns": [
+        {
+          "comment": "A name in single quotes, which may hold spaces: part 'flight controller'.",
+          "match": "'(?:[^'\\\\\\r\\n]|\\\\.)*'",
+          "name": "variable.other.quoted.sysml"
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "match": "\\b[0-9]+(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?\\b|\\.[0-9]+(?:[eE][+-]?[0-9]+)?\\b",
+          "name": "constant.numeric.sysml"
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "match": ":>>|::>|:>|::|->|=>|:=|\\.\\.|===|!==|==|!=|<=|>=|\\?\\?|~",
+          "name": "keyword.operator.sysml"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "begin": "\"",
+          "end": "\"|$",
+          "name": "string.quoted.double.sysml",
+          "patterns": [
+            {
+              "match": "\\\\.",
+              "name": "constant.character.escape.sysml"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "scopeName": "source.sysml"
+}
