@@ -79,6 +79,32 @@ loads, so without these warnings its diagrams would look complete. A model may
 declare any view, so one ortho cannot draw is skipped with the reason
 (`why_undrawable`).
 
+**Errors and warnings.** The standard says when a model is well-formed, not
+when it is complete: `perform`, `allocate` and `#refinement` are all optional,
+and a view is a filter on the one model (§9.2.20), so a model with only an
+implementation view, for a cloud solution, is valid SysML v2. ortho keeps the
+two apart:
+
+- **An error** is what the standard forbids, or a name that resolves to
+  nothing. The model does not load, and nothing is drawn.
+- **A warning** is a rule of ortho's method: two views that both exist and
+  disagree. The model renders anyway, so a systems engineer can work in any
+  order, and an agent knows what to fix.
+- **A view that is missing** is neither. Every view is optional; a check
+  between two views applies only once the model declares both.
+
+| When the model declares… | ortho warns of… |
+|---|---|
+| use cases and a logical view | a tree drawn beside use cases that refines none |
+| a logical view, and an implementation or physical view | a function in scope that no module or part those views draw performs |
+| a deployment view | an `allocate` end that is not a module of an implementation view or a part of a physical view, and a module no host runs |
+
+A function is in scope when a logical view draws it and, in a model with use
+cases, its tree refines one. A catalogue of functions kept beside the product's
+trees needs no solution until a use case asks for it. SysML v2's own way to say
+which functions one product of a range addresses is variability, `variation`
+and `variant` (§7.6), which ortho parses but does not yet read.
+
 ## Layout and rendering
 
 - **Text is measured without a browser.** `src/render/text_metrics.rs` embeds
@@ -391,6 +417,22 @@ In priority order:
   `MakeBeverage`'s `#refinement dependency` drew its logical view without a
   word, the arrow up to `OperateMachine` simply gone. A refinement stays
   optional on a view that shows no use cases.
+- [ ] **Every function in scope has a solution** (see
+  [Errors and warnings](#parsing)): the `perform` warning applies once the
+  model declares an implementation or physical view, rather than once it
+  performs any function, and only a module or part those views draw counts as
+  performing. LANGUAGE.md's "`perform` is optional" and its examples change
+  with it.
+- [ ] **A deployment view adds nothing of its own:** warn of an `allocate`
+  whose software is not a module an implementation view draws, or whose host
+  is not a part a physical view draws.
+- [ ] **An error for a usage typed by the wrong kind of definition,** such as
+  `part a : A` where `A` is an `action def`, which the standard forbids and
+  ortho draws today.
+- [ ] **Warn of software that runs nowhere:** once a model declares a
+  deployment view, every module usage is allocated to a host.
+- [ ] **Warn of a use case no tree refines** on a logical view that draws
+  trees. LANGUAGE.md now calls one "a visible gap"; it changes with it.
 - [ ] **Suggest the name meant** when a reference does not resolve, from the
   names in scope that come closest: *Could not resolve reference to Feature
   named 'storeBeans'. Did you mean 'storeMrBeans'?* It saves an agent, or a
