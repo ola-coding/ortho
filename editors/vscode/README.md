@@ -41,22 +41,20 @@ other SysML v2 extensions, such as SysIDE.
 
 ## Trying it
 
-It is not on the Marketplace yet. To try it from a clone of the repository:
+It is not on the Marketplace yet. Install ortho first (`cargo install ortho`,
+or a download from the
+[releases](https://github.com/ola-coding/ortho/releases)), then either:
 
-- **Run it:** open `editors/vscode` in VS Code and press F5. A second window
-  opens on the coffee machine example with the extension loaded.
-- **Or install it** by linking the folder into VS Code's extensions, then
-  restart VS Code:
-
-  ```sh
-  # Linux and macOS, from the repository
-  ln -s "$PWD/editors/vscode" ~/.vscode/extensions/ola-coding.ortho-0.0.1
-  ```
-
-  ```bat
-  :: Windows, from the repository
-  mklink /J "%USERPROFILE%\.vscode\extensions\ola-coding.ortho-0.0.1" editors\vscode
-  ```
+- **Install the latest build.** Every CI run packages the extension. Open the
+  latest run of the
+  [CI workflow](https://github.com/ola-coding/ortho/actions/workflows/ci.yml)
+  on the branch you want, download **ortho-vscode** under Artifacts and unzip
+  it. In VS Code, open the Extensions view, click **...** at its top, choose
+  **Install from VSIX...** and pick `ortho-vscode.vsix`. Or from a terminal:
+  `code --install-extension ortho-vscode.vsix`.
+- **Or run it from a clone** of the repository: open `editors/vscode` in VS
+  Code and press F5. A second window opens on the coffee machine example with
+  the extension loaded, and picks up your changes when you reload it.
 
 ## Working on it
 

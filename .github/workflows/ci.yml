@@ -4,7 +4,8 @@
 # lint      Formatting and clippy, which read the same on every system, and the
 #           VS Code extension's grammar, which is written from ortho's keywords.
 # vscode    Tests the VS Code extension's code with Node, against the ortho built
-#           here.
+#           here, and packages the extension as a .vsix to download from the
+#           run's Artifacts and install with "Install from VSIX...".
 # diagrams  Re-renders every example, and the views written by hand in
 #           tests/views/, and fails if the committed SVGs differ.
 #           Rendering is deterministic, so any difference means a model or the
@@ -77,6 +78,15 @@ jobs:
       - name: Test the extension against this ortho
         working-directory: editors/vscode
         run: ORTHO_BIN="$GITHUB_WORKSPACE/target/debug/ortho" node --test
+      - name: Package the extension
+        working-directory: editors/vscode
+        run: |
+          cp ../../LICENSE .
+          npx --yes @vscode/vsce@3 package --no-dependencies -o ortho-vscode.vsix
+      - uses: actions/upload-artifact@v5
+        with:
+          name: ortho-vscode
+          path: editors/vscode/ortho-vscode.vsix
 
   diagrams:
     name: Example diagrams are up to date
