@@ -213,7 +213,10 @@ package Functions {
 with a dependency, tagged from the standard library's `ModelingMetadata`, whose
 source is "a more precise and/or accurate representation" than its target. It
 is optional, but its ends are checked: once it names a use case, that use case
-has to be loaded.
+has to be loaded. A logical view that shows use cases is there to tie its trees
+to them, though, so ortho warns of a tree it draws that refines no use case,
+and renders anyway. For a view of a single branch, the tree the branch belongs
+to has to refine one.
 
 ```sysml
 package SystemUseCases {
@@ -493,6 +496,13 @@ package Hardware {
 
 It is many to many: a program and a device may realize one function together,
 and a part may realize several.
+
+A model that performs any of the functions its logical views draw should
+perform them all. ortho warns of each function at the bottom of a tree that
+nothing performs, either itself or through a function above it, and renders
+anyway. Performing a typed action, `perform beverage;`, performs its
+definition's whole tree. A model that performs none of its functions gets no
+warning, since `perform` is optional.
 
 A `perform` may also name a use case, listed the same way. One that names
 structure, such as a part or a port, is an error.

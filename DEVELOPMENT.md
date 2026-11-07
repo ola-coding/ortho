@@ -66,11 +66,18 @@ says where it is and what was expected there.
 it can. After linking, the validator checks the rules it cannot, all listed
 in [LANGUAGE.md](LANGUAGE.md): no reserved word as a name, chains that start
 at a usage, a `perform` of behaviour rather than structure, and a use case's
-subject before its actors. One rule is only a warning, which the CLI prints
-before carrying on: a top-level package named after a standard library package.
-ortho finds the model's, while the pilot may find the library's, so such a model
-renders here and may fail elsewhere. A model may declare any view, so one ortho
-cannot draw is skipped with the reason (`why_undrawable`).
+subject before its actors. Three rules are only warnings, which the CLI prints
+before carrying on. One is a top-level package named after a standard library
+package: ortho finds the model's, while the pilot may find the library's, so
+such a model renders here and may fail elsewhere. The other two find what a
+deleted line leaves behind (`Gaps`): a function at the bottom of a logical
+view's tree that nothing performs, in a model that performs others
+(`unperformed_functions`), and a tree that refines no use case, though a
+logical view draws it beside use cases (`unrefined_trees`). Told to fix an
+error, an agent may delete the line the error points at; the model still
+loads, so without these warnings its diagrams would look complete. A model may
+declare any view, so one ortho cannot draw is skipped with the reason
+(`why_undrawable`).
 
 ## Layout and rendering
 
@@ -385,6 +392,20 @@ In priority order:
   `cargo binstall ortho`. 0.2.0 is there; the Release workflow publishes
   each release with trusted publishing, and the token is gone. See
   [Releasing](#releasing).
+- [x] **Warn of a function nothing performs,** in a model that performs
+  others (`unperformed_functions`). Told to fix an error, an agent may delete
+  the `perform` the error points at. The coffee machine without its bean
+  hopper's `perform` drew all six views without a word, though nothing stored
+  the beans any more.
+- [x] **Warn of a tree that refines no use case,** where a logical view draws
+  it beside use cases (`unrefined_trees`). The coffee machine without
+  `MakeBeverage`'s `#refinement dependency` drew its logical view without a
+  word, the arrow up to `OperateMachine` simply gone. A refinement stays
+  optional on a view that shows no use cases.
+- [ ] **Suggest the name meant** when a reference does not resolve, from the
+  names in scope that come closest: *Could not resolve reference to Feature
+  named 'storeBeans'. Did you mean 'storeMrBeans'?* It saves an agent, or a
+  person, a search through the model.
 - [ ] **Be found by SysML v2 users:** an entry in each SysML v2 awesome list
   (jgsystemsconsulting/awesome-sysml-v2, mycr0ft/awesome-sysml,
   daltskin/SysML-v2-Resources, jgsystemsconsulting/awesome-mbse) and a post
@@ -394,20 +415,32 @@ In priority order:
   SVG preview shows the diagram beside the text.
 - [ ] **Create a VS Code extension,** in `editors/vscode/` in this
   repository, so a systems engineer writes SysML v2 with the diagrams beside
-  the text:
+  the text. AI agents will write most of the models, so it helps check and
+  review them rather than type them: rename, completion and other editing help
+  are left to the agents and to SysIDE, since ortho's checks catch what an
+  agent misses.
   - [x] SysML v2 keyword highlighting, written from ortho's own keyword list.
     It uses the language id `sysml`, so it works beside other SysML v2
     extensions such as SysIDE.
   - [x] A live preview: the views' SVGs in a panel beside the model, rendered
     again by `ortho render` on every save, and ortho's errors in the Problems
     panel. It needs ortho installed, until the step that bundles it.
-  - [ ] An *Open example* command for the coffee machine and survey drone.
   - [ ] An *Add AI instructions* command that writes a skill file for Claude
-    Code and instructions for Copilot from [LANGUAGE.md](LANGUAGE.md).
+    Code and instructions for Copilot from [LANGUAGE.md](LANGUAGE.md). They
+    tell the agent to run `ortho render` and fix what it reports before it
+    finishes.
+  - [ ] An *Open example* command for the coffee machine and survey drone.
   - [ ] The ortho binary inside the extension: one package per system, built
     by CI from the release binaries, with a setting to use another ortho.
+    Agents check their work with it too, so it has to be where their shell
+    finds it, not only where the preview does.
   - [ ] Publish on the VS Code Marketplace and Open VSX, which Cursor and
     VSCodium use.
+  - [ ] Click a box in a diagram to open the line that declares it, which
+    takes a reviewer from a diagram that looks wrong to the text. ortho first
+    has to write each box's file and line into the SVG.
+  - [ ] Show what a change did to each view: the diagrams before and after an
+    agent's edit, matched by the same file and line marks.
 - [ ] **Requirements on the parts that satisfy them**, in a compartment like
   *perform actions* rather than a seventh view.
 - [ ] **Item flows on the physical view** (`flow`): what passes between ports,

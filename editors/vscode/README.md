@@ -52,9 +52,10 @@ or a download from the
   it. In VS Code, open the Extensions view, click **...** at its top, choose
   **Install from VSIX...** and pick `ortho-vscode.vsix`. Or from a terminal:
   `code --install-extension ortho-vscode.vsix`.
-- **Or run it from a clone** of the repository: open `editors/vscode` in VS
-  Code and press F5. A second window opens on the coffee machine example with
-  the extension loaded, and picks up your changes when you reload it.
+- **Or run it from a clone** of the repository: open the repository, or
+  `editors/vscode`, in VS Code and press F5. A second window opens on the
+  coffee machine example with the extension loaded, and picks up your changes
+  when you reload it.
 
 ## Working on it
 

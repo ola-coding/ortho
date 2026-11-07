@@ -10,10 +10,29 @@ use super::scope::Logged;
 use super::workspace::{Diagnostic, Severity};
 use crate::model::graph::effective_name;
 use crate::model::library::{LIBRARY, LibraryPackage};
+use crate::model::packages::exposed_members;
+use crate::model::views::{
+    DiagramKind, declared_views, diagram_kind, exposed_elements, is_sub_function, why_undrawable,
+};
 use std::collections::HashSet;
 
-/// What one file reports: its unresolved references, then each node's checks.
-pub fn validate(ast: &Ast, root: NodeId, _text: &str, log: &[Logged]) -> Vec<Diagnostic> {
+/// What a model leaves undone across its files, found once for the whole model and
+/// reported by each file where it is. A function and what performs it, or a tree
+/// and the use case it refines, may be in different files.
+pub struct Gaps {
+    unperformed: HashSet<NodeId>,
+    unrefined: HashSet<NodeId>,
+}
+
+impl Gaps {
+    pub fn of(ast: &Ast, roots: &[NodeId]) -> Gaps {
+        Gaps { unperformed: unperformed_functions(ast, roots), unrefined: unrefined_trees(ast, roots) }
+    }
+}
+
+/// What one file reports: its unresolved references, then each node's checks,
+/// with the model's `gaps` among them.
+pub fn validate(ast: &Ast, root: NodeId, _text: &str, log: &[Logged], gaps: &Gaps) -> Vec<Diagnostic> {
     let mut diagnostics = Vec::new();
     for logged in log {
         if let Some(message) = &logged.error
@@ -24,6 +43,12 @@ pub fn validate(ast: &Ast, root: NodeId, _text: &str, log: &[Logged]) -> Vec<Dia
         }
     }
     for node in ast.with_all_contents(root) {
+        if gaps.unperformed.contains(&node) {
+            warn_unperformed(ast, node, &mut diagnostics);
+        }
+        if gaps.unrefined.contains(&node) {
+            warn_unrefined(ast, node, &mut diagnostics);
+        }
         match ast[node].ty {
             Type::ConnectorEnd => check_end_starts_at_accessible_feature(ast, node, &mut diagnostics),
             Type::PackageDecl => check_package_not_named_after_library(ast, node, &mut diagnostics),
@@ -129,6 +154,144 @@ fn is_structure(ast: &Ast, node: NodeId) -> bool {
     use Type::*;
     matches!(ast[node].ty, PartUsage | PortUsage | AttributeUsage | ActorUsage | SubjectUsage | ConnectionUsage)
         || (ast[node].ty == OtherUsage && matches!(ast.text(node, Prop::Kind), Some("item" | "occurrence" | "enum")))
+}
+
+/// The functions at the bottom of the trees the logical views draw that nothing
+/// performs, in a model that performs any of them.
+///
+/// `perform` is optional, so a model that performs none of its functions is not
+/// warned of. One that performs some has to perform them all: asked to fix an
+/// error, an agent may delete the `perform` it points at, and the model would
+/// then draw as if complete, with nothing realizing that function. Performing a
+/// function performs everything under it, and performing a typed action,
+/// `perform beverage;`, performs its definition's tree. A typed action inside a
+/// tree stands for its definition's tree, which is checked where a view draws it.
+fn unperformed_functions(ast: &Ast, roots: &[NodeId]) -> HashSet<NodeId> {
+    let mut seen = HashSet::new();
+    let mut leaves = Vec::new();
+    for view in logical_views(ast, roots) {
+        for member in exposed_members(ast, &exposed_elements(ast, view)) {
+            if is_function(ast, member) {
+                collect_leaves(ast, member, &mut seen, &mut leaves);
+            }
+        }
+    }
+    let mut performed = HashSet::new();
+    for perform in roots.iter().flat_map(|root| ast.with_all_contents(*root)) {
+        if ast[perform].ty != Type::PerformUsage {
+            continue;
+        }
+        let last = ast.child(perform, Prop::Target).and_then(|end| ast.references_of(end, Prop::Segments).pop());
+        if let Some(function) = last.and_then(|segment| ast.reference_target(segment)) {
+            performed.insert(function);
+            performed.extend(ast.target(function, Prop::Type));
+        }
+    }
+    let is_performed = |leaf: &NodeId| {
+        std::iter::successors(Some(*leaf), |node| ast[*node].parent).any(|node| performed.contains(&node))
+    };
+    let (done, undone): (Vec<NodeId>, Vec<NodeId>) = leaves.into_iter().partition(is_performed);
+    if done.is_empty() { HashSet::new() } else { undone.into_iter().collect() }
+}
+
+/// The functions with none under them, from `function` down, each once.
+fn collect_leaves(ast: &Ast, function: NodeId, seen: &mut HashSet<NodeId>, leaves: &mut Vec<NodeId>) {
+    if !seen.insert(function) {
+        return;
+    }
+    let children: Vec<NodeId> =
+        ast.children(function, Prop::Members).filter(|member| ast[*member].ty == Type::ActionUsage).collect();
+    if children.is_empty() {
+        if is_function(ast, function) {
+            leaves.push(function);
+        }
+        return;
+    }
+    for child in children {
+        collect_leaves(ast, child, seen, leaves);
+    }
+}
+
+fn warn_unperformed(ast: &Ast, function: NodeId, diagnostics: &mut Vec<Diagnostic>) {
+    let named = effective_name(ast, function).map_or("this function".to_string(), |name| format!("'{name}'"));
+    diagnostics.push(Diagnostic {
+        severity: Severity::Warning,
+        offset: offset_of(ast, function, Prop::Name),
+        message: format!(
+            "No part or module performs {named}. Perform it, or a function above it, in the part or module that realizes it."
+        ),
+    });
+}
+
+/// The function trees that refine no use case, though a logical view draws them
+/// beside use cases.
+///
+/// A refinement is optional, but a logical view that shows use cases is there to
+/// tie its trees to them. Asked to fix an error, an agent may delete the
+/// refinement it points at, and the view would then draw as if complete, the tree
+/// without its arrow up to its use case. A tree is named by the function at its
+/// top, also where a view draws one of its branches; a dependency from a typed
+/// action, `beverage : MakeBeverage`, refines its definition's tree.
+fn unrefined_trees(ast: &Ast, roots: &[NodeId]) -> HashSet<NodeId> {
+    let is_use_case = |node: NodeId| matches!(ast[node].ty, Type::UseCaseDef | Type::UseCaseUsage);
+    let mut drawn = Vec::new();
+    for view in logical_views(ast, roots) {
+        let members = exposed_members(ast, &exposed_elements(ast, view));
+        if members.iter().any(|member| is_use_case(*member)) {
+            drawn.extend(members.into_iter().filter(|member| is_function(ast, *member)).map(|f| top_of_tree(ast, f)));
+        }
+    }
+    let mut refined = HashSet::new();
+    for dependency in roots.iter().flat_map(|root| ast.with_all_contents(*root)) {
+        if ast[dependency].ty != Type::Dependency {
+            continue;
+        }
+        let ends =
+            |prop: Prop| ast.references_of(dependency, prop).into_iter().filter_map(|end| ast.reference_target(end));
+        if ends(Prop::Suppliers).any(is_use_case) {
+            for client in ends(Prop::Clients) {
+                refined.insert(client);
+                refined.extend(ast.target(client, Prop::Type));
+            }
+        }
+    }
+    drawn.into_iter().filter(|tree| !refined.contains(tree)).collect()
+}
+
+/// The function at the top of the tree `function` is in.
+fn top_of_tree(ast: &Ast, function: NodeId) -> NodeId {
+    let mut top = function;
+    while let Some(parent) =
+        ast[top].parent.filter(|parent| matches!(ast[*parent].ty, Type::ActionDef | Type::ActionUsage))
+    {
+        top = parent;
+    }
+    top
+}
+
+fn warn_unrefined(ast: &Ast, tree: NodeId, diagnostics: &mut Vec<Diagnostic>) {
+    let named = effective_name(ast, tree).map_or("This tree".to_string(), |name| format!("'{name}'"));
+    diagnostics.push(Diagnostic {
+        severity: Severity::Warning,
+        offset: offset_of(ast, tree, Prop::Name),
+        message: format!(
+            "{named} refines no use case, though a logical view draws it beside use cases. Add a #refinement dependency from it to the use case it details."
+        ),
+    });
+}
+
+/// The logical views ortho draws.
+fn logical_views(ast: &Ast, roots: &[NodeId]) -> Vec<NodeId> {
+    let views = roots.iter().flat_map(|root| declared_views(ast, *root));
+    views
+        .filter(|view| diagram_kind(ast, *view) == DiagramKind::Logical && why_undrawable(ast, *view).is_none())
+        .collect()
+}
+
+/// Whether a logical view draws `node` as a function: an action definition, or an
+/// action of its own. A typed action is one use of a tree, drawn from its definition.
+fn is_function(ast: &Ast, node: NodeId) -> bool {
+    ast[node].ty == Type::ActionDef || is_sub_function(ast, node)
 }
 
 /// ortho does not load the standard library, so some references name nothing it

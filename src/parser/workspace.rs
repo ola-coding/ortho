@@ -1,7 +1,7 @@
 //! A model's files read as one, so names resolve across them.
 use super::ast::{Ast, NodeId, Prop, Type};
 use super::scope::Linker;
-use super::validator::validate;
+use super::validator::{Gaps, validate};
 use super::{SyntaxError, parse, position};
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -58,8 +58,9 @@ impl Workspace {
         for (reference, target) in &linked.targets {
             ast.set_target(*reference, *target);
         }
+        let gaps = Gaps::of(&ast, &roots);
         for (document, log) in documents.iter_mut().zip(&linked.logs) {
-            document.diagnostics = validate(&ast, document.root, &document.text, log);
+            document.diagnostics = validate(&ast, document.root, &document.text, log, &gaps);
         }
         Ok(Workspace { ast, documents })
     }

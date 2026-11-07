@@ -582,6 +582,177 @@ fn leaves_alone_any_other_package_and_the_library_itself() {
     }
 }
 
+fn unperformed(name: &str) -> String {
+    format!(
+        "No part or module performs '{name}'. Perform it, or a function above it, in the part or module that realizes it."
+    )
+}
+
+/// A function tree a logical view draws, and the parts in `hardware`, which may perform its functions.
+fn realized(hardware: &str) -> String {
+    format!(
+        "package Functions {{
+            private import StandardViewDefinitions::*;
+            action def MakeBeverage {{
+                action prepareWater {{ action storeWater; action heatWater; }}
+                action prepareCoffee {{ action grindBeans; }}
+            }}
+            action beverage : MakeBeverage;
+            view logical : GeneralView {{ expose MakeBeverage; }}
+        }}
+        package Hardware {{
+            private import Functions::*;
+            {hardware}
+        }}"
+    )
+}
+
+#[test]
+fn warns_of_a_function_nothing_performs_once_the_model_performs_others() {
+    // What is left once an agent deletes the grinder's perform to silence an error.
+    let workspace = build(&realized(
+        "part def Tank { perform beverage.prepareWater.storeWater; }
+         part def Heater { perform beverage.prepareWater.heatWater; }
+         part def Grinder;",
+    ));
+    assert_eq!(reported(&workspace, Severity::Warning), [unperformed("grindBeans")]);
+    assert_eq!(reported(&workspace, Severity::Error), Vec::<String>::new());
+}
+
+#[test]
+fn a_model_that_performs_none_of_its_functions_is_not_warned_as_perform_is_optional() {
+    let workspace = build(&realized("part def Tank; part def Heater; part def Grinder;"));
+    assert_eq!(reported(&workspace, Severity::Warning), Vec::<String>::new());
+}
+
+#[test]
+fn performing_a_function_performs_the_functions_under_it() {
+    for hardware in [
+        "part def Boiler { perform beverage.prepareWater; }
+         part def Grinder { perform beverage.prepareCoffee.grindBeans; }",
+        // A typed action stands for its definition's whole tree.
+        "part def Machine { perform beverage; }",
+    ] {
+        assert_eq!(reported(&build(&realized(hardware)), Severity::Warning), Vec::<String>::new(), "{hardware}");
+    }
+}
+
+#[test]
+fn only_the_functions_a_logical_view_draws_have_to_be_performed() {
+    let text = |exposed: &str| {
+        format!(
+            "package Functions {{
+                private import StandardViewDefinitions::*;
+                action def MakeBeverage {{ action heatWater; action grindBeans; }}
+                action def Clean {{ action rinse; }}
+                action beverage : MakeBeverage;
+                view logical : GeneralView {{ {exposed} }}
+                part def Heater {{ perform beverage.heatWater; }}
+                part def Grinder {{ perform beverage.grindBeans; }}
+            }}"
+        )
+    };
+    assert_eq!(reported(&build(&text("expose MakeBeverage;")), Severity::Warning), Vec::<String>::new());
+    assert_eq!(
+        reported(&build(&text("expose MakeBeverage; expose Clean;")), Severity::Warning),
+        [unperformed("rinse")]
+    );
+}
+
+fn unrefined(name: &str) -> String {
+    format!(
+        "'{name}' refines no use case, though a logical view draws it beside use cases. Add a #refinement dependency from it to the use case it details."
+    )
+}
+
+/// A function tree, a use case, and `refinement` beside them, with a logical view exposing `exposed`.
+fn refining(exposed: &str, refinement: &str) -> String {
+    format!(
+        "package SystemUseCases {{ use case def OperateMachine; }}
+        package Functions {{
+            private import StandardViewDefinitions::*;
+            private import ModelingMetadata::*;
+            action def MakeBeverage {{ action prepareWater {{ action heatWater; }} }}
+            action beverage : MakeBeverage;
+            {refinement}
+            view logical : GeneralView {{ {exposed} }}
+        }}"
+    )
+}
+
+#[test]
+fn warns_of_a_tree_that_refines_no_use_case_on_a_view_that_shows_use_cases() {
+    let workspace = build(&refining("expose MakeBeverage; expose SystemUseCases::OperateMachine;", ""));
+    assert_eq!(reported(&workspace, Severity::Warning), [unrefined("MakeBeverage")]);
+    assert_eq!(reported(&workspace, Severity::Error), Vec::<String>::new());
+}
+
+#[test]
+fn a_tree_on_a_view_without_use_cases_needs_no_refinement_as_it_is_optional() {
+    let workspace = build(&refining("expose MakeBeverage;", ""));
+    assert_eq!(reported(&workspace, Severity::Warning), Vec::<String>::new());
+}
+
+#[test]
+fn a_refinement_from_the_tree_or_a_use_of_it_refines_the_tree_also_on_a_view_of_a_branch() {
+    for refinement in [
+        "#refinement dependency MakeBeverage to SystemUseCases::OperateMachine;",
+        "#refinement dependency beverage to SystemUseCases::OperateMachine;",
+    ] {
+        for exposed in ["expose MakeBeverage;", "expose MakeBeverage::prepareWater;"] {
+            let text = refining(&format!("{exposed} expose SystemUseCases::OperateMachine;"), refinement);
+            assert_eq!(reported(&build(&text), Severity::Warning), Vec::<String>::new(), "{refinement} {exposed}");
+        }
+    }
+    // A branch whose tree refines nothing: the warning is at the tree.
+    let branch = refining("expose MakeBeverage::prepareWater; expose SystemUseCases::OperateMachine;", "");
+    assert_eq!(reported(&build(&branch), Severity::Warning), [unrefined("MakeBeverage")]);
+}
+
+/// The coffee machine's warnings once `deleted` is gone from its files, as an agent
+/// may delete the line an error points at, and its logical.sysml as named in them.
+fn coffee_machine_without(deleted: &str, folder: &str) -> (Vec<String>, String) {
+    let example = Path::new(env!("CARGO_MANIFEST_DIR")).join("examples/coffee-machine");
+    let folder = std::env::temp_dir().join(format!("ortho-linking-{folder}-{}", std::process::id()));
+    std::fs::create_dir_all(&folder).unwrap();
+    let mut files = Vec::new();
+    for entry in std::fs::read_dir(&example).unwrap() {
+        let path = entry.unwrap().path();
+        if path.extension().is_some_and(|e| e == "sysml") {
+            let copy = folder.join(path.file_name().unwrap());
+            std::fs::write(&copy, std::fs::read_to_string(&path).unwrap().replace(deleted, "")).unwrap();
+            files.push(copy.to_str().unwrap().to_string());
+        }
+    }
+    files.sort();
+    let parsed = parse_sysml_files(&files);
+    std::fs::remove_dir_all(&folder).unwrap();
+    (parsed.unwrap().warnings, folder.join("logical.sysml").to_str().unwrap().to_string())
+}
+
+/// The line, from 1, of the coffee machine's logical.sysml that reads `written`.
+fn coffee_machine_logical_line(written: &str) -> usize {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"));
+    let logical = std::fs::read_to_string(root.join("examples/coffee-machine/logical.sysml")).unwrap();
+    logical.lines().position(|line| line.trim() == written).unwrap() + 1
+}
+
+#[test]
+fn warns_at_the_function_when_the_coffee_machine_loses_a_perform() {
+    // The bean hopper's, on the physical view.
+    let (warnings, logical) = coffee_machine_without("perform beverage.prepareCoffee.storeBeans;", "unperformed");
+    let line = coffee_machine_logical_line("action storeBeans;");
+    assert_eq!(warnings, [format!("{logical} line {line}: {}", unperformed("storeBeans"))]);
+}
+
+#[test]
+fn warns_at_the_tree_when_the_coffee_machine_loses_a_refinement() {
+    let refinement = "#refinement dependency MakeBeverage to SystemUseCases::OperateMachine;";
+    let (warnings, logical) = coffee_machine_without(refinement, "unrefined");
+    let line = coffee_machine_logical_line("action def MakeBeverage {");
+    assert_eq!(warnings, [format!("{logical} line {line}: {}", unrefined("MakeBeverage"))]);
+}
+
 #[test]
 fn hands_a_warning_back_with_its_file_and_line_and_does_not_stop_the_model_loading() {
     let folder = std::env::temp_dir().join(format!("ortho-linking-{}", std::process::id()));
