@@ -1,6 +1,8 @@
 //! Writes the VS Code extension's SysML v2 grammar, `editors/vscode/syntaxes/sysml.tmLanguage.json`,
-//! from ortho's own keyword list, so the editor colours exactly the words ortho reserves.
-//! CI runs it and fails if the committed grammar differs.
+//! from ortho's own keyword list, so the editor colours exactly the words ortho reserves,
+//! and copies LANGUAGE.md to `editors/vscode/ai/LANGUAGE.md`, which the extension's
+//! *Add AI instructions* command hands to agents. CI runs it and fails if either
+//! committed file differs.
 //!
 //! The grammar follows the lexer (`src/parser/lexer.rs`): `//` starts a note to the end
 //! of the line, `//* */` is a note over lines, `/* */` is a comment, `"..."` a string and
@@ -10,6 +12,9 @@ use ortho::parser::KEYWORDS;
 use serde_json::{Value, json};
 
 const OUT: &str = "editors/vscode/syntaxes/sysml.tmLanguage.json";
+const LANGUAGE_OUT: &str = "editors/vscode/ai/LANGUAGE.md";
+/// Where a link to another file of the repository points, once the page is copied out of it.
+const REPOSITORY: &str = "https://github.com/ola-coding/ortho/blob/main/";
 
 /// Words coloured apart from the other keywords, each group with its TextMate scope.
 /// Every word here must be one of ortho's keywords; the rest are `keyword.other`.
@@ -126,5 +131,27 @@ pub fn run() -> Result {
     let text = serde_json::to_string_pretty(&grammar()?).map_err(|error| error.to_string())?;
     write(OUT, &format!("{text}\n"))?;
     println!("Wrote {OUT}");
+    let language = std::fs::read_to_string("LANGUAGE.md").map_err(|error| format!("LANGUAGE.md: {error}"))?;
+    std::fs::create_dir_all("editors/vscode/ai").map_err(|error| error.to_string())?;
+    write(LANGUAGE_OUT, &language_copy(&language))?;
+    println!("Wrote {LANGUAGE_OUT}");
     Ok(())
+}
+
+/// LANGUAGE.md as it reads outside the repository: a link to another of its files,
+/// `[VIEWS.md](VIEWS.md)`, points at it on GitHub. A link within the page stays.
+fn language_copy(language: &str) -> String {
+    let mut copy = String::from("<!-- Copied from ortho's LANGUAGE.md by `cargo xtask vscode-grammar`. -->\n\n");
+    let mut rest = language;
+    while let Some(at) = rest.find("](") {
+        let (before, after) = rest.split_at(at + 2);
+        copy.push_str(before);
+        let relative = !after.starts_with("http") && !after.starts_with('#');
+        if relative {
+            copy.push_str(REPOSITORY);
+        }
+        rest = after;
+    }
+    copy.push_str(rest);
+    copy
 }

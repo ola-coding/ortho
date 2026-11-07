@@ -18,6 +18,13 @@ It is at an early stage. What it does now:
   packages declare, comments and notes, strings, quoted names, numbers and
   metadata such as `#Safety`. The keywords are exactly the ones ortho reads.
 - **Comments a line** with Ctrl+/ and closes brackets and quotes.
+- **Teaches AI agents the model.** *Ortho: Add AI Instructions*, in the
+  Command Palette, writes a skill for Claude Code
+  (`.claude/skills/sysml-v2-ortho/`) and instructions for GitHub Copilot
+  (`.github/instructions/sysml-v2.instructions.md`) into your workspace. They
+  carry the SysML v2 that ortho reads, and tell the agent to render the model
+  after every change and fix what ortho reports, rather than delete the line
+  it points at. It asks before replacing files that are already there.
 
 A model is every `.sysml` file in the folder of the file you preview, read
 together, as `ortho render <folder>` reads them. The diagrams are written to
@@ -34,7 +41,7 @@ cannot find it, set **Ortho: Path** to the binary.
 
 What comes next is in the
 [backlog](https://github.com/ola-coding/ortho/blob/main/DEVELOPMENT.md#backlog):
-the examples, AI instructions, and ortho itself inside the extension.
+the examples, and ortho itself inside the extension.
 
 It targets SysML v2 only. It uses the language id `sysml`, so it works beside
 other SysML v2 extensions, such as SysIDE.
@@ -65,9 +72,12 @@ The code is plain JavaScript, with no dependencies and no build step:
 - `src/ortho.js`: runs `ortho render` and reads what it prints. It needs no
   VS Code, so `npm test` tests it with Node; set `ORTHO_BIN` to an ortho
   binary to run it on the examples too, as CI does.
+- `src/instructions.js`: the AI instructions, tested with Node too.
 - `media/`: the preview panel's page.
 
 The grammar, `syntaxes/sysml.tmLanguage.json`, is written from ortho's
 keyword list in `src/parser/lexer.rs` by `cargo xtask vscode-grammar`. Change
 `xtask/src/vscode_grammar.rs` and run that, rather than editing the JSON; CI
-fails if the two differ.
+fails if the two differ. The same task copies ortho's LANGUAGE.md to
+`ai/LANGUAGE.md`, which the AI instructions carry, so they never drift from
+what ortho reads.

@@ -243,7 +243,7 @@ cargo xtask deck                    # build the pitch deck into marketing/
 cargo xtask omg-models              # fetch OMG's models, which needs Git
 cargo test -- --ignored             # count how many of OMG's models load
 cargo xtask library-names           # list the standard library's names
-cargo xtask vscode-grammar          # write the VS Code extension's grammar
+cargo xtask vscode-grammar          # the extension's grammar, LANGUAGE.md copy
 ```
 
 CI (`.github/workflows/ci.yml`) builds and tests on Linux, Windows and
@@ -258,7 +258,9 @@ deck to GitHub Pages.
   after, so the VS Code extension colours it.
 - **The VS Code extension** is in `editors/vscode/`, with its own version and
   its own [README](editors/vscode/README.md). Its grammar,
-  `syntaxes/sysml.tmLanguage.json`, is written from `KEYWORDS`, never by hand.
+  `syntaxes/sysml.tmLanguage.json`, is written from `KEYWORDS`, never by hand,
+  and its `ai/LANGUAGE.md`, which the AI instructions carry, is copied from
+  LANGUAGE.md: run `cargo xtask vscode-grammar` after changing either.
   Its code is plain JavaScript with no dependencies and no build step;
   `src/ortho.js`, which runs ortho and reads what it prints, is tested with
   Node (`npm test` in `editors/vscode`, with `ORTHO_BIN` set to run the real
@@ -421,10 +423,7 @@ Open, in priority order:
   agent misses.
   - [x] SysML v2 keyword highlighting, written from ortho's keyword list.
   - [x] A live preview, rendered on every save, with ortho's problems.
-  - [ ] An *Add AI instructions* command that writes a skill file for Claude
-    Code and instructions for Copilot from [LANGUAGE.md](LANGUAGE.md). They
-    tell the agent to run `ortho render` and fix what it reports before it
-    finishes.
+  - [x] *Add AI instructions*: a Claude Code skill and Copilot instructions.
   - [ ] An *Open example* command for the coffee machine and survey drone.
   - [ ] The ortho binary inside the extension: one package per system, built
     by CI from the release binaries, with a setting to use another ortho.

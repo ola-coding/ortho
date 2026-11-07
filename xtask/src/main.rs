@@ -5,7 +5,8 @@
 //! - `deck`: the pitch deck, into `marketing/`.
 //! - `omg-models`: OMG's SysML v2 models, into `.omg-models/`.
 //! - `library-names`: the standard library's names, into `src/model/library.rs`.
-//! - `vscode-grammar`: the VS Code extension's SysML v2 grammar, from ortho's keywords.
+//! - `vscode-grammar`: the VS Code extension's SysML v2 grammar, from ortho's keywords,
+//!   and its copy of LANGUAGE.md.
 use std::path::Path;
 use std::process::ExitCode;
 
@@ -25,7 +26,11 @@ const TASKS: &[Task] = &[
     ("deck", deck::run, "build the pitch deck into marketing/ from the committed diagrams"),
     ("omg-models", omg_models::run, "fetch OMG's SysML v2 models into .omg-models/"),
     ("library-names", library_names::run, "list the standard library's names into src/model/library.rs"),
-    ("vscode-grammar", vscode_grammar::run, "write the VS Code extension's grammar from ortho's keyword list"),
+    (
+        "vscode-grammar",
+        vscode_grammar::run,
+        "write the VS Code extension's grammar from ortho's keywords, and its copy of LANGUAGE.md",
+    ),
 ];
 
 fn main() -> ExitCode {

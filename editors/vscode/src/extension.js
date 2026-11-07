@@ -7,6 +7,7 @@ const vscode = require('vscode');
 const crypto = require('node:crypto');
 const path = require('node:path');
 const { readReport, viewTitle, tabTitles, runOrtho, keepOnly } = require('./ortho');
+const { instructionFiles } = require('./instructions');
 
 const INSTALL_URL = 'https://github.com/ola-coding/ortho#install';
 
@@ -21,6 +22,7 @@ function activate(context) {
       preview.open(uri),
     ),
     vscode.commands.registerCommand('ortho.renderAgain', () => preview.render()),
+    vscode.commands.registerCommand('ortho.addAiInstructions', () => addAiInstructions(context)),
     // A preview open when VS Code closed opens again on the same model.
     vscode.window.registerWebviewPanelSerializer(Preview.viewType, {
       async deserializeWebviewPanel(panel, /** @type {{ folder?: unknown } | undefined} */ state) {
@@ -31,6 +33,63 @@ function activate(context) {
 }
 
 function deactivate() {}
+
+/**
+ * Writes the AI instructions into a workspace folder: a skill for Claude Code and
+ * instructions for Copilot, from the copy of ortho's LANGUAGE.md the extension carries.
+ * Files that are already there are replaced only once the user says so.
+ * @param {vscode.ExtensionContext} context
+ */
+async function addAiInstructions(context) {
+  const folders = vscode.workspace.workspaceFolders ?? [];
+  const folder =
+    folders.length > 1
+      ? await vscode.window.showWorkspaceFolderPick({ placeHolder: 'Where should the AI instructions go?' })
+      : folders[0];
+  if (!folder) {
+    if (folders.length === 0) vscode.window.showInformationMessage('Open a folder to add AI instructions to.');
+    return;
+  }
+  const bytes = await vscode.workspace.fs.readFile(vscode.Uri.joinPath(context.extensionUri, 'ai', 'LANGUAGE.md'));
+  const files = instructionFiles(new TextDecoder().decode(bytes));
+  const existing = [];
+  for (const file of files) {
+    const uri = vscode.Uri.joinPath(folder.uri, file.path);
+    if (await exists(uri)) existing.push(file.path);
+  }
+  if (existing.length > 0) {
+    const replace = 'Replace';
+    const answer = await vscode.window.showWarningMessage(
+      `Replace the AI instructions already in ${folder.name}?`,
+      { modal: true, detail: existing.join('\n') },
+      replace,
+    );
+    if (answer !== replace) return;
+  }
+  for (const file of files) {
+    const uri = vscode.Uri.joinPath(folder.uri, file.path);
+    await vscode.workspace.fs.createDirectory(vscode.Uri.joinPath(uri, '..'));
+    await vscode.workspace.fs.writeFile(uri, new TextEncoder().encode(file.content));
+  }
+  const open = 'Open the skill';
+  const answer = await vscode.window.showInformationMessage(
+    `Added AI instructions for Claude Code and Copilot to ${folder.name}.`,
+    open,
+  );
+  if (answer === open) {
+    await vscode.window.showTextDocument(vscode.Uri.joinPath(folder.uri, files[0].path));
+  }
+}
+
+/** @param {vscode.Uri} uri */
+async function exists(uri) {
+  try {
+    await vscode.workspace.fs.stat(uri);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 /** The model a file belongs to: every .sysml file in its folder, read as one model. */
 function modelOf(/** @type {vscode.Uri} */ uri) {
