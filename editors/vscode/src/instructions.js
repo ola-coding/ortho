@@ -40,7 +40,7 @@ When you rename an element, update every reference to it in every file of the fo
 
 ## Where ortho is
 
-Run \`ortho\`. If it is not found, try \`~/.cargo/bin/ortho\`, or the path in the VS Code setting \`ortho.path\`. To install it: \`cargo install ortho\`, or download it from https://github.com/ola-coding/ortho/releases.
+Run \`ortho\`. In a VS Code terminal, the Ortho extension puts the ortho it runs first on the PATH. If \`ortho\` is not found, look in the \`bin\` folder of the Ortho extension, under \`~/.vscode/extensions/\` (\`~/.cursor/extensions/\` in Cursor), then try \`~/.cargo/bin/ortho\` or the path in the VS Code setting \`ortho.path\`. To install it: \`cargo install ortho\`, or download it from https://github.com/ola-coding/ortho/releases.
 `;
 }
 

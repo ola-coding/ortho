@@ -93,6 +93,49 @@ function cargoOrtho() {
 }
 
 /**
+ * The ortho a build of the extension for one system carries, in its `bin` folder. A
+ * build for every system, as CI packages for trying out, carries none.
+ * @param {string} extensionPath
+ * @param {string} [platform]
+ */
+function bundledOrtho(extensionPath, platform = process.platform) {
+  return path.join(extensionPath, 'bin', platform === 'win32' ? 'ortho.exe' : 'ortho');
+}
+
+/**
+ * Which ortho to run: the one the `ortho.path` setting names, else the one the
+ * extension carries, else `ortho` on the PATH.
+ * @param {string | undefined} setting
+ * @param {string} bundled
+ * @param {(file: string) => boolean} [exists]
+ */
+function chooseOrtho(setting, bundled, exists = fs.existsSync) {
+  const named = setting?.trim();
+  if (named) return named;
+  return exists(bundled) ? bundled : 'ortho';
+}
+
+/**
+ * The folder to put first on a terminal's PATH, so that `ortho` there is the ortho the
+ * preview runs: that binary's folder, or none for a bare command, already looked up on
+ * the PATH.
+ * @param {string} ortho
+ */
+function orthoFolder(ortho) {
+  return path.isAbsolute(ortho) && /^ortho(\.exe)?$/i.test(path.basename(ortho)) ? path.dirname(ortho) : undefined;
+}
+
+/**
+ * Makes a binary runnable, in case unpacking the extension lost its mode.
+ * @param {string} file
+ */
+function makeExecutable(file) {
+  if (process.platform === 'win32' || !fs.existsSync(file)) return;
+  const mode = fs.statSync(file).mode;
+  if ((mode & 0o111) !== 0o111) fs.chmodSync(file, mode | 0o755);
+}
+
+/**
  * Runs `ortho render <model> -o <out> --theme <theme>` in `cwd`, the folder a diagram
  * names its model file relative to. Never rejects: a model that does not load is a
  * result, and so is an ortho that cannot be found.
@@ -132,4 +175,15 @@ function keepOnly(base, keep) {
   }
 }
 
-module.exports = { readReport, viewTitle, tabTitles, runOrtho, keepOnly, cargoOrtho };
+module.exports = {
+  readReport,
+  viewTitle,
+  tabTitles,
+  runOrtho,
+  keepOnly,
+  cargoOrtho,
+  bundledOrtho,
+  chooseOrtho,
+  orthoFolder,
+  makeExecutable,
+};

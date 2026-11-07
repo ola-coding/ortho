@@ -8,7 +8,17 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
-const { readReport, viewTitle, tabTitles, runOrtho, keepOnly } = require('../src/ortho');
+const {
+  readReport,
+  viewTitle,
+  tabTitles,
+  runOrtho,
+  keepOnly,
+  bundledOrtho,
+  chooseOrtho,
+  orthoFolder,
+  makeExecutable,
+} = require('../src/ortho');
 
 const repository = path.resolve(__dirname, '..', '..', '..');
 
@@ -85,6 +95,30 @@ test('keeps only the latest render', () => {
   assert.deepEqual(fs.readdirSync(base), ['3']);
   keepOnly(path.join(base, 'missing'), '3');
   fs.rmSync(base, { recursive: true });
+});
+
+test('runs the ortho the setting names, else the one the extension carries, else ortho on the PATH', () => {
+  const bundled = bundledOrtho('/ext', 'linux');
+  assert.equal(bundled, path.join('/ext', 'bin', 'ortho'));
+  assert.equal(bundledOrtho('/ext', 'win32'), path.join('/ext', 'bin', 'ortho.exe'));
+  assert.equal(chooseOrtho('/opt/ortho', bundled, () => true), '/opt/ortho');
+  assert.equal(chooseOrtho(' ', bundled, () => true), bundled);
+  assert.equal(chooseOrtho('', bundled, () => false), 'ortho');
+  assert.equal(chooseOrtho(undefined, bundled, () => false), 'ortho');
+});
+
+test('puts the folder of the ortho the preview runs on the terminal PATH', () => {
+  assert.equal(orthoFolder(path.join(path.sep, 'ext', 'bin', 'ortho')), path.join(path.sep, 'ext', 'bin'));
+  // A bare command is already found on the PATH, and a folder of other things stays off it.
+  assert.equal(orthoFolder('ortho'), undefined);
+  assert.equal(orthoFolder(path.join(path.sep, 'usr', 'bin', 'env')), undefined);
+});
+
+test('makes the binary it carries runnable', { skip: process.platform === 'win32' }, () => {
+  const file = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'ortho-bin-')), 'ortho');
+  fs.writeFileSync(file, '', { mode: 0o644 });
+  makeExecutable(file);
+  assert.equal(fs.statSync(file).mode & 0o777, 0o755);
 });
 
 test('reports an ortho that cannot be found', async () => {

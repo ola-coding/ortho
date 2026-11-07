@@ -6,7 +6,17 @@
 const vscode = require('vscode');
 const crypto = require('node:crypto');
 const path = require('node:path');
-const { readReport, viewTitle, tabTitles, runOrtho, keepOnly } = require('./ortho');
+const {
+  readReport,
+  viewTitle,
+  tabTitles,
+  runOrtho,
+  keepOnly,
+  bundledOrtho,
+  chooseOrtho,
+  orthoFolder,
+  makeExecutable,
+} = require('./ortho');
 const { instructionFiles } = require('./instructions');
 const { EXAMPLES, freeName, firstFile } = require('./examples');
 
@@ -16,6 +26,8 @@ const OPEN_ON_START = 'ortho.openOnStart';
 
 /** @param {vscode.ExtensionContext} context */
 function activate(context) {
+  makeExecutable(bundledOrtho(context.extensionPath));
+  putOnTerminalPath(context);
   const problems = vscode.languages.createDiagnosticCollection('ortho');
   const preview = new Preview(context, problems);
   context.subscriptions.push(
@@ -27,6 +39,9 @@ function activate(context) {
     vscode.commands.registerCommand('ortho.renderAgain', () => preview.render()),
     vscode.commands.registerCommand('ortho.addAiInstructions', () => addAiInstructions(context)),
     vscode.commands.registerCommand('ortho.openExample', () => openExample(context)),
+    vscode.workspace.onDidChangeConfiguration((event) => {
+      if (event.affectsConfiguration('ortho.path')) putOnTerminalPath(context);
+    }),
     // A preview open when VS Code closed opens again on the same model.
     vscode.window.registerWebviewPanelSerializer(Preview.viewType, {
       async deserializeWebviewPanel(panel, /** @type {{ folder?: unknown } | undefined} */ state) {
@@ -38,6 +53,28 @@ function activate(context) {
 }
 
 function deactivate() {}
+
+/** The ortho the preview runs: the one `ortho.path` names, else the one the extension carries. */
+function orthoOf(/** @type {vscode.ExtensionContext} */ context) {
+  return chooseOrtho(
+    vscode.workspace.getConfiguration('ortho').get('path', ''),
+    bundledOrtho(context.extensionPath),
+  );
+}
+
+/**
+ * Puts the ortho the preview runs first on the PATH of VS Code's terminals, where
+ * agents run their commands, so that they check their work with the same ortho.
+ * @param {vscode.ExtensionContext} context
+ */
+function putOnTerminalPath(context) {
+  const terminals = context.environmentVariableCollection;
+  terminals.clear();
+  const folder = orthoFolder(orthoOf(context));
+  if (!folder) return;
+  terminals.description = 'Puts the ortho that the Ortho extension runs on the PATH.';
+  terminals.prepend('PATH', folder + path.delimiter);
+}
 
 /**
  * Copies an example the extension carries into a folder the user picks, then opens its
@@ -289,9 +326,8 @@ class Preview {
 
   /** @param {string} folder */
   async renderOnce(folder) {
-    const settings = vscode.workspace.getConfiguration('ortho');
-    const ortho = settings.get('path', 'ortho') || 'ortho';
-    const theme = settings.get('theme', 'light');
+    const ortho = orthoOf(this.context);
+    const theme = vscode.workspace.getConfiguration('ortho').get('theme', 'light');
     // Each render gets a folder of its own, so the diagrams of the last render that
     // worked stay on screen while the model does not load.
     const base = this.outFolder(folder);

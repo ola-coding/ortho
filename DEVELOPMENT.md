@@ -336,6 +336,13 @@ tab, with *publish* ticked: it tags that commit `v` and the version in
 that changes the build, such as `Cargo.toml` or the workflow, builds every
 binary without publishing.
 
+The same workflow packs the VS Code extension once per system VS Code
+names (`linux-x64`, `alpine-arm64`, `win32-x64`, `darwin-arm64` and so on),
+each VSIX carrying that system's binary in `bin/`. The release gets them
+beside the archives, as `ortho-vscode-<system>.vsix`. The VSIX that CI
+packages on every run is for any system and carries no ortho: it runs the
+one on the PATH.
+
 After the GitHub release, the workflow publishes the same version on
 [crates.io](https://crates.io/crates/ortho), for `cargo install ortho` and
 `cargo binstall ortho`; binstall fetches the release's archive, which is why
@@ -427,10 +434,8 @@ Open, in priority order:
   - [x] A live preview, rendered on every save, with ortho's problems.
   - [x] *Add AI instructions*: a Claude Code skill and Copilot instructions.
   - [x] An *Open example* command for the coffee machine and survey drone.
-  - [ ] The ortho binary inside the extension: one package per system, built
-    by CI from the release binaries, with a setting to use another ortho.
-    Agents check their work with it too, so it has to be where their shell
-    finds it, not only where the preview does.
+  - [x] The ortho binary inside the extension, one VSIX per system, and on
+    the PATH of VS Code's terminals, where agents check their work.
   - [ ] Publish on the VS Code Marketplace and Open VSX, which Cursor and
     VSCodium use.
   - [ ] Click a box in a diagram to open the line that declares it, which
