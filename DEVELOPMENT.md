@@ -443,9 +443,8 @@ Open, in priority order:
     box's group carries `data-file` and `data-line`.
   - [x] Carry ortho inside the extension: one package per system, with
     ortho's version; a folder VS Code does not trust cannot set `ortho.path`.
-  - [ ] Save the diagrams from the preview: the view shown, or every view,
-    as SVG into a folder the user picks, such as one beside the models. The
-    preview itself keeps writing to VS Code's storage.
+  - [x] Save the diagrams from the preview as SVG: the view shown, or every
+    view into a folder, remembered for each model.
   - [ ] Package it as the Marketplace wants: a LICENSE, a `.vscodeignore`
     that leaves out `test/` and `.vscode/`, the icon from
     `logo/ortho-icon.png`, and a CHANGELOG.md.

@@ -25,6 +25,8 @@ const { EXAMPLES, freeName, firstFile } = require('./examples');
 const INSTALL_URL = 'https://github.com/ola-coding/ortho#install';
 /** The file of an example just copied into a folder another window opens, to open there. */
 const OPEN_ON_START = 'ortho.openOnStart';
+/** Where each model's diagrams were last saved, by the model's folder. */
+const SAVE_FOLDERS = 'ortho.saveFolders';
 
 /** @param {vscode.ExtensionContext} context */
 function activate(context) {
@@ -39,6 +41,8 @@ function activate(context) {
       preview.open(uri),
     ),
     vscode.commands.registerCommand('ortho.renderAgain', () => preview.render()),
+    vscode.commands.registerCommand('ortho.saveDiagram', () => preview.saveShown()),
+    vscode.commands.registerCommand('ortho.saveDiagrams', () => preview.saveAll()),
     vscode.commands.registerCommand('ortho.addAiInstructions', () => addAiInstructions(context)),
     vscode.commands.registerCommand('ortho.openExample', () => openExample(context)),
     vscode.workspace.onDidChangeConfiguration((event) => {
@@ -244,6 +248,14 @@ class Preview {
     this.shown = new Map();
     /** @type {vscode.Uri[]} the files that have problems now, to clear on the next render */
     this.reported = [];
+    /**
+     * The diagrams on screen, to save: the model's folder, the render they are from,
+     * their files, and whether the model still renders them as they are.
+     * @type {{ folder: string, out: string, files: string[], current: boolean } | undefined}
+     */
+    this.diagrams = undefined;
+    /** @type {string | undefined} the file of the view on screen */
+    this.showing = undefined;
     /** @type {vscode.Disposable[]} */
     this.disposables = [
       vscode.workspace.onDidSaveTextDocument((document) => {
@@ -302,10 +314,15 @@ class Preview {
     panel.onDidDispose(() => {
       this.panel = undefined;
       this.folder = undefined;
+      this.diagrams = undefined;
+      this.updateContext();
       this.clearProblems();
     });
     panel.webview.onDidReceiveMessage((message) => {
       if (message?.type === 'renderAgain') this.render();
+      if (message?.type === 'showing' && typeof message.file === 'string') this.showing = message.file;
+      if (message?.type === 'save') this.saveShown();
+      if (message?.type === 'saveAll') this.saveAll();
       if (message?.type === 'open') this.openSource(message.file, message.line);
       if (message?.type === 'install') vscode.env.openExternal(vscode.Uri.parse(INSTALL_URL));
       if (message?.type === 'settings') vscode.commands.executeCommand('workbench.action.openSettings', 'ortho.path');
@@ -315,6 +332,10 @@ class Preview {
 
   /** @param {string} folder */
   show(folder) {
+    if (folder !== this.diagrams?.folder) {
+      this.diagrams = undefined;
+      this.updateContext();
+    }
     this.folder = folder;
     if (this.panel) this.panel.title = `Ortho: ${path.basename(folder)}`;
     this.clearProblems();
@@ -394,9 +415,17 @@ class Preview {
       return;
     }
     this.setProblems(folder, report.problems);
-    const webview = this.panel.webview;
+    const files = report.written.map((written) => path.basename(written.file));
+    if (files.length > 0) {
+      this.diagrams = { folder, out, files, current: true };
+    } else if (this.diagrams) {
+      // The last diagrams stay on screen, faded, but no longer match the model.
+      this.diagrams.current = false;
+    }
+    this.updateContext();
     const titles = tabTitles(report.written.map((written) => written.file));
     const views = report.written.map((written, index) => ({
+      file: files[index],
       title: titles[index],
       heading: viewTitle(written.file),
       summary: written.summary,
@@ -414,6 +443,94 @@ class Preview {
       notes: report.notes,
       theme,
     });
+  }
+
+  /** Shows the commands that save diagrams only while there are diagrams to save. */
+  updateContext() {
+    vscode.commands.executeCommand('setContext', 'ortho.hasDiagrams', Boolean(this.panel && this.diagrams));
+  }
+
+  /**
+   * The diagrams on screen, with each file's bytes, read now so that a render while a
+   * dialog is open cannot change what is saved. None while the model does not load,
+   * since the diagrams shown then are from before the last change.
+   * @returns {Promise<{ folder: string, files: { name: string, bytes: Uint8Array }[] } | undefined>}
+   */
+  async diagramsToSave() {
+    const diagrams = this.diagrams;
+    if (!diagrams) {
+      vscode.window.showInformationMessage('There are no diagrams to save yet.');
+      return undefined;
+    }
+    if (!diagrams.current) {
+      vscode.window.showWarningMessage(
+        'The model does not load now, so the diagrams shown no longer match it. Fix its problems, then save.',
+      );
+      return undefined;
+    }
+    const files = [];
+    for (const name of diagrams.files) {
+      const bytes = await vscode.workspace.fs.readFile(vscode.Uri.file(path.join(diagrams.out, name)));
+      files.push({ name, bytes });
+    }
+    return { folder: diagrams.folder, files };
+  }
+
+  /** The folder the diagrams of a model were last saved to, else the model's own. */
+  saveFolder(/** @type {string} */ model) {
+    /** @type {Record<string, string>} */
+    const folders = this.context.workspaceState.get(SAVE_FOLDERS, {});
+    return folders[model] ?? model;
+  }
+
+  /** @param {string} model @param {string} folder */
+  async rememberSaveFolder(model, folder) {
+    /** @type {Record<string, string>} */
+    const folders = this.context.workspaceState.get(SAVE_FOLDERS, {});
+    await this.context.workspaceState.update(SAVE_FOLDERS, { ...folders, [model]: folder });
+  }
+
+  /** Saves the view on screen as an SVG file the user names. */
+  async saveShown() {
+    const diagrams = await this.diagramsToSave();
+    if (!diagrams) return;
+    const file = diagrams.files.find((candidate) => candidate.name === this.showing) ?? diagrams.files[0];
+    const target = await vscode.window.showSaveDialog({
+      defaultUri: vscode.Uri.file(path.join(this.saveFolder(diagrams.folder), file.name)),
+      filters: { SVG: ['svg'] },
+      title: `Save ${viewTitle(file.name)}`,
+    });
+    if (!target) return;
+    await vscode.workspace.fs.writeFile(target, file.bytes);
+    await this.rememberSaveFolder(diagrams.folder, path.dirname(target.fsPath));
+    vscode.window.showInformationMessage(`Saved ${vscode.workspace.asRelativePath(target)}.`);
+  }
+
+  /**
+   * Saves every view as SVG into a folder the user picks, each file named as
+   * `ortho render` names it, so saving again replaces them as rendering again would.
+   */
+  async saveAll() {
+    const diagrams = await this.diagramsToSave();
+    if (!diagrams) return;
+    const picked = await vscode.window.showOpenDialog({
+      canSelectFiles: false,
+      canSelectFolders: true,
+      canSelectMany: false,
+      openLabel: 'Save Here',
+      title: `Where should the diagrams of ${path.basename(diagrams.folder)} go?`,
+      defaultUri: vscode.Uri.file(this.saveFolder(diagrams.folder)),
+    });
+    if (!picked?.[0]) return;
+    const target = picked[0];
+    for (const file of diagrams.files) {
+      await vscode.workspace.fs.writeFile(vscode.Uri.joinPath(target, file.name), file.bytes);
+    }
+    await this.rememberSaveFolder(diagrams.folder, target.fsPath);
+    const count = diagrams.files.length;
+    vscode.window.showInformationMessage(
+      `Saved ${count} diagram${count === 1 ? '' : 's'} to ${vscode.workspace.asRelativePath(target)}.`,
+    );
   }
 
   /**
@@ -474,6 +591,10 @@ class Preview {
 <header>
   <nav id="tabs" role="tablist"></nav>
   <span id="status" role="status"></span>
+  <span id="actions" hidden>
+    <button type="button" id="save-one" title="Save the view shown as an SVG file">Save SVG…</button>
+    <button type="button" id="save-all" title="Save every view as SVG, into a folder">Save all…</button>
+  </span>
 </header>
 <section id="messages"></section>
 <main id="diagram"></main>

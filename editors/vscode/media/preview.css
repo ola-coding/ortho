@@ -23,7 +23,15 @@ nav {
   flex-wrap: wrap;
   gap: 4px;
 }
-nav button {
+#actions {
+  display: flex;
+  gap: 4px;
+}
+#actions[hidden] {
+  display: none;
+}
+nav button,
+#actions button {
   padding: 3px 10px;
   border: 1px solid var(--vscode-button-border, transparent);
   border-radius: 2px;
@@ -32,14 +40,20 @@ nav button {
   font: inherit;
   cursor: pointer;
 }
-nav button:hover {
+nav button:hover,
+#actions button:hover:enabled {
   background: var(--vscode-button-secondaryHoverBackground);
+}
+#actions button:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 nav button[aria-selected='true'] {
   color: var(--vscode-button-foreground);
   background: var(--vscode-button-background);
 }
-nav button:focus-visible {
+nav button:focus-visible,
+#actions button:focus-visible {
   outline: 1px solid var(--vscode-focusBorder);
   outline-offset: 1px;
 }

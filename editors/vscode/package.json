@@ -77,6 +77,18 @@
         "icon": "$(refresh)"
       },
       {
+        "command": "ortho.saveDiagram",
+        "title": "Save Diagram as SVG...",
+        "category": "Ortho",
+        "icon": "$(save)"
+      },
+      {
+        "command": "ortho.saveDiagrams",
+        "title": "Save All Diagrams as SVG...",
+        "category": "Ortho",
+        "icon": "$(save-all)"
+      },
+      {
         "command": "ortho.addAiInstructions",
         "title": "Add AI Instructions",
         "category": "Ortho"
@@ -98,6 +110,11 @@
           "command": "ortho.renderAgain",
           "when": "activeWebviewPanelId == ortho.preview",
           "group": "navigation"
+        },
+        {
+          "command": "ortho.saveDiagrams",
+          "when": "activeWebviewPanelId == ortho.preview && ortho.hasDiagrams",
+          "group": "navigation"
         }
       ],
       "explorer/context": [
@@ -115,6 +132,14 @@
         {
           "command": "ortho.renderAgain",
           "when": "activeWebviewPanelId == ortho.preview"
+        },
+        {
+          "command": "ortho.saveDiagram",
+          "when": "ortho.hasDiagrams"
+        },
+        {
+          "command": "ortho.saveDiagrams",
+          "when": "ortho.hasDiagrams"
         },
         {
           "command": "ortho.addAiInstructions",

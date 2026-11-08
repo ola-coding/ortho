@@ -12,6 +12,12 @@ It is at an early stage. What it does now:
   every time you save. Click a box to open the line that declares it, beside
   the preview. Click anywhere else in a diagram to switch between fitting the
   panel and actual size.
+- **Saves the diagrams as SVG,** for a document, a slide or your repository.
+  *Save SVG…* at the top of the preview saves the view shown, and *Save
+  all…* every view, into a folder you pick, each named as `ortho render`
+  names it, so saving again replaces them. The files are exactly what
+  `ortho render` writes. While the model does not load, nothing is saved,
+  since the faded diagrams no longer match it.
 - **Puts ortho's problems in the Problems panel,** underlined in the file: a
   name that does not resolve, a syntax error, a warning. While the model does
   not load, the last diagrams stay in the panel, faded, until it does.
@@ -33,7 +39,8 @@ It is at an early stage. What it does now:
 
 A model is every `.sysml` file in the folder of the file you preview, read
 together, as `ortho render <folder>` reads them. The diagrams are written to
-VS Code's storage for the extension, never into your workspace.
+VS Code's storage for the extension, never into your workspace, until you
+save them.
 
 The extension carries ortho, built for your system, so there is nothing else
 to install. It runs that one, and puts it first on the PATH of VS Code's
