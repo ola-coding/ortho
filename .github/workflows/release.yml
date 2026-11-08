@@ -16,8 +16,11 @@
 # crates-io  After the release, publishes the same version on crates.io, for
 #          cargo install ortho and cargo binstall ortho (which fetches the
 #          release's archive, so it runs second).
+# marketplace, open-vsx  After the release, publish the extension's packages on
+#          the VS Code Marketplace and on Open VSX, which Cursor and VSCodium use.
 #
-# To release: set the version in Cargo.toml, commit, then either
+# To release: set the version in Cargo.toml and editors/vscode/package.json,
+# commit, then either
 #   git tag v0.2.0 && git push origin v0.2.0
 # or, without Git, Actions -> Release -> Run workflow on main with "publish"
 # ticked, which tags that commit v<version> itself.
@@ -226,3 +229,41 @@ jobs:
       - run: cargo publish --locked
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN || steps.auth.outputs.token }}
+
+  # The extension goes out after the GitHub release, as crates.io does: one package
+  # per system, from the vscode job. --skip-duplicate lets a failed run be run again.
+  marketplace:
+    name: Publish on the VS Code Marketplace
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v5
+        with:
+          path: dist
+          pattern: vscode-*
+          merge-multiple: true
+      # Trusted publishing: the Marketplace takes GitHub's short-lived token for
+      # this workflow, as a policy on the publisher ola-coding allows. No secret.
+      - run: npx --yes @vscode/vsce@4 publish --oidc --skip-duplicate --packagePath dist/*.vsix
+
+  open-vsx:
+    name: Publish on Open VSX
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v5
+        with:
+          path: dist
+          pattern: vscode-*
+          merge-multiple: true
+      # The namespace's token from the secret OVSX_PAT; without one, ovsx tries
+      # trusted publishing with GitHub's token instead.
+      - run: npx --yes ovsx@1 publish --skip-duplicate --packagePath dist/*.vsix
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}

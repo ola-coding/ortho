@@ -337,7 +337,7 @@ README and licence. For a tag, it publishes them as a GitHub release, with
 their SHA-256 sums:
 
 ```sh
-# Set the version in Cargo.toml, commit, then:
+# Set the version in Cargo.toml and editors/vscode/package.json, commit, then:
 git tag v0.2.0
 git push origin v0.2.0
 ```
@@ -372,6 +372,16 @@ set up for `ola-coding/ortho` and `release.yml` in the crate's settings on
 crates.io. The workflow still takes a token from the secret
 `CARGO_REGISTRY_TOKEN` if one is set, which only the first publish needed;
 there is none now.
+
+The extension's packages go out after the GitHub release too, from the
+`marketplace` and `open-vsx` jobs. A version on either can never be
+published again, so a fix needs a new version; `--skip-duplicate` lets a
+run that failed part-way be run again. The VS Code Marketplace takes
+GitHub's short-lived token through its own *trusted publishing*: a policy
+for `ola-coding/ortho` and `release.yml` on the publisher `ola-coding`, at
+marketplace.visualstudio.com/manage, with no secret. Open VSX, for Cursor
+and VSCodium, takes the token of the namespace `ola-coding` from the secret
+`OVSX_PAT`; without it, `ovsx` tries trusted publishing instead.
 
 ## The move to Rust
 
@@ -461,10 +471,12 @@ Open, in priority order:
   - [x] Package it as the Marketplace wants: licence, icon, changelog, and
     no tests.
   - [x] A README for Marketplace visitors, with a screenshot of the preview.
-  - [ ] Set up publishing: the publisher `ola-coding` on the VS Code
+  - [x] Publish from the release workflow, after the GitHub release: the
+    `marketplace` and `open-vsx` jobs; see [Releasing](#releasing).
+  - [ ] Set up the accounts: the publisher `ola-coding` on the VS Code
     Marketplace, with Trusted Publishing for `release.yml`, since Azure
     DevOps' global tokens stop working on 1 December 2026; and the
-    `ola-coding` namespace on Open VSX, with its token as a secret.
+    `ola-coding` namespace on Open VSX, with its token as `OVSX_PAT`.
   - [ ] Install each system's package from a Release run of a pull request
     on Linux, Windows and macOS, and try every command, before tagging.
   - [ ] Release 0.3.0 of both ortho and the extension: review CHANGELOG.md
