@@ -7,7 +7,8 @@
 //!
 //! The grammar follows the lexer (`src/parser/lexer.rs`): `//` starts a note to the end
 //! of the line, `//* */` is a note over lines, `/* */` is a comment, `"..."` a string and
-//! `'...'` a name, each on one line.
+//! `'...'` a name, each on one line. A note is a comment to the editor; a `/* */` comment
+//! is part of the model, as a docstring is part of Python, and is scoped as documentation.
 use crate::{Result, write};
 use ortho::parser::KEYWORDS;
 use serde_json::{Value, json};
@@ -18,11 +19,39 @@ const EXAMPLES_OUT: &str = "editors/vscode/examples";
 /// Where a link to another file of the repository points, once the page is copied out of it.
 const REPOSITORY: &str = "https://github.com/ola-coding/ortho/blob/main/";
 
-/// Words coloured apart from the other keywords, each group with its TextMate scope.
-/// Every word here must be one of ortho's keywords; the rest are `keyword.other`.
+/// The keywords by what they do, each group with its TextMate scope, as the Python
+/// grammar VS Code ships sorts Python's: a declaration's kind is `storage.type`, like
+/// `def` and `class`; what directs a behaviour or brings names in is `keyword.control`,
+/// like `if` and `import`; words that relate one element to another read as operators.
+/// The theme picks the colours; the groups decide which words share one. Every word here
+/// must be one of ortho's keywords; the rest are `storage.type`, the kinds of element.
 const GROUPS: &[(&str, &[&str])] = &[
     ("constant.language.sysml", &["true", "false", "null"]),
-    ("keyword.operator.word.sysml", &["and", "or", "xor", "not", "implies", "hastype", "istype", "as", "meta", "all"]),
+    ("keyword.operator.logical.sysml", &["and", "or", "xor", "not", "implies"]),
+    (
+        "keyword.operator.word.sysml",
+        &[
+            "specializes",
+            "subsets",
+            "redefines",
+            "references",
+            "typed",
+            "defined",
+            "by",
+            "of",
+            "to",
+            "from",
+            "about",
+            "via",
+            "crosses",
+            "hastype",
+            "istype",
+            "as",
+            "meta",
+            "all",
+            "new",
+        ],
+    ),
     (
         "storage.modifier.sysml",
         &[
@@ -31,6 +60,7 @@ const GROUPS: &[(&str, &[&str])] = &[
             "public",
             "abstract",
             "variation",
+            "variant",
             "individual",
             "ordered",
             "nonunique",
@@ -44,6 +74,46 @@ const GROUPS: &[(&str, &[&str])] = &[
             "default",
             "standard",
             "library",
+            "parallel",
+        ],
+    ),
+    (
+        "keyword.control.sysml",
+        &[
+            "import",
+            "expose",
+            "filter",
+            "render",
+            "accept",
+            "send",
+            "assign",
+            "do",
+            "entry",
+            "exit",
+            "if",
+            "else",
+            "then",
+            "first",
+            "loop",
+            "while",
+            "until",
+            "for",
+            "fork",
+            "join",
+            "merge",
+            "decide",
+            "terminate",
+            "return",
+            "after",
+            "at",
+            "when",
+        ],
+    ),
+    (
+        "keyword.other.sysml",
+        &[
+            "perform", "exhibit", "include", "satisfy", "verify", "assert", "assume", "require", "allocate", "bind",
+            "connect", "frame", "language", "locale",
         ],
     ),
 ];
@@ -65,7 +135,7 @@ fn grammar() -> Result<Value> {
 
     let mut keywords: Vec<Value> =
         GROUPS.iter().map(|(scope, group)| json!({ "name": scope, "match": words(group) })).collect();
-    keywords.push(json!({ "name": "keyword.other.sysml", "match": words(&others) }));
+    keywords.push(json!({ "name": "storage.type.sysml", "match": words(&others) }));
 
     Ok(json!({
         "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
@@ -86,22 +156,39 @@ fn grammar() -> Result<Value> {
             "comments": { "patterns": [
                 { "name": "comment.block.note.sysml", "begin": r"//\*", "end": r"\*/" },
                 { "name": "comment.line.double-slash.sysml", "match": "//.*$" },
-                { "name": "comment.block.sysml", "begin": r"/\*", "end": r"\*/" }
+                { "name": "comment.block.documentation.sysml", "begin": r"/\*", "end": r"\*/" }
             ]},
             "declarations": { "patterns": [
                 {
-                    "comment": "The name a definition or package declares: part def Motor, package Power.",
-                    "match": format!(r"\b(def|package)\s+(?:(<)\s*{name}\s*(>)\s*)?({name})"),
+                    "comment": "The name a definition declares, as a class's: part def Motor.",
+                    "match": format!(r"\b(def)\s+(?:(<)\s*{name}\s*(>)\s*)?({name})"),
                     "captures": {
-                        "1": { "name": "keyword.other.sysml" },
+                        "1": { "name": "storage.type.sysml" },
                         "2": { "name": "punctuation.definition.short-name.sysml" },
                         "3": { "name": "punctuation.definition.short-name.sysml" },
                         "4": { "name": "entity.name.type.sysml" }
                     }
+                },
+                {
+                    "comment": "The name a package declares: package Power.",
+                    "match": format!(r"\b(package)\s+(?:(<)\s*{name}\s*(>)\s*)?({name})"),
+                    "captures": {
+                        "1": { "name": "storage.type.sysml" },
+                        "2": { "name": "punctuation.definition.short-name.sysml" },
+                        "3": { "name": "punctuation.definition.short-name.sysml" },
+                        "4": { "name": "entity.name.namespace.sysml" }
+                    }
                 }
             ]},
             "metadata": { "patterns": [
-                { "name": "entity.name.tag.sysml", "match": format!(r"[#@]{name}") }
+                {
+                    "comment": "Metadata on an element, as a decorator on a Python function: #refinement.",
+                    "match": format!(r"([#@])({name})"),
+                    "captures": {
+                        "1": { "name": "punctuation.definition.decorator.sysml" },
+                        "2": { "name": "entity.name.function.decorator.sysml" }
+                    }
+                }
             ]},
             "keywords": { "patterns": keywords },
             "strings": { "patterns": [
@@ -114,8 +201,8 @@ fn grammar() -> Result<Value> {
             ]},
             "names": { "patterns": [
                 {
-                    "comment": "A name in single quotes, which may hold spaces: part 'flight controller'.",
-                    "name": "variable.other.quoted.sysml",
+                    "comment": "A name in single quotes, which may hold spaces: part 'flight controller'. A name, not a string: it keeps the text's colour.",
+                    "name": "meta.name.quoted.sysml",
                     "match": r"'(?:[^'\\\r\n]|\\.)*'"
                 }
             ]},

@@ -12,10 +12,8 @@ const {
   tabTitles,
   runOrtho,
   keepOnly,
-  bundledOrtho,
   chooseOrtho,
   orthoFolder,
-  makeExecutable,
   markedSource,
 } = require('./ortho');
 const fs = require('node:fs');
@@ -28,7 +26,6 @@ const OPEN_ON_START = 'ortho.openOnStart';
 
 /** @param {vscode.ExtensionContext} context */
 function activate(context) {
-  makeExecutable(bundledOrtho(context.extensionPath));
   putOnTerminalPath(context);
   const problems = vscode.languages.createDiagnosticCollection('ortho');
   const preview = new Preview(context, problems);
@@ -56,12 +53,9 @@ function activate(context) {
 
 function deactivate() {}
 
-/** The ortho the preview runs: the one `ortho.path` names, else the one the extension carries. */
-function orthoOf(/** @type {vscode.ExtensionContext} */ context) {
-  return chooseOrtho(
-    vscode.workspace.getConfiguration('ortho').get('path', ''),
-    bundledOrtho(context.extensionPath),
-  );
+/** The ortho the preview runs: the one `ortho.path` names, else `ortho` on the PATH. */
+function orthoOf() {
+  return chooseOrtho(vscode.workspace.getConfiguration('ortho').get('path', ''));
 }
 
 /**
@@ -72,7 +66,7 @@ function orthoOf(/** @type {vscode.ExtensionContext} */ context) {
 function putOnTerminalPath(context) {
   const terminals = context.environmentVariableCollection;
   terminals.clear();
-  const folder = orthoFolder(orthoOf(context));
+  const folder = orthoFolder(orthoOf());
   if (!folder) return;
   terminals.description = 'Puts the ortho that the Ortho extension runs on the PATH.';
   terminals.prepend('PATH', folder + path.delimiter);
@@ -361,7 +355,7 @@ class Preview {
 
   /** @param {string} folder */
   async renderOnce(folder) {
-    const ortho = orthoOf(this.context);
+    const ortho = orthoOf();
     const theme = vscode.workspace.getConfiguration('ortho').get('theme', 'light');
     // Each render gets a folder of its own, so the diagrams of the last render that
     // worked stay on screen while the model does not load.

@@ -43,7 +43,7 @@
         {
           "begin": "/\\*",
           "end": "\\*/",
-          "name": "comment.block.sysml"
+          "name": "comment.block.documentation.sysml"
         }
       ]
     },
@@ -52,7 +52,7 @@
         {
           "captures": {
             "1": {
-              "name": "keyword.other.sysml"
+              "name": "storage.type.sysml"
             },
             "2": {
               "name": "punctuation.definition.short-name.sysml"
@@ -64,8 +64,26 @@
               "name": "entity.name.type.sysml"
             }
           },
-          "comment": "The name a definition or package declares: part def Motor, package Power.",
-          "match": "\\b(def|package)\\s+(?:(<)\\s*(?:[A-Za-z_][A-Za-z0-9_]*|'(?:[^'\\\\\\r\\n]|\\\\.)*')\\s*(>)\\s*)?((?:[A-Za-z_][A-Za-z0-9_]*|'(?:[^'\\\\\\r\\n]|\\\\.)*'))"
+          "comment": "The name a definition declares, as a class's: part def Motor.",
+          "match": "\\b(def)\\s+(?:(<)\\s*(?:[A-Za-z_][A-Za-z0-9_]*|'(?:[^'\\\\\\r\\n]|\\\\.)*')\\s*(>)\\s*)?((?:[A-Za-z_][A-Za-z0-9_]*|'(?:[^'\\\\\\r\\n]|\\\\.)*'))"
+        },
+        {
+          "captures": {
+            "1": {
+              "name": "storage.type.sysml"
+            },
+            "2": {
+              "name": "punctuation.definition.short-name.sysml"
+            },
+            "3": {
+              "name": "punctuation.definition.short-name.sysml"
+            },
+            "4": {
+              "name": "entity.name.namespace.sysml"
+            }
+          },
+          "comment": "The name a package declares: package Power.",
+          "match": "\\b(package)\\s+(?:(<)\\s*(?:[A-Za-z_][A-Za-z0-9_]*|'(?:[^'\\\\\\r\\n]|\\\\.)*')\\s*(>)\\s*)?((?:[A-Za-z_][A-Za-z0-9_]*|'(?:[^'\\\\\\r\\n]|\\\\.)*'))"
         }
       ]
     },
@@ -76,33 +94,53 @@
           "name": "constant.language.sysml"
         },
         {
-          "match": "\\b(?:and|or|xor|not|implies|hastype|istype|as|meta|all)\\b",
+          "match": "\\b(?:and|or|xor|not|implies)\\b",
+          "name": "keyword.operator.logical.sysml"
+        },
+        {
+          "match": "\\b(?:specializes|subsets|redefines|references|typed|defined|by|of|to|from|about|via|crosses|hastype|istype|as|meta|all|new)\\b",
           "name": "keyword.operator.word.sysml"
         },
         {
-          "match": "\\b(?:private|protected|public|abstract|variation|individual|ordered|nonunique|derived|constant|in|out|inout|end|ref|default|standard|library)\\b",
+          "match": "\\b(?:private|protected|public|abstract|variation|variant|individual|ordered|nonunique|derived|constant|in|out|inout|end|ref|default|standard|library|parallel)\\b",
           "name": "storage.modifier.sysml"
         },
         {
-          "match": "\\b(?:about|accept|action|actor|after|alias|allocate|allocation|analysis|assert|assign|assume|at|attribute|bind|binding|by|calc|case|comment|concern|connect|connection|constraint|crosses|decide|def|defined|dependency|do|doc|else|entry|enum|event|exhibit|exit|expose|filter|first|flow|for|fork|frame|from|if|import|include|interface|item|join|language|locale|loop|merge|message|metadata|new|objective|occurrence|of|package|parallel|part|perform|port|redefines|references|render|rendering|rep|require|requirement|return|satisfy|send|snapshot|specializes|stakeholder|state|subject|subsets|succession|terminate|then|timeslice|to|transition|typed|until|use|variant|verification|verify|via|view|viewpoint|when|while)\\b",
+          "match": "\\b(?:import|expose|filter|render|accept|send|assign|do|entry|exit|if|else|then|first|loop|while|until|for|fork|join|merge|decide|terminate|return|after|at|when)\\b",
+          "name": "keyword.control.sysml"
+        },
+        {
+          "match": "\\b(?:perform|exhibit|include|satisfy|verify|assert|assume|require|allocate|bind|connect|frame|language|locale)\\b",
           "name": "keyword.other.sysml"
+        },
+        {
+          "match": "\\b(?:action|actor|alias|allocation|analysis|attribute|binding|calc|case|comment|concern|connection|constraint|def|dependency|doc|enum|event|flow|interface|item|message|metadata|objective|occurrence|package|part|port|rendering|rep|requirement|snapshot|stakeholder|state|subject|succession|timeslice|transition|use|verification|view|viewpoint)\\b",
+          "name": "storage.type.sysml"
         }
       ]
     },
     "metadata": {
       "patterns": [
         {
-          "match": "[#@](?:[A-Za-z_][A-Za-z0-9_]*|'(?:[^'\\\\\\r\\n]|\\\\.)*')",
-          "name": "entity.name.tag.sysml"
+          "captures": {
+            "1": {
+              "name": "punctuation.definition.decorator.sysml"
+            },
+            "2": {
+              "name": "entity.name.function.decorator.sysml"
+            }
+          },
+          "comment": "Metadata on an element, as a decorator on a Python function: #refinement.",
+          "match": "([#@])((?:[A-Za-z_][A-Za-z0-9_]*|'(?:[^'\\\\\\r\\n]|\\\\.)*'))"
         }
       ]
     },
     "names": {
       "patterns": [
         {
-          "comment": "A name in single quotes, which may hold spaces: part 'flight controller'.",
+          "comment": "A name in single quotes, which may hold spaces: part 'flight controller'. A name, not a string: it keeps the text's colour.",
           "match": "'(?:[^'\\\\\\r\\n]|\\\\.)*'",
-          "name": "variable.other.quoted.sysml"
+          "name": "meta.name.quoted.sysml"
         }
       ]
     },
