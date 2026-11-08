@@ -357,7 +357,10 @@ binary without publishing.
 The same workflow packs the VS Code extension once per system VS Code
 names (`linux-x64`, `alpine-arm64`, `win32-x64`, `darwin-arm64` and so on),
 each package carrying that system's binary in `bin/`, and tests the Linux
-one against the ortho inside it. The packages are the run's artifacts, not
+one against the ortho inside it. The two Mac packages are unpacked on Mac
+runners, Apple silicon and Intel, and tested the same way, after the
+extension's own `makeExecutable` rather than a `chmod`; nothing is published
+unless they pass. The packages are the run's artifacts, not
 part of the GitHub release: the Marketplace and Open VSX give each user the
 package for their system.
 
@@ -488,6 +491,9 @@ Open, in priority order:
     the Marketplace and the rest of the release go out without it.
   - [ ] Install each system's package from a Release run of a pull request
     on Linux, Windows and macOS, and try every command, before tagging.
+    Linux and Windows are tried by hand; macOS, with no Mac at hand, by the
+    `vscode-macos` job, which runs the extension's tests against the ortho
+    in each Mac package.
   - [ ] Release 0.3.0 of both ortho and the extension: review CHANGELOG.md
     and date it, link the extension from the root README, merge into
     `main`, set 0.3.0 in `Cargo.toml` and `package.json`, and tag. The release
