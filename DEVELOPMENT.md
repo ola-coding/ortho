@@ -428,13 +428,38 @@ Open, in priority order:
   - [x] *Add AI instructions*: a Claude Code skill and Copilot instructions.
   - [x] An *Open example* command for the coffee machine and survey drone.
   - [x] The ortho the preview runs on the PATH of VS Code's terminals, where
-    agents check their work. Carrying ortho inside per-system VSIX packages
-    was tried and dropped as clumsy: install ortho, and run the extension
-    with F5 until it is on the Marketplace.
+    agents check their work. Per-system VSIX files to install by hand were
+    tried and dropped as clumsy; the Marketplace picks the package itself.
   - [x] Click a box in a diagram to open the line that declares it: each
     box's group carries `data-file` and `data-line`.
-  - [ ] Publish on the VS Code Marketplace and Open VSX, which Cursor and
-    VSCodium use.
+  - [ ] Carry ortho inside the extension, so nobody installs it first: one
+    package per system, for Linux, Windows and macOS, each with the ortho
+    the release workflow builds for it. The Marketplace and Open VSX give
+    each user the package for their system. `ortho.path` still overrides it,
+    except in a folder VS Code does not trust: there the extension runs in
+    Restricted Mode and ignores a folder's own `ortho.path`, so a cloned
+    repository cannot name a program for it to run. The extension then has
+    the version of the ortho it carries, released together from one tag.
+  - [ ] Save the diagrams from the preview: the view shown, or every view,
+    as SVG into a folder the user picks, such as one beside the models. The
+    preview itself keeps writing to VS Code's storage.
+  - [ ] Package it as the Marketplace wants: a LICENSE, a `.vscodeignore`
+    that leaves out `test/` and `.vscode/`, the icon from
+    `logo/ortho-icon.png`, and a CHANGELOG.md.
+  - [ ] A README for Marketplace visitors: what it does, with a screenshot of
+    the preview as PNG or GIF, since vsce refuses SVG in a README. Running
+    it with F5 and working on it move to this file. The root README's
+    "version 0.1" and its `v0.1.0` example become 0.3.0.
+  - [ ] Set up publishing: the publisher `ola-coding` on the VS Code
+    Marketplace, with Trusted Publishing for `release.yml`, since Azure
+    DevOps' global tokens stop working on 1 December 2026; and the
+    `ola-coding` namespace on Open VSX, with its token as a secret.
+  - [ ] Install each system's package from a Release run of a pull request
+    on Linux, Windows and macOS, and try every command, before tagging.
+  - [ ] Release 0.3.0 of both ortho and the extension: merge into `main`,
+    set 0.3.0 in `Cargo.toml` and `package.json`, and tag. The release
+    workflow publishes the GitHub release, crates.io, the Marketplace and
+    Open VSX. Clicking a box needs this ortho: 0.2.0 has no `data-line`.
 - [ ] **Be found by SysML v2 users:** an entry in each SysML v2 awesome list
   (jgsystemsconsulting/awesome-sysml-v2, mycr0ft/awesome-sysml,
   daltskin/SysML-v2-Resources, jgsystemsconsulting/awesome-mbse) and a post
