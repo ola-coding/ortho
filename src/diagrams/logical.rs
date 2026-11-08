@@ -12,6 +12,7 @@ fn function_node(ast: &Ast, function: NodeId) -> GraphNode {
     let name = ast.text(function, Prop::Name).unwrap_or("");
     let (width, height) = box_size(name, &[], 110.0, 40.0, keyword);
     GraphNode {
+        element: Some(function),
         id: qualified_name(ast, function),
         shape,
         keyword: keyword.to_string(),

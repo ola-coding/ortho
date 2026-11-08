@@ -230,6 +230,7 @@ fn fails_on_a_dependency_that_names_nothing_so_a_typo_cannot_pass() {
 
 fn function(id: &str, width: f64) -> GraphNode {
     GraphNode {
+        element: None,
         id: id.to_string(),
         shape: NodeShape::Usage,
         keyword: "action".to_string(),

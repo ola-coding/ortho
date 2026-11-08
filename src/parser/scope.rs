@@ -152,7 +152,8 @@ impl<'a> Linker<'a> {
             Ok(Some(target)) => (Link::To(target), None),
             Ok(None) => {
                 let kind = Kind::of(self.ast[reference.node].ty, self.prop_of(reference));
-                (Link::Failed, Some(format!("Could not resolve reference to {} named '{text}'.", kind.name())))
+                let hint = self.chain_hint(reference, index, text);
+                (Link::Failed, Some(format!("Could not resolve reference to {} named '{text}'.{hint}", kind.name())))
             }
             Err(thrown) => {
                 (Link::Failed, Some(format!("An error occurred while resolving reference to '{text}': {thrown}")))
@@ -162,6 +163,49 @@ impl<'a> Linker<'a> {
         let root = self.ast.root_of(reference.node);
         let file = self.roots.iter().position(|candidate| *candidate == root).unwrap();
         self.logs[file].push(Logged { reference, index, error });
+    }
+
+    /// For a chain's later segment that names nothing, what the segment before it
+    /// does have: the names closest to the one written, `Did you mean 'storeMrBeans'?`,
+    /// or, when none is close, its features by name. A rename or a typo is then
+    /// fixed from the message, by a person or an agent, without searching the model.
+    /// The first segment, and any other name, is looked up through packages and
+    /// imports, and gets no hint.
+    fn chain_hint(&mut self, reference: RefId, index: Option<usize>, text: &str) -> String {
+        let container = reference.node;
+        if self.ast[container].ty != Type::ConnectorEnd {
+            return String::new();
+        }
+        let segments = self.ast.references_of(container, Prop::Segments);
+        let index = index.or_else(|| segments.iter().position(|segment| *segment == reference)).unwrap_or(0);
+        if index == 0 {
+            return String::new();
+        }
+        let Ok(Some(previous)) = self.target_of(segments[index - 1]) else {
+            return String::new();
+        };
+        let features = self.features_of(Some(previous), true).unwrap_or_default();
+        let mut names: Vec<&str> = Vec::new();
+        for name in features.iter().filter_map(|feature| effective_name(self.ast, *feature)) {
+            if !name.is_empty() && !names.contains(&name) {
+                names.push(name);
+            }
+        }
+        if names.is_empty() {
+            return String::new();
+        }
+        let closest = closest_names(text, &names);
+        if !closest.is_empty() {
+            let quoted: Vec<String> = closest.iter().map(|name| format!("'{name}'")).collect();
+            return format!(" Did you mean {}?", quoted.join(" or "));
+        }
+        const SHOWN: usize = 8;
+        let owner = self.ast.reference_text(segments[index - 1]);
+        let mut listed = names.iter().take(SHOWN).copied().collect::<Vec<_>>().join(", ");
+        if names.len() > SHOWN {
+            listed.push_str(&format!(" and {} more", names.len() - SHOWN));
+        }
+        format!(" '{owner}' has {listed}.")
     }
 
     fn prop_of(&self, reference: RefId) -> Prop {
@@ -592,6 +636,38 @@ impl<'a> Linker<'a> {
             elements
         })
     }
+}
+
+/// The names closest to `written`, at most three: those the fewest letters away,
+/// ignoring case, and no further than about a third of the name, so a short name
+/// does not pull in unrelated ones.
+fn closest_names<'n>(written: &str, names: &[&'n str]) -> Vec<&'n str> {
+    let written_lower = written.to_lowercase();
+    let limit = (written.chars().count() / 3).max(1);
+    let distances: Vec<(usize, &str)> = names
+        .iter()
+        .map(|name| (edit_distance(&written_lower, &name.to_lowercase()), *name))
+        .filter(|(distance, _)| *distance <= limit)
+        .collect();
+    let Some(best) = distances.iter().map(|(distance, _)| *distance).min() else {
+        return Vec::new();
+    };
+    distances.into_iter().filter(|(distance, _)| *distance == best).map(|(_, name)| name).take(3).collect()
+}
+
+/// How many letters have to be inserted, deleted or replaced to turn `a` into `b`.
+fn edit_distance(a: &str, b: &str) -> usize {
+    let b: Vec<char> = b.chars().collect();
+    let mut previous: Vec<usize> = (0..=b.len()).collect();
+    for (i, ca) in a.chars().enumerate() {
+        let mut current = vec![i + 1];
+        for (j, cb) in b.iter().enumerate() {
+            let replace = previous[j] + usize::from(ca != *cb);
+            current.push(replace.min(previous[j + 1] + 1).min(current[j] + 1));
+        }
+        previous = current;
+    }
+    previous[b.len()]
 }
 
 /// A usage's own features: its members, and a connection's named ends.

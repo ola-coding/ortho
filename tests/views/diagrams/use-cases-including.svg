@@ -20,13 +20,13 @@
         fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
   <text x="526.9479999999999" y="498" text-anchor="end" font-size="9" fill="#1a1a1a">tests/views/views.sysml</text>
   
-    <g><rect x="211.028" y="152" width="120.892" height="40" rx="10" ry="10"
+    <g data-file="tests/views/views.sysml" data-line="79"><rect x="211.028" y="152" width="120.892" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="271.474" y="169" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;use case&#187;</text>
       <text x="271.474" y="182" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">one : Operate</text></g>
-    <g stroke="#1a1a1a" stroke-width="1.5" fill="none">
+    <g data-file="tests/views/views.sysml" data-line="77" stroke="#1a1a1a" stroke-width="1.5" fill="none">
       <circle cx="96.40299999999999" cy="157" r="8" fill="#ccdce5" />
       <line x1="96.40299999999999" y1="165" x2="96.40299999999999" y2="184" />
       <line x1="83.40299999999999" y1="172" x2="109.40299999999999" y2="172" />
@@ -35,13 +35,13 @@
       <text x="96.40299999999999" y="216" text-anchor="middle" stroke="none"
           font-size="11" fill="#1a1a1a">operator : Operator</text>
     </g>
-    <g><rect x="41.7" y="292" width="121.036" height="40" rx="10" ry="10"
+    <g data-file="tests/views/views.sysml" data-line="85"><rect x="41.7" y="292" width="121.036" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="102.218" y="309" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;use case&#187;</text>
       <text x="102.218" y="322" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">two : Operate</text></g>
-    <g stroke="#1a1a1a" stroke-width="1.5" fill="none">
+    <g data-file="tests/views/views.sysml" data-line="88" stroke="#1a1a1a" stroke-width="1.5" fill="none">
       <circle cx="284.89599999999996" cy="297" r="8" fill="#ccdce5" />
       <line x1="284.89599999999996" y1="305" x2="284.89599999999996" y2="324" />
       <line x1="271.89599999999996" y1="312" x2="297.89599999999996" y2="312" />
@@ -50,19 +50,19 @@
       <text x="284.89599999999996" y="356" text-anchor="middle" stroke="none"
           font-size="11" fill="#1a1a1a">bystander : Bystander</text>
     </g>
-    <g><rect x="36" y="428" width="132.436" height="40" rx="10" ry="10"
+    <g data-file="tests/views/views.sysml" data-line="90"><rect x="36" y="428" width="132.436" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="102.218" y="445" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;use case&#187;</text>
       <text x="102.218" y="458" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">three : Operate</text></g>
-    <g><rect x="383.0559999999999" y="288" width="123.892" height="40" rx="10" ry="10"
+    <g data-file="tests/views/views.sysml" data-line="91"><rect x="383.0559999999999" y="288" width="123.892" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="445.00199999999995" y="305" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;use case&#187;</text>
       <text x="445.00199999999995" y="318" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">four : Operate</text></g>
-    <g><rect x="201.668" y="60" width="139.612" height="40" rx="10" ry="10"
+    <g data-file="tests/views/views.sysml" data-line="76"><rect x="201.668" y="60" width="139.612" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="271.474" y="77" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;subject&#187;</text>

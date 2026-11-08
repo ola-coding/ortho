@@ -3,6 +3,7 @@ pub mod tree;
 pub mod use_case;
 
 use crate::model::graph::{Compartment, EdgeKind, NodeShape};
+use crate::parser::ast::NodeId;
 
 pub const PORT_SIZE: f64 = 10.0;
 /// Port labels' font size.
@@ -29,6 +30,17 @@ pub struct LaidOutNode {
     pub y: f64,
     pub width: f64,
     pub height: f64,
+    /// The element the box stands for, from its graph node.
+    pub element: Option<NodeId>,
+    /// Where that element is declared, written into the SVG so a viewer can open it.
+    pub source: Option<SourceMark>,
+}
+
+/// A file and a line, 1-based, as ortho reports a problem at.
+#[derive(Clone, PartialEq, Eq, Debug)]
+pub struct SourceMark {
+    pub file: String,
+    pub line: usize,
 }
 
 #[derive(Clone, Copy, PartialEq, Debug)]

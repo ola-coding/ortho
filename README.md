@@ -77,7 +77,13 @@ says what each view is for, and [LANGUAGE.md](LANGUAGE.md) what to write for it.
 
 ## Install
 
-Download ortho for your system from the
+In VS Code, install
+[Ortho for SysML v2](https://marketplace.visualstudio.com/items?itemName=ola-coding.ortho)
+from the Marketplace. It carries ortho, draws the views beside the model as
+you edit it, and puts ortho on the PATH of VS Code's terminals, so there is
+nothing else to install.
+
+Otherwise, download ortho for your system from the
 [latest release](https://github.com/ola-coding/ortho/releases/latest):
 
 | System               | File                                      |
@@ -165,6 +171,11 @@ ortho render <models...> -o <folder> [--theme <name>] [--watch]
   `.sysml` file added to a folder you named is picked up too, and a model that
   does not load is reported and waited on. Stop it with Ctrl+C.
 
+Each box in a diagram carries the file and line that declare its element,
+as `data-file` and `data-line` on its group, the file named from the folder
+ortho ran in. A viewer can take you from a box to the text, as the VS Code
+extension does when you click one.
+
 Diagrams are drawn for landscape A4. A view too big for that page, one whose
 names would print smaller than 6 pt once it is shrunk to fit, is still drawn,
 with a warning that says so: split it into smaller views, as
@@ -190,7 +201,7 @@ change: the diagrams can never drift from the models. In GitHub Actions:
     test -z "$(git status --porcelain diagrams)" || { git status diagrams; exit 1; }
 ```
 
-To keep every run on the same version, use `releases/download/v0.1.0/` in
+To keep every run on the same version, use `releases/download/v0.3.0/` in
 place of `releases/latest/download/`.
 
 ## Examples
@@ -216,7 +227,7 @@ both, with the model source beside each diagram.
 - **It does not load the standard library.** It knows the library's names, so
   a model may use them, and shows them as written.
 
-ortho is young, at version 0.1. The [backlog](DEVELOPMENT.md#backlog) lists
+ortho is young, at version 0.3. The [backlog](DEVELOPMENT.md#backlog) lists
 what comes next, and issues are welcome.
 
 ## Learn more

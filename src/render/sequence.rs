@@ -1,5 +1,5 @@
 use super::number::Js;
-use super::svg::{DiagramTitle, FONT, PAD_TOP, PAD_X, escape_xml, page, render_frame, title_text};
+use super::svg::{DiagramTitle, FONT, PAD_TOP, PAD_X, escape_xml, page, render_frame, source_marks, title_text};
 use super::text_metrics::{Weight, measure_text};
 use super::theme::{Theme, radius_attrs};
 use crate::diagrams::sequence::SequenceModel;
@@ -70,7 +70,7 @@ pub fn render_sequence_svg(model: &SequenceModel, title: &DiagramTitle, t: &Them
         let (cx, head) = (centers[i], widths[i]);
         parts.push_str(&format!(
             r#"
-    <g><rect x="{left}" y="{top}" width="{head_width}" height="{head_height}"{radius}{lift}
+    <g{marks}><rect x="{left}" y="{top}" width="{head_width}" height="{head_height}"{radius}{lift}
           fill="{fill}" stroke="{stroke}" stroke-width="1.25" />{gloss}
       <text x="{cx}" y="{keyword_y}" text-anchor="middle"
           font-size="9" font-style="italic" fill="{keyword}">&#171;part&#187;</text>
@@ -96,6 +96,7 @@ pub fn render_sequence_svg(model: &SequenceModel, title: &DiagramTitle, t: &Them
             line_top = Js(head_top + HEAD_HEIGHT),
             line_bottom = Js(lifeline_bottom),
             line = t.stroke,
+            marks = source_marks(lifeline.source.as_ref()),
         ));
     }
 

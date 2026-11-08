@@ -53,6 +53,8 @@ fn laid_out(node: &GraphNode, x: f64, y: f64) -> LaidOutNode {
         y,
         width: node.width,
         height: node.height,
+        element: node.element,
+        source: None,
     }
 }
 

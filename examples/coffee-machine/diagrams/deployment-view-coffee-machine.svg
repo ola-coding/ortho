@@ -20,7 +20,7 @@
         fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
   <text x="328.079" y="371" text-anchor="end" font-size="9" fill="#1a1a1a">examples/coffee-machine/deployment.sysml</text>
   
-    <g><rect x="39" y="63" width="266.079" height="275" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/physical.sysml" data-line="168"><rect x="39" y="63" width="266.079" height="275" rx="10" ry="10"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M39.5,95 L39.5,73 A9.5,9.5 0 0 1 49,63.5 L295.079,63.5 A9.5,9.5 0 0 1 304.579,73 L304.579,95 Z" fill="#ccdce5" />
       <text x="172.0395" y="76" text-anchor="middle"
@@ -29,7 +29,7 @@
           font-size="12" font-weight="600" fill="#1a1a1a">machine : CoffeeMachine</text>
       <line x1="39" y1="95" x2="305.079" y2="95"
           stroke="#40657e" stroke-width="1" /></g>
-    <g><rect x="64" y="108" width="216.079" height="113" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/physical.sysml" data-line="139"><rect x="64" y="108" width="216.079" height="113" rx="10" ry="10"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M64.5,140 L64.5,118 A9.5,9.5 0 0 1 74,108.5 L270.079,108.5 A9.5,9.5 0 0 1 279.579,118 L279.579,140 Z" fill="#ccdce5" />
       <text x="172.0395" y="121" text-anchor="middle"
@@ -48,7 +48,7 @@
           font-size="11" fill="#1a1a1a">allocated sw::temperatureController</text>
       <text x="72" y="210"
           font-size="11" fill="#1a1a1a">allocated sw::milkController</text></g>
-    <g><rect x="64" y="245" width="180.112" height="68" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/physical.sysml" data-line="140"><rect x="64" y="245" width="180.112" height="68" rx="10" ry="10"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M64.5,277 L64.5,255 A9.5,9.5 0 0 1 74,245.5 L234.112,245.5 A9.5,9.5 0 0 1 243.612,255 L243.612,277 Z" fill="#ccdce5" />
       <text x="154.05599999999998" y="258" text-anchor="middle"

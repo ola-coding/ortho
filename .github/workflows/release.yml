@@ -5,6 +5,12 @@
 #          README and licence: a .tar.gz, or a .zip for Windows. Each asset is
 #          named after its target alone, so releases/latest/download/<asset>
 #          always finds the newest.
+# vscode   The VS Code extension once per system, each package carrying that
+#          system's binary from build, so the preview and the agents in its
+#          terminals run the same ortho without installing it. The packages
+#          are the run's artifacts, for the Marketplace, not the release.
+# vscode-macos  The two Mac packages, unpacked on Macs, Apple silicon and Intel,
+#          and the extension's tests run against the ortho each carries.
 # package  Packs the crate as crates.io would get it, and builds it with the
 #          oldest Rust that Cargo.toml's rust-version promises.
 # publish  For a tag v<version>, where <version> is Cargo.toml's, creates the
@@ -12,8 +18,11 @@
 # crates-io  After the release, publishes the same version on crates.io, for
 #          cargo install ortho and cargo binstall ortho (which fetches the
 #          release's archive, so it runs second).
+# marketplace, open-vsx  After the release, publish the extension's packages on
+#          the VS Code Marketplace and on Open VSX, which Cursor and VSCodium use.
 #
-# To release: set the version in Cargo.toml, commit, then either
+# To release: set the version in Cargo.toml and editors/vscode/package.json,
+# commit, then either
 #   git tag v0.2.0 && git push origin v0.2.0
 # or, without Git, Actions -> Release -> Run workflow on main with "publish"
 # ticked, which tags that commit v<version> itself.
@@ -29,6 +38,8 @@ on:
       - Cargo.toml
       - Cargo.lock
       - rust-toolchain.toml
+      - editors/vscode/package.json
+      - editors/vscode/.vscodeignore
   workflow_dispatch:
     inputs:
       publish:
@@ -92,6 +103,92 @@ jobs:
           path: dist/*
           if-no-files-found: error
 
+  vscode:
+    name: VS Code extension (${{ matrix.vscode }})
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # The static musl binaries run on Alpine as well as on any other distribution.
+          - { vscode: linux-x64, target: x86_64-unknown-linux-musl }
+          - { vscode: linux-arm64, target: aarch64-unknown-linux-musl }
+          - { vscode: alpine-x64, target: x86_64-unknown-linux-musl }
+          - { vscode: alpine-arm64, target: aarch64-unknown-linux-musl }
+          - { vscode: win32-x64, target: x86_64-pc-windows-msvc }
+          # Windows on Arm runs the x64 binary through its emulation.
+          - { vscode: win32-arm64, target: x86_64-pc-windows-msvc }
+          - { vscode: darwin-arm64, target: aarch64-apple-darwin }
+          - { vscode: darwin-x64, target: x86_64-apple-darwin }
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v5
+        with:
+          name: ortho-${{ matrix.target }}
+          path: dist
+      - name: Put ortho in the extension
+        run: |
+          name=ortho-${{ matrix.target }}
+          mkdir -p editors/vscode/bin
+          if [ -f "dist/$name.zip" ]; then
+            unzip -j "dist/$name.zip" "$name/ortho.exe" -d editors/vscode/bin
+          else
+            tar -xzf "dist/$name.tar.gz" -C editors/vscode/bin --strip-components=1 "$name/ortho"
+            chmod 755 editors/vscode/bin/ortho
+          fi
+      - name: Package
+        working-directory: editors/vscode
+        run: |
+          npx --yes @vscode/vsce@4 package --no-dependencies --target ${{ matrix.vscode }} \
+            -o ortho-vscode-${{ matrix.vscode }}.vsix
+      - name: The package carries ortho
+        run: unzip -l editors/vscode/ortho-vscode-${{ matrix.vscode }}.vsix | grep -E 'extension/bin/ortho(\.exe)?$'
+      - name: Test the extension against the ortho it carries
+        if: matrix.vscode == 'linux-x64'
+        run: |
+          unzip -q editors/vscode/ortho-vscode-linux-x64.vsix -d unpacked
+          chmod +x unpacked/extension/bin/ortho
+          cd editors/vscode
+          ORTHO_BIN="$GITHUB_WORKSPACE/unpacked/extension/bin/ortho" node --test
+      # Named vscode-*, so the release, which takes ortho-*, leaves them out.
+      - uses: actions/upload-artifact@v5
+        with:
+          name: vscode-${{ matrix.vscode }}
+          path: editors/vscode/ortho-vscode-${{ matrix.vscode }}.vsix
+          if-no-files-found: error
+
+  # The Mac packages tested on Macs, since vscode packs them on Linux: the ortho
+  # each carries, as the extension starts it, under the extension's own tests.
+  vscode-macos:
+    name: VS Code extension on a Mac (${{ matrix.vscode }})
+    needs: vscode
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { vscode: darwin-arm64, os: macos-latest }
+          - { vscode: darwin-x64, os: macos-15-intel }
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v5
+        with:
+          name: vscode-${{ matrix.vscode }}
+          path: dist
+      - name: Unpack the package
+        run: unzip -q dist/ortho-vscode-${{ matrix.vscode }}.vsix -d unpacked
+      # No chmod here: the extension makes its ortho runnable itself when it starts.
+      - name: Start ortho as the extension does
+        run: |
+          node -e "require('./editors/vscode/src/ortho.js').makeExecutable(process.argv[1])" \
+            "$GITHUB_WORKSPACE/unpacked/extension/bin/ortho"
+          file unpacked/extension/bin/ortho
+          unpacked/extension/bin/ortho --version
+      - name: Test the extension against the ortho it carries
+        working-directory: editors/vscode
+        run: ORTHO_BIN="$GITHUB_WORKSPACE/unpacked/extension/bin/ortho" node --test
+
   package:
     name: Package for crates.io
     runs-on: ubuntu-latest
@@ -109,7 +206,7 @@ jobs:
 
   publish:
     name: Publish the release
-    needs: [build, package]
+    needs: [build, vscode, vscode-macos, package]
     if: startsWith(github.ref, 'refs/tags/v') || (inputs.publish && github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     permissions:
@@ -132,6 +229,7 @@ jobs:
       - uses: actions/download-artifact@v5
         with:
           path: dist
+          pattern: ortho-*
           merge-multiple: true
       - name: Create the release
         env:
@@ -164,3 +262,41 @@ jobs:
       - run: cargo publish --locked
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN || steps.auth.outputs.token }}
+
+  # The extension goes out after the GitHub release, as crates.io does: one package
+  # per system, from the vscode job. --skip-duplicate lets a failed run be run again.
+  marketplace:
+    name: Publish on the VS Code Marketplace
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v5
+        with:
+          path: dist
+          pattern: vscode-*
+          merge-multiple: true
+      # Trusted publishing: the Marketplace takes GitHub's short-lived token for
+      # this workflow, as a policy on the publisher ola-coding allows. No secret.
+      - run: npx --yes @vscode/vsce@4 publish --oidc --skip-duplicate --packagePath dist/*.vsix
+
+  open-vsx:
+    name: Publish on Open VSX
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v5
+        with:
+          path: dist
+          pattern: vscode-*
+          merge-multiple: true
+      # The namespace's token from the secret OVSX_PAT; without one, ovsx tries
+      # trusted publishing with GitHub's token instead.
+      - run: npx --yes ovsx@1 publish --skip-duplicate --packagePath dist/*.vsix
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}

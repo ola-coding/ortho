@@ -1,7 +1,7 @@
 use super::number::{Js, hypot};
 use super::text_metrics::{Weight, measure_text};
 use super::theme::{Theme, radius_attrs};
-use crate::layout::{LaidOutDiagram, LaidOutEdge, LaidOutNode, PORT_LABEL_FONT, PORT_SIZE, Point};
+use crate::layout::{LaidOutDiagram, LaidOutEdge, LaidOutNode, PORT_LABEL_FONT, PORT_SIZE, Point, SourceMark};
 use crate::model::graph::{
     BOX_HEADER_HEIGHT as HEADER_HEIGHT, COMPARTMENT_LINE_HEIGHT as LINE_HEIGHT, COMPARTMENT_PADDING,
     COMPARTMENT_TITLE_HEIGHT, EdgeKind, NodeShape, USAGE_RADIUS,
@@ -129,19 +129,29 @@ pub fn title_text(title: &DiagramTitle) -> String {
 }
 
 fn render_node(n: &LaidOutNode, t: &Theme) -> String {
+    let marks = source_marks(n.source.as_ref());
     match n.shape {
-        NodeShape::Actor => render_actor_node(n, t),
-        NodeShape::Package => render_package_node(n, t),
-        NodeShape::Definition | NodeShape::Usage => render_box_node(n, t),
+        NodeShape::Actor => render_actor_node(n, &marks, t),
+        NodeShape::Package => render_package_node(n, &marks, t),
+        NodeShape::Definition | NodeShape::Usage => render_box_node(n, &marks, t),
     }
 }
 
-fn render_actor_node(n: &LaidOutNode, t: &Theme) -> String {
+/// The attributes that mark a box's group with where its element is declared,
+/// ` data-file="examples/coffee-machine/logical.sysml" data-line="12"`, so a viewer
+/// such as the VS Code extension can open that line when the box is clicked.
+pub fn source_marks(source: Option<&SourceMark>) -> String {
+    source.map_or_else(String::new, |source| {
+        format!(r#" data-file="{}" data-line="{}""#, escape_xml(&source.file), source.line)
+    })
+}
+
+fn render_actor_node(n: &LaidOutNode, marks: &str, t: &Theme) -> String {
     let cx = n.x + PAD_X + n.width / 2.0;
     let top = n.y + PAD_TOP;
     format!(
         r#"
-    <g stroke="{stroke}" stroke-width="1.5" fill="none">
+    <g{marks} stroke="{stroke}" stroke-width="1.5" fill="none">
       <circle cx="{cx}" cy="{head}" r="8" fill="{actor_fill}" />
       <line x1="{cx}" y1="{neck}" x2="{cx}" y2="{hip}" />
       <line x1="{arm_left}" y1="{arm}" x2="{arm_right}" y2="{arm}" />
@@ -170,7 +180,7 @@ fn render_actor_node(n: &LaidOutNode, t: &Theme) -> String {
 
 /// A package (§8.2.3.5): a tabbed box. One holding others carries its name in its tab,
 /// above what it holds; one holding nothing drawn carries it inside, under an empty tab.
-fn render_package_node(n: &LaidOutNode, t: &Theme) -> String {
+fn render_package_node(n: &LaidOutNode, marks: &str, t: &Theme) -> String {
     let x = n.x + PAD_X;
     let y = n.y + PAD_TOP;
     let name_width = measure_text(&n.name, 11.0, Weight::Bold);
@@ -197,7 +207,7 @@ fn render_package_node(n: &LaidOutNode, t: &Theme) -> String {
     };
     format!(
         r#"
-    <g><rect x="{x}" y="{y}" width="{tab_width}" height="{tab_height}"
+    <g{marks}><rect x="{x}" y="{y}" width="{tab_width}" height="{tab_height}"
           fill="{tint}" stroke="{stroke}" stroke-width="1.25" />
       <rect x="{x}" y="{body_y}" width="{width}" height="{body_height}"
           fill="{body}" stroke="{stroke}" stroke-width="1.25" />{gloss}
@@ -241,7 +251,7 @@ fn name_band(x: f64, y: f64, width: f64, radius: f64, fill: &str) -> String {
 
 /// A definition or a usage: a box with square or rounded corners, its keyword above
 /// its name, compartments below and ports on its border.
-fn render_box_node(n: &LaidOutNode, t: &Theme) -> String {
+fn render_box_node(n: &LaidOutNode, marks: &str, t: &Theme) -> String {
     let x = n.x + PAD_X;
     let y = n.y + PAD_TOP;
     let radius = if n.shape == NodeShape::Usage { USAGE_RADIUS } else { 0.0 };
@@ -354,7 +364,7 @@ fn render_box_node(n: &LaidOutNode, t: &Theme) -> String {
         ));
     }
 
-    format!("\n    <g>{}</g>", parts.join("\n      "))
+    format!("\n    <g{marks}>{}</g>", parts.join("\n      "))
 }
 
 /// Port labels are painted after every edge, so a line passing a port never strikes

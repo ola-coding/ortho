@@ -1,0 +1,4 @@
+# ortho, put here by the release workflow for a package for one system
+bin/
+# The extension, packaged
+*.vsix

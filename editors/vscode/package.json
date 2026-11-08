@@ -1,0 +1,184 @@
+{
+  "name": "ortho",
+  "displayName": "Ortho for SysML v2",
+  "description": "SysML v2 highlighting and a live preview of the architectural views ortho draws from your model",
+  "version": "0.3.0",
+  "private": true,
+  "publisher": "ola-coding",
+  "icon": "icon.png",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ola-coding/ortho",
+    "directory": "editors/vscode"
+  },
+  "homepage": "https://github.com/ola-coding/ortho/tree/main/editors/vscode",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Visualization"
+  ],
+  "keywords": [
+    "sysml-v2",
+    "mbse",
+    "architecture",
+    "diagrams"
+  ],
+  "main": "./src/extension.js",
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "In a folder you do not trust, the extension ignores the folder's own Ortho: Path setting, so it runs only the ortho it carries or one your user settings name.",
+      "restrictedConfigurations": [
+        "ortho.path"
+      ]
+    }
+  },
+  "activationEvents": [
+    "onWebviewPanel:ortho.preview",
+    "workspaceContains:**/*.sysml"
+  ],
+  "scripts": {
+    "test": "node --test"
+  },
+  "contributes": {
+    "languages": [
+      {
+        "id": "sysml",
+        "aliases": [
+          "SysML v2",
+          "sysml"
+        ],
+        "extensions": [
+          ".sysml"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "sysml",
+        "scopeName": "source.sysml",
+        "path": "./syntaxes/sysml.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "ortho.openPreview",
+        "title": "Open Preview to the Side",
+        "category": "Ortho",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "ortho.renderAgain",
+        "title": "Render Again",
+        "category": "Ortho",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "ortho.saveDiagram",
+        "title": "Save Diagram as SVG...",
+        "category": "Ortho",
+        "icon": "$(save)"
+      },
+      {
+        "command": "ortho.saveDiagrams",
+        "title": "Save All Diagrams as SVG...",
+        "category": "Ortho",
+        "icon": "$(save-all)"
+      },
+      {
+        "command": "ortho.addAiInstructions",
+        "title": "Add AI Instructions",
+        "category": "Ortho"
+      },
+      {
+        "command": "ortho.openExample",
+        "title": "Open Example",
+        "category": "Ortho"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "ortho.openPreview",
+          "when": "resourceLangId == sysml",
+          "group": "navigation"
+        },
+        {
+          "command": "ortho.renderAgain",
+          "when": "activeWebviewPanelId == ortho.preview",
+          "group": "navigation"
+        },
+        {
+          "command": "ortho.saveDiagrams",
+          "when": "activeWebviewPanelId == ortho.preview && ortho.hasDiagrams",
+          "group": "navigation"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "ortho.openPreview",
+          "when": "resourceLangId == sysml",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "ortho.openPreview",
+          "when": "resourceLangId == sysml"
+        },
+        {
+          "command": "ortho.renderAgain",
+          "when": "activeWebviewPanelId == ortho.preview"
+        },
+        {
+          "command": "ortho.saveDiagram",
+          "when": "ortho.hasDiagrams"
+        },
+        {
+          "command": "ortho.saveDiagrams",
+          "when": "ortho.hasDiagrams"
+        },
+        {
+          "command": "ortho.addAiInstructions",
+          "when": "workspaceFolderCount > 0"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "ortho.openPreview",
+        "key": "ctrl+k v",
+        "mac": "cmd+k v",
+        "when": "editorLangId == sysml"
+      }
+    ],
+    "configuration": {
+      "title": "Ortho",
+      "properties": {
+        "ortho.path": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "The ortho to run, as a command or the full path to the binary. Leave it empty to run the ortho that comes with the extension. The extension puts the ortho it runs first on the PATH of VS Code's terminals, so agents check their work with it too. In a folder you do not trust, the folder's own value is ignored.",
+          "scope": "machine-overridable"
+        },
+        "ortho.theme": {
+          "type": "string",
+          "default": "light",
+          "enum": [
+            "light",
+            "dark-glass"
+          ],
+          "enumDescriptions": [
+            "White boxes with a blue tint, for documents and print.",
+            "Dark glass, for slides."
+          ],
+          "description": "The theme ortho paints the diagrams with."
+        }
+      }
+    }
+  }
+}

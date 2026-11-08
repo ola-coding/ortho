@@ -55,8 +55,9 @@ pub fn is_sub_function(ast: &Ast, element: NodeId) -> bool {
     ast[element].ty == Type::ActionUsage && ast.text(element, Prop::Type).is_none()
 }
 
-/// Which of ortho's six diagrams a view is.
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+/// Which of ortho's six diagrams a view is, in the order a model's views are
+/// written and shown: from what is asked of the system to how it runs.
+#[derive(Clone, Copy, PartialEq, Eq, Debug, PartialOrd, Ord)]
 pub enum DiagramKind {
     UseCase,
     Logical,

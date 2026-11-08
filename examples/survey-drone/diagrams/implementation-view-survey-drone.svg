@@ -20,17 +20,17 @@
         fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
   <text x="1855.755" y="1267" text-anchor="end" font-size="9" fill="#1a1a1a">examples/survey-drone/implementation.sysml</text>
   
-    <g><rect x="36" y="60" width="71.99000000000001" height="18"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="10"><rect x="36" y="60" width="71.99000000000001" height="18"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <rect x="36" y="78" width="1799.755" height="1159"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <text x="44" y="73" font-size="11" font-weight="600" fill="#1a1a1a">Software</text></g>
-    <g><rect x="61" y="371" width="61.551" height="18"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="91"><rect x="61" y="371" width="61.551" height="18"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <rect x="61" y="389" width="189.024" height="216"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <text x="69" y="384" font-size="11" font-weight="600" fill="#1a1a1a">Ground</text></g>
-    <g><rect x="86" y="416" width="139.024" height="164"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="94"><rect x="86" y="416" width="139.024" height="164"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M86.5,448 L86.5,416.5 L224.524,416.5 L224.524,448 Z" fill="#ccdce5" />
       <text x="155.512" y="429" text-anchor="middle"
@@ -57,17 +57,17 @@
           font-size="11" fill="#1a1a1a">mission : MissionTopic</text>
       <text x="94" y="569"
           font-size="11" fill="#1a1a1a">video : ~VideoTopic</text></g>
-    <g><rect x="290.0240000000001" y="105" width="69.339" height="18"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="107"><rect x="290.0240000000001" y="105" width="69.339" height="18"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <rect x="290.0240000000001" y="123" width="895.9069999999999" height="482"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <text x="298.0240000000001" y="118" font-size="11" font-weight="600" fill="#1a1a1a">Onboard</text></g>
-    <g><rect x="371.9770000000001" y="150" width="79.184" height="18"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="111"><rect x="371.9770000000001" y="150" width="79.184" height="18"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <rect x="371.9770000000001" y="168" width="395.33799999999997" height="186"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <text x="379.9770000000001" y="163" font-size="11" font-weight="600" fill="#1a1a1a">Autonomy</text></g>
-    <g><rect x="396.9770000000001" y="195" width="148.242" height="134"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="114"><rect x="396.9770000000001" y="195" width="148.242" height="134"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M397.4770000000001,227 L397.4770000000001,195.5 L544.719,195.5 L544.719,227 Z" fill="#ccdce5" />
       <text x="471.09800000000007" y="208" text-anchor="middle"
@@ -90,7 +90,7 @@
           font-size="11" fill="#1a1a1a">world : ~WorldTopic</text>
       <text x="404.9770000000001" y="318"
           font-size="11" fill="#1a1a1a">mission : ~MissionTopic</text></g>
-    <g><rect x="585.219" y="210" width="157.096" height="104"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="122"><rect x="585.219" y="210" width="157.096" height="104"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M585.719,242 L585.719,210.5 L741.815,210.5 L741.815,242 Z" fill="#ccdce5" />
       <text x="663.767" y="223" text-anchor="middle"
@@ -109,12 +109,12 @@
           font-size="9" font-style="italic" fill="#40657e">ports</text>
       <text x="593.219" y="303"
           font-size="11" fill="#1a1a1a">world : ~WorldTopic</text></g>
-    <g><rect x="315.0240000000001" y="406" width="83.221" height="18"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="129"><rect x="315.0240000000001" y="406" width="83.221" height="18"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <rect x="315.0240000000001" y="424" width="509.2439999999999" height="156"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <text x="323.0240000000001" y="419" font-size="11" font-weight="600" fill="#1a1a1a">Perception</text></g>
-    <g><rect x="340.0240000000001" y="451" width="129.45999999999998" height="104"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="130"><rect x="340.0240000000001" y="451" width="129.45999999999998" height="104"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M340.5240000000001,483 L340.5240000000001,451.5 L468.9840000000001,451.5 L468.9840000000001,483 Z" fill="#ccdce5" />
       <text x="404.75400000000013" y="464" text-anchor="middle"
@@ -133,7 +133,7 @@
           font-size="9" font-style="italic" fill="#40657e">ports</text>
       <text x="348.0240000000001" y="544"
           font-size="11" fill="#1a1a1a">video : VideoTopic</text></g>
-    <g><rect x="509.4840000000001" y="451" width="120" height="104"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="136"><rect x="509.4840000000001" y="451" width="120" height="104"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M509.9840000000001,483 L509.9840000000001,451.5 L628.9840000000002,451.5 L628.9840000000002,483 Z" fill="#ccdce5" />
       <text x="569.4840000000002" y="464" text-anchor="middle"
@@ -152,7 +152,7 @@
           font-size="9" font-style="italic" fill="#40657e">ports</text>
       <text x="517.4840000000002" y="544"
           font-size="11" fill="#1a1a1a">world : WorldTopic</text></g>
-    <g><rect x="669.4840000000002" y="451" width="129.784" height="104"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="142"><rect x="669.4840000000002" y="451" width="129.784" height="104"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M669.9840000000002,483 L669.9840000000002,451.5 L798.7680000000001,451.5 L798.7680000000001,483 Z" fill="#ccdce5" />
       <text x="734.3760000000002" y="464" text-anchor="middle"
@@ -171,12 +171,12 @@
           font-size="9" font-style="italic" fill="#40657e">ports</text>
       <text x="677.4840000000002" y="544"
           font-size="11" fill="#1a1a1a">world : WorldTopic</text></g>
-    <g><rect x="807.315" y="157.5" width="68.27199999999999" height="18"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="149"><rect x="807.315" y="157.5" width="68.27199999999999" height="18"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <rect x="807.315" y="175.5" width="353.616" height="171"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <text x="815.315" y="170.5" font-size="11" font-weight="600" fill="#1a1a1a">Services</text></g>
-    <g><rect x="832.315" y="210" width="127.199" height="104"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="150"><rect x="832.315" y="210" width="127.199" height="104"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M832.815,242 L832.815,210.5 L959.014,210.5 L959.014,242 Z" fill="#ccdce5" />
       <text x="895.9145000000001" y="223" text-anchor="middle"
@@ -195,7 +195,7 @@
           font-size="9" font-style="italic" fill="#40657e">ports</text>
       <text x="840.315" y="303"
           font-size="11" fill="#1a1a1a">health : HealthTopic</text></g>
-    <g><rect x="999.5140000000001" y="202.5" width="136.417" height="119"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="156"><rect x="999.5140000000001" y="202.5" width="136.417" height="119"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M1000.0140000000001,234.5 L1000.0140000000001,203 L1135.431,203 L1135.431,234.5 Z" fill="#ccdce5" />
       <text x="1067.7225" y="215.5" text-anchor="middle"
@@ -216,12 +216,12 @@
           font-size="11" fill="#1a1a1a">health : ~HealthTopic</text>
       <text x="1007.5140000000001" y="310.5"
           font-size="11" fill="#1a1a1a">video : ~VideoTopic</text></g>
-    <g><rect x="467.8988333333334" y="657" width="88.171" height="18"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="165"><rect x="467.8988333333334" y="657" width="88.171" height="18"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <rect x="467.8988333333334" y="675" width="405.118" height="259"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <text x="475.8988333333334" y="670" font-size="11" font-weight="600" fill="#1a1a1a">Middleware</text></g>
-    <g><rect x="497.5078333333334" y="727.5" width="148.341" height="68"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="169"><rect x="497.5078333333334" y="727.5" width="148.341" height="68"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M498.0078333333334,759.5 L498.0078333333334,728 L645.3488333333335,728 L645.3488333333335,759.5 Z" fill="#ccdce5" />
       <text x="571.6783333333334" y="740.5" text-anchor="middle"
@@ -234,7 +234,7 @@
           font-size="9" font-style="italic" fill="#40657e">ports</text>
       <text x="505.5078333333334" y="784.5"
           font-size="11" fill="#1a1a1a">transport : TransportApi</text></g>
-    <g><rect x="695.1163333333334" y="702" width="148.242" height="119"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="174"><rect x="695.1163333333334" y="702" width="148.242" height="119"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M695.6163333333334,734 L695.6163333333334,702.5 L842.8583333333333,702.5 L842.8583333333333,734 Z" fill="#ccdce5" />
       <text x="769.2373333333334" y="715" text-anchor="middle"
@@ -255,7 +255,7 @@
           font-size="11" fill="#1a1a1a">mavlink : ~MavlinkApi</text>
       <text x="703.1163333333334" y="810"
           font-size="11" fill="#1a1a1a">mission : ~MissionTopic</text></g>
-    <g><rect x="492.8988333333334" y="841" width="157.559" height="68"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="182"><rect x="492.8988333333334" y="841" width="157.559" height="68"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M493.3988333333334,873 L493.3988333333334,841.5 L649.9578333333334,841.5 L649.9578333333334,873 Z" fill="#ccdce5" />
       <text x="571.6783333333334" y="854" text-anchor="middle"
@@ -268,7 +268,7 @@
           font-size="9" font-style="italic" fill="#40657e">ports</text>
       <text x="500.8988333333334" y="898"
           font-size="11" fill="#1a1a1a">transport : ~TransportApi</text></g>
-    <g><rect x="690.4578333333334" y="841" width="157.559" height="68"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="187"><rect x="690.4578333333334" y="841" width="157.559" height="68"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M690.9578333333334,873 L690.9578333333334,841.5 L847.5168333333334,841.5 L847.5168333333334,873 Z" fill="#ccdce5" />
       <text x="769.2373333333334" y="854" text-anchor="middle"
@@ -281,12 +281,12 @@
           font-size="9" font-style="italic" fill="#40657e">ports</text>
       <text x="698.4578333333334" y="898"
           font-size="11" fill="#1a1a1a">transport : ~TransportApi</text></g>
-    <g><rect x="460.08883333333347" y="986" width="103.285" height="18"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="193"><rect x="460.08883333333347" y="986" width="103.285" height="18"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <rect x="460.08883333333347" y="1004" width="420.738" height="208"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <text x="468.08883333333347" y="999" font-size="11" font-weight="600" fill="#1a1a1a">LinuxPlatform</text></g>
-    <g><rect x="489.69783333333345" y="1031" width="156.151" height="68"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="194"><rect x="489.69783333333345" y="1031" width="156.151" height="68"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M490.19783333333345,1063 L490.19783333333345,1031.5 L645.3488333333335,1031.5 L645.3488333333335,1063 Z" fill="#ccdce5" />
       <text x="567.7733333333334" y="1044" text-anchor="middle"
@@ -299,7 +299,7 @@
           font-size="9" font-style="italic" fill="#40657e">ports</text>
       <text x="497.69783333333345" y="1088"
           font-size="11" fill="#1a1a1a">containers : ContainerApi</text></g>
-    <g><rect x="690.4578333333335" y="1031" width="165.369" height="68"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="199"><rect x="690.4578333333335" y="1031" width="165.369" height="68"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M690.9578333333335,1063 L690.9578333333335,1031.5 L855.3268333333335,1031.5 L855.3268333333335,1063 Z" fill="#ccdce5" />
       <text x="773.1423333333335" y="1044" text-anchor="middle"
@@ -312,7 +312,7 @@
           font-size="9" font-style="italic" fill="#40657e">ports</text>
       <text x="698.4578333333335" y="1088"
           font-size="11" fill="#1a1a1a">containers : ~ContainerApi</text></g>
-    <g><rect x="485.08883333333347" y="1119" width="165.369" height="68"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="203"><rect x="485.08883333333347" y="1119" width="165.369" height="68"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M485.58883333333347,1151 L485.58883333333347,1119.5 L649.9578333333335,1119.5 L649.9578333333335,1151 Z" fill="#ccdce5" />
       <text x="567.7733333333334" y="1132" text-anchor="middle"
@@ -325,18 +325,18 @@
           font-size="9" font-style="italic" fill="#40657e">ports</text>
       <text x="493.08883333333347" y="1176"
           font-size="11" fill="#1a1a1a">containers : ~ContainerApi</text></g>
-    <g><rect x="713.1423333333335" y="1133" width="120" height="40"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="207"><rect x="713.1423333333335" y="1133" width="120" height="40"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="773.1423333333335" y="1150" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part def&#187;</text>
       <text x="773.1423333333335" y="1163" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">SecureBoot</text></g>
-    <g><rect x="1225.931" y="262" width="52.025" height="18"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="212"><rect x="1225.931" y="262" width="52.025" height="18"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <rect x="1225.931" y="280" width="584.8240000000001" height="325"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <text x="1233.931" y="275" font-size="11" font-weight="600" fill="#1a1a1a">Flight</text></g>
-    <g><rect x="1250.931" y="314.5" width="151.608" height="119"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="216"><rect x="1250.931" y="314.5" width="151.608" height="119"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M1251.431,346.5 L1251.431,315 L1402.039,315 L1402.039,346.5 Z" fill="#ccdce5" />
       <text x="1326.7350000000001" y="327.5" text-anchor="middle"
@@ -357,7 +357,7 @@
           font-size="11" fill="#1a1a1a">target : TargetApi</text>
       <text x="1258.931" y="422.5"
           font-size="11" fill="#1a1a1a">vehicleState : ~StateApi</text></g>
-    <g><rect x="1447.1480000000001" y="314.5" width="142.39" height="119"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="224"><rect x="1447.1480000000001" y="314.5" width="142.39" height="119"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M1447.6480000000001,346.5 L1447.6480000000001,315 L1589.038,315 L1589.038,346.5 Z" fill="#ccdce5" />
       <text x="1518.343" y="327.5" text-anchor="middle"
@@ -378,7 +378,7 @@
           font-size="11" fill="#1a1a1a">vehicleState : StateApi</text>
       <text x="1455.1480000000001" y="422.5"
           font-size="11" fill="#1a1a1a">sensors : ~SensorApi</text></g>
-    <g><rect x="1634.147" y="307" width="151.608" height="134"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="232"><rect x="1634.147" y="307" width="151.608" height="134"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M1634.647,339 L1634.647,307.5 L1785.2549999999999,307.5 L1785.2549999999999,339 Z" fill="#ccdce5" />
       <text x="1709.951" y="320" text-anchor="middle"
@@ -401,7 +401,7 @@
           font-size="11" fill="#1a1a1a">target : ~TargetApi</text>
       <text x="1642.147" y="430"
           font-size="11" fill="#1a1a1a">hal : ~HalApi</text></g>
-    <g><rect x="1264.4775" y="479" width="124.515" height="83"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="242"><rect x="1264.4775" y="479" width="124.515" height="83"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M1264.9775,511 L1264.9775,479.5 L1388.4925,479.5 L1388.4925,511 Z" fill="#ccdce5" />
       <text x="1326.735" y="492" text-anchor="middle"
@@ -416,7 +416,7 @@
           font-size="11" fill="#1a1a1a">sensors : SensorApi</text>
       <text x="1272.4775" y="551"
           font-size="11" fill="#1a1a1a">hal : ~HalApi</text></g>
-    <g><rect x="1442.539" y="461" width="151.608" height="119"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="248"><rect x="1442.539" y="461" width="151.608" height="119"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M1443.039,493 L1443.039,461.5 L1593.647,461.5 L1593.647,493 Z" fill="#ccdce5" />
       <text x="1518.343" y="474" text-anchor="middle"
@@ -437,12 +437,12 @@
           font-size="11" fill="#1a1a1a">mavlink : MavlinkApi</text>
       <text x="1450.539" y="569"
           font-size="11" fill="#1a1a1a">vehicleState : ~StateApi</text></g>
-    <g><rect x="1310.372" y="657" width="105.771" height="18"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="258"><rect x="1310.372" y="657" width="105.771" height="18"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <rect x="1310.372" y="675" width="415.942" height="135"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <text x="1318.372" y="670" font-size="11" font-weight="600" fill="#1a1a1a">FlightPlatform</text></g>
-    <g><rect x="1335.372" y="702" width="172.42" height="83"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="260"><rect x="1335.372" y="702" width="172.42" height="83"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M1335.872,734 L1335.872,702.5 L1507.2920000000001,702.5 L1507.2920000000001,734 Z" fill="#ccdce5" />
       <text x="1421.582" y="715" text-anchor="middle"
@@ -457,7 +457,7 @@
           font-size="11" fill="#1a1a1a">hal : HalApi</text>
       <text x="1343.372" y="774"
           font-size="11" fill="#1a1a1a">scheduler : ~SchedulerApi</text></g>
-    <g><rect x="1547.7920000000001" y="709.5" width="153.522" height="68"
+    <g data-file="examples/survey-drone/implementation.sysml" data-line="266"><rect x="1547.7920000000001" y="709.5" width="153.522" height="68"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M1548.2920000000001,741.5 L1548.2920000000001,710 L1700.814,710 L1700.814,741.5 Z" fill="#ccdce5" />
       <text x="1624.553" y="722.5" text-anchor="middle"

@@ -1,5 +1,6 @@
 //! The process view's model: the lifelines a scenario's messages pass between.
 use super::connector_ends::{end_part, usage_label};
+use crate::layout::SourceMark;
 use crate::model::graph::qualified_name;
 use crate::parser::ast::{Ast, NodeId, Prop, Type};
 
@@ -8,6 +9,10 @@ use crate::parser::ast::{Ast, NodeId, Prop, Type};
 pub struct SequenceLifeline {
     pub id: String,
     pub label: String,
+    /// The part it stands for, whose declaration the SVG marks its head with.
+    pub element: Option<NodeId>,
+    /// Where that part is declared, filled in once the model's files are known.
+    pub source: Option<SourceMark>,
 }
 
 #[derive(Debug)]
@@ -55,7 +60,12 @@ pub fn extract_sequence_model(ast: &Ast, exposed: &[NodeId]) -> SequenceModel {
             for part in [source, target] {
                 let id = qualified_name(ast, part);
                 if !lifelines.iter().any(|lifeline| lifeline.id == id) {
-                    lifelines.push(SequenceLifeline { id, label: usage_label(ast, part) });
+                    lifelines.push(SequenceLifeline {
+                        id,
+                        label: usage_label(ast, part),
+                        element: Some(part),
+                        source: None,
+                    });
                 }
             }
             messages.push(SequenceMessage {

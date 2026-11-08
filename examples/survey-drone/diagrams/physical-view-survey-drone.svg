@@ -20,7 +20,7 @@
         fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
   <text x="965.1569166666666" y="1257" text-anchor="end" font-size="9" fill="#1a1a1a">examples/survey-drone/physical.sysml</text>
   
-    <g><rect x="36" y="60" width="909.1569166666666" height="1167" rx="10" ry="10"
+    <g data-file="examples/survey-drone/physical.sysml" data-line="188"><rect x="36" y="60" width="909.1569166666666" height="1167" rx="10" ry="10"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M36.5,92 L36.5,70 A9.5,9.5 0 0 1 46,60.5 L935.1569166666666,60.5 A9.5,9.5 0 0 1 944.6569166666666,70 L944.6569166666666,92 Z" fill="#ccdce5" />
       <text x="490.5784583333333" y="73" text-anchor="middle"
@@ -29,7 +29,7 @@
           font-size="12" font-weight="600" fill="#1a1a1a">system : SurveyDroneSystem</text>
       <line x1="36" y1="92" x2="945.1569166666666" y2="92"
           stroke="#40657e" stroke-width="1" /></g>
-    <g><rect x="61" y="406" width="731.5209166666666" height="769" rx="10" ry="10"
+    <g data-file="examples/survey-drone/physical.sysml" data-line="179"><rect x="61" y="406" width="731.5209166666666" height="769" rx="10" ry="10"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M61.5,438 L61.5,416 A9.5,9.5 0 0 1 71,406.5 L782.5209166666666,406.5 A9.5,9.5 0 0 1 792.0209166666666,416 L792.0209166666666,438 Z" fill="#ccdce5" />
       <text x="426.7604583333333" y="419" text-anchor="middle"
@@ -40,7 +40,7 @@
           stroke="#40657e" stroke-width="1" />
       <rect x="490.1478333333334" y="1170" width="10" height="10" rx="2" ry="2"
           fill="white" stroke="#40657e" stroke-width="1.25" /></g>
-    <g><rect x="588.9085833333334" y="1071" width="160.12" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/physical.sysml" data-line="138"><rect x="588.9085833333334" y="1071" width="160.12" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="668.9685833333333" y="1088" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
@@ -50,7 +50,7 @@
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="692.3219166666667" y="1066" width="10" height="10" rx="2" ry="2"
           fill="white" stroke="#40657e" stroke-width="1.25" /></g>
-    <g><rect x="97.43933333333332" y="949" width="218.332" height="68" rx="10" ry="10"
+    <g data-file="examples/survey-drone/physical.sysml" data-line="139"><rect x="97.43933333333332" y="949" width="218.332" height="68" rx="10" ry="10"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M97.93933333333332,981 L97.93933333333332,959 A9.5,9.5 0 0 1 107.43933333333332,949.5 L305.7713333333333,949.5 A9.5,9.5 0 0 1 315.2713333333333,959 L315.2713333333333,981 Z" fill="#ccdce5" />
       <text x="206.6053333333333" y="962" text-anchor="middle"
@@ -69,7 +69,7 @@
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="163.55" y="1012" width="10" height="10" rx="2" ry="2"
           fill="white" stroke="#40657e" stroke-width="1.25" /></g>
-    <g><rect x="86" y="1071" width="165.1" height="68" rx="10" ry="10"
+    <g data-file="examples/survey-drone/physical.sysml" data-line="140"><rect x="86" y="1071" width="165.1" height="68" rx="10" ry="10"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M86.5,1103 L86.5,1081 A9.5,9.5 0 0 1 96,1071.5 L241.1,1071.5 A9.5,9.5 0 0 1 250.6,1081 L250.6,1103 Z" fill="#ccdce5" />
       <text x="168.55" y="1084" text-anchor="middle"
@@ -84,7 +84,7 @@
           font-size="11" fill="#1a1a1a">produceThrust</text>
       <rect x="163.55" y="1066" width="10" height="10" rx="2" ry="2"
           fill="white" stroke="#40657e" stroke-width="1.25" /></g>
-    <g><rect x="128.21333333333334" y="836.3333333333333" width="156.784" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/physical.sysml" data-line="141"><rect x="128.21333333333334" y="836.3333333333333" width="156.784" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="206.60533333333333" y="853.3333333333333" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
@@ -96,7 +96,7 @@
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="201.60533333333333" y="871.3333333333333" width="10" height="10" rx="2" ry="2"
           fill="white" stroke="#40657e" stroke-width="1.25" /></g>
-    <g><rect x="163.115" y="451" width="170.584" height="68" rx="10" ry="10"
+    <g data-file="examples/survey-drone/physical.sysml" data-line="142"><rect x="163.115" y="451" width="170.584" height="68" rx="10" ry="10"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M163.615,483 L163.615,461 A9.5,9.5 0 0 1 173.115,451.5 L323.699,451.5 A9.5,9.5 0 0 1 333.199,461 L333.199,483 Z" fill="#ccdce5" />
       <text x="248.407" y="464" text-anchor="middle"
@@ -111,7 +111,7 @@
           font-size="11" fill="#1a1a1a">supplyPower</text>
       <rect x="243.407" y="514" width="10" height="10" rx="2" ry="2"
           fill="white" stroke="#40657e" stroke-width="1.25" /></g>
-    <g><rect x="160.96699999999998" y="573" width="174.88" height="68" rx="10" ry="10"
+    <g data-file="examples/survey-drone/physical.sysml" data-line="143"><rect x="160.96699999999998" y="573" width="174.88" height="68" rx="10" ry="10"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M161.46699999999998,605 L161.46699999999998,583 A9.5,9.5 0 0 1 170.96699999999998,573.5 L325.847,573.5 A9.5,9.5 0 0 1 335.347,583 L335.347,605 Z" fill="#ccdce5" />
       <text x="248.40699999999998" y="586" text-anchor="middle"
@@ -132,7 +132,7 @@
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="231.14" y="636" width="10" height="10" rx="2" ry="2"
           fill="white" stroke="#40657e" stroke-width="1.25" /></g>
-    <g><rect x="378.5135" y="695" width="169.576" height="68" rx="10" ry="10"
+    <g data-file="examples/survey-drone/physical.sysml" data-line="144"><rect x="378.5135" y="695" width="169.576" height="68" rx="10" ry="10"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M379.0135,727 L379.0135,705 A9.5,9.5 0 0 1 388.5135,695.5 L538.0895,695.5 A9.5,9.5 0 0 1 547.5895,705 L547.5895,727 Z" fill="#ccdce5" />
       <text x="463.30150000000003" y="708" text-anchor="middle"
@@ -155,7 +155,7 @@
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="488.23083333333335" y="758" width="10" height="10" rx="2" ry="2"
           fill="white" stroke="#40657e" stroke-width="1.25" /></g>
-    <g><rect x="390.83583333333337" y="827" width="208.624" height="68" rx="10" ry="10"
+    <g data-file="examples/survey-drone/physical.sysml" data-line="145"><rect x="390.83583333333337" y="827" width="208.624" height="68" rx="10" ry="10"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M391.33583333333337,859 L391.33583333333337,837 A9.5,9.5 0 0 1 400.83583333333337,827.5 L589.4598333333333,827.5 A9.5,9.5 0 0 1 598.9598333333333,837 L598.9598333333333,859 Z" fill="#ccdce5" />
       <text x="495.1478333333334" y="840" text-anchor="middle"
@@ -176,7 +176,7 @@
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="490.1478333333334" y="890" width="10" height="10" rx="2" ry="2"
           fill="white" stroke="#40657e" stroke-width="1.25" /></g>
-    <g><rect x="600.5965833333333" y="695" width="142.588" height="68" rx="10" ry="10"
+    <g data-file="examples/survey-drone/physical.sysml" data-line="146"><rect x="600.5965833333333" y="695" width="142.588" height="68" rx="10" ry="10"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M601.0965833333333,727 L601.0965833333333,705 A9.5,9.5 0 0 1 610.5965833333333,695.5 L733.1845833333333,695.5 A9.5,9.5 0 0 1 742.6845833333333,705 L742.6845833333333,727 Z" fill="#ccdce5" />
       <text x="671.8905833333333" y="708" text-anchor="middle"
@@ -193,7 +193,7 @@
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="641.45925" y="758" width="10" height="10" rx="2" ry="2"
           fill="white" stroke="#40657e" stroke-width="1.25" /></g>
-    <g><rect x="413.72400000000005" y="601" width="110" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/physical.sysml" data-line="147"><rect x="413.72400000000005" y="601" width="110" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="468.72400000000005" y="618" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
@@ -201,7 +201,7 @@
           font-size="12" font-weight="600" fill="#1a1a1a">imu : Imu</text>
       <rect x="463.72400000000005" y="636" width="10" height="10" rx="2" ry="2"
           fill="white" stroke="#40657e" stroke-width="1.25" /></g>
-    <g><rect x="563.724" y="601" width="140.632" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/physical.sysml" data-line="148"><rect x="563.724" y="601" width="140.632" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="634.0400000000001" y="618" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
@@ -209,7 +209,7 @@
           font-size="12" font-weight="600" fill="#1a1a1a">gps : GpsModule</text>
       <rect x="629.0400000000001" y="636" width="10" height="10" rx="2" ry="2"
           fill="white" stroke="#40657e" stroke-width="1.25" /></g>
-    <g><rect x="431.41383333333334" y="963" width="127.468" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/physical.sysml" data-line="149"><rect x="431.41383333333334" y="963" width="127.468" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="495.1478333333333" y="980" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
@@ -219,7 +219,7 @@
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="490.1478333333333" y="998" width="10" height="10" rx="2" ry="2"
           fill="white" stroke="#40657e" stroke-width="1.25" /></g>
-    <g><rect x="684.8849166666666" y="105" width="235.272" height="232" rx="10" ry="10"
+    <g data-file="examples/survey-drone/physical.sysml" data-line="180"><rect x="684.8849166666666" y="105" width="235.272" height="232" rx="10" ry="10"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M685.3849166666666,137 L685.3849166666666,115 A9.5,9.5 0 0 1 694.8849166666666,105.5 L910.1569166666666,105.5 A9.5,9.5 0 0 1 919.6569166666666,115 L919.6569166666666,137 Z" fill="#ccdce5" />
       <text x="802.5209166666666" y="118" text-anchor="middle"
@@ -230,7 +230,7 @@
           stroke="#40657e" stroke-width="1" />
       <rect x="797.5209166666666" y="332" width="10" height="10" rx="2" ry="2"
           fill="white" stroke="#40657e" stroke-width="1.25" /></g>
-    <g><rect x="709.8849166666666" y="150" width="185.272" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/physical.sysml" data-line="171"><rect x="709.8849166666666" y="150" width="185.272" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="802.5209166666666" y="167" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
@@ -238,7 +238,7 @@
           font-size="12" font-weight="600" fill="#1a1a1a">tablet : OperatorTablet</text>
       <rect x="797.5209166666666" y="185" width="10" height="10" rx="2" ry="2"
           fill="white" stroke="#40657e" stroke-width="1.25" /></g>
-    <g><rect x="738.7869166666667" y="244" width="127.468" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/physical.sysml" data-line="172"><rect x="738.7869166666667" y="244" width="127.468" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="802.5209166666667" y="261" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>

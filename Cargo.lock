@@ -334,7 +334,7 @@ dependencies = [
 
 [[package]]
 name = "ortho"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "clap",
  "org-eclipse-elk-graph-json",
@@ -634,6 +634,7 @@ version = "0.0.0"
 dependencies = [
  "ortho",
  "regex",
+ "serde_json",
 ]
 
 [[package]]

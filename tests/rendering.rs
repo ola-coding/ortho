@@ -26,6 +26,8 @@ fn node(shape: NodeShape, keyword: &str, name: &str) -> LaidOutNode {
         y: 0.0,
         width: 200.0,
         height: 90.0,
+        element: None,
+        source: None,
     }
 }
 
@@ -214,4 +216,18 @@ fn takes_a_hypotenuse_as_v8_does() {
     assert_eq!(hypot(58.8, 64.2), 87.05791175993139);
     assert_eq!(hypot(0.2, 271.628), 271.62807363010177);
     assert_eq!(hypot(313.859, 270.41379), 414.28382746996544);
+}
+
+#[test]
+fn marks_a_box_with_where_it_is_declared_for_a_viewer_to_open() {
+    use ortho::layout::SourceMark;
+    let mark = |shape| {
+        let mut n = node(shape, "part", "engine");
+        n.source = Some(SourceMark { file: "models/a&b.sysml".to_string(), line: 12 });
+        svg_of(n, &LIGHT)
+    };
+    for shape in [NodeShape::Usage, NodeShape::Definition, NodeShape::Actor, NodeShape::Package] {
+        assert_eq!(count(&mark(shape), r#"<g data-file="models/a&amp;b.sysml" data-line="12""#), 1, "{shape:?}");
+    }
+    assert_eq!(count(&svg_of(node(NodeShape::Usage, "part", "engine"), &LIGHT), "data-file"), 0);
 }

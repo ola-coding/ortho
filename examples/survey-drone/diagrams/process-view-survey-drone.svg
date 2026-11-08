@@ -16,7 +16,7 @@
         fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
   <text x="1776.8999999999999" y="1102" text-anchor="end" font-size="9" fill="#1a1a1a">examples/survey-drone/process.sysml</text>
   
-    <g><rect x="24" y="48" width="90" height="36" rx="10" ry="10"
+    <g data-file="examples/survey-drone/process.sysml" data-line="36"><rect x="24" y="48" width="90" height="36" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="69" y="63" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
@@ -24,7 +24,7 @@
           font-size="12" font-weight="600" fill="#1a1a1a">operator</text>
       <line x1="69" y1="84" x2="69" y2="1080"
           stroke="#1a1a1a" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g><rect x="143.99999999999997" y="48" width="233.724" height="36" rx="10" ry="10"
+    <g data-file="examples/survey-drone/process.sysml" data-line="37"><rect x="143.99999999999997" y="48" width="233.724" height="36" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="260.86199999999997" y="63" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
@@ -32,7 +32,7 @@
           font-size="12" font-weight="600" fill="#1a1a1a">surveyPlanner : SurveyPlanner</text>
       <line x1="260.86199999999997" y1="84" x2="260.86199999999997" y2="1080"
           stroke="#1a1a1a" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g><rect x="407.72399999999993" y="48" width="217.932" height="36" rx="10" ry="10"
+    <g data-file="examples/survey-drone/process.sysml" data-line="38"><rect x="407.72399999999993" y="48" width="217.932" height="36" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="516.6899999999999" y="63" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
@@ -40,7 +40,7 @@
           font-size="12" font-weight="600" fill="#1a1a1a">routePlanner : RoutePlanner</text>
       <line x1="516.6899999999999" y1="84" x2="516.6899999999999" y2="1080"
           stroke="#1a1a1a" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g><rect x="683.1999999999999" y="48" width="231.948" height="36" rx="10" ry="10"
+    <g data-file="examples/survey-drone/process.sysml" data-line="39"><rect x="683.1999999999999" y="48" width="231.948" height="36" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="799.174" y="63" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
@@ -48,7 +48,7 @@
           font-size="12" font-weight="600" fill="#1a1a1a">mavlinkBridge : MavlinkBridge</text>
       <line x1="799.174" y1="84" x2="799.174" y2="1080"
           stroke="#1a1a1a" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g><rect x="945.1479999999999" y="48" width="265.692" height="36" rx="10" ry="10"
+    <g data-file="examples/survey-drone/process.sysml" data-line="40"><rect x="945.1479999999999" y="48" width="265.692" height="36" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="1077.994" y="63" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
@@ -56,7 +56,7 @@
           font-size="12" font-weight="600" fill="#1a1a1a">mavlinkInterface : MavlinkInterface</text>
       <line x1="1077.994" y1="84" x2="1077.994" y2="1080"
           stroke="#1a1a1a" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g><rect x="1240.8399999999997" y="48" width="259.452" height="36" rx="10" ry="10"
+    <g data-file="examples/survey-drone/process.sysml" data-line="41"><rect x="1240.8399999999997" y="48" width="259.452" height="36" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="1370.5659999999998" y="63" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
@@ -64,7 +64,7 @@
           font-size="12" font-weight="600" fill="#1a1a1a">missionExecutor : MissionExecutor</text>
       <line x1="1370.5659999999998" y1="84" x2="1370.5659999999998" y2="1080"
           stroke="#1a1a1a" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g><rect x="1530.2919999999997" y="48" width="238.608" height="36" rx="10" ry="10"
+    <g data-file="examples/survey-drone/process.sysml" data-line="42"><rect x="1530.2919999999997" y="48" width="238.608" height="36" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="1649.5959999999998" y="63" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>

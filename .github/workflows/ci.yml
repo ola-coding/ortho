@@ -1,7 +1,10 @@
 # Tests ortho, keeps the example diagrams honest and publishes the pitch deck.
 #
 # test      Builds and tests on each system ortho ships for.
-# lint      Formatting and clippy, which read the same on every system.
+# lint      Formatting and clippy, which read the same on every system, and the
+#           VS Code extension's grammar, which is written from ortho's keywords.
+# vscode    Tests the VS Code extension's code with Node, against the ortho built
+#           here.
 # diagrams  Re-renders every example, and the views written by hand in
 #           tests/views/, and fails if the committed SVGs differ.
 #           Rendering is deterministic, so any difference means a model or the
@@ -54,6 +57,26 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - run: cargo fmt --all --check
       - run: cargo clippy --locked --workspace --all-targets -- -D warnings
+      - run: cargo xtask vscode-grammar
+      - name: Fail if the VS Code grammar or its copies are stale
+        run: |
+          if [ -n "$(git status --porcelain -- editors/vscode)" ]; then
+            git diff -- editors/vscode
+            echo "::error::The VS Code grammar, or its copy of LANGUAGE.md, the examples, the licence or the icon, is stale. Run 'cargo xtask vscode-grammar' and commit the result."
+            exit 1
+          fi
+
+  vscode:
+    name: VS Code extension
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo build --locked
+      - name: Test the extension against this ortho
+        working-directory: editors/vscode
+        run: ORTHO_BIN="$GITHUB_WORKSPACE/target/debug/ortho" node --test
 
   diagrams:
     name: Example diagrams are up to date
