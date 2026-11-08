@@ -2,7 +2,7 @@
 
 The extension has the version of the ortho it carries.
 
-## 0.3.0 (unreleased)
+## 0.3.0 (2026-11-08)
 
 The first release on the VS Code Marketplace and Open VSX.
 

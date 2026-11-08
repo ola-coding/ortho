@@ -488,13 +488,15 @@ Open, in priority order:
     namespace's trusted publisher, which only an owner can, make the
     `open-vsx` job use `--trusted-publishing` alone, and run that job again
     if a release went out before. Until then the job fails on its own, and
-    the Marketplace and the rest of the release go out without it.
-  - [ ] Install each system's package from a Release run of a pull request
+    the Marketplace and the rest of the release go out without it. Then
+    name Open VSX, for Cursor and VSCodium, beside the Marketplace in the
+    root README's Install.
+  - [x] Install each system's package from a Release run of a pull request
     on Linux, Windows and macOS, and try every command, before tagging.
     Linux and Windows are tried by hand; macOS, with no Mac at hand, by the
     `vscode-macos` job, which runs the extension's tests against the ortho
     in each Mac package.
-  - [ ] Release 0.3.0 of both ortho and the extension: review CHANGELOG.md
+  - [x] Release 0.3.0 of both ortho and the extension: review CHANGELOG.md
     and date it, link the extension from the root README, merge into
     `main`, set 0.3.0 in `Cargo.toml` and `package.json`, and tag. The release
     workflow publishes the GitHub release, crates.io, the Marketplace and

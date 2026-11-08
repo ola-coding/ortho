@@ -2,7 +2,7 @@
   "name": "ortho",
   "displayName": "Ortho for SysML v2",
   "description": "SysML v2 highlighting and a live preview of the architectural views ortho draws from your model",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "publisher": "ola-coding",
   "icon": "icon.png",
