@@ -1,94 +1,104 @@
 # Ortho for SysML v2
 
-A VS Code extension for writing SysML v2 models with
-[ortho](https://github.com/ola-coding/ortho), which draws a model's
-architectural views as SVG.
+**See the architecture while you write the model.** Ortho draws six
+architectural views of a SysML v2 model, in SysML v2's own graphical
+notation: use case, logical, implementation, physical, deployment and
+process. It shows them beside the text and draws them again every time you
+save.
 
-It is at an early stage. What it does now:
+![The coffee machine example in VS Code: the model on the left, its physical view in the preview on the right](https://raw.githubusercontent.com/ola-coding/ortho/main/editors/vscode/images/preview.png)
 
-- **Shows the diagrams beside the model.** Click the preview button at the
-  top right of a `.sysml` file, or press Ctrl+K V (Cmd+K V on a Mac). A panel
-  opens with a tab for each view the model declares, and draws them again
-  every time you save. Click a box to open the line that declares it, beside
-  the preview. Click anywhere else in a diagram to switch between fitting the
-  panel and actual size.
-- **Saves the diagrams as SVG,** for a document, a slide or your repository.
-  *Save SVG…* at the top of the preview saves the view shown, and *Save
-  all…* every view, into a folder you pick, each named as `ortho render`
-  names it, so saving again replaces them. The files are exactly what
-  `ortho render` writes. While the model does not load, nothing is saved,
-  since the faded diagrams no longer match it.
-- **Puts ortho's problems in the Problems panel,** underlined in the file: a
-  name that does not resolve, a syntax error, a warning. While the model does
-  not load, the last diagrams stay in the panel, faded, until it does.
-- **Colours SysML v2** in `.sysml` files: keywords, the names definitions and
-  packages declare, comments and notes, strings, quoted names, numbers and
-  metadata such as `#Safety`. The keywords are exactly the ones ortho reads.
-- **Comments a line** with Ctrl+/ and closes brackets and quotes.
-- **Teaches AI agents the model.** *Ortho: Add AI Instructions*, in the
-  Command Palette, writes a skill for Claude Code
-  (`.claude/skills/sysml-v2-ortho/`) and instructions for GitHub Copilot
-  (`.github/instructions/sysml-v2.instructions.md`) into your workspace. They
-  carry the SysML v2 that ortho reads, and tell the agent to render the model
-  after every change and fix what ortho reports, rather than delete the line
-  it points at. It asks before replacing files that are already there.
-- **Opens an example.** *Ortho: Open Example* copies the coffee machine or
-  the survey drone into a folder you pick and opens its use case view with
-  the preview beside it. The copy is yours to change; a folder outside your
-  workspace opens in a new window.
+It is made for models that AI agents write and people review. ortho's checks
+land in the Problems panel, and an agent working in VS Code's terminal checks
+its work with the same ortho as the preview.
+
+## Getting started
+
+1. Run **Ortho: Open Example** from the Command Palette (Ctrl+Shift+P, or
+   Cmd+Shift+P on a Mac) and pick the coffee machine. It is copied into a
+   folder you choose and opens with the preview beside it.
+2. Change the model and save. The diagrams follow.
+3. For a model of your own, open a `.sysml` file and click the preview button
+   at the top right of the editor, or press Ctrl+K V (Cmd+K V on a Mac).
+
+There is nothing else to install: the extension carries ortho, built for your
+system.
+
+## Features
+
+- **The diagrams beside the model.** The preview has a tab for each view the
+  model declares. Click a box to open the line that declares it. Click
+  anywhere else in a diagram to switch between fitting the panel and actual
+  size.
+- **Save the diagrams as SVG,** for a document, a slide or your repository.
+  *Save SVG…* at the top of the preview saves the view shown, and *Save all…*
+  every view into a folder you pick. The files are exactly what
+  `ortho render` writes, with the same names, so saving again replaces them.
+- **Problems where you write.** A name that does not resolve, a syntax error,
+  or two views that disagree, such as a function nothing performs, is
+  underlined in the file and listed in the Problems panel. While the model
+  does not load, the last diagrams stay in the preview, faded.
+- **SysML v2 colouring:** keywords, the names that definitions and packages
+  declare, comments, strings, quoted names, numbers and metadata such as
+  `#Safety`. The keywords are exactly the ones ortho reads. Ctrl+/ comments a
+  line.
+- **AI instructions.** *Ortho: Add AI Instructions* writes a skill for Claude
+  Code and instructions for GitHub Copilot into your workspace. They carry the
+  SysML v2 that ortho reads, and tell the agent to render the model after
+  every change and fix what ortho reports, rather than delete the line it
+  points at.
+- **Two examples,** a coffee machine and a survey drone, each with all six
+  views, copied into a folder you pick by *Ortho: Open Example*.
+
+## Your model
 
 A model is every `.sysml` file in the folder of the file you preview, read
-together, as `ortho render <folder>` reads them. The diagrams are written to
-VS Code's storage for the extension, never into your workspace, until you
-save them.
+together. Each view is declared in the model with SysML v2's standard view
+definitions, and every view is optional: a model draws only the views it
+declares. [LANGUAGE.md](https://github.com/ola-coding/ortho/blob/main/LANGUAGE.md)
+says what to write for each view, and
+[VIEWS.md](https://github.com/ola-coding/ortho/blob/main/VIEWS.md) what each
+view shows.
 
-The extension carries ortho, built for your system, so there is nothing else
-to install. It runs that one, and puts it first on the PATH of VS Code's
-terminals, so an agent working there checks the model with the same ortho as
-the preview. Its version is the extension's. To run another ortho, set
-**Ortho: Path** to the command or the binary. In a folder you have not told
-VS Code to trust, the folder's own **Ortho: Path** is ignored, so a
-repository you cloned cannot choose a program for the extension to run.
+## Commands
+
+| Command | What it does |
+| --- | --- |
+| Ortho: Open Preview to the Side | Opens the preview of the model the file belongs to. Ctrl+K V. |
+| Ortho: Render Again | Draws the views again without a save. |
+| Ortho: Save Diagram as SVG... | Saves the view shown in the preview. |
+| Ortho: Save All Diagrams as SVG... | Saves every view into a folder. |
+| Ortho: Add AI Instructions | Writes the Claude Code skill and the Copilot instructions into the workspace. It asks before replacing files that are already there. |
+| Ortho: Open Example | Copies an example into a folder you pick and opens it. |
+
+## Settings
 
 | Setting | Default | What it does |
 | --- | --- | --- |
 | `ortho.path` | empty | The ortho to run, as a command or a path. Empty runs the one the extension carries. |
 | `ortho.theme` | `light` | `light` for documents, or `dark-glass` for slides. |
 
-What comes next is in the
-[backlog](https://github.com/ola-coding/ortho/blob/main/DEVELOPMENT.md#backlog):
-the Marketplace.
+The extension puts the ortho it runs first on the PATH of VS Code's
+terminals, so `ortho render` there is the same ortho as the preview's. In a
+folder you have not told VS Code to trust, the folder's own `ortho.path` is
+ignored, so a repository you cloned cannot choose a program for the extension
+to run.
 
-It targets SysML v2 only. It uses the language id `sysml`, so it works beside
-other SysML v2 extensions, such as SysIDE.
+## Your data stays on your machine
 
-## Trying it
+The extension collects no telemetry and makes no network calls, and neither
+does ortho. The preview's diagrams are kept in VS Code's storage for the
+extension, never in your workspace, until you save them.
 
-It is not on the Marketplace yet. To run it from a clone of the repository,
-open the repository, or `editors/vscode`, in VS Code and press F5. A second
-window opens on the coffee machine example with the extension loaded, and
-picks up your changes when you reload it. Run this way, it carries no ortho
-and runs `ortho` from the PATH: install it with `cargo install ortho`, or set
-**Ortho: Path** to the one `cargo build` writes, `target/debug/ortho`.
+## Beside other extensions
 
-## Working on it
+It reads SysML v2 only, not SysML v1. It uses the language id `sysml`, so it
+works beside other SysML v2 extensions, such as SysIDE, which give completion
+and other help with typing a model.
 
-The code is plain JavaScript, with no dependencies and no build step:
+## More
 
-- `src/extension.js`: the commands, the preview panel and the Problems.
-- `src/ortho.js`: runs `ortho render` and reads what it prints. It needs no
-  VS Code, so `npm test` tests it with Node; set `ORTHO_BIN` to an ortho
-  binary to run it on the examples too, as CI does.
-- `src/instructions.js` and `src/examples.js`: the AI instructions and the
-  examples offered, tested with Node too.
-- `media/`: the preview panel's page.
-
-The grammar, `syntaxes/sysml.tmLanguage.json`, is written from ortho's
-keyword list in `src/parser/lexer.rs` by `cargo xtask vscode-grammar`. Change
-`xtask/src/vscode_grammar.rs` and run that, rather than editing the JSON; CI
-fails if the two differ. The same task copies ortho's LANGUAGE.md to
-`ai/LANGUAGE.md`, which the AI instructions carry, so they never drift from
-what ortho reads, each example's `.sysml` files to `examples/`, which
-*Open Example* copies, and the repository's LICENSE and icon, since the
-package holds only what is in this folder. CHANGELOG.md is written by hand,
-for the Marketplace's Changelog tab.
+ortho is also a command-line program, for rendering the diagrams in CI so they
+never drift from the model: see
+[ortho on GitHub](https://github.com/ola-coding/ortho), where
+[issues](https://github.com/ola-coding/ortho/issues) are welcome.

@@ -256,8 +256,14 @@ deck to GitHub Pages.
   A new keyword goes in `KEYWORDS`, which the deck highlights from too, and is
   then reserved: it can no longer be a name. Run `cargo xtask vscode-grammar`
   after, so the VS Code extension colours it.
-- **The VS Code extension** is in `editors/vscode/`, with its own
-  [README](editors/vscode/README.md). Its version is ortho's, since each
+- **The VS Code extension** is in `editors/vscode/`. Its
+  [README](editors/vscode/README.md) is its page on the Marketplace, written
+  for systems engineers deciding to install it, so how to work on it is here.
+  Press F5 with the repository, or `editors/vscode`, open in VS Code: a
+  second window opens on the coffee machine example with the extension
+  loaded, and picks up your changes when you reload it. Run this way, it
+  carries no ortho and runs `ortho` from the PATH, so set **Ortho: Path** to
+  `target/debug/ortho` after `cargo build`. Its version is ortho's, since each
   package carries that ortho, and a test fails if `package.json` and
   `Cargo.toml` differ. Its grammar,
   `syntaxes/sysml.tmLanguage.json`, is written from `KEYWORDS`, never by hand,
@@ -267,10 +273,15 @@ deck to GitHub Pages.
   repository's, since `vsce` packs only what is in the extension's folder:
   run `cargo xtask vscode-grammar` after changing any of them. Its
   CHANGELOG.md, which the Marketplace shows, is written by hand.
-  Its code is plain JavaScript with no dependencies and no build step;
-  `src/ortho.js`, which runs ortho and reads what it prints, is tested with
-  Node (`npm test` in `editors/vscode`, with `ORTHO_BIN` set to run the real
-  ortho too). Anything that changes what `ortho render` prints, its `Wrote`
+  Its code is plain JavaScript with no dependencies and no build step:
+  `src/extension.js` holds the commands, the preview panel and the Problems,
+  and `media/` the preview's page. What needs no VS Code is tested with Node
+  (`npm test` in `editors/vscode`, with `ORTHO_BIN` set to run the real ortho
+  too): `src/ortho.js`, which runs ortho and reads what it prints, and
+  `src/instructions.js` and `src/examples.js`, the AI instructions and the
+  examples offered. The README's screenshot, in `images/`, is left out of the
+  package: the Marketplace shows it from GitHub, by an absolute URL, since
+  `vsce` makes a relative one point at the repository's root folder. Anything that changes what `ortho render` prints, its `Wrote`
   lines or its `file line n: message` problems, must keep those tests passing.
 - **The examples** cover two different domains, so a rendering change that
   only suits one shows up. Regenerate their SVGs and look at them in a browser
@@ -449,18 +460,18 @@ Open, in priority order:
     view into a folder, remembered for each model.
   - [x] Package it as the Marketplace wants: licence, icon, changelog, and
     no tests.
-  - [ ] A README for Marketplace visitors: what it does, with a screenshot of
-    the preview as PNG or GIF, since vsce refuses SVG in a README. Running
-    it with F5 and working on it move to this file. The root README's
-    "version 0.1" and its `v0.1.0` example become 0.3.0.
+  - [ ] A README for Marketplace visitors. Left: its screenshot of the
+    preview beside a model, `editors/vscode/images/preview.png`, as PNG,
+    since vsce refuses SVG in a README.
   - [ ] Set up publishing: the publisher `ola-coding` on the VS Code
     Marketplace, with Trusted Publishing for `release.yml`, since Azure
     DevOps' global tokens stop working on 1 December 2026; and the
     `ola-coding` namespace on Open VSX, with its token as a secret.
   - [ ] Install each system's package from a Release run of a pull request
     on Linux, Windows and macOS, and try every command, before tagging.
-  - [ ] Release 0.3.0 of both ortho and the extension: merge into `main`,
-    set 0.3.0 in `Cargo.toml` and `package.json`, and tag. The release
+  - [ ] Release 0.3.0 of both ortho and the extension: review CHANGELOG.md
+    and date it, link the extension from the root README, merge into
+    `main`, set 0.3.0 in `Cargo.toml` and `package.json`, and tag. The release
     workflow publishes the GitHub release, crates.io, the Marketplace and
     Open VSX. Clicking a box needs this ortho: 0.2.0 has no `data-line`.
 - [ ] **Be found by SysML v2 users:** an entry in each SysML v2 awesome list

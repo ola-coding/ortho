@@ -195,7 +195,7 @@ change: the diagrams can never drift from the models. In GitHub Actions:
     test -z "$(git status --porcelain diagrams)" || { git status diagrams; exit 1; }
 ```
 
-To keep every run on the same version, use `releases/download/v0.1.0/` in
+To keep every run on the same version, use `releases/download/v0.3.0/` in
 place of `releases/latest/download/`.
 
 ## Examples
@@ -221,7 +221,7 @@ both, with the model source beside each diagram.
 - **It does not load the standard library.** It knows the library's names, so
   a model may use them, and shows them as written.
 
-ortho is young, at version 0.1. The [backlog](DEVELOPMENT.md#backlog) lists
+ortho is young, at version 0.3. The [backlog](DEVELOPMENT.md#backlog) lists
 what comes next, and issues are welcome.
 
 ## Learn more

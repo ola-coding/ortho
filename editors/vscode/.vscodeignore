@@ -1,5 +1,7 @@
-# What vsce leaves out of the package: what only working on the extension needs.
+# What vsce leaves out of the package: what only working on the extension needs, and
+# the README's screenshot, which the Marketplace shows from GitHub.
 test/**
 .vscode/**
 .gitignore
 *.vsix
+images/**
