@@ -93,26 +93,11 @@ function cargoOrtho() {
 }
 
 /**
- * The ortho a build of the extension for one system carries, in its `bin` folder. A
- * build for every system, as CI packages for trying out, carries none.
- * @param {string} extensionPath
- * @param {string} [platform]
- */
-function bundledOrtho(extensionPath, platform = process.platform) {
-  return path.join(extensionPath, 'bin', platform === 'win32' ? 'ortho.exe' : 'ortho');
-}
-
-/**
- * Which ortho to run: the one the `ortho.path` setting names, else the one the
- * extension carries, else `ortho` on the PATH.
+ * Which ortho to run: the one the `ortho.path` setting names, else `ortho` on the PATH.
  * @param {string | undefined} setting
- * @param {string} bundled
- * @param {(file: string) => boolean} [exists]
  */
-function chooseOrtho(setting, bundled, exists = fs.existsSync) {
-  const named = setting?.trim();
-  if (named) return named;
-  return exists(bundled) ? bundled : 'ortho';
+function chooseOrtho(setting) {
+  return setting?.trim() || 'ortho';
 }
 
 /**
@@ -123,16 +108,6 @@ function chooseOrtho(setting, bundled, exists = fs.existsSync) {
  */
 function orthoFolder(ortho) {
   return path.isAbsolute(ortho) && /^ortho(\.exe)?$/i.test(path.basename(ortho)) ? path.dirname(ortho) : undefined;
-}
-
-/**
- * Makes a binary runnable, in case unpacking the extension lost its mode.
- * @param {string} file
- */
-function makeExecutable(file) {
-  if (process.platform === 'win32' || !fs.existsSync(file)) return;
-  const mode = fs.statSync(file).mode;
-  if ((mode & 0o111) !== 0o111) fs.chmodSync(file, mode | 0o755);
 }
 
 /**
@@ -200,9 +175,7 @@ module.exports = {
   runOrtho,
   keepOnly,
   cargoOrtho,
-  bundledOrtho,
   chooseOrtho,
   orthoFolder,
-  makeExecutable,
   markedSource,
 };

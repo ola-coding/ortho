@@ -11,5 +11,3 @@ marketing/ortho-deck.artifact.html
 # OMG's SysML v2 models, fetched by cargo xtask omg-models (EPL-2.0, not committed)
 .omg-models/
 
-# The VS Code extension, packaged
-*.vsix

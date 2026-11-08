@@ -35,17 +35,15 @@ A model is every `.sysml` file in the folder of the file you preview, read
 together, as `ortho render <folder>` reads them. The diagrams are written to
 VS Code's storage for the extension, never into your workspace.
 
-The extension built for your system carries ortho, and runs that one. It
-also puts it first on the PATH of VS Code's terminals, so an agent working
-there checks the model with the same ortho as the preview. To run another
-ortho, set **Ortho: Path** to the command or the binary. A build for any
-system, as CI packages, carries none and runs `ortho` from the PATH:
-`cargo install ortho`, or a download from the
-[releases](https://github.com/ola-coding/ortho/releases).
+The preview runs ortho, so install it first: `cargo install ortho`, or a
+download from the [releases](https://github.com/ola-coding/ortho/releases).
+It runs `ortho` from the PATH, or the binary that **Ortho: Path** names; one
+named there is also put first on the PATH of VS Code's terminals, so an
+agent working there checks the model with the same ortho as the preview.
 
 | Setting | Default | What it does |
 | --- | --- | --- |
-| `ortho.path` | empty | The ortho to run, as a command or a path. Empty runs the one the extension carries. |
+| `ortho.path` | empty | The ortho to run, as a command or a path. Empty runs `ortho` from the PATH. |
 | `ortho.theme` | `light` | `light` for documents, or `dark-glass` for slides. |
 
 What comes next is in the
@@ -57,27 +55,10 @@ other SysML v2 extensions, such as SysIDE.
 
 ## Trying it
 
-It is not on the Marketplace yet. Either:
-
-- **Install a release.** Each
-  [release](https://github.com/ola-coding/ortho/releases) after 0.2.0 has an
-  `ortho-vscode-<system>.vsix` per system, such as `linux-x64` or
-  `darwin-arm64`, with ortho inside. In VS Code, open the Extensions view,
-  click **...** at its top, choose **Install from VSIX...** and pick it. Or
-  from a terminal: `code --install-extension ortho-vscode-linux-x64.vsix`.
-- **Or install the latest build,** after installing ortho
-  (`cargo install ortho`), since this build carries none. Every CI run
-  packages the extension. Open the
-  latest run of the
-  [CI workflow](https://github.com/ola-coding/ortho/actions/workflows/ci.yml)
-  on the branch you want, download **ortho-vscode** under Artifacts and unzip
-  it. In VS Code, open the Extensions view, click **...** at its top, choose
-  **Install from VSIX...** and pick `ortho-vscode.vsix`. Or from a terminal:
-  `code --install-extension ortho-vscode.vsix`.
-- **Or run it from a clone** of the repository: open the repository, or
-  `editors/vscode`, in VS Code and press F5. A second window opens on the
-  coffee machine example with the extension loaded, and picks up your changes
-  when you reload it.
+It is not on the Marketplace yet. To run it from a clone of the repository,
+open the repository, or `editors/vscode`, in VS Code and press F5. A second
+window opens on the coffee machine example with the extension loaded, and
+picks up your changes when you reload it.
 
 ## Working on it
 

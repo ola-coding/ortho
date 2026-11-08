@@ -127,7 +127,7 @@
         "ortho.path": {
           "type": "string",
           "default": "",
-          "markdownDescription": "The ortho to run, as a command or the full path to the binary. Leave it empty to run the ortho that comes with the extension. The extension puts the ortho it runs on the PATH of VS Code's terminals, so agents check their work with it too.",
+          "markdownDescription": "The ortho to run, as a command or the full path to the binary. Leave it empty to run `ortho` from the PATH. A binary named here is also put first on the PATH of VS Code's terminals, so agents check their work with it too. Install ortho with `cargo install ortho`, or download it from the [releases](https://github.com/ola-coding/ortho/releases).",
           "scope": "machine-overridable"
         },
         "ortho.theme": {

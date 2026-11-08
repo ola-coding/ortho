@@ -5,13 +5,10 @@
 #          README and licence: a .tar.gz, or a .zip for Windows. Each asset is
 #          named after its target alone, so releases/latest/download/<asset>
 #          always finds the newest.
-# vscode   The VS Code extension once per system, each VSIX carrying that
-#          system's binary from build, so the preview and the agents in its
-#          terminals run the same ortho without installing it.
 # package  Packs the crate as crates.io would get it, and builds it with the
 #          oldest Rust that Cargo.toml's rust-version promises.
 # publish  For a tag v<version>, where <version> is Cargo.toml's, creates the
-#          release with every archive and VSIX, and their SHA-256 sums.
+#          release with every archive and their SHA-256 sums.
 # crates-io  After the release, publishes the same version on crates.io, for
 #          cargo install ortho and cargo binstall ortho (which fetches the
 #          release's archive, so it runs second).
@@ -96,61 +93,6 @@ jobs:
           path: dist/*
           if-no-files-found: error
 
-  vscode:
-    name: VS Code extension (${{ matrix.vscode }})
-    needs: build
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          # The static musl binaries run on Alpine as well as on any other distribution.
-          - { vscode: linux-x64, target: x86_64-unknown-linux-musl }
-          - { vscode: linux-arm64, target: aarch64-unknown-linux-musl }
-          - { vscode: alpine-x64, target: x86_64-unknown-linux-musl }
-          - { vscode: alpine-arm64, target: aarch64-unknown-linux-musl }
-          - { vscode: win32-x64, target: x86_64-pc-windows-msvc }
-          # Windows on Arm runs the x64 binary through its emulation.
-          - { vscode: win32-arm64, target: x86_64-pc-windows-msvc }
-          - { vscode: darwin-arm64, target: aarch64-apple-darwin }
-          - { vscode: darwin-x64, target: x86_64-apple-darwin }
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/download-artifact@v5
-        with:
-          name: ortho-${{ matrix.target }}
-          path: dist
-      - name: Put ortho in the extension
-        run: |
-          name=ortho-${{ matrix.target }}
-          mkdir -p editors/vscode/bin
-          if [ -f "dist/$name.zip" ]; then
-            unzip -j "dist/$name.zip" "$name/ortho.exe" -d editors/vscode/bin
-          else
-            tar -xzf "dist/$name.tar.gz" -C editors/vscode/bin --strip-components=1 "$name/ortho"
-            chmod 755 editors/vscode/bin/ortho
-          fi
-      - name: Package
-        working-directory: editors/vscode
-        run: |
-          cp ../../LICENSE .
-          npx --yes @vscode/vsce@3 package --no-dependencies --target ${{ matrix.vscode }} \
-            -o ortho-vscode-${{ matrix.vscode }}.vsix
-      - name: The package carries ortho
-        run: unzip -l editors/vscode/ortho-vscode-${{ matrix.vscode }}.vsix | grep -E 'extension/bin/ortho(\.exe)?$'
-      - name: Test the extension against the ortho it carries
-        if: matrix.vscode == 'linux-x64'
-        run: |
-          unzip -q editors/vscode/ortho-vscode-linux-x64.vsix -d unpacked
-          chmod +x unpacked/extension/bin/ortho
-          cd editors/vscode
-          ORTHO_BIN="$GITHUB_WORKSPACE/unpacked/extension/bin/ortho" node --test
-      - uses: actions/upload-artifact@v5
-        with:
-          name: ortho-vscode-${{ matrix.vscode }}
-          path: editors/vscode/ortho-vscode-${{ matrix.vscode }}.vsix
-          if-no-files-found: error
-
   package:
     name: Package for crates.io
     runs-on: ubuntu-latest
@@ -168,7 +110,7 @@ jobs:
 
   publish:
     name: Publish the release
-    needs: [build, vscode, package]
+    needs: [build, package]
     if: startsWith(github.ref, 'refs/tags/v') || (inputs.publish && github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     permissions:
