@@ -2,7 +2,8 @@
 //! from ortho's own keyword list, so the editor colours exactly the words ortho reserves,
 //! copies LANGUAGE.md to `editors/vscode/ai/LANGUAGE.md`, which the extension's
 //! *Add AI instructions* command hands to agents, and copies each example's model to
-//! `editors/vscode/examples/`, which its *Open example* command copies for the user.
+//! `editors/vscode/examples/`, which its *Open example* command copies for the user,
+//! and copies the licence and the icon, which the Marketplace shows.
 //! CI runs it and fails if any committed file differs.
 //!
 //! The grammar follows the lexer (`src/parser/lexer.rs`): `//` starts a note to the end
@@ -16,6 +17,9 @@ use serde_json::{Value, json};
 const OUT: &str = "editors/vscode/syntaxes/sysml.tmLanguage.json";
 const LANGUAGE_OUT: &str = "editors/vscode/ai/LANGUAGE.md";
 const EXAMPLES_OUT: &str = "editors/vscode/examples";
+/// Files the extension carries as they are: `vsce` packs only what is in its folder.
+const COPIES: [(&str, &str); 2] =
+    [("LICENSE", "editors/vscode/LICENSE"), ("logo/ortho-icon.png", "editors/vscode/icon.png")];
 /// Where a link to another file of the repository points, once the page is copied out of it.
 const REPOSITORY: &str = "https://github.com/ola-coding/ortho/blob/main/";
 
@@ -226,6 +230,10 @@ pub fn run() -> Result {
     println!("Wrote {LANGUAGE_OUT}");
     copy_examples()?;
     println!("Wrote {EXAMPLES_OUT}");
+    for (from, to) in COPIES {
+        std::fs::copy(from, to).map_err(|error| format!("{from}: {error}"))?;
+        println!("Wrote {to}");
+    }
     Ok(())
 }
 

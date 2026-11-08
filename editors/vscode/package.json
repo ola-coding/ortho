@@ -5,6 +5,7 @@
   "version": "0.2.0",
   "private": true,
   "publisher": "ola-coding",
+  "icon": "icon.png",
   "license": "MIT",
   "repository": {
     "type": "git",

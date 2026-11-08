@@ -262,9 +262,11 @@ deck to GitHub Pages.
   `Cargo.toml` differ. Its grammar,
   `syntaxes/sysml.tmLanguage.json`, is written from `KEYWORDS`, never by hand,
   its `ai/LANGUAGE.md`, which the AI instructions carry, is copied from
-  LANGUAGE.md, and its `examples/`, which *Open Example* copies, from each
-  example's `.sysml` files: run `cargo xtask vscode-grammar` after changing
-  any of them.
+  LANGUAGE.md, its `examples/`, which *Open Example* copies, from each
+  example's `.sysml` files, and its LICENSE and `icon.png` from the
+  repository's, since `vsce` packs only what is in the extension's folder:
+  run `cargo xtask vscode-grammar` after changing any of them. Its
+  CHANGELOG.md, which the Marketplace shows, is written by hand.
   Its code is plain JavaScript with no dependencies and no build step;
   `src/ortho.js`, which runs ortho and reads what it prints, is tested with
   Node (`npm test` in `editors/vscode`, with `ORTHO_BIN` set to run the real
@@ -445,9 +447,8 @@ Open, in priority order:
     ortho's version; a folder VS Code does not trust cannot set `ortho.path`.
   - [x] Save the diagrams from the preview as SVG: the view shown, or every
     view into a folder, remembered for each model.
-  - [ ] Package it as the Marketplace wants: a LICENSE, a `.vscodeignore`
-    that leaves out `test/` and `.vscode/`, the icon from
-    `logo/ortho-icon.png`, and a CHANGELOG.md.
+  - [x] Package it as the Marketplace wants: licence, icon, changelog, and
+    no tests.
   - [ ] A README for Marketplace visitors: what it does, with a screenshot of
     the preview as PNG or GIF, since vsce refuses SVG in a README. Running
     it with F5 and working on it move to this file. The root README's

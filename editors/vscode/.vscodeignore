@@ -1,0 +1,5 @@
+# What vsce leaves out of the package: what only working on the extension needs.
+test/**
+.vscode/**
+.gitignore
+*.vsix

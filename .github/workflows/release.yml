@@ -135,7 +135,6 @@ jobs:
       - name: Package
         working-directory: editors/vscode
         run: |
-          cp ../../LICENSE .
           npx --yes @vscode/vsce@4 package --no-dependencies --target ${{ matrix.vscode }} \
             -o ortho-vscode-${{ matrix.vscode }}.vsix
       - name: The package carries ortho

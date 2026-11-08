@@ -88,5 +88,7 @@ keyword list in `src/parser/lexer.rs` by `cargo xtask vscode-grammar`. Change
 `xtask/src/vscode_grammar.rs` and run that, rather than editing the JSON; CI
 fails if the two differ. The same task copies ortho's LANGUAGE.md to
 `ai/LANGUAGE.md`, which the AI instructions carry, so they never drift from
-what ortho reads, and each example's `.sysml` files to `examples/`, which
-*Open Example* copies.
+what ortho reads, each example's `.sysml` files to `examples/`, which
+*Open Example* copies, and the repository's LICENSE and icon, since the
+package holds only what is in this folder. CHANGELOG.md is written by hand,
+for the Marketplace's Changelog tab.
