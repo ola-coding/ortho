@@ -6,7 +6,7 @@ notation: use case, logical, implementation, physical, deployment and
 process. It shows them beside the text and draws them again every time you
 save.
 
-![The coffee machine example in VS Code: the model on the left, its physical view in the preview on the right](https://raw.githubusercontent.com/ola-coding/ortho/main/editors/vscode/images/preview.png)
+![The coffee machine example in VS Code: the model on the left, its physical view in the preview on the right](https://raw.githubusercontent.com/ola-coding/ortho/2252c5cdcf405c49d01f5bfcff55f77a0f5777cc/editors/vscode/images/preview.png)
 
 It is made for models that AI agents write and people review. ortho's checks
 land in the Problems panel, and an agent working in VS Code's terminal checks

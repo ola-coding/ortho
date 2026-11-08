@@ -281,7 +281,10 @@ deck to GitHub Pages.
   `src/instructions.js` and `src/examples.js`, the AI instructions and the
   examples offered. The README's screenshot, in `images/`, is left out of the
   package: the Marketplace shows it from GitHub, by an absolute URL, since
-  `vsce` makes a relative one point at the repository's root folder. Anything that changes what `ortho render` prints, its `Wrote`
+  `vsce` makes a relative one point at the repository's root folder. The URL
+  names the commit that added the image, not `main`, so a package built
+  before its branch is merged shows it too; a new screenshot needs the URL
+  moved to its own commit, once that commit is pushed. Anything that changes what `ortho render` prints, its `Wrote`
   lines or its `file line n: message` problems, must keep those tests passing.
 - **The examples** cover two different domains, so a rendering change that
   only suits one shows up. Regenerate their SVGs and look at them in a browser
