@@ -460,9 +460,7 @@ Open, in priority order:
     view into a folder, remembered for each model.
   - [x] Package it as the Marketplace wants: licence, icon, changelog, and
     no tests.
-  - [ ] A README for Marketplace visitors. Left: its screenshot of the
-    preview beside a model, `editors/vscode/images/preview.png`, as PNG,
-    since vsce refuses SVG in a README.
+  - [x] A README for Marketplace visitors, with a screenshot of the preview.
   - [ ] Set up publishing: the publisher `ola-coding` on the VS Code
     Marketplace, with Trusted Publishing for `release.yml`, since Azure
     DevOps' global tokens stop working on 1 December 2026; and the
