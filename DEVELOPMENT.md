@@ -473,10 +473,16 @@ Open, in priority order:
   - [x] A README for Marketplace visitors, with a screenshot of the preview.
   - [x] Publish from the release workflow, after the GitHub release: the
     `marketplace` and `open-vsx` jobs; see [Releasing](#releasing).
-  - [ ] Set up the accounts: the publisher `ola-coding` on the VS Code
+  - [x] Set up the accounts: the publisher `ola-coding` on the VS Code
     Marketplace, with Trusted Publishing for `release.yml`, since Azure
     DevOps' global tokens stop working on 1 December 2026; and the
-    `ola-coding` namespace on Open VSX, with its token as `OVSX_PAT`.
+    `ola-coding` namespace on Open VSX, with the Publisher Agreement signed
+    and its ownership claimed in an issue at EclipseFdn/open-vsx.org.
+  - [ ] Once Open VSX grants the claim, register `release.yml` as the
+    namespace's trusted publisher, which only an owner can, make the
+    `open-vsx` job use `--trusted-publishing` alone, and run that job again
+    if a release went out before. Until then the job fails on its own, and
+    the Marketplace and the rest of the release go out without it.
   - [ ] Install each system's package from a Release run of a pull request
     on Linux, Windows and macOS, and try every command, before tagging.
   - [ ] Release 0.3.0 of both ortho and the extension: review CHANGELOG.md
