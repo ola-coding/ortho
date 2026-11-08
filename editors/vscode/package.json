@@ -2,7 +2,7 @@
   "name": "ortho",
   "displayName": "Ortho for SysML v2",
   "description": "SysML v2 highlighting and a live preview of the architectural views ortho draws from your model",
-  "version": "0.0.1",
+  "version": "0.2.0",
   "private": true,
   "publisher": "ola-coding",
   "license": "MIT",
@@ -26,6 +26,15 @@
     "diagrams"
   ],
   "main": "./src/extension.js",
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "In a folder you do not trust, the extension ignores the folder's own Ortho: Path setting, so it runs only the ortho it carries or one your user settings name.",
+      "restrictedConfigurations": [
+        "ortho.path"
+      ]
+    }
+  },
   "activationEvents": [
     "onWebviewPanel:ortho.preview",
     "workspaceContains:**/*.sysml"
@@ -127,7 +136,7 @@
         "ortho.path": {
           "type": "string",
           "default": "",
-          "markdownDescription": "The ortho to run, as a command or the full path to the binary. Leave it empty to run `ortho` from the PATH. A binary named here is also put first on the PATH of VS Code's terminals, so agents check their work with it too. Install ortho with `cargo install ortho`, or download it from the [releases](https://github.com/ola-coding/ortho/releases).",
+          "markdownDescription": "The ortho to run, as a command or the full path to the binary. Leave it empty to run the ortho that comes with the extension. The extension puts the ortho it runs first on the PATH of VS Code's terminals, so agents check their work with it too. In a folder you do not trust, the folder's own value is ignored.",
           "scope": "machine-overridable"
         },
         "ortho.theme": {

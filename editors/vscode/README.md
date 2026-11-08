@@ -35,15 +35,17 @@ A model is every `.sysml` file in the folder of the file you preview, read
 together, as `ortho render <folder>` reads them. The diagrams are written to
 VS Code's storage for the extension, never into your workspace.
 
-The preview runs ortho, so install it first: `cargo install ortho`, or a
-download from the [releases](https://github.com/ola-coding/ortho/releases).
-It runs `ortho` from the PATH, or the binary that **Ortho: Path** names; one
-named there is also put first on the PATH of VS Code's terminals, so an
-agent working there checks the model with the same ortho as the preview.
+The extension carries ortho, built for your system, so there is nothing else
+to install. It runs that one, and puts it first on the PATH of VS Code's
+terminals, so an agent working there checks the model with the same ortho as
+the preview. Its version is the extension's. To run another ortho, set
+**Ortho: Path** to the command or the binary. In a folder you have not told
+VS Code to trust, the folder's own **Ortho: Path** is ignored, so a
+repository you cloned cannot choose a program for the extension to run.
 
 | Setting | Default | What it does |
 | --- | --- | --- |
-| `ortho.path` | empty | The ortho to run, as a command or a path. Empty runs `ortho` from the PATH. |
+| `ortho.path` | empty | The ortho to run, as a command or a path. Empty runs the one the extension carries. |
 | `ortho.theme` | `light` | `light` for documents, or `dark-glass` for slides. |
 
 What comes next is in the
@@ -58,7 +60,9 @@ other SysML v2 extensions, such as SysIDE.
 It is not on the Marketplace yet. To run it from a clone of the repository,
 open the repository, or `editors/vscode`, in VS Code and press F5. A second
 window opens on the coffee machine example with the extension loaded, and
-picks up your changes when you reload it.
+picks up your changes when you reload it. Run this way, it carries no ortho
+and runs `ortho` from the PATH: install it with `cargo install ortho`, or set
+**Ortho: Path** to the one `cargo build` writes, `target/debug/ortho`.
 
 ## Working on it
 

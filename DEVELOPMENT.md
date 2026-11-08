@@ -256,8 +256,10 @@ deck to GitHub Pages.
   A new keyword goes in `KEYWORDS`, which the deck highlights from too, and is
   then reserved: it can no longer be a name. Run `cargo xtask vscode-grammar`
   after, so the VS Code extension colours it.
-- **The VS Code extension** is in `editors/vscode/`, with its own version and
-  its own [README](editors/vscode/README.md). Its grammar,
+- **The VS Code extension** is in `editors/vscode/`, with its own
+  [README](editors/vscode/README.md). Its version is ortho's, since each
+  package carries that ortho, and a test fails if `package.json` and
+  `Cargo.toml` differ. Its grammar,
   `syntaxes/sysml.tmLanguage.json`, is written from `KEYWORDS`, never by hand,
   its `ai/LANGUAGE.md`, which the AI instructions carry, is copied from
   LANGUAGE.md, and its `examples/`, which *Open Example* copies, from each
@@ -335,6 +337,13 @@ tab, with *publish* ticked: it tags that commit `v` and the version in
 `releases/latest/download/<archive>` always finds the newest. A pull request
 that changes the build, such as `Cargo.toml` or the workflow, builds every
 binary without publishing.
+
+The same workflow packs the VS Code extension once per system VS Code
+names (`linux-x64`, `alpine-arm64`, `win32-x64`, `darwin-arm64` and so on),
+each package carrying that system's binary in `bin/`, and tests the Linux
+one against the ortho inside it. The packages are the run's artifacts, not
+part of the GitHub release: the Marketplace and Open VSX give each user the
+package for their system.
 
 After the GitHub release, the workflow publishes the same version on
 [crates.io](https://crates.io/crates/ortho), for `cargo install ortho` and
@@ -432,14 +441,8 @@ Open, in priority order:
     tried and dropped as clumsy; the Marketplace picks the package itself.
   - [x] Click a box in a diagram to open the line that declares it: each
     box's group carries `data-file` and `data-line`.
-  - [ ] Carry ortho inside the extension, so nobody installs it first: one
-    package per system, for Linux, Windows and macOS, each with the ortho
-    the release workflow builds for it. The Marketplace and Open VSX give
-    each user the package for their system. `ortho.path` still overrides it,
-    except in a folder VS Code does not trust: there the extension runs in
-    Restricted Mode and ignores a folder's own `ortho.path`, so a cloned
-    repository cannot name a program for it to run. The extension then has
-    the version of the ortho it carries, released together from one tag.
+  - [x] Carry ortho inside the extension: one package per system, with
+    ortho's version; a folder VS Code does not trust cannot set `ortho.path`.
   - [ ] Save the diagrams from the preview: the view shown, or every view,
     as SVG into a folder the user picks, such as one beside the models. The
     preview itself keeps writing to VS Code's storage.

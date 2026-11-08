@@ -12,8 +12,10 @@ const {
   tabTitles,
   runOrtho,
   keepOnly,
+  bundledOrtho,
   chooseOrtho,
   orthoFolder,
+  makeExecutable,
   markedSource,
 } = require('./ortho');
 const fs = require('node:fs');
@@ -26,6 +28,7 @@ const OPEN_ON_START = 'ortho.openOnStart';
 
 /** @param {vscode.ExtensionContext} context */
 function activate(context) {
+  makeExecutable(bundledOrtho(context.extensionPath));
   putOnTerminalPath(context);
   const problems = vscode.languages.createDiagnosticCollection('ortho');
   const preview = new Preview(context, problems);
@@ -41,6 +44,12 @@ function activate(context) {
     vscode.workspace.onDidChangeConfiguration((event) => {
       if (event.affectsConfiguration('ortho.path')) putOnTerminalPath(context);
     }),
+    // In a folder VS Code does not trust, its own `ortho.path` is ignored, as
+    // package.json asks; once trusted, the ortho it names takes over.
+    vscode.workspace.onDidGrantWorkspaceTrust(() => {
+      putOnTerminalPath(context);
+      preview.render();
+    }),
     // A preview open when VS Code closed opens again on the same model.
     vscode.window.registerWebviewPanelSerializer(Preview.viewType, {
       async deserializeWebviewPanel(panel, /** @type {{ folder?: unknown } | undefined} */ state) {
@@ -53,9 +62,16 @@ function activate(context) {
 
 function deactivate() {}
 
-/** The ortho the preview runs: the one `ortho.path` names, else `ortho` on the PATH. */
-function orthoOf() {
-  return chooseOrtho(vscode.workspace.getConfiguration('ortho').get('path', ''));
+/**
+ * The ortho the preview runs: the one `ortho.path` names, else the one the extension
+ * carries. VS Code leaves out a folder's own `ortho.path` while the folder is not trusted.
+ * @param {vscode.ExtensionContext} context
+ */
+function orthoOf(context) {
+  return chooseOrtho(
+    vscode.workspace.getConfiguration('ortho').get('path', ''),
+    bundledOrtho(context.extensionPath),
+  );
 }
 
 /**
@@ -66,7 +82,7 @@ function orthoOf() {
 function putOnTerminalPath(context) {
   const terminals = context.environmentVariableCollection;
   terminals.clear();
-  const folder = orthoFolder(orthoOf());
+  const folder = orthoFolder(orthoOf(context));
   if (!folder) return;
   terminals.description = 'Puts the ortho that the Ortho extension runs on the PATH.';
   terminals.prepend('PATH', folder + path.delimiter);
@@ -355,7 +371,7 @@ class Preview {
 
   /** @param {string} folder */
   async renderOnce(folder) {
-    const ortho = orthoOf();
+    const ortho = orthoOf(this.context);
     const theme = vscode.workspace.getConfiguration('ortho').get('theme', 'light');
     // Each render gets a folder of its own, so the diagrams of the last render that
     // worked stay on screen while the model does not load.
