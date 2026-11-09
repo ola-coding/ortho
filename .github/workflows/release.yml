@@ -265,6 +265,8 @@ jobs:
 
   # The extension goes out after the GitHub release, as crates.io does: one package
   # per system, from the vscode job. --skip-duplicate lets a failed run be run again.
+  # Each job then waits until its store serves every package, since a store can
+  # answer "Published" and still drop one.
   marketplace:
     name: Publish on the VS Code Marketplace
     needs: publish
@@ -273,6 +275,7 @@ jobs:
       contents: read
       id-token: write
     steps:
+      - uses: actions/checkout@v7
       - uses: actions/download-artifact@v5
         with:
           path: dist
@@ -281,6 +284,8 @@ jobs:
       # Trusted publishing: the Marketplace takes GitHub's short-lived token for
       # this workflow, as a policy on the publisher ola-coding allows. No secret.
       - run: npx --yes @vscode/vsce@4 publish --oidc --skip-duplicate --packagePath dist/*.vsix
+      - name: The Marketplace serves every package
+        run: .github/scripts/await-extension.sh marketplace dist/*.vsix
 
   open-vsx:
     name: Publish on Open VSX
@@ -290,13 +295,14 @@ jobs:
       contents: read
       id-token: write
     steps:
+      - uses: actions/checkout@v7
       - uses: actions/download-artifact@v5
         with:
           path: dist
           pattern: vscode-*
           merge-multiple: true
-      # The namespace's token from the secret OVSX_PAT; without one, ovsx tries
-      # trusted publishing with GitHub's token instead.
-      - run: npx --yes ovsx@1 publish --skip-duplicate --packagePath dist/*.vsix
-        env:
-          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+      # Trusted publishing: Open VSX takes GitHub's short-lived token for this
+      # workflow, registered on the extension ola-coding.ortho. No secret.
+      - run: npx --yes ovsx@1 publish --trusted-publishing --skip-duplicate --packagePath dist/*.vsix
+      - name: Open VSX serves every package
+        run: .github/scripts/await-extension.sh open-vsx dist/*.vsix

@@ -79,9 +79,10 @@ says what each view is for, and [LANGUAGE.md](LANGUAGE.md) what to write for it.
 
 In VS Code, install
 [Ortho for SysML v2](https://marketplace.visualstudio.com/items?itemName=ola-coding.ortho)
-from the Marketplace. It carries ortho, draws the views beside the model as
-you edit it, and puts ortho on the PATH of VS Code's terminals, so there is
-nothing else to install.
+from the Marketplace; in Cursor or VSCodium, from
+[Open VSX](https://open-vsx.org/extension/ola-coding/ortho). It carries
+ortho, draws the views beside the model as you edit it, and puts ortho on
+the PATH of VS Code's terminals, so there is nothing else to install.
 
 Otherwise, download ortho for your system from the
 [latest release](https://github.com/ola-coding/ortho/releases/latest):

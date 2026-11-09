@@ -386,8 +386,21 @@ run that failed part-way be run again. The VS Code Marketplace takes
 GitHub's short-lived token through its own *trusted publishing*: a policy
 for `ola-coding/ortho` and `release.yml` on the publisher `ola-coding`, at
 marketplace.visualstudio.com/manage, with no secret. Open VSX, for Cursor
-and VSCodium, takes the token of the namespace `ola-coding` from the secret
-`OVSX_PAT`; without it, `ovsx` tries trusted publishing instead.
+and VSCodium, takes it the same way, through a trusted publisher for
+`ola-coding/ortho` and `release.yml` registered on the extension
+`ola-coding.ortho` at open-vsx.org/user-settings/trusted-publishers, which
+only an owner of the namespace can do. Open VSX registers one only for an
+extension that already exists, so a new extension's first version needs a
+namespace token in the secret `OVSX_PAT`, read by a job that passes it, and
+the secret deleted afterwards.
+
+Both stores answer *Published* before a package can be installed: they
+check it first, for some minutes. For 0.3.0, the Marketplace dropped the
+seven packages uploaded while it checked the first, the one that created
+the extension, though it answered *Published* for each. So each job then
+waits, by `.github/scripts/await-extension.sh`, until its store serves the
+package for every system, and fails after 30 minutes if one never comes:
+run that job again, and `--skip-duplicate` publishes only what is missing.
 
 ## The move to Rust
 
@@ -484,13 +497,15 @@ Open, in priority order:
     DevOps' global tokens stop working on 1 December 2026; and the
     `ola-coding` namespace on Open VSX, with the Publisher Agreement signed
     and its ownership claimed in an issue at EclipseFdn/open-vsx.org.
-  - [ ] Once Open VSX grants the claim, register `release.yml` as the
-    namespace's trusted publisher, which only an owner can, make the
-    `open-vsx` job use `--trusted-publishing` alone, and run that job again
-    if a release went out before. Until then the job fails on its own, and
-    the Marketplace and the rest of the release go out without it. Then
-    name Open VSX, for Cursor and VSCodium, beside the Marketplace in the
-    root README's Install.
+  - [x] Once Open VSX granted the claim, publish 0.3.0 there with a
+    namespace token, since a trusted publisher can only be registered for
+    an extension that exists; then register `release.yml` as its trusted
+    publisher, delete the token, and make the `open-vsx` job use
+    `--trusted-publishing` alone. Open VSX is named beside the Marketplace
+    in the root README's Install.
+  - [x] Wait in each publish job until the store serves every system's
+    package: the Marketplace dropped seven of 0.3.0's eight, which went out
+    again by running the job again.
   - [x] Install each system's package from a Release run of a pull request
     on Linux, Windows and macOS, and try every command, before tagging.
     Linux and Windows are tried by hand; macOS, with no Mac at hand, by the
