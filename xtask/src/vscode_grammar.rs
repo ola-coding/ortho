@@ -226,9 +226,9 @@ pub fn run() -> Result {
     println!("Wrote {OUT}");
     let language = std::fs::read_to_string("LANGUAGE.md").map_err(|error| format!("LANGUAGE.md: {error}"))?;
     std::fs::create_dir_all("editors/vscode/ai").map_err(|error| error.to_string())?;
-    write(LANGUAGE_OUT, &language_copy(&language))?;
+    write(LANGUAGE_OUT, &language_copy(&language, "vscode-grammar"))?;
     println!("Wrote {LANGUAGE_OUT}");
-    copy_examples()?;
+    copy_examples(EXAMPLES_OUT)?;
     println!("Wrote {EXAMPLES_OUT}");
     for (from, to) in COPIES {
         std::fs::copy(from, to).map_err(|error| format!("{from}: {error}"))?;
@@ -239,16 +239,16 @@ pub fn run() -> Result {
 
 /// Each example's `.sysml` files, as they are, without the diagrams: the preview draws
 /// those. The folder is written afresh, so a file removed from an example goes too.
-fn copy_examples() -> Result {
+pub fn copy_examples(out_folder: &str) -> Result {
     let error = |error: std::io::Error| error.to_string();
-    if std::path::Path::new(EXAMPLES_OUT).exists() {
-        std::fs::remove_dir_all(EXAMPLES_OUT).map_err(error)?;
+    if std::path::Path::new(out_folder).exists() {
+        std::fs::remove_dir_all(out_folder).map_err(error)?;
     }
     let mut examples: Vec<_> =
         std::fs::read_dir("examples").map_err(error)?.collect::<std::io::Result<_>>().map_err(error)?;
     examples.sort_by_key(|entry| entry.file_name());
     for example in examples.iter().filter(|entry| entry.path().is_dir()) {
-        let out = std::path::Path::new(EXAMPLES_OUT).join(example.file_name());
+        let out = std::path::Path::new(out_folder).join(example.file_name());
         std::fs::create_dir_all(&out).map_err(error)?;
         for file in std::fs::read_dir(example.path()).map_err(error)? {
             let path = file.map_err(error)?.path();
@@ -262,8 +262,8 @@ fn copy_examples() -> Result {
 
 /// LANGUAGE.md as it reads outside the repository: a link to another of its files,
 /// `[VIEWS.md](VIEWS.md)`, points at it on GitHub. A link within the page stays.
-fn language_copy(language: &str) -> String {
-    let mut copy = String::from("<!-- Copied from ortho's LANGUAGE.md by `cargo xtask vscode-grammar`. -->\n\n");
+pub fn language_copy(language: &str, task: &str) -> String {
+    let mut copy = format!("<!-- Copied from ortho's LANGUAGE.md by `cargo xtask {task}`. -->\n\n");
     let mut rest = language;
     while let Some(at) = rest.find("](") {
         let (before, after) = rest.split_at(at + 2);

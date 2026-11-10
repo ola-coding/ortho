@@ -245,7 +245,7 @@ cargo xtask omg-models              # fetch OMG's models, which needs Git
 cargo test -- --ignored             # count how many of OMG's models load
 cargo xtask library-names           # list the standard library's names
 cargo xtask vscode-grammar          # the extension's grammar, LANGUAGE.md and example copies
-cargo xtask zed-grammar             # the Zed extension's highlighting and licence copy
+cargo xtask zed-grammar             # the Zed highlighting, and the copies the extension and ortho lsp carry
 ```
 
 CI (`.github/workflows/ci.yml`) builds and tests on Linux, Windows and
@@ -303,7 +303,12 @@ deck to GitHub Pages.
   folder the server runs in, which it moves to the editor's project root, so
   the diagrams match `ortho render` run there. Go to definition follows the
   references name resolution linked, and a code action on a view opens its
-  diagram by `window/showDocument`. It answers nothing else: no completion,
+  diagram by `window/showDocument`. On a file's first line, code actions
+  write the AI instructions (`src/lsp/instructions.rs`, the VS Code
+  extension's text but for where ortho is) and copy an example into the
+  project; the language reference and the examples they carry are copied
+  into `src/lsp/assets/` by `cargo xtask zed-grammar`, since crates.io gets
+  only `src/`. It answers nothing else: no completion,
   hover or rename. `tests/lsp.rs` drives the binary over stdio, as an editor
   does.
 - **The Zed extension** is in `editors/zed/`: a Rust crate, built to
