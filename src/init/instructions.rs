@@ -1,20 +1,14 @@
-//! The AI instructions the *Add AI instructions* code action writes into a project: a
-//! skill for Claude Code and instructions for GitHub Copilot, each telling an agent how
-//! to write a model ortho draws and to check its work with ortho. The same as the VS
-//! Code extension writes (`editors/vscode/src/instructions.js`), but for where ortho is.
-use std::path::Path;
+//! The AI instructions `ortho init` writes into a project: a skill for Claude Code and
+//! instructions for GitHub Copilot, each telling an agent how to write a model ortho
+//! draws and to check its work with ortho. The same as the VS Code extension writes
+//! (`editors/vscode/src/instructions.js`), but for where ortho is: they name no path
+//! of this machine, since they are committed and shared.
 
 const SKILL: &str = "sysml-v2-ortho";
 
 /// What an agent does with a model, in either tool. `language` says where the language
-/// reference is, as the sentence's object; `ortho` is the ortho the editor runs.
-fn workflow(language: &str, ortho: Option<&Path>) -> String {
-    let found = match ortho {
-        Some(ortho) => {
-            format!("If `ortho` is not found, run the one Zed's Ortho extension runs, `{}`, ", ortho.display())
-        }
-        None => "If `ortho` is not found, ".to_string(),
-    };
+/// reference is, as the sentence's object.
+fn workflow(language: &str) -> String {
     format!(
         r#"The `.sysml` files in a folder are one SysML v2 model. ortho reads them together and draws, as SVG, every view the model declares. {language} says what ortho reads and what each view draws from it. Read it before you change a model, and write only what it describes.
 
@@ -41,7 +35,7 @@ When you rename an element, update every reference to it in every file of the fo
 
 ## Where ortho is
 
-Run `ortho`. {found}then try `~/.cargo/bin/ortho` or the path in the Zed setting `lsp.ortho.binary.path`. To install it: `cargo install ortho`, or download it from https://github.com/ola-coding/ortho/releases.
+Run `ortho`. If it is not found, try `~/.cargo/bin/ortho`. To install it: `cargo install ortho`, or download it from https://github.com/ola-coding/ortho/releases.
 "#
     )
 }
@@ -61,14 +55,14 @@ fn nested(language: &str) -> String {
 }
 
 /// The files to write, by path from the project's folder, from ortho's LANGUAGE.md.
-pub fn instruction_files(language: &str, ortho: Option<&Path>) -> Vec<(String, String)> {
+pub fn instruction_files(language: &str) -> Vec<(String, String)> {
     let skill = format!(
         "---\nname: {SKILL}\ndescription: Write and change SysML v2 models, .sysml files, that ortho draws as architecture views, and check them with ortho. Use whenever you create or edit a .sysml file.\n---\n\n# SysML v2 models that ortho draws\n\n{}",
-        workflow("[LANGUAGE.md](LANGUAGE.md), beside this file,", ortho)
+        workflow("[LANGUAGE.md](LANGUAGE.md), beside this file,")
     );
     let copilot = format!(
         "---\napplyTo: \"**/*.sysml\"\n---\n\n# SysML v2 models that ortho draws\n\n{}\n{}",
-        workflow("The language reference below", ortho),
+        workflow("The language reference below"),
         nested(language)
     );
     vec![
@@ -89,10 +83,11 @@ mod tests {
     }
 
     #[test]
-    fn names_the_ortho_the_editor_runs() {
-        let files = instruction_files("# L", Some(Path::new("/x/ortho")));
+    fn writes_a_skill_its_reference_and_copilot_instructions() {
+        let files = instruction_files("# L");
         assert_eq!(files.len(), 3);
-        assert!(files[0].1.contains("`/x/ortho`"));
+        assert!(files[0].1.contains("ortho render <model folder>"));
+        assert_eq!(files[1].1, "# L");
         assert!(files[2].1.ends_with("## L"));
     }
 }

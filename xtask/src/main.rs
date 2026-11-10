@@ -8,7 +8,7 @@
 //! - `vscode-grammar`: the VS Code extension's SysML v2 grammar, from ortho's keywords,
 //!   and its copies of LANGUAGE.md, the examples, the licence and the icon.
 //! - `zed-grammar`: the Zed extension's highlighting, from the same keyword groups, its
-//!   copy of the licence, and `ortho lsp`'s copies of LANGUAGE.md and the examples.
+//!   copy of the licence, and `ortho init`'s copies of LANGUAGE.md and the examples.
 use std::path::Path;
 use std::process::ExitCode;
 
@@ -37,7 +37,7 @@ const TASKS: &[Task] = &[
     (
         "zed-grammar",
         zed_grammar::run,
-        "write the Zed extension's highlighting from ortho's keywords, and copy what it and ortho lsp carry",
+        "write the Zed extension's highlighting from ortho's keywords, and copy what it and ortho init carry",
     ),
 ];
 

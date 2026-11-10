@@ -4,8 +4,6 @@
 //! of each file the editor opens, as it is typed, goes to what a name names, and on
 //! every save writes the model's diagrams beside it, which a code action on a view
 //! opens. It completes and renames nothing: it helps check and review a model.
-mod assets;
-mod instructions;
 mod protocol;
 
 use crate::model::views::{declared_views, view_heading};
@@ -21,10 +19,6 @@ use std::path::{Path, PathBuf};
 
 /// The command a code action runs to open a view's diagram.
 const SHOW_DIAGRAM: &str = "ortho.showDiagram";
-/// The command that writes the AI instructions into the project.
-const ADD_AI_INSTRUCTIONS: &str = "ortho.addAiInstructions";
-/// The command that copies an example into the project and opens it.
-const COPY_EXAMPLE: &str = "ortho.copyExample";
 
 /// Serves one editor until it says `exit` or closes the stream. Says whether it was
 /// told to shut down first, as a clean exit requires.
@@ -68,8 +62,6 @@ struct Server<W: Write> {
     /// The folder, in a model's folder, that diagrams are written to, or none.
     diagrams: Option<String>,
     theme: &'static Theme,
-    /// The project's folder, where the AI instructions and examples go.
-    root: Option<PathBuf>,
     shut_down: bool,
     /// How many requests of its own the server has sent.
     sent: u64,
@@ -84,7 +76,6 @@ impl<W: Write> Server<W> {
             reported: HashMap::new(),
             diagrams: Some("diagrams".to_string()),
             theme: &LIGHT,
-            root: None,
             shut_down: false,
             sent: 0,
         }
@@ -164,8 +155,7 @@ impl<W: Write> Server<W> {
         // run there does, so the diagrams match those rendered at the project's root.
         let root = params["workspaceFolders"][0]["uri"].as_str().or(params["rootUri"].as_str());
         if let Some(root) = root.and_then(uri_to_path) {
-            let _ = std::env::set_current_dir(&root);
-            self.root = Some(root);
+            let _ = std::env::set_current_dir(root);
         }
         let options = &params["initializationOptions"];
         match &options["diagrams"] {
@@ -176,15 +166,12 @@ impl<W: Write> Server<W> {
         if let Some(theme) = options["theme"].as_str().and_then(Theme::named) {
             self.theme = theme;
         }
-        let mut commands = vec![ADD_AI_INSTRUCTIONS, COPY_EXAMPLE];
-        if self.diagrams.is_some() {
-            commands.push(SHOW_DIAGRAM);
-        }
+        let commands = if self.diagrams.is_some() { vec![SHOW_DIAGRAM] } else { vec![] };
         json!({
             "capabilities": {
                 "textDocumentSync": { "openClose": true, "change": 1, "save": { "includeText": false } },
                 "definitionProvider": true,
-                "codeActionProvider": true,
+                "codeActionProvider": self.diagrams.is_some(),
                 "executeCommandProvider": { "commands": commands },
             },
             "serverInfo": { "name": "ortho", "version": env!("CARGO_PKG_VERSION") },
@@ -359,16 +346,9 @@ impl<W: Write> Server<W> {
         json!({ "uri": path_to_uri(Path::new(file)), "range": range })
     }
 
-    /// The code actions at a position: on a view's declaration, one that opens its
-    /// diagram; on a file's first line, those that add the AI instructions and copy an
-    /// example, which need no model, so an empty file offers them too.
+    /// A code action on a view's declaration that opens its diagram.
     fn code_actions(&self, params: &Value) -> Value {
-        let mut actions = self.diagram_actions(params);
-        let first_line = params["range"]["start"]["line"].as_u64() == Some(0);
-        if let (true, Some(file)) = (first_line, document_path(params)) {
-            actions.extend(self.project_actions(&file));
-        }
-        Value::Array(actions)
+        Value::Array(self.diagram_actions(params))
     }
 
     fn diagram_actions(&self, params: &Value) -> Vec<Value> {
@@ -394,79 +374,6 @@ impl<W: Write> Server<W> {
         actions
     }
 
-    /// The folder the AI instructions and examples go to: the project's, else the file's.
-    fn project(&self, file: &Path) -> Option<PathBuf> {
-        self.root.clone().or_else(|| file.parent().map(Path::to_path_buf))
-    }
-
-    fn project_actions(&self, file: &Path) -> Vec<Value> {
-        let Some(project) = self.project(file) else { return Vec::new() };
-        let mut actions = Vec::new();
-        let files = instructions::instruction_files(assets::LANGUAGE, std::env::current_exe().ok().as_deref());
-        let present: Vec<Option<String>> =
-            files.iter().map(|(path, _)| std::fs::read_to_string(project.join(path)).ok()).collect();
-        // Offered until they are there as ortho writes them; replacing them is the
-        // user's choice, made by picking the action that says so.
-        if present.iter().all(Option::is_none) {
-            actions.push(action(
-                "Add AI instructions for Claude Code and Copilot",
-                ADD_AI_INSTRUCTIONS,
-                json!([path_to_uri(file)]),
-            ));
-        } else if files.iter().zip(&present).any(|((_, content), there)| there.as_ref() != Some(content)) {
-            actions.push(action(
-                "Replace the AI instructions for Claude Code and Copilot",
-                ADD_AI_INSTRUCTIONS,
-                json!([path_to_uri(file)]),
-            ));
-        }
-        for example in &assets::EXAMPLES {
-            let folder = assets::free_name(example.name, |name| project.join(name).exists());
-            let title = format!("Copy the {} example into {folder}/", example.label.to_lowercase());
-            actions.push(action(&title, COPY_EXAMPLE, json!([example.name, path_to_uri(file)])));
-        }
-        actions
-    }
-
-    /// Writes the AI instructions into the project, replacing what is there.
-    fn add_ai_instructions(&mut self, file: Option<PathBuf>) -> io::Result<()> {
-        let Some(project) = self.root.clone().or_else(|| file.and_then(|f| f.parent().map(Path::to_path_buf))) else {
-            return Ok(());
-        };
-        let files = instructions::instruction_files(assets::LANGUAGE, std::env::current_exe().ok().as_deref());
-        for (path, content) in &files {
-            let path = project.join(path);
-            let written =
-                path.parent().map_or(Ok(()), std::fs::create_dir_all).and_then(|()| std::fs::write(&path, content));
-            if let Err(error) = written {
-                let message = format!("ortho: {}: {error}", path.display());
-                return self.notify("window/showMessage", json!({ "type": 1, "message": message }));
-            }
-        }
-        let skill = project.join(&files[0].0);
-        self.show(&skill)?;
-        let message =
-            "ortho: added AI instructions for Claude Code (.claude/skills/) and Copilot (.github/instructions/).";
-        self.notify("window/showMessage", json!({ "type": 3, "message": message }))
-    }
-
-    /// Copies an example into a folder of the project that is not taken, and opens its
-    /// use case view.
-    fn copy_example(&mut self, name: &str, file: Option<PathBuf>) -> io::Result<()> {
-        let Some(example) = assets::EXAMPLES.iter().find(|example| example.name == name) else { return Ok(()) };
-        let Some(project) = self.root.clone().or_else(|| file.and_then(|f| f.parent().map(Path::to_path_buf))) else {
-            return Ok(());
-        };
-        let folder = project.join(assets::free_name(example.name, |name| project.join(name).exists()));
-        let copied = std::fs::create_dir_all(&folder)
-            .and_then(|()| example.files.iter().try_for_each(|(name, text)| std::fs::write(folder.join(name), text)));
-        if let Err(error) = copied {
-            let message = format!("ortho: {}: {error}", folder.display());
-            return self.notify("window/showMessage", json!({ "type": 1, "message": message }));
-        }
-        self.show(&folder.join(assets::FIRST_FILE))
-    }
-
     /// Asks the editor to open a file.
     fn show(&mut self, path: &Path) -> io::Result<()> {
         self.sent += 1;
@@ -477,20 +384,10 @@ impl<W: Write> Server<W> {
 
     /// Runs the command of a code action.
     fn execute(&mut self, params: &Value) -> io::Result<Value> {
-        let arguments = &params["arguments"];
-        match params["command"].as_str() {
-            Some(SHOW_DIAGRAM) => {
-                if let Some(svg) = arguments[0].as_str().and_then(uri_to_path) {
-                    self.show_diagram(&svg)?;
-                }
-            }
-            Some(ADD_AI_INSTRUCTIONS) => self.add_ai_instructions(arguments[0].as_str().and_then(uri_to_path))?,
-            Some(COPY_EXAMPLE) => {
-                if let Some(name) = arguments[0].as_str() {
-                    self.copy_example(name, arguments[1].as_str().and_then(uri_to_path))?;
-                }
-            }
-            _ => {}
+        if params["command"].as_str() == Some(SHOW_DIAGRAM)
+            && let Some(svg) = params["arguments"][0].as_str().and_then(uri_to_path)
+        {
+            self.show_diagram(&svg)?;
         }
         Ok(Value::Null)
     }

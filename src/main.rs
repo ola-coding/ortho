@@ -1,5 +1,5 @@
 //! `ortho render`: every view a model declares, one SVG each, once or on every save;
-//! and `ortho lsp`, the same checks for an editor.
+//! `ortho lsp`, the same checks for an editor; and `ortho init`, what a project starts with.
 use clap::{Parser, Subcommand};
 use ortho::model::views::view_heading;
 use ortho::parser::workspace::parse_sysml_files;
@@ -33,6 +33,19 @@ enum Command {
         #[arg(short, long)]
         watch: bool,
     },
+    /// Write AI instructions for Claude Code and GitHub Copilot into a folder, so an
+    /// agent there knows the SysML v2 ortho reads and checks its work with ortho
+    Init {
+        /// The folder to write into
+        #[arg(value_name = "FOLDER", default_value = ".")]
+        folder: String,
+        /// Also copy an example model into a folder of its own there
+        #[arg(long, value_name = "NAME", value_parser = ortho::init::example_names())]
+        example: Option<String>,
+        /// Replace AI instructions that differ from the ones ortho writes
+        #[arg(long)]
+        force: bool,
+    },
     /// Serve editors as a language server over stdin and stdout: the problems of each
     /// model folder as it is typed, go to definition, and diagrams on every save
     Lsp {
@@ -45,6 +58,20 @@ enum Command {
 fn main() -> ExitCode {
     let (models, out, theme, watching) = match Cli::parse().command {
         Command::Render { models, out, theme, watch } => (models, out, theme, watch),
+        Command::Init { folder, example, force } => {
+            return match ortho::init::init(Path::new(&folder), example.as_deref(), force) {
+                Ok(done) => {
+                    for line in done {
+                        println!("{line}");
+                    }
+                    ExitCode::SUCCESS
+                }
+                Err(message) => {
+                    eprintln!("{message}");
+                    ExitCode::FAILURE
+                }
+            };
+        }
         Command::Lsp { .. } => {
             let stdin = std::io::stdin().lock();
             return match ortho::lsp::serve(stdin, std::io::stdout().lock()) {

@@ -25,20 +25,25 @@ check and read a model rather than type it.
   (Cmd-. , or Ctrl-. on Linux and Windows) offer *Show diagram*, which opens
   that view's SVG in Zed. Drag its tab beside the model: Zed shows it again
   each time you save.
-- **AI instructions.** On the first line of any `.sysml` file, even an empty
-  one, the code actions offer *Add AI instructions for Claude Code and
-  Copilot*: a skill for Claude Code and instructions for GitHub Copilot,
-  written into your project. They carry the SysML v2 that ortho reads, and
-  tell the agent to render the model after every change and fix what ortho
-  reports, rather than delete the line it points at.
-- **Two examples,** a coffee machine and a survey drone, each with all six
-  views. On the first line of any `.sysml` file, *Copy the coffee machine
-  example* copies it into a new folder of your project and opens it. To start
-  from nothing, create an empty `new.sysml` and press Cmd-. on it.
 - **SysML v2 colouring,** the same as in the VS Code extension: keywords, the
   names that definitions and packages declare, comments, strings, numbers and
   metadata such as `#Safety`. Packages, definitions and the main usages are in
   Zed's outline (Cmd-Shift-O).
+
+## Starting a project
+
+ortho itself carries what a project starts with, so it is one command in
+Zed's terminal, with any ortho, in any editor:
+
+```sh
+ortho init                           # AI instructions, into this folder
+ortho init --example coffee-machine  # and an example model, or survey-drone
+```
+
+The AI instructions are a skill for Claude Code and instructions for GitHub
+Copilot. They carry the SysML v2 that ortho reads, and tell the agent to
+render the model after every change and fix what ortho reports, rather than
+delete the line it points at. Each example has all six views.
 
 ## Your model
 

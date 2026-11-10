@@ -219,68 +219,8 @@ fn opens_a_views_diagram_from_a_code_action() {
     assert!(svg.exists());
     // Elsewhere in the file, no action.
     let mut elsewhere = params;
-    elsewhere["range"]["start"]["line"] = json!(1);
-    elsewhere["range"]["end"]["line"] = json!(1);
+    elsewhere["range"]["start"]["line"] = json!(0);
+    elsewhere["range"]["end"]["line"] = json!(0);
     let (sent, _) = session(&folder, &[open(&logical, &text), request(3, "textDocument/codeAction", elsewhere)]);
     assert_eq!(response(&sent, 3), &json!([]));
-}
-
-fn first_line_actions(file: &Path, text: &str, root: &Path) -> Vec<Value> {
-    let range = json!({ "start": { "line": 0, "character": 0 }, "end": { "line": 0, "character": 0 } });
-    let params = json!({ "textDocument": { "uri": uri(file) }, "range": range, "context": { "diagnostics": [] } });
-    let (sent, _) = session(root, &[open(file, text), request(1, "textDocument/codeAction", params)]);
-    response(&sent, 1).as_array().unwrap().clone()
-}
-
-fn run(root: &Path, file: &Path, text: &str, action: &Value) -> Vec<Value> {
-    let command = &action["command"];
-    let execute = json!({ "command": command["command"], "arguments": command["arguments"] });
-    session(root, &[open(file, text), request(2, "workspace/executeCommand", execute)]).0
-}
-
-fn titled<'a>(actions: &'a [Value], start: &str) -> Option<&'a Value> {
-    actions.iter().find(|action| action["title"].as_str().unwrap().starts_with(start))
-}
-
-#[test]
-fn adds_the_ai_instructions_from_an_empty_file() {
-    let root = scratch("instructions");
-    let file = root.join("new.sysml");
-    let actions = first_line_actions(&file, "", &root);
-    let add = titled(&actions, "Add AI instructions").unwrap_or_else(|| panic!("{actions:?}"));
-    let sent = run(&root, &file, "", add);
-    let skill = root.join(".claude/skills/sysml-v2-ortho/SKILL.md");
-    assert!(std::fs::read_to_string(&skill).unwrap().contains("ortho render <model folder>"));
-    assert!(root.join(".claude/skills/sysml-v2-ortho/LANGUAGE.md").exists());
-    assert!(root.join(".github/instructions/sysml-v2.instructions.md").exists());
-    let show = sent.iter().find(|message| message["method"] == "window/showDocument").unwrap();
-    assert_eq!(show["params"]["uri"], uri(&skill));
-    // Once there, as ortho writes them, they are not offered again; changed, they are
-    // offered to be replaced.
-    assert!(titled(&first_line_actions(&file, "", &root), "Add AI instructions").is_none());
-    assert!(titled(&first_line_actions(&file, "", &root), "Replace the AI instructions").is_none());
-    std::fs::write(&skill, "mine").unwrap();
-    assert!(titled(&first_line_actions(&file, "", &root), "Replace the AI instructions").is_some());
-}
-
-#[test]
-fn copies_an_example_into_a_free_folder_and_opens_it() {
-    let root = scratch("examples");
-    std::fs::create_dir(root.join("coffee-machine")).unwrap();
-    let file = root.join("new.sysml");
-    let actions = first_line_actions(&file, "", &root);
-    let copy = titled(&actions, "Copy the coffee machine example into coffee-machine-2/")
-        .unwrap_or_else(|| panic!("{actions:?}"));
-    assert!(titled(&actions, "Copy the survey drone example into survey-drone/").is_some());
-    let sent = run(&root, &file, "", copy);
-    let copied = root.join("coffee-machine-2");
-    for entry in std::fs::read_dir(repository().join("examples/coffee-machine")).unwrap() {
-        let path = entry.unwrap().path();
-        if path.extension().is_some_and(|ext| ext == "sysml") {
-            let name = path.file_name().unwrap();
-            assert_eq!(std::fs::read(copied.join(name)).unwrap(), std::fs::read(&path).unwrap(), "{name:?}");
-        }
-    }
-    let show = sent.iter().find(|message| message["method"] == "window/showDocument").unwrap();
-    assert_eq!(show["params"]["uri"], uri(&copied.join("use-case.sysml")));
 }

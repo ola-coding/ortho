@@ -2,6 +2,7 @@
 //! A model goes through `parser`, `model`, `diagrams`, `layout` and `render` in turn;
 //! `pipeline` runs them for a view.
 pub mod diagrams;
+pub mod init;
 pub mod layout;
 pub mod lsp;
 pub mod model;

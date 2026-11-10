@@ -16,8 +16,9 @@ How ortho works inside, and why. For using it, see [README.md](README.md).
 
 ortho is written in Rust, one binary with no runtime. `src/main.rs` is the
 `ortho render` command, which renders every view the model declares, and
-`ortho lsp`, the same checks and diagrams for an editor (`src/lsp/`); they
-are the only ways in for users. The library in `src/lib.rs` is there for the tests
+`ortho lsp`, the same checks and diagrams for an editor (`src/lsp/`), and
+`ortho init`, what a project starts with (`src/init/`); they are the only
+ways in for users. The library in `src/lib.rs` is there for the tests
 and `xtask/`, not as a public API. `src/model/views.rs` says which of the six
 diagrams a view is and names its file, and `src/pipeline.rs` runs that
 diagram's extractor, layout and renderer on what the view exposes.
@@ -245,7 +246,7 @@ cargo xtask omg-models              # fetch OMG's models, which needs Git
 cargo test -- --ignored             # count how many of OMG's models load
 cargo xtask library-names           # list the standard library's names
 cargo xtask vscode-grammar          # the extension's grammar, LANGUAGE.md and example copies
-cargo xtask zed-grammar             # the Zed highlighting, and the copies the extension and ortho lsp carry
+cargo xtask zed-grammar             # the Zed highlighting, and the copies the extension and ortho init carry
 ```
 
 CI (`.github/workflows/ci.yml`) builds and tests on Linux, Windows and
@@ -303,14 +304,20 @@ deck to GitHub Pages.
   folder the server runs in, which it moves to the editor's project root, so
   the diagrams match `ortho render` run there. Go to definition follows the
   references name resolution linked, and a code action on a view opens its
-  diagram by `window/showDocument`. On a file's first line, code actions
-  write the AI instructions (`src/lsp/instructions.rs`, the VS Code
-  extension's text but for where ortho is) and copy an example into the
-  project; the language reference and the examples they carry are copied
-  into `src/lsp/assets/` by `cargo xtask zed-grammar`, since crates.io gets
-  only `src/`. It answers nothing else: no completion,
+  diagram by `window/showDocument`. It answers nothing else: no completion,
   hover or rename. `tests/lsp.rs` drives the binary over stdio, as an editor
   does.
+- **`ortho init`** (`src/init/`) writes what a project starts with: the AI
+  instructions, a skill for Claude Code and instructions for GitHub Copilot,
+  and with `--example` an example model in a folder of its own. ortho carries
+  them, so it needs no editor: Zed gives an extension no commands, and its
+  language extensions leave setting a project up to the language's own
+  command, as `cargo new`. The text is the VS Code extension's
+  (`editors/vscode/src/instructions.js`), without that editor's paths or any
+  path of the machine, since the files are committed. Instructions changed by
+  hand are kept unless `--force`. The language reference and the examples are
+  copied into `src/init/assets/` by `cargo xtask zed-grammar`, since crates.io
+  gets only `src/`.
 - **The Zed extension** is in `editors/zed/`: a Rust crate, built to
   WebAssembly by Zed itself, that starts `ortho lsp` (`src/ortho.rs`), and the
   language's Tree-sitter queries in `languages/sysml/`. It parses with

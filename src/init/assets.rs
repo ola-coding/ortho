@@ -1,4 +1,4 @@
-//! What `ortho lsp` carries for its code actions: the language reference that the AI
+//! What ortho carries for `ortho init`: the language reference that the AI
 //! instructions hand to agents, and the examples it copies into a project. Copied into
 //! `assets/` from LANGUAGE.md and `examples/` by `cargo xtask zed-grammar`.
 
@@ -69,7 +69,7 @@ mod tests {
     /// Every example's every file is carried, as `cargo xtask zed-grammar` copied them.
     #[test]
     fn carries_every_file_of_every_example() {
-        let folder = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("src/lsp/assets/examples");
+        let folder = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("src/init/assets/examples");
         let mut on_disk: Vec<String> = std::fs::read_dir(&folder)
             .unwrap()
             .flat_map(|example| {
