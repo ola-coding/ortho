@@ -15,8 +15,10 @@ fn scratch(name: &str) -> PathBuf {
     folder
 }
 
+/// `file:///home/a/m.sysml`, or `file:///C:/a/m.sysml` on Windows.
 fn uri(path: &Path) -> String {
-    format!("file://{}", path.to_str().unwrap().replace(' ', "%20"))
+    let path = path.to_str().unwrap().replace('\\', "/").replace(' ', "%20");
+    if path.starts_with('/') { format!("file://{path}") } else { format!("file:///{path}") }
 }
 
 fn frame(message: &Value) -> String {

@@ -2,9 +2,11 @@
 #
 # test      Builds and tests on each system ortho ships for.
 # lint      Formatting and clippy, which read the same on every system, and the
-#           VS Code extension's grammar, which is written from ortho's keywords.
+#           VS Code and Zed extensions' highlighting, written from ortho's keywords.
 # vscode    Tests the VS Code extension's code with Node, against the ortho built
 #           here.
+# zed       Builds the Zed extension to WebAssembly, as Zed does, and checks its
+#           Tree-sitter queries against the grammar it pins and the examples.
 # diagrams  Re-renders every example, and the views written by hand in
 #           tests/views/, and fails if the committed SVGs differ.
 #           Rendering is deterministic, so any difference means a model or the
@@ -65,6 +67,14 @@ jobs:
             echo "::error::The VS Code grammar, or its copy of LANGUAGE.md, the examples, the licence or the icon, is stale. Run 'cargo xtask vscode-grammar' and commit the result."
             exit 1
           fi
+      - run: cargo xtask zed-grammar
+      - name: Fail if the Zed highlighting or its copies are stale
+        run: |
+          if [ -n "$(git status --porcelain -- editors/zed)" ]; then
+            git diff -- editors/zed
+            echo "::error::The Zed extension's highlighting, or its copy of the licence, is stale. Run 'cargo xtask zed-grammar' and commit the result."
+            exit 1
+          fi
 
   vscode:
     name: VS Code extension
@@ -77,6 +87,36 @@ jobs:
       - name: Test the extension against this ortho
         working-directory: editors/vscode
         run: ORTHO_BIN="$GITHUB_WORKSPACE/target/debug/ortho" node --test
+
+  zed:
+    name: Zed extension
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: editors/zed
+    steps:
+      - uses: actions/checkout@v7
+      - run: rustup toolchain install && rustup target add wasm32-wasip2
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: editors/zed
+      - run: cargo fmt --check
+      - run: cargo clippy --locked --target wasm32-wasip2 -- -D warnings
+      - run: cargo build --locked --release --target wasm32-wasip2
+      - name: Fetch the grammar the extension pins
+        run: |
+          rev="$(sed -n 's/^rev = "\(.*\)"$/\1/p' extension.toml)"
+          repository="$(sed -n '/^\[grammars.sysml\]/,/^$/s/^repository = "\(.*\)"$/\1/p' extension.toml)"
+          git init -q "$RUNNER_TEMP/grammar"
+          git -C "$RUNNER_TEMP/grammar" fetch -q --depth 1 "$repository" "$rev"
+          git -C "$RUNNER_TEMP/grammar" checkout -q FETCH_HEAD
+      - name: The examples parse, and every query compiles against the grammar
+        run: |
+          cd "$RUNNER_TEMP/grammar"
+          npx --yes tree-sitter-cli@0.25.10 parse --quiet "$GITHUB_WORKSPACE"/examples/*/*.sysml
+          for query in "$GITHUB_WORKSPACE"/editors/zed/languages/sysml/*.scm; do
+            npx --yes tree-sitter-cli@0.25.10 query --quiet "$query" "$GITHUB_WORKSPACE"/examples/coffee-machine/logical.sysml
+          done
 
   diagrams:
     name: Example diagrams are up to date

@@ -29,7 +29,7 @@ const REPOSITORY: &str = "https://github.com/ola-coding/ortho/blob/main/";
 /// like `if` and `import`; words that relate one element to another read as operators.
 /// The theme picks the colours; the groups decide which words share one. Every word here
 /// must be one of ortho's keywords; the rest are `storage.type`, the kinds of element.
-const GROUPS: &[(&str, &[&str])] = &[
+pub const GROUPS: &[(&str, &[&str])] = &[
     ("constant.language.sysml", &["true", "false", "null"]),
     ("keyword.operator.logical.sysml", &["and", "or", "xor", "not", "implies"]),
     (

@@ -394,8 +394,8 @@ impl<W: Write> Server<W> {
     fn at(&self, params: &Value) -> Option<(&Workspace, &crate::parser::workspace::Document, usize)> {
         let path = document_path(params)?;
         let workspace = self.models.get(path.parent()?)?.workspace.as_ref()?;
-        let name = path.to_string_lossy();
-        let document = workspace.documents.iter().find(|document| document.path == name)?;
+        // Compared as paths, since Windows writes a folder with `/` and a file in it with `\`.
+        let document = workspace.documents.iter().find(|document| Path::new(&document.path) == path)?;
         let position = if params["position"].is_object() { &params["position"] } else { &params["range"]["start"] };
         let line = position["line"].as_u64()? as usize;
         let character = position["character"].as_u64()? as usize;

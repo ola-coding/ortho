@@ -15,8 +15,9 @@ How ortho works inside, and why. For using it, see [README.md](README.md).
 ```
 
 ortho is written in Rust, one binary with no runtime. `src/main.rs` is the
-`ortho render` command, which renders every view the model declares, and is
-the only way in for users; the library in `src/lib.rs` is there for the tests
+`ortho render` command, which renders every view the model declares, and
+`ortho lsp`, the same checks and diagrams for an editor (`src/lsp/`); they
+are the only ways in for users. The library in `src/lib.rs` is there for the tests
 and `xtask/`, not as a public API. `src/model/views.rs` says which of the six
 diagrams a view is and names its file, and `src/pipeline.rs` runs that
 diagram's extractor, layout and renderer on what the view exposes.
@@ -244,18 +245,20 @@ cargo xtask omg-models              # fetch OMG's models, which needs Git
 cargo test -- --ignored             # count how many of OMG's models load
 cargo xtask library-names           # list the standard library's names
 cargo xtask vscode-grammar          # the extension's grammar, LANGUAGE.md and example copies
+cargo xtask zed-grammar             # the Zed extension's highlighting and licence copy
 ```
 
 CI (`.github/workflows/ci.yml`) builds and tests on Linux, Windows and
-macOS, runs fmt and clippy, tests the VS Code extension, counts OMG's
-models, fails if a fresh render differs from the committed diagrams or the
-VS Code grammar from a fresh one, and only then, on `main`, publishes the
+macOS, runs fmt and clippy, tests the VS Code extension, builds the Zed
+extension and checks its queries against the grammar it pins, counts OMG's
+models, fails if a fresh render differs from the committed diagrams or
+either extension's highlighting from a fresh one, and only then, on `main`, publishes the
 deck to GitHub Pages.
 
 - **The grammar** is `src/parser/grammar.rs`, with its keywords in `lexer.rs`.
   A new keyword goes in `KEYWORDS`, which the deck highlights from too, and is
   then reserved: it can no longer be a name. Run `cargo xtask vscode-grammar`
-  after, so the VS Code extension colours it.
+  and `cargo xtask zed-grammar` after, so both extensions colour it.
 - **The VS Code extension** is in `editors/vscode/`. AI agents will write
   most of the models, so it helps people check and review them rather than
   type them: rename, completion and other editing help are left to the agents
@@ -290,6 +293,34 @@ deck to GitHub Pages.
   moved to its own commit, once that commit is pushed. Anything that changes
   what `ortho render` prints, its `Wrote` lines or its `file line n: message`
   problems, must keep those tests passing.
+- **`ortho lsp`** (`src/lsp/`) is ortho as a language server over stdio, with
+  JSON-RPC written by hand on `serde_json`, like the SVG: no dependency.
+  The `.sysml` files of a folder are one model, as for `ortho render`. On
+  every change it checks the model of the file, with the open files as typed,
+  and reports every file of the folder; on every save it renders the model
+  into `diagrams/` beside it, writing only what changed, so an image open in
+  the editor reloads only then. A diagram names its model file from the
+  folder the server runs in, which it moves to the editor's project root, so
+  the diagrams match `ortho render` run there. Go to definition follows the
+  references name resolution linked, and a code action on a view opens its
+  diagram by `window/showDocument`. It answers nothing else: no completion,
+  hover or rename. `tests/lsp.rs` drives the binary over stdio, as an editor
+  does.
+- **The Zed extension** is in `editors/zed/`: a Rust crate, built to
+  WebAssembly by Zed itself, that starts `ortho lsp` (`src/ortho.rs`), and the
+  language's Tree-sitter queries in `languages/sysml/`. It parses with
+  Nomograph's tree-sitter-sysml (MIT), pinned to a commit in
+  `extension.toml`; `highlights.scm` is written from the VS Code grammar's
+  keyword groups by `cargo xtask zed-grammar`, never by hand, so both editors
+  colour alike. It is its own Cargo workspace, outside ortho's. To try it,
+  run *zed: install dev extension* in Zed and pick `editors/zed`; Zed builds
+  it, and Rust must be installed with rustup. Set `lsp.ortho.binary.path` to
+  `target/debug/ortho` after `cargo build`, so it runs the ortho you build.
+  Zed gives an extension no panel or web view, so there is no preview panel:
+  the diagrams are written on save and Zed's image viewer, which reloads a
+  file when it changes on disk, shows them. Clicking a box does nothing there.
+  The language is named *SysML v2*, as the Spec42 extension names it too, so
+  both run on the same files.
 - **The examples** cover two different domains, so a rendering change that
   only suits one shows up. Regenerate their SVGs and look at them in a browser
   whenever rendering changes. They carry no requirements, since no view would
@@ -398,6 +429,26 @@ extension that already exists, so a new extension's first version needs a
 namespace token in the secret `OVSX_PAT`, read by a job that passes it, and
 the secret deleted afterwards.
 
+The Zed extension is published by a pull request to
+[zed-industries/extensions](https://github.com/zed-industries/extensions),
+which carries this repository as a Git submodule and names the extension's
+folder, `editors/zed`, and version in its `extensions.toml`; Zed's CI builds
+it from there. The first one adds the submodule and an entry:
+
+```toml
+[ortho]
+submodule = "extensions/ortho"
+path = "editors/zed"
+version = "0.1.0"
+```
+
+A new version moves the submodule to the commit that sets it in
+`editors/zed/extension.toml` and `Cargo.toml`, and the `version` with it.
+The extension's version is its own, not ortho's, since it carries no ortho:
+it downloads ortho's latest release, so a release of ortho reaches Zed
+users without a new extension. A change to `ortho lsp` that the extension
+relies on must be released before the extension that relies on it.
+
 Both stores answer *Published* before a package can be installed: they
 check it first, for some minutes. For 0.3.0, the Marketplace dropped the
 seven packages uploaded while it checked the first, the one that created
@@ -479,19 +530,18 @@ Open, in priority order:
   extensions no panel or web view, only open proposals (zed-industries/zed
   #21208 and #53403), so there is no live preview: `ortho render --watch` in
   Zed's terminal writes the diagrams, and Zed opens them as images.
-  - [ ] `ortho lsp`: ortho as a language server over stdio, with the problems
-    of the whole model folder on open, change and save, and go-to-definition
-    from the names it resolves; no completion or rename. Neovim, Helix, Emacs
-    and JetBrains' editors can use it too.
-  - [ ] Highlighting from a Tree-sitter grammar: Nomograph's tree-sitter-sysml
-    (gitlab.com/nomograph/tree-sitter-sysml) if its licence and coverage
-    fit, or else a small grammar of keywords written from `KEYWORDS`, as the
-    VS Code grammar is.
-  - [ ] The extension: a Rust crate built to WebAssembly that starts
+  - [x] `ortho lsp`: ortho as a language server over stdio, with the problems
+    of the whole model folder as typed, go-to-definition, and the diagrams
+    on save, which a code action on a view opens. Neovim, Helix, Emacs and
+    JetBrains' editors can use it too.
+  - [x] Highlighting from Nomograph's tree-sitter-sysml (MIT), coloured as
+    the VS Code grammar colours.
+  - [x] The extension: a Rust crate built to WebAssembly that starts
     `ortho lsp`, with the ortho on the PATH or else the release archive for
     the user's system, which it downloads.
-  - [ ] Find out whether Zed's image viewer shows an SVG again when `--watch`
-    rewrites it.
+  - [x] Zed's image viewer shows an SVG again when it is rewritten: it
+    reloads an image whose file changes on disk (`image_store.rs`).
+  - [ ] Release ortho 0.4.0, with `ortho lsp`, before the extension.
   - [ ] Publish it by a pull request to zed-industries/extensions, and add
     that to [Releasing](#releasing).
 - [ ] **Be found by SysML v2 users:** an entry in each SysML v2 awesome list

@@ -1,0 +1,16 @@
+id = "ortho"
+name = "Ortho for SysML v2"
+description = "SysML v2 highlighting, the problems of your model as you type, go to definition, and the architectural views ortho draws from it, as SVG."
+version = "0.1.0"
+schema_version = 1
+authors = ["ola-coding"]
+repository = "https://github.com/ola-coding/ortho"
+
+# Nomograph's Tree-sitter grammar for SysML v2 (MIT), pinned to a commit.
+[grammars.sysml]
+repository = "https://gitlab.com/nomograph/tree-sitter-sysml"
+rev = "10b243eb4a47b7b428960b95019d27055afbf702"
+
+[language_servers.ortho]
+name = "ortho"
+languages = ["SysML v2"]

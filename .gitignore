@@ -11,3 +11,8 @@ marketing/ortho-deck.artifact.html
 # OMG's SysML v2 models, fetched by cargo xtask omg-models (EPL-2.0, not committed)
 .omg-models/
 
+
+# What Zed builds when the extension is installed from its folder
+editors/zed/target/
+editors/zed/extension.wasm
+editors/zed/grammars/
