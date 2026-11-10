@@ -256,7 +256,10 @@ deck to GitHub Pages.
   A new keyword goes in `KEYWORDS`, which the deck highlights from too, and is
   then reserved: it can no longer be a name. Run `cargo xtask vscode-grammar`
   after, so the VS Code extension colours it.
-- **The VS Code extension** is in `editors/vscode/`. Its
+- **The VS Code extension** is in `editors/vscode/`. AI agents will write
+  most of the models, so it helps people check and review them rather than
+  type them: rename, completion and other editing help are left to the agents
+  and to SysIDE, since ortho's checks catch what an agent misses. Its
   [README](editors/vscode/README.md) is its page on the Marketplace, written
   for systems engineers deciding to install it, so how to work on it is here.
   Press F5 with the repository, or `editors/vscode`, open in VS Code: a
@@ -284,8 +287,9 @@ deck to GitHub Pages.
   `vsce` makes a relative one point at the repository's root folder. The URL
   names the commit that added the image, not `main`, so a package built
   before its branch is merged shows it too; a new screenshot needs the URL
-  moved to its own commit, once that commit is pushed. Anything that changes what `ortho render` prints, its `Wrote`
-  lines or its `file line n: message` problems, must keep those tests passing.
+  moved to its own commit, once that commit is pushed. Anything that changes
+  what `ortho render` prints, its `Wrote` lines or its `file line n: message`
+  problems, must keep those tests passing.
 - **The examples** cover two different domains, so a rendering change that
   only suits one shows up. Regenerate their SVGs and look at them in a browser
   whenever rendering changes. They carry no requirements, since no view would
@@ -465,66 +469,61 @@ Done, one line each; the commits and the sections above hold the detail:
 - [x] **Warn of software that runs nowhere** (`unhosted_software`).
 - [x] **Warn of a use case no tree refines** (`unrefined_use_cases`).
 - [x] **Suggest the name meant** in a chain (`chain_hint`); not for plain names.
+- [x] **A VS Code extension** in `editors/vscode/`, with ortho inside, on the
+  Marketplace and Open VSX; see *Working on the code* and *Releasing*.
 
 Open, in priority order:
 
-- [ ] **Create a VS Code extension,** in `editors/vscode/` in this
-  repository, so a systems engineer writes SysML v2 with the diagrams beside
-  the text. AI agents will write most of the models, so it helps check and
-  review them rather than type them: rename, completion and other editing help
-  are left to the agents and to SysIDE, since ortho's checks catch what an
-  agent misses.
-  - [x] SysML v2 keyword highlighting, written from ortho's keyword list.
-  - [x] A live preview, rendered on every save, with ortho's problems.
-  - [x] *Add AI instructions*: a Claude Code skill and Copilot instructions.
-  - [x] An *Open example* command for the coffee machine and survey drone.
-  - [x] The ortho the preview runs on the PATH of VS Code's terminals, where
-    agents check their work. Per-system VSIX files to install by hand were
-    tried and dropped as clumsy; the Marketplace picks the package itself.
-  - [x] Click a box in a diagram to open the line that declares it: each
-    box's group carries `data-file` and `data-line`.
-  - [x] Carry ortho inside the extension: one package per system, with
-    ortho's version; a folder VS Code does not trust cannot set `ortho.path`.
-  - [x] Save the diagrams from the preview as SVG: the view shown, or every
-    view into a folder, remembered for each model.
-  - [x] Package it as the Marketplace wants: licence, icon, changelog, and
-    no tests.
-  - [x] A README for Marketplace visitors, with a screenshot of the preview.
-  - [x] Publish from the release workflow, after the GitHub release: the
-    `marketplace` and `open-vsx` jobs; see [Releasing](#releasing).
-  - [x] Set up the accounts: the publisher `ola-coding` on the VS Code
-    Marketplace, with Trusted Publishing for `release.yml`, since Azure
-    DevOps' global tokens stop working on 1 December 2026; and the
-    `ola-coding` namespace on Open VSX, with the Publisher Agreement signed
-    and its ownership claimed in an issue at EclipseFdn/open-vsx.org.
-  - [x] Once Open VSX granted the claim, publish 0.3.0 there with a
-    namespace token, since a trusted publisher can only be registered for
-    an extension that exists; then register `release.yml` as its trusted
-    publisher, delete the token, and make the `open-vsx` job use
-    `--trusted-publishing` alone. Open VSX is named beside the Marketplace
-    in the root README's Install.
-  - [x] Wait in each publish job until the store serves every system's
-    package: the Marketplace dropped seven of 0.3.0's eight, which went out
-    again by running the job again.
-  - [x] Install each system's package from a Release run of a pull request
-    on Linux, Windows and macOS, and try every command, before tagging.
-    Linux and Windows are tried by hand; macOS, with no Mac at hand, by the
-    `vscode-macos` job, which runs the extension's tests against the ortho
-    in each Mac package.
-  - [x] Release 0.3.0 of both ortho and the extension: review CHANGELOG.md
-    and date it, link the extension from the root README, merge into
-    `main`, set 0.3.0 in `Cargo.toml` and `package.json`, and tag. The release
-    workflow publishes the GitHub release, crates.io, the Marketplace and
-    Open VSX. Clicking a box needs this ortho: 0.2.0 has no `data-line`.
+- [ ] **A Zed extension,** in `editors/zed/`, on the VS Code extension's
+  principle: it helps check and review models, not type them. Zed gives
+  extensions no panel or web view, only open proposals (zed-industries/zed
+  #21208 and #53403), so there is no live preview: `ortho render --watch` in
+  Zed's terminal writes the diagrams, and Zed opens them as images.
+  - [ ] `ortho lsp`: ortho as a language server over stdio, with the problems
+    of the whole model folder on open, change and save, and go-to-definition
+    from the names it resolves; no completion or rename. Neovim, Helix, Emacs
+    and JetBrains' editors can use it too.
+  - [ ] Highlighting from a Tree-sitter grammar: Nomograph's tree-sitter-sysml
+    (gitlab.com/nomograph/tree-sitter-sysml) if its licence and coverage
+    fit, or else a small grammar of keywords written from `KEYWORDS`, as the
+    VS Code grammar is.
+  - [ ] The extension: a Rust crate built to WebAssembly that starts
+    `ortho lsp`, with the ortho on the PATH or else the release archive for
+    the user's system, which it downloads.
+  - [ ] Find out whether Zed's image viewer shows an SVG again when `--watch`
+    rewrites it.
+  - [ ] Publish it by a pull request to zed-industries/extensions, and add
+    that to [Releasing](#releasing).
 - [ ] **Be found by SysML v2 users:** an entry in each SysML v2 awesome list
   (jgsystemsconsulting/awesome-sysml-v2, mycr0ft/awesome-sysml,
   daltskin/SysML-v2-Resources, jgsystemsconsulting/awesome-mbse) and a post
   in the SysML Forum, made from the maintainer's own account. Tag and
   describe ortho as SysML v2, never plain SysML, which reads as v1.
-- [ ] **Requirements on the parts that satisfy them**, in a compartment like
-  *perform actions* rather than a seventh view.
 - [ ] **Item flows on the physical view** (`flow`): what passes between ports,
-  not only that they connect.
-
-Later, to make ortho easier to find and install without Rust: one-line
-install scripts, a Homebrew tap, Scoop and winget.
+  not only that they connect. ortho parses every flow already.
+  - [ ] Resolve a flow's ends and its `of` type, kept as written today, as
+    connection ends are, so a typo gets *did you mean*; `of` must name an
+    item definition.
+  - [ ] A flow between two connected ports puts an arrowhead and `of Water`
+    on that line; a flow with no `connect` draws a line of its own, as the
+    spec draws a flow (§8.2.3).
+  - [ ] Flows in the examples: water, steam, grounds and milk in the coffee
+    machine, power and video in the drone. Mounts stay `connect`s, since
+    nothing flows through them.
+  - [ ] 38 of OMG's model files use flows, some between action parameters:
+    they must keep loading once the ends are resolved.
+- [ ] **Requirements as a table ortho writes,** and on the parts that satisfy
+  them, rather than a seventh diagram. They are standard SysML,
+  `requirement <'R1'> brewTime { doc /* ... */ }` and
+  `satisfy brewTime by machine.brewUnit;`, so SysIDE's requirements table
+  edits the same files, and ortho needs no editor of its own.
+  - [ ] A `GridView`, SysML's standard tabular view, rendered as a Markdown
+    file beside the SVGs: each requirement's ID, name and text, and what
+    satisfies it. GitHub, VS Code and Zed all show it; the VS Code preview
+    gets a tab for it.
+  - [ ] The requirements a part satisfies, in a compartment on its box, like
+    *perform actions*.
+  - [ ] Resolve what `satisfy` names, kept as written today, as for flows: an
+    error with *did you mean* for a name that names nothing, and a warning
+    for a requirement nothing satisfies.
+  - [ ] Requirements in the examples.
