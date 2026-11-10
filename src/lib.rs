@@ -3,6 +3,7 @@
 //! `pipeline` runs them for a view.
 pub mod diagrams;
 pub mod layout;
+pub mod lsp;
 pub mod model;
 pub mod parser;
 pub mod pipeline;

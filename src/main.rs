@@ -1,4 +1,5 @@
-//! `ortho render`: every view a model declares, one SVG each, once or on every save.
+//! `ortho render`: every view a model declares, one SVG each, once or on every save;
+//! and `ortho lsp`, the same checks for an editor.
 use clap::{Parser, Subcommand};
 use ortho::model::views::view_heading;
 use ortho::parser::workspace::parse_sysml_files;
@@ -32,10 +33,30 @@ enum Command {
         #[arg(short, long)]
         watch: bool,
     },
+    /// Serve editors as a language server over stdin and stdout: the problems of each
+    /// model folder as it is typed, go to definition, and diagrams on every save
+    Lsp {
+        /// Accepted and ignored: editors pass it to say the server talks over stdio
+        #[arg(long, hide = true)]
+        stdio: bool,
+    },
 }
 
 fn main() -> ExitCode {
-    let Command::Render { models, out, theme, watch: watching } = Cli::parse().command;
+    let (models, out, theme, watching) = match Cli::parse().command {
+        Command::Render { models, out, theme, watch } => (models, out, theme, watch),
+        Command::Lsp { .. } => {
+            let stdin = std::io::stdin().lock();
+            return match ortho::lsp::serve(stdin, std::io::stdout().lock()) {
+                Ok(true) => ExitCode::SUCCESS,
+                Ok(false) => ExitCode::FAILURE,
+                Err(error) => {
+                    eprintln!("ortho lsp: {error}");
+                    ExitCode::FAILURE
+                }
+            };
+        }
+    };
     let theme = Theme::named(&theme).expect("clap admits only the themes there are");
     if watching {
         watch(&models, &out, theme);
