@@ -123,11 +123,12 @@ pub fn extract_use_case_graph(ast: &Ast, exposed: &[NodeId]) -> DiagramGraph {
     // system acts on, not a user of it, is a secondary actor, drawn after the
     // primary ones. The distinction needs at least one actor to come through a def;
     // otherwise every actor is primary.
+    // An actor is its name and type together: `user : User` on two use case defs is
+    // one actor, and `serviceGuy : User` another.
     let actor_key = |actor: NodeId| -> String {
-        match ast.target(actor, Prop::Type) {
-            Some(definition) => qualified_name(ast, definition),
-            None => ast.text(actor, Prop::Name).unwrap_or("").to_string(),
-        }
+        let name = effective_name(ast, actor).unwrap_or("");
+        let ty = ast.target(actor, Prop::Type).map(|definition| qualified_name(ast, definition));
+        declaration(name, ty.as_deref().or_else(|| type_name(ast, actor)))
     };
     let is_actor = |member: &NodeId| ast[*member].ty == Type::ActorUsage;
     let mut on_def: HashSet<String> = HashSet::new();

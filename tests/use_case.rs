@@ -110,6 +110,35 @@ fn builds_use_cases_one_subject_deduplicated_actors_and_edges() {
 }
 
 #[test]
+fn tells_actors_of_one_type_apart_by_their_names() {
+    // Using the machine and looking after it are both a user's, but in roles of
+    // their own: each figure is named as its use case def declares it.
+    let graph = graph_of(&parse_ok(
+        "package P {
+            part def User;
+            part def CoffeeMachine;
+            use case def OperateMachine {
+                subject machine : CoffeeMachine;
+                actor user : User;
+            }
+            use case def ServiceMachine {
+                subject machine : CoffeeMachine;
+                actor serviceGuy : User;
+            }
+            use case makeEspresso : OperateMachine;
+            use case descale : ServiceMachine;
+        }",
+    ));
+    let actors_of = |use_case: &str| -> Vec<&str> {
+        let lines = graph.edges.iter().filter(|e| e.kind == EdgeKind::Association && e.target_id == use_case);
+        let actors = lines.filter_map(|e| graph.nodes.iter().find(|n| n.id == e.source_id));
+        actors.filter(|n| n.shape == NodeShape::Actor).map(|n| n.name.as_str()).collect()
+    };
+    assert_eq!(actors_of("P::makeEspresso"), ["user : User"]);
+    assert_eq!(actors_of("P::descale"), ["serviceGuy : User"]);
+}
+
+#[test]
 fn draws_a_use_case_an_include_declares_as_a_box_of_its_own() {
     let graph = graph_of(&parse_ok(
         "package P {
