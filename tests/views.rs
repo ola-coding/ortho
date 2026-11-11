@@ -158,9 +158,9 @@ fn joins_actors_and_the_subject_to_their_use_cases_and_points_an_include_at_what
         edges,
         [
             (EdgeKind::Association, "M::order", "subject:machine : Machine"),
-            (EdgeKind::Association, "actor:M::User", "M::order"),
+            (EdgeKind::Association, "actor:user : M::User", "M::order"),
             (EdgeKind::Association, "M::pay", "subject:machine : Machine"),
-            (EdgeKind::Association, "actor:M::User", "M::pay"),
+            (EdgeKind::Association, "actor:user : M::User", "M::pay"),
             (EdgeKind::Include, "M::order", "M::pay"),
         ]
     );
@@ -169,7 +169,7 @@ fn joins_actors_and_the_subject_to_their_use_cases_and_points_an_include_at_what
     // The order with its own subject above it and its actor to its left, and below
     // it the payment it includes, drawn with the order's.
     assert!(at("subject:machine : Machine@M::order").y < at("M::order").y);
-    assert!(at("actor:M::User@M::order").x < at("M::order").x);
+    assert!(at("actor:user : M::User@M::order").x < at("M::order").x);
     assert!(at("M::pay").y > at("M::order").y);
     assert_eq!(laid_out.nodes.len(), 4);
 }

@@ -86,7 +86,7 @@ fn use_case_view_one_operator_three_use_cases_surveying_includes_both() {
     let associations = graph
         .edges
         .iter()
-        .filter(|e| e.kind == EdgeKind::Association && e.source_id == "actor:SystemUseCases::Operator");
+        .filter(|e| e.kind == EdgeKind::Association && e.source_id == "actor:operator : SystemUseCases::Operator");
     assert_eq!(associations.count(), 3);
 }
 
