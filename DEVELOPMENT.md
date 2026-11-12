@@ -298,15 +298,28 @@ deck to GitHub Pages.
   JSON-RPC written by hand on `serde_json`, like the SVG: no dependency.
   The `.sysml` files of a folder are one model, as for `ortho render`. On
   every change it checks the model of the file, with the open files as typed,
-  and reports every file of the folder; on every save it renders the model
-  into `diagrams/` beside it, writing only what changed, so an image open in
-  the editor reloads only then. A diagram names its model file from the
-  folder the server runs in, which it moves to the editor's project root, so
-  the diagrams match `ortho render` run there. Go to definition follows the
-  references name resolution linked, and a code action on a view opens its
-  diagram by `window/showDocument`. It answers nothing else: no completion,
-  hover or rename. `tests/lsp.rs` drives the binary over stdio, as an editor
-  does.
+  and reports every file of the folder. A diagram names its model file from
+  the folder the server runs in, which it moves to the editor's project root,
+  so the diagrams match `ortho render` run there. Go to definition follows
+  the references name resolution linked. It answers nothing else: no
+  completion, hover or rename. `tests/lsp.rs` drives the binary over stdio,
+  as an editor does, and asks the preview as a browser does.
+- **The live preview** (`src/lsp/preview.rs`, and its page `preview.html`,
+  carried in the binary) is how `ortho lsp` shows the diagrams, since a
+  language server has no panel to draw in and Zed gives an extension none:
+  it serves a page on `127.0.0.1`, as Typst's Tinymist does, with HTTP
+  written by hand on `std::net`. The server draws a model when a file of it
+  is opened or saved, and keeps the diagrams in memory: nothing is written
+  beside the model until the page's *Save all* is pressed. The page waits on
+  `state` for each newer render, a request the server holds until there is
+  one, and posts `open` when a box is clicked, which the server passes to the
+  editor as `window/showDocument` with the line selected. The same request
+  with `external` opens the page in the browser, when the first model file is
+  opened, unless a page left open asks within a moment; the port is chosen
+  from the project's path, so that page finds the server again. A code action
+  on a view turns the page to it. Only this machine's browser is served: a
+  request under another host name is refused, and so is a post from another
+  page, so no site can read a model or open files through it.
 - **`ortho init`** (`src/init/`) writes what a project starts with: the AI
   instructions, a skill for Claude Code and instructions for GitHub Copilot,
   and with `--example` an example model in a folder of its own. ortho carries
@@ -328,9 +341,8 @@ deck to GitHub Pages.
   run *zed: install dev extension* in Zed and pick `editors/zed`; Zed builds
   it, and Rust must be installed with rustup. Set `lsp.ortho.binary.path` to
   `target/debug/ortho` after `cargo build`, so it runs the ortho you build.
-  Zed gives an extension no panel or web view, so there is no preview panel:
-  the diagrams are written on save and Zed's image viewer, which reloads a
-  file when it changes on disk, shows them. Clicking a box does nothing there.
+  Zed gives an extension no panel or web view, so the preview is the page
+  `ortho lsp` opens in the browser.
   The language is named *SysML v2*, as the Spec42 extension names it too, so
   both run on the same files.
 - **The examples** cover two different domains, so a rendering change that
@@ -540,19 +552,23 @@ Open, in priority order:
 - [ ] **A Zed extension,** in `editors/zed/`, on the VS Code extension's
   principle: it helps check and review models, not type them. Zed gives
   extensions no panel or web view, only open proposals (zed-industries/zed
-  #21208 and #53403), so there is no live preview: `ortho render --watch` in
-  Zed's terminal writes the diagrams, and Zed opens them as images.
+  #21208 and #53403), so the live preview is a page in the browser, which
+  `ortho lsp` serves and Zed opens, as Typst's Tinymist does.
   - [x] `ortho lsp`: ortho as a language server over stdio, with the problems
-    of the whole model folder as typed, go-to-definition, and the diagrams
-    on save, which a code action on a view opens. Neovim, Helix, Emacs and
-    JetBrains' editors can use it too.
+    of the whole model folder as typed and go-to-definition. Neovim, Helix,
+    Emacs and JetBrains' editors can use it too.
+  - [x] The live preview: a page with a tab for each view, opened in the
+    browser with the first model file and drawn again on every save. With a
+    problem in the model the last diagrams stay, faded; a click on a box
+    opens its line in the editor; and nothing is written beside the model
+    until *Save all* is pressed. Writing the diagrams on every save, for
+    Zed's image viewer to show, took too many steps to see one, and is gone.
   - [x] Highlighting from Nomograph's tree-sitter-sysml (MIT), coloured as
     the VS Code grammar colours.
   - [x] The extension: a Rust crate built to WebAssembly that starts
     `ortho lsp`, with the ortho on the PATH or else the release archive for
     the user's system, which it downloads.
-  - [x] Zed's image viewer shows an SVG again when it is rewritten: it
-    reloads an image whose file changes on disk (`image_store.rs`).
+  - [ ] Try the preview in Zed, on macOS, Linux and Windows.
   - [ ] Release ortho 0.4.0, with `ortho lsp`, before the extension.
   - [ ] Publish it by a pull request to zed-industries/extensions, and add
     that to [Releasing](#releasing).

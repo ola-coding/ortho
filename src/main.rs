@@ -47,7 +47,8 @@ enum Command {
         force: bool,
     },
     /// Serve editors as a language server over stdin and stdout: the problems of each
-    /// model folder as it is typed, go to definition, and diagrams on every save
+    /// model folder as it is typed, go to definition, and a live preview of the diagrams
+    /// in the browser
     Lsp {
         /// Accepted and ignored: editors pass it to say the server talks over stdio
         #[arg(long, hide = true)]
@@ -74,7 +75,7 @@ fn main() -> ExitCode {
         }
         Command::Lsp { .. } => {
             let stdin = std::io::stdin().lock();
-            return match ortho::lsp::serve(stdin, std::io::stdout().lock()) {
+            return match ortho::lsp::serve(stdin, std::io::stdout()) {
                 Ok(true) => ExitCode::SUCCESS,
                 Ok(false) => ExitCode::FAILURE,
                 Err(error) => {

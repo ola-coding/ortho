@@ -3,8 +3,8 @@
 **Check a SysML v2 model as you write it, and see its architecture.** Ortho
 draws six architectural views of a SysML v2 model, in SysML v2's own
 graphical notation: use case, logical, implementation, physical, deployment
-and process. This extension brings ortho's checks into Zed, and writes the
-diagrams beside the model every time you save.
+and process. This extension brings ortho's checks into Zed, and shows the
+diagrams in a live preview in your browser, drawn again every time you save.
 
 It is made for models that AI agents write and people review, so it helps
 check and read a model rather than type it.
@@ -18,13 +18,19 @@ check and read a model rather than type it.
 - **Go to definition** (F12, or Cmd-click) from any name to the element it
   names, in whichever file of the model declares it, a segment of a chain
   such as `beverage.prepareCoffee.grindBeans` included.
-- **The diagrams on every save.** Saving a model file writes its views as SVG
-  into a `diagrams/` folder beside the model, exactly as
-  `ortho render <model folder> -o <model folder>/diagrams` does, rewriting
-  only the diagrams that changed. On a view's declaration, the code actions
-  (Cmd-. , or Ctrl-. on Linux and Windows) offer *Show diagram*, which opens
-  that view's SVG in Zed. Drag its tab beside the model: Zed shows it again
-  each time you save.
+- **A live preview.** Open a `.sysml` file and the model's diagrams open in
+  your browser, a tab for each view. Put the window beside Zed: every save
+  draws them again. While the model has a problem the last diagrams stay,
+  faded, with the problem above them.
+- **From a box to its line.** Click a box in the preview and Zed opens the
+  line that declares it. The other way, the code actions on a view's
+  declaration (Cmd-. , or Ctrl-. on Linux and Windows) offer *Show in the
+  preview*, which turns the page to that view.
+- **Nothing written until you ask.** The preview keeps the diagrams to
+  itself. *Save all* on the page writes them as SVG into a `diagrams/` folder
+  beside the model, exactly as
+  `ortho render <model folder> -o <model folder>/diagrams` does, and *Save
+  SVG* downloads the one shown.
 - **SysML v2 colouring,** the same as in the VS Code extension: keywords, the
   names that definitions and packages declare, comments, strings, numbers and
   metadata such as `#Safety`. Packages, definitions and the main usages are in
@@ -74,9 +80,10 @@ Zed settings:
 
 Under `lsp.ortho.initialization_options`:
 
-- `"diagrams"`: the folder, inside the model's folder, that the diagrams are
-  written to; `"diagrams"` unless set. `false` writes none, and leaves out
-  *Show diagram*.
+- `"preview"`: `false` keeps the preview from opening by itself with the
+  first model file. *Show in the preview* still opens it.
+- `"diagrams"`: the folder, inside the model's folder, that *Save all* writes
+  the diagrams to; `"diagrams"` unless set.
 - `"theme"`: `"light"`, the default, or `"dark-glass"`, a transparent version
   for dark slides.
 
@@ -84,7 +91,7 @@ Under `lsp.ortho.initialization_options`:
 {
   "lsp": {
     "ortho": {
-      "initialization_options": { "diagrams": "out", "theme": "light" }
+      "initialization_options": { "preview": false, "diagrams": "out" }
     }
   }
 }

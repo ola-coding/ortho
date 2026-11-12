@@ -175,52 +175,208 @@ fn goes_to_what_a_name_names_in_another_file() {
     assert_eq!(&logical.lines().nth(declared).unwrap()[start..start + 10], "grindBeans");
 }
 
-#[test]
-fn writes_the_diagrams_on_save_as_ortho_render_does() {
-    let folder = example("coffee-machine", "save");
-    let logical = folder.join("logical.sysml");
-    let text = std::fs::read_to_string(&logical).unwrap();
-    let (_, clean) = session(&folder, &[open(&logical, &text), save(&logical)]);
-    assert!(clean);
-    // As `ortho render` run at the project's root, where the server runs.
-    let rendered = Command::new(env!("CARGO_BIN_EXE_ortho"))
-        .args(["render", ".", "-o", "expected"])
-        .current_dir(&folder)
-        .output()
-        .unwrap();
-    assert!(rendered.status.success());
-    let mut names = 0;
-    for entry in std::fs::read_dir(folder.join("expected")).unwrap() {
-        let name = entry.unwrap().file_name();
-        let written = std::fs::read_to_string(folder.join("diagrams").join(&name)).unwrap();
-        assert_eq!(written, std::fs::read_to_string(folder.join("expected").join(&name)).unwrap(), "{name:?}");
-        names += 1;
+/// A session kept open, to talk with the server as an editor does while its preview
+/// is asked as a browser asks it.
+struct Live {
+    child: std::process::Child,
+    input: std::process::ChildStdin,
+    sent: std::sync::mpsc::Receiver<Value>,
+}
+
+impl Live {
+    /// Starts a session in `root`, as an editor that opens what it is asked to.
+    fn start(root: &Path) -> Live {
+        let mut child = Command::new(env!("CARGO_BIN_EXE_ortho"))
+            .arg("lsp")
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .spawn()
+            .unwrap();
+        let mut output = BufReader::new(child.stdout.take().unwrap());
+        let (sender, sent) = std::sync::mpsc::channel();
+        std::thread::spawn(move || {
+            loop {
+                let mut header = String::new();
+                if output.read_line(&mut header).unwrap_or(0) == 0 {
+                    break;
+                }
+                let length: usize = header.trim().strip_prefix("Content-Length: ").unwrap().parse().unwrap();
+                output.read_line(&mut String::new()).unwrap();
+                let mut body = vec![0; length];
+                output.read_exact(&mut body).unwrap();
+                if sender.send(serde_json::from_slice(&body).unwrap()).is_err() {
+                    break;
+                }
+            }
+        });
+        let mut live = Live { input: child.stdin.take().unwrap(), child, sent };
+        let capabilities = json!({ "window": { "showDocument": { "support": true } } });
+        live.send(&request(0, "initialize", json!({ "rootUri": uri(root), "capabilities": capabilities })));
+        live.send(&json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }));
+        live
     }
-    assert_eq!(names, 6);
+
+    fn send(&mut self, message: &Value) {
+        self.input.write_all(frame(message).as_bytes()).unwrap();
+    }
+
+    /// The next thing the server asks the editor to show.
+    fn shown(&mut self) -> Value {
+        loop {
+            let message = self.sent.recv_timeout(std::time::Duration::from_secs(20)).expect("nothing shown");
+            if message["method"] == "window/showDocument" {
+                return message["params"].clone();
+            }
+        }
+    }
+
+    /// Opens a model file, and gives the port of the preview the server opens for it.
+    fn preview(&mut self, file: &Path) -> u16 {
+        self.send(&open(file, &std::fs::read_to_string(file).unwrap()));
+        let shown = self.shown();
+        assert_eq!(shown["external"], true);
+        let url = shown["uri"].as_str().unwrap();
+        url.strip_prefix("http://127.0.0.1:").and_then(|rest| rest.strip_suffix('/')).unwrap().parse().unwrap()
+    }
+}
+
+impl Drop for Live {
+    fn drop(&mut self) {
+        let _ = self.child.kill();
+        let _ = self.child.wait();
+    }
+}
+
+/// Asks the preview as a browser does: the status and the body of its answer.
+fn http(port: u16, method: &str, path: &str, headers: &str, body: &str) -> (u16, String) {
+    let mut stream = std::net::TcpStream::connect(("127.0.0.1", port)).unwrap();
+    write!(stream, "{method} {path} HTTP/1.1\r\n{headers}Content-Length: {}\r\n\r\n{body}", body.len()).unwrap();
+    let mut answer = String::new();
+    stream.read_to_string(&mut answer).unwrap();
+    let (head, body) = answer.split_once("\r\n\r\n").unwrap();
+    (head.split(' ').nth(1).unwrap().parse().unwrap(), body.to_string())
+}
+
+fn get(port: u16, path: &str) -> Value {
+    let (status, body) = http(port, "GET", path, &format!("Host: 127.0.0.1:{port}\r\n"), "");
+    assert_eq!(status, 200, "{body}");
+    serde_json::from_str(&body).unwrap()
+}
+
+/// A post from the preview's own page.
+fn post(port: u16, path: &str, body: Value) -> Value {
+    let headers = format!("Host: 127.0.0.1:{port}\r\nOrigin: http://127.0.0.1:{port}\r\n");
+    let (status, body) = http(port, "POST", path, &headers, &body.to_string());
+    assert_eq!(status, 200, "{body}");
+    serde_json::from_str(&body).unwrap()
+}
+
+/// What `ortho render` run at the project's root, where the server runs, writes.
+fn rendered(folder: &Path) -> Vec<(String, String)> {
+    let done =
+        Command::new(env!("CARGO_BIN_EXE_ortho")).args(["render", ".", "-o", "expected"]).current_dir(folder).output();
+    assert!(done.unwrap().status.success());
+    let files = std::fs::read_dir(folder.join("expected")).unwrap().map(|entry| entry.unwrap());
+    files.map(|file| (file.file_name().into_string().unwrap(), std::fs::read_to_string(file.path()).unwrap())).collect()
 }
 
 #[test]
-fn opens_a_views_diagram_from_a_code_action() {
+fn opens_a_preview_that_shows_the_diagrams_ortho_render_writes_and_follows_each_save() {
+    let folder = example("coffee-machine", "preview");
+    let logical = folder.join("logical.sysml");
+    let mut live = Live::start(&folder);
+    let port = live.preview(&logical);
+    let (status, page) = http(port, "GET", "/", &format!("Host: localhost:{port}\r\n"), "");
+    assert!(status == 200 && page.contains("<title>Ortho preview</title>"));
+    let state = get(port, "/state?session=&after=0");
+    assert_eq!(state["model"], "coffee-machine");
+    assert_eq!(state["errors"], json!([]));
+    let expected = rendered(&folder);
+    let views = state["views"].as_array().unwrap();
+    assert_eq!((views.len(), expected.len()), (6, 6));
+    for (file, svg) in &expected {
+        let view = views.iter().find(|view| view["file"] == file.as_str()).unwrap();
+        assert_eq!(view["svg"], svg.as_str(), "{file}");
+    }
+    assert_eq!(views[0]["heading"], "Use case view — Coffee Machine");
+    // Nothing is written beside the model until the page is asked to.
+    assert!(!folder.join("diagrams").exists());
+
+    // Saved with a mistake: the page is told where, and keeps the diagrams it has.
+    let text = std::fs::read_to_string(&logical).unwrap();
+    let line = text.lines().position(|line| line.trim() == "action grindBeans;").unwrap();
+    live.send(&change(&logical, &text.replace("action grindBeans;", "action grindBeans")));
+    live.send(&save(&logical));
+    let after = format!("/state?session={}&after={}", state["session"].as_str().unwrap(), state["version"]);
+    let broken = get(port, &after);
+    assert_eq!(broken["views"], json!([]));
+    assert_eq!(broken["folder"], state["folder"]);
+    assert_eq!(broken["errors"][0]["file"], "logical.sysml");
+    assert!(broken["errors"][0]["line"].as_u64().unwrap() > line as u64);
+}
+
+#[test]
+fn a_box_of_the_preview_opens_its_line_in_the_editor_and_save_writes_the_diagrams() {
+    let folder = example("coffee-machine", "page");
+    let logical = folder.join("logical.sysml");
+    let mut live = Live::start(&folder);
+    let port = live.preview(&logical);
+    assert_eq!(post(port, "/open", json!({ "file": "logical.sysml", "line": 7 })), json!({ "ok": true }));
+    let shown = live.shown();
+    assert_eq!(shown["uri"], uri(&logical));
+    assert_eq!(shown["selection"]["start"], json!({ "line": 6, "character": 0 }));
+    // Only the model's own files, and only for the preview's own page.
+    std::fs::write(folder.parent().unwrap().join("other.sysml"), "").unwrap();
+    assert_eq!(post(port, "/open", json!({ "file": "../other.sysml", "line": 1 })), json!({ "ok": false }));
+    let ours = format!("Host: 127.0.0.1:{port}\r\n");
+    let body = json!({ "file": "logical.sysml", "line": 7 }).to_string();
+    assert_eq!(http(port, "POST", "/open", &ours, &body).0, 403);
+    let elsewhere = format!("{ours}Origin: http://example.com\r\n");
+    assert_eq!(http(port, "POST", "/save", &elsewhere, "{}").0, 403);
+    assert_eq!(http(port, "GET", "/state", "Host: example.com\r\n", "").0, 403);
+    assert!(!folder.join("diagrams").exists());
+
+    let saved = post(port, "/save", json!({}));
+    assert_eq!(saved["ok"], true, "{saved}");
+    for (file, svg) in rendered(&folder) {
+        assert_eq!(std::fs::read_to_string(folder.join("diagrams").join(&file)).unwrap(), svg, "{file}");
+    }
+}
+
+#[test]
+fn a_code_action_on_a_view_shows_it_in_the_preview() {
     let folder = example("coffee-machine", "action");
     let logical = folder.join("logical.sysml");
     let text = std::fs::read_to_string(&logical).unwrap();
     let line = text.lines().position(|line| line.trim_start().starts_with("view ")).unwrap() as u64;
     let range = json!({ "start": { "line": line, "character": 0 }, "end": { "line": line, "character": 0 } });
     let params = json!({ "textDocument": { "uri": uri(&logical) }, "range": range, "context": { "diagnostics": [] } });
-    let (sent, _) = session(&folder, &[open(&logical, &text), request(1, "textDocument/codeAction", params.clone())]);
-    let actions = response(&sent, 1).as_array().unwrap();
-    assert_eq!(actions.len(), 1, "{actions:?}");
-    let command = actions[0]["command"].clone();
-    let execute = json!({ "command": command["command"], "arguments": command["arguments"] });
-    let (sent, _) = session(&folder, &[open(&logical, &text), request(2, "workspace/executeCommand", execute)]);
-    let show = sent.iter().find(|message| message["method"] == "window/showDocument").unwrap();
-    let svg = folder.join("diagrams/logical-view-coffee-machine.svg");
-    assert_eq!(show["params"]["uri"], uri(&svg));
-    assert!(svg.exists());
-    // Elsewhere in the file, no action.
-    let mut elsewhere = params;
+    let mut elsewhere = params.clone();
     elsewhere["range"]["start"]["line"] = json!(0);
     elsewhere["range"]["end"]["line"] = json!(0);
-    let (sent, _) = session(&folder, &[open(&logical, &text), request(3, "textDocument/codeAction", elsewhere)]);
-    assert_eq!(response(&sent, 3), &json!([]));
+    let asked = [
+        open(&logical, &text),
+        request(1, "textDocument/codeAction", params),
+        request(2, "textDocument/codeAction", elsewhere),
+    ];
+    let (sent, _) = session(&folder, &asked);
+    let actions = response(&sent, 1).as_array().unwrap();
+    assert_eq!(actions.len(), 1, "{actions:?}");
+    assert_eq!(actions[0]["title"], "Show 'Logical view — Coffee Machine' in the preview");
+    assert_eq!(response(&sent, 2), &json!([]));
+
+    // With no page open, the browser is opened at the view; with one, it turns to it.
+    let command = &actions[0]["command"];
+    let execute = json!({ "command": command["command"], "arguments": command["arguments"] });
+    let mut live = Live::start(&folder);
+    live.send(&request(3, "workspace/executeCommand", execute));
+    let shown = live.shown();
+    assert_eq!(shown["external"], true);
+    let url = shown["uri"].as_str().unwrap();
+    let (address, view) = url.split_once("/#").unwrap();
+    assert_eq!(view, "logical-view-coffee-machine.svg");
+    let port = address.rsplit(':').next().unwrap().parse().unwrap();
+    let state = get(port, "/state?session=&after=0");
+    assert_eq!(state["select"]["file"], view);
+    assert_eq!(state["views"].as_array().unwrap().len(), 6);
 }

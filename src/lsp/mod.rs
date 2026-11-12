@@ -1,30 +1,34 @@
 //! `ortho lsp`: ortho as a language server, over stdin and stdout, for any editor that
 //! speaks the Language Server Protocol. The `.sysml` files in a folder are one model,
 //! as for `ortho render`: the server reports the problems of every file in the folder
-//! of each file the editor opens, as it is typed, goes to what a name names, and on
-//! every save writes the model's diagrams beside it, which a code action on a view
-//! opens. It completes and renames nothing: it helps check and review a model.
+//! of each file the editor opens, as it is typed, goes to what a name names, and shows
+//! the model's diagrams in a page in the browser, drawn again on every save. It
+//! completes and renames nothing: it helps check and review a model.
+mod preview;
 mod protocol;
 
-use crate::model::views::{declared_views, view_heading};
+use crate::model::views::{declared_views, view_file_name, view_heading};
 use crate::parser::ast::{NodeId, Prop, Value as Field};
 use crate::parser::workspace::{Severity, Workspace};
-use crate::pipeline::render_views;
+use crate::pipeline::{relative_to_working_folder, render_views};
 use crate::render::theme::{LIGHT, Theme};
+use preview::{Note, Preview, Shown};
 use protocol::{offset_at, path_to_uri, position_of, read_message, uri_to_path, write_message};
 use serde_json::{Value, json};
 use std::collections::HashMap;
 use std::io::{self, BufRead, Write};
 use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
+use std::sync::{Arc, Mutex};
 
-/// The command a code action runs to open a view's diagram.
-const SHOW_DIAGRAM: &str = "ortho.showDiagram";
+/// The command a code action runs to show a view in the preview.
+const SHOW_IN_PREVIEW: &str = "ortho.showInPreview";
 
 /// Serves one editor until it says `exit` or closes the stream. Says whether it was
 /// told to shut down first, as a clean exit requires.
-pub fn serve(input: impl BufRead, output: impl Write) -> io::Result<bool> {
+pub fn serve(input: impl BufRead, output: impl Write + Send + 'static) -> io::Result<bool> {
     let mut input = input;
-    let mut server = Server::new(output);
+    let mut server = Server::new(Editor::new(output));
     while let Some(message) = read_message(&mut input)? {
         if message.get("method").and_then(Value::as_str) == Some("exit") {
             break;
@@ -34,12 +38,53 @@ pub fn serve(input: impl BufRead, output: impl Write) -> io::Result<bool> {
     Ok(server.shut_down)
 }
 
+/// The editor served, to write to from the server and from the preview's page alike.
+#[derive(Clone)]
+struct Editor {
+    output: Arc<Mutex<dyn Write + Send>>,
+    /// How many requests of its own the server has sent.
+    sent: Arc<AtomicU64>,
+    /// Whether the editor opens a document or an address when asked to.
+    shows_documents: Arc<AtomicBool>,
+}
+
+impl Editor {
+    fn new(output: impl Write + Send + 'static) -> Self {
+        Editor { output: Arc::new(Mutex::new(output)), sent: Arc::default(), shows_documents: Arc::default() }
+    }
+
+    fn send(&self, message: Value) -> io::Result<()> {
+        write_message(&mut *self.output.lock().unwrap(), &message)
+    }
+
+    fn notify(&self, method: &str, params: Value) -> io::Result<()> {
+        self.send(json!({ "jsonrpc": "2.0", "method": method, "params": params }))
+    }
+
+    fn request(&self, method: &str, params: Value) -> io::Result<()> {
+        let id = format!("ortho-{}", self.sent.fetch_add(1, Ordering::Relaxed) + 1);
+        self.send(json!({ "jsonrpc": "2.0", "id": id, "method": method, "params": params }))
+    }
+
+    /// Opens an address in the browser, or says where it is if the editor opens none.
+    fn open_url(&self, url: &str) -> io::Result<()> {
+        if self.shows_documents.load(Ordering::Relaxed) {
+            self.request("window/showDocument", json!({ "uri": url, "external": true }))
+        } else {
+            self.notify("window/showMessage", json!({ "type": 3, "message": format!("ortho preview: {url}") }))
+        }
+    }
+}
+
 /// A problem at a place in a file.
 struct Problem {
     severity: Severity,
     offset: usize,
     message: String,
 }
+
+/// A problem, with the file it is in and the file's text.
+type Found<'a> = (&'a PathBuf, &'a String, &'a Problem);
 
 /// A model: the `.sysml` files of one folder.
 #[derive(Default)]
@@ -50,8 +95,8 @@ struct Model {
     rendering: HashMap<PathBuf, Vec<Problem>>,
 }
 
-struct Server<W: Write> {
-    output: W,
+struct Server {
+    editor: Editor,
     /// The text of each file the editor has open, which may not be saved.
     open: HashMap<PathBuf, String>,
     /// Each model with a file open, by its folder.
@@ -59,34 +104,30 @@ struct Server<W: Write> {
     /// What was last reported for each file, so a file is reported again only when
     /// that changes.
     reported: HashMap<PathBuf, Value>,
-    /// The folder, in a model's folder, that diagrams are written to, or none.
-    diagrams: Option<String>,
+    /// The page that shows the diagrams, once the editor has said where the project is.
+    preview: Option<Preview>,
+    /// Whether the page is opened in the browser when the first model file is.
+    opens_preview: bool,
     theme: &'static Theme,
     shut_down: bool,
-    /// How many requests of its own the server has sent.
-    sent: u64,
 }
 
-impl<W: Write> Server<W> {
-    fn new(output: W) -> Self {
+impl Server {
+    fn new(editor: Editor) -> Self {
         Server {
-            output,
+            editor,
             open: HashMap::new(),
             models: HashMap::new(),
             reported: HashMap::new(),
-            diagrams: Some("diagrams".to_string()),
+            preview: None,
+            opens_preview: true,
             theme: &LIGHT,
             shut_down: false,
-            sent: 0,
         }
     }
 
     fn send(&mut self, message: Value) -> io::Result<()> {
-        write_message(&mut self.output, &message)
-    }
-
-    fn notify(&mut self, method: &str, params: Value) -> io::Result<()> {
-        self.send(json!({ "jsonrpc": "2.0", "method": method, "params": params }))
+        self.editor.send(message)
     }
 
     fn handle(&mut self, message: &Value) -> io::Result<()> {
@@ -106,7 +147,12 @@ impl<W: Write> Server<W> {
                 if let Some(path) = document_path(&params) {
                     let text = params["textDocument"]["text"].as_str().unwrap_or("").to_string();
                     self.open.insert(path.clone(), text);
-                    self.check(&path, false)?;
+                    self.check(&path, true)?;
+                    if std::mem::take(&mut self.opens_preview)
+                        && let Some(preview) = &self.preview
+                    {
+                        preview.open_unless_watched();
+                    }
                 }
                 None
             }
@@ -158,20 +204,22 @@ impl<W: Write> Server<W> {
             let _ = std::env::set_current_dir(root);
         }
         let options = &params["initializationOptions"];
-        match &options["diagrams"] {
-            Value::String(folder) if !folder.trim().is_empty() => self.diagrams = Some(folder.trim().to_string()),
-            Value::Null => {}
-            _ => self.diagrams = None,
-        }
         if let Some(theme) = options["theme"].as_str().and_then(Theme::named) {
             self.theme = theme;
         }
-        let commands = if self.diagrams.is_some() { vec![SHOW_DIAGRAM] } else { vec![] };
+        self.opens_preview = options["preview"].as_bool().unwrap_or(true);
+        let shows = params["capabilities"]["window"]["showDocument"]["support"].as_bool().unwrap_or(false);
+        self.editor.shows_documents.store(shows, Ordering::Relaxed);
+        let save_to = options["diagrams"].as_str().map(str::trim).filter(|folder| !folder.is_empty());
+        let root = std::env::current_dir().unwrap_or_default();
+        // Without the page, as when the machine lends it no port, the rest still serves.
+        self.preview = Preview::start(&root, save_to.unwrap_or("diagrams"), self.editor.clone()).ok();
+        let commands = if self.preview.is_some() { vec![SHOW_IN_PREVIEW] } else { vec![] };
         json!({
             "capabilities": {
                 "textDocumentSync": { "openClose": true, "change": 1, "save": { "includeText": false } },
                 "definitionProvider": true,
-                "codeActionProvider": self.diagrams.is_some(),
+                "codeActionProvider": self.preview.is_some(),
                 "executeCommandProvider": { "commands": commands },
             },
             "serverInfo": { "name": "ortho", "version": env!("CARGO_PKG_VERSION") },
@@ -208,8 +256,8 @@ impl<W: Write> Server<W> {
     }
 
     /// Checks the model a file is part of and reports the problems of each of its
-    /// files; when saved, renders it too.
-    fn check(&mut self, file: &Path, saved: bool) -> io::Result<()> {
+    /// files; when it is opened or saved, draws it in the preview too.
+    fn check(&mut self, file: &Path, draw: bool) -> io::Result<()> {
         let Some(folder) = file.parent().map(Path::to_path_buf) else {
             return Ok(());
         };
@@ -241,8 +289,11 @@ impl<W: Write> Server<W> {
         let model = self.models.entry(folder.clone()).or_default();
         model.workspace = workspace;
         model.rendering.clear();
-        if saved {
-            self.render(&folder)?;
+        if draw {
+            let found = paths.iter().filter_map(|path| Some((path, problems.get(path)?)));
+            let notes = found.flat_map(|(path, (found, text))| found.iter().map(move |problem| (path, text, problem)));
+            let (errors, notes) = notes.partition(|(_, _, problem)| problem.severity == Severity::Error);
+            self.draw(&folder, errors, notes);
         }
         let model = &self.models[&folder];
         let mut reports = Vec::new();
@@ -256,7 +307,7 @@ impl<W: Write> Server<W> {
         for (path, diagnostics) in reports {
             if self.reported.get(&path) != Some(&diagnostics) {
                 self.reported.insert(path.clone(), diagnostics.clone());
-                self.notify(
+                self.editor.notify(
                     "textDocument/publishDiagnostics",
                     json!({ "uri": path_to_uri(&path), "diagnostics": diagnostics }),
                 )?;
@@ -265,59 +316,62 @@ impl<W: Write> Server<W> {
         Ok(())
     }
 
-    /// Writes the diagrams of a model that loads into its diagrams folder, each only if
-    /// it changed, so an image open in the editor reloads only then. What rendering
-    /// warns of is kept to be reported on the view it is about.
-    fn render(&mut self, folder: &Path) -> io::Result<()> {
-        let Some(out) = self.diagrams.as_ref().map(|name| folder.join(name)) else {
-            return Ok(());
-        };
-        let Some(model) = self.models.get_mut(folder) else { return Ok(()) };
-        let Some(workspace) = &model.workspace else { return Ok(()) };
-        if workspace.documents.iter().any(|d| d.diagnostics.iter().any(|d| d.severity == Severity::Error)) {
-            return Ok(());
-        }
-        let rendering = match render_views(workspace, self.theme) {
-            Ok(rendering) => rendering,
-            Err(message) => {
-                let params = json!({ "type": 1, "message": format!("ortho: {message}") });
-                return self.notify("window/showMessage", params);
+    /// Draws a model in the preview: its diagrams if it loads, and otherwise what keeps
+    /// it from loading, with the last diagrams left on the page. What rendering warns
+    /// of is kept to be reported on the view it is about, too.
+    fn draw(&mut self, folder: &Path, errors: Vec<Found>, warnings: Vec<Found>) {
+        let (Some(preview), Some(model)) = (&self.preview, self.models.get_mut(folder)) else { return };
+        let note = |(path, text, problem): &Found| {
+            let line = crate::parser::position(text, problem.offset.min(text.len())).0;
+            Note {
+                place: Some((relative_to_working_folder(&path.to_string_lossy()), line)),
+                message: problem.message.clone(),
             }
         };
-        let mut found: Vec<(NodeId, String)> = Vec::new();
-        for skipped in &rendering.skipped {
-            let heading = view_heading(&workspace.ast, skipped.view);
-            found.push((skipped.view, format!("ortho does not draw '{heading}': {}", skipped.reason)));
-        }
-        let mut failure = None;
-        if !rendering.rendered.is_empty()
-            && let Err(error) = std::fs::create_dir_all(&out)
-        {
-            failure = Some(format!("{}: {error}", out.display()));
-        }
-        for rendered in &rendering.rendered {
-            let path = out.join(&rendered.file);
-            let same = std::fs::read(&path).is_ok_and(|old| old == rendered.result.svg.as_bytes());
-            if failure.is_none()
-                && !same
-                && let Err(error) = std::fs::write(&path, &rendered.result.svg)
-            {
-                failure = Some(format!("{}: {error}", path.display()));
+        let mut shown = Shown {
+            folder: folder.to_path_buf(),
+            views: Vec::new(),
+            errors: errors.iter().map(note).collect(),
+            notes: warnings.iter().map(note).collect(),
+        };
+        if let Some(workspace) = model.workspace.as_ref().filter(|_| shown.errors.is_empty()) {
+            let ast = &workspace.ast;
+            let mut found: Vec<(NodeId, String)> = Vec::new();
+            match render_views(workspace, self.theme) {
+                Ok(rendering) => {
+                    for skipped in &rendering.skipped {
+                        let heading = view_heading(ast, skipped.view);
+                        found.push((skipped.view, format!("ortho does not draw '{heading}': {}", skipped.reason)));
+                    }
+                    if rendering.rendered.is_empty() && rendering.skipped.is_empty() {
+                        let message = "The model declares no view. ortho draws the views a model declares, such as \
+                                       view 'Functions' : GeneralView { expose Functions; }.";
+                        shown.notes.push(Note { place: None, message: message.to_string() });
+                    }
+                    for rendered in rendering.rendered {
+                        if let Some(warning) = rendered.warning {
+                            found.push((rendered.view, warning));
+                        }
+                        let heading = view_heading(ast, rendered.view).to_string();
+                        shown.views.push([rendered.file, heading, rendered.result.summary, rendered.result.svg]);
+                    }
+                }
+                Err(message) => shown.errors.push(Note { place: None, message }),
             }
-            if let Some(warning) = &rendered.warning {
-                found.push((rendered.view, warning.clone()));
+            for (view, message) in found {
+                let root = ast.root_of(view);
+                let Some(document) = workspace.documents.iter().find(|document| document.root == root) else {
+                    continue;
+                };
+                let offset = ast[view].offset as usize;
+                let line = crate::parser::position(&document.text, offset.min(document.text.len())).0;
+                let place = Some((relative_to_working_folder(&document.path), line));
+                shown.notes.push(Note { place, message: message.clone() });
+                let problem = Problem { severity: Severity::Warning, offset, message };
+                model.rendering.entry(PathBuf::from(&document.path)).or_default().push(problem);
             }
         }
-        for (view, message) in found {
-            let root = workspace.ast.root_of(view);
-            let Some(document) = workspace.documents.iter().find(|document| document.root == root) else { continue };
-            let problem = Problem { severity: Severity::Warning, offset: workspace.ast[view].offset as usize, message };
-            model.rendering.entry(PathBuf::from(&document.path)).or_default().push(problem);
-        }
-        match failure {
-            Some(message) => self.notify("window/showMessage", json!({ "type": 1, "message": message })),
-            None => Ok(()),
-        }
+        preview.show(shown);
     }
 
     /// Where the name at a position is declared.
@@ -346,14 +400,9 @@ impl<W: Write> Server<W> {
         json!({ "uri": path_to_uri(Path::new(file)), "range": range })
     }
 
-    /// A code action on a view's declaration that opens its diagram.
+    /// A code action on a view's declaration that shows the view in the preview.
     fn code_actions(&self, params: &Value) -> Value {
-        Value::Array(self.diagram_actions(params))
-    }
-
-    fn diagram_actions(&self, params: &Value) -> Vec<Value> {
-        let Some(out) = &self.diagrams else { return Vec::new() };
-        let Some((workspace, document, offset)) = self.at(params) else { return Vec::new() };
+        let Some((workspace, document, offset)) = self.at(params) else { return json!([]) };
         let ast = &workspace.ast;
         let text = &document.text;
         let line = |offset: usize| crate::parser::position(text, offset.min(text.len())).0;
@@ -364,47 +413,28 @@ impl<W: Write> Server<W> {
             let last = ast.with_all_contents(view).iter().flat_map(|&n| ast[n].fields.iter()).map(|f| f.offset).max();
             let end = last.map_or(start, |last| last as usize);
             if (line(start)..=line(end)).contains(&line(offset)) {
-                let folder = Path::new(&document.path).parent().unwrap_or(Path::new(""));
-                let file = crate::model::views::view_file_name(ast, view);
-                let svg = folder.join(out).join(file);
-                let title = format!("Show diagram of '{}'", view_heading(ast, view));
-                actions.push(action(&title, SHOW_DIAGRAM, json!([path_to_uri(&svg)])));
+                let title = format!("Show '{}' in the preview", view_heading(ast, view));
+                let arguments = json!([view_file_name(ast, view), params["textDocument"]["uri"]]);
+                let command = json!({ "title": title, "command": SHOW_IN_PREVIEW, "arguments": arguments });
+                actions.push(json!({ "title": title, "command": command }));
             }
         }
-        actions
+        Value::Array(actions)
     }
 
-    /// Asks the editor to open a file.
-    fn show(&mut self, path: &Path) -> io::Result<()> {
-        self.sent += 1;
-        let params = json!({ "uri": path_to_uri(path), "takeFocus": true });
-        let request = json!({ "jsonrpc": "2.0", "id": format!("ortho-{}", self.sent), "method": "window/showDocument", "params": params });
-        self.send(request)
-    }
-
-    /// Runs the command of a code action.
+    /// Runs the command of a code action: draws the view's model in the preview, and
+    /// turns the page to the view.
     fn execute(&mut self, params: &Value) -> io::Result<Value> {
-        if params["command"].as_str() == Some(SHOW_DIAGRAM)
-            && let Some(svg) = params["arguments"][0].as_str().and_then(uri_to_path)
+        let arguments = &params["arguments"];
+        if params["command"].as_str() == Some(SHOW_IN_PREVIEW)
+            && let (Some(view), Some(file)) = (arguments[0].as_str(), arguments[1].as_str().and_then(uri_to_path))
         {
-            self.show_diagram(&svg)?;
+            self.check(&file, true)?;
+            if let Some(preview) = &self.preview {
+                preview.open_at(view)?;
+            }
         }
         Ok(Value::Null)
-    }
-
-    /// Opens a diagram, rendering its model first if it has none yet.
-    fn show_diagram(&mut self, svg: &Path) -> io::Result<()> {
-        if !svg.exists()
-            && let Some(folder) = svg.parent().and_then(Path::parent)
-        {
-            self.render(folder)?;
-        }
-        if svg.exists() {
-            self.show(svg)
-        } else {
-            let message = "ortho: the diagram is drawn once the model has no errors; save to draw it.";
-            self.notify("window/showMessage", json!({ "type": 2, "message": message }))
-        }
     }
 
     /// The checked model, document and byte offset a request's position is in.
@@ -418,11 +448,6 @@ impl<W: Write> Server<W> {
         let character = position["character"].as_u64()? as usize;
         Some((workspace, document, offset_at(&document.text, line, character)))
     }
-}
-
-/// A code action that runs a command of the server's.
-fn action(title: &str, command: &str, arguments: Value) -> Value {
-    json!({ "title": title, "command": { "title": title, "command": command, "arguments": arguments } })
 }
 
 /// The file a request or notification is about.

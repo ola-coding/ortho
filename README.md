@@ -185,8 +185,9 @@ SysML v2 ortho reads and checks its work with ortho.
 
 `ortho lsp` runs ortho as a language server, for an editor that speaks the
 Language Server Protocol, such as Zed, Neovim, Helix or Emacs: the problems
-of every file in a model's folder as you type, go to definition, and the
-diagrams written to `diagrams/` beside the model on every save.
+of every file in a model's folder as you type, go to definition, and a live
+preview of the diagrams, a page it opens in your browser and draws again on
+every save.
 
 Diagrams are drawn for landscape A4. A view too big for that page, one whose
 names would print smaller than 6 pt once it is shrunk to fit, is still drawn,

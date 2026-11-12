@@ -31,7 +31,7 @@ pub fn read_message(input: &mut impl BufRead) -> io::Result<Option<Value>> {
     serde_json::from_slice(&body).map(Some).map_err(|error| io::Error::new(io::ErrorKind::InvalidData, error))
 }
 
-pub fn write_message(output: &mut impl Write, message: &Value) -> io::Result<()> {
+pub fn write_message(output: &mut (impl Write + ?Sized), message: &Value) -> io::Result<()> {
     let body = message.to_string();
     write!(output, "Content-Length: {}\r\n\r\n{body}", body.len())?;
     output.flush()

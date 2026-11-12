@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ortho preview</title>
+<style>
+:root {
+  color-scheme: light dark;
+  --fg: #1f2328;
+  --dim: #59636e;
+  --bg: #ffffff;
+  --bar: #f6f8fa;
+  --line: #d1d9e0;
+  --button: #e8ecf0;
+  --button-hover: #dbe1e7;
+  --accent: #40657e;
+  --accent-fg: #ffffff;
+  --error: #cf222e;
+  --info: #40657e;
+  --note: #f6f8fa;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fg: #e6edf3;
+    --dim: #9198a1;
+    --bg: #15191e;
+    --bar: #1c2128;
+    --line: #353c45;
+    --button: #2a313a;
+    --button-hover: #353d48;
+    --accent: #7fa8c4;
+    --accent-fg: #0d1117;
+    --error: #ff7b72;
+    --info: #7fa8c4;
+    --note: #1c2128;
+  }
+}
+body {
+  margin: 0;
+  color: var(--fg);
+  background: var(--bg);
+  font: 13px/1.4 system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  padding: 6px 12px;
+  background: var(--bar);
+  border-bottom: 1px solid var(--line);
+}
+nav, #actions { display: flex; flex-wrap: wrap; gap: 4px; }
+#actions[hidden] { display: none; }
+button {
+  padding: 3px 10px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: var(--fg);
+  background: var(--button);
+  font: inherit;
+  cursor: pointer;
+}
+button:hover:enabled { background: var(--button-hover); }
+button:disabled { opacity: 0.5; cursor: default; }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+nav button[aria-selected='true'] { color: var(--accent-fg); background: var(--accent); }
+#status { margin-left: auto; color: var(--dim); white-space: nowrap; }
+#status.lost { color: var(--error); }
+#messages:empty { display: none; }
+#messages { margin: 8px 12px 0; }
+.message {
+  margin: 0 0 6px;
+  padding: 6px 10px;
+  border-left: 3px solid var(--info);
+  background: var(--note);
+  white-space: pre-wrap;
+}
+.message.error { border-left-color: var(--error); }
+.message.link { cursor: pointer; }
+.message.link:hover { text-decoration: underline; }
+main { padding: 12px; }
+main.stale svg { opacity: 0.45; }
+/* The diagrams are drawn on white, on a dark page too. */
+main svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+  border-radius: 6px;
+  cursor: zoom-in;
+}
+main.actual-size svg { max-width: none; cursor: zoom-out; }
+/* A box opens the line that declares it. */
+main svg [data-line] { cursor: pointer; }
+main svg [data-line]:hover { filter: brightness(0.93); }
+.summary { margin: 8px 0 0; text-align: center; color: var(--dim); }
+.empty { color: var(--dim); }
+</style>
+</head>
+<body>
+<header>
+  <nav id="tabs" role="tablist"></nav>
+  <span id="status" role="status">Connecting…</span>
+  <span id="actions" hidden>
+    <button type="button" id="save-one" title="Download the view shown as an SVG file">Save SVG</button>
+    <button type="button" id="save-all"></button>
+  </span>
+</header>
+<section id="messages"></section>
+<main id="diagram"><p class="empty">Open a .sysml file in your editor: its views are drawn here, and again on every save.</p></main>
+<script>
+// The preview's page: a tab for each view ortho drew, the chosen view's diagram, and
+// what ortho reported. It asks `ortho lsp`, which serves it, for each render, and
+// waits there until there is a newer one.
+(function () {
+  const tabs = document.getElementById('tabs');
+  const status = document.getElementById('status');
+  const messages = document.getElementById('messages');
+  const diagram = document.getElementById('diagram');
+  const actions = document.getElementById('actions');
+  const saveOne = document.getElementById('save-one');
+  const saveAll = document.getElementById('save-all');
+
+  /** What the page remembers between reloads: the view chosen and its size. */
+  let state = {};
+  try {
+    state = JSON.parse(sessionStorage.getItem('ortho') || '{}');
+  } catch {}
+  function remember() {
+    try {
+      sessionStorage.setItem('ortho', JSON.stringify(state));
+    } catch {}
+  }
+  // The editor opens the page at the view asked for: #logical-view.svg
+  if (location.hash.length > 1) state.selected = decodeURIComponent(location.hash.slice(1));
+
+  let views = [];
+  let folder;
+
+  function element(tag, attributes = {}, text = '') {
+    const node = document.createElement(tag);
+    for (const [name, value] of Object.entries(attributes)) node.setAttribute(name, value);
+    node.textContent = text;
+    return node;
+  }
+
+  function post(path, body) {
+    return fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  }
+
+  /** A diagram's title from its file name: logical-view-survey-drone.svg is "Logical view survey drone". */
+  function viewTitle(file) {
+    const words = file.replace(/\.svg$/i, '').replace(/[-_]+/g, ' ').trim();
+    return words ? words[0].toUpperCase() + words.slice(1) : 'View';
+  }
+
+  /** Short titles for tabs: the words every title ends with are left out. */
+  function tabTitles(files) {
+    const titles = files.map(viewTitle);
+    if (titles.length < 2) return titles;
+    const split = titles.map((title) => title.split(' '));
+    let common = 0;
+    while (
+      split.every((words) => common < words.length - 1) &&
+      split.every((words) => words.at(-1 - common).toLowerCase() === split[0].at(-1 - common).toLowerCase())
+    ) {
+      common += 1;
+    }
+    return split.map((words) => words.slice(0, words.length - common).join(' '));
+  }
+
+  function message(problem, kind) {
+    const where = problem.file ? `${problem.file.split('/').pop()} line ${problem.line}: ` : '';
+    const node = element('p', { class: `message ${kind}` }, where + problem.message);
+    if (problem.file) {
+      node.classList.add('link');
+      node.title = 'Open it in the editor';
+      node.addEventListener('click', () => post('open', { file: problem.file, line: problem.line }));
+    }
+    messages.append(node);
+  }
+
+  function selected() {
+    return views.find((view) => view.file === state.selected) || views[0];
+  }
+
+  function showSelected() {
+    const view = selected();
+    for (const button of tabs.querySelectorAll('button')) {
+      button.setAttribute('aria-selected', String(button.dataset.file === view?.file));
+    }
+    diagram.replaceChildren();
+    diagram.classList.toggle('actual-size', Boolean(state.actualSize));
+    if (!view) return;
+    const parsed = new DOMParser().parseFromString(view.svg, 'image/svg+xml').documentElement;
+    if (parsed.nodeName !== 'svg') {
+      diagram.append(element('p', { class: 'empty' }, `${view.heading} could not be read.`));
+      return;
+    }
+    const svg = document.importNode(parsed, true);
+    svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', view.heading);
+    for (const box of svg.querySelectorAll('[data-line]')) {
+      const file = box.getAttribute('data-file') || '';
+      const tip = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+      tip.textContent = `Open ${file.split('/').pop()} line ${box.getAttribute('data-line')}`;
+      box.prepend(tip);
+    }
+    svg.addEventListener('click', (event) => {
+      // A box opens the line that declares it; anywhere else switches between fitting
+      // the window and actual size.
+      const box = event.target.closest('[data-line]');
+      if (box) {
+        post('open', { file: box.getAttribute('data-file'), line: Number(box.getAttribute('data-line')) });
+        return;
+      }
+      state.actualSize = !state.actualSize;
+      remember();
+      diagram.classList.toggle('actual-size', state.actualSize);
+    });
+    diagram.append(svg, element('p', { class: 'summary' }, view.summary));
+  }
+
+  function showTabs() {
+    const titles = tabTitles(views.map((view) => view.file));
+    tabs.replaceChildren(
+      ...views.map((view, i) => {
+        const button = element('button', { role: 'tab', type: 'button', title: view.heading }, titles[i]);
+        button.dataset.file = view.file;
+        button.addEventListener('click', () => {
+          state.selected = view.file;
+          remember();
+          showSelected();
+        });
+        return button;
+      }),
+    );
+  }
+
+  /** The save buttons: hidden with no diagrams, disabled while the model does not load. */
+  function showActions(how, saveTo) {
+    actions.hidden = how === 'none';
+    saveOne.disabled = saveAll.disabled = how === 'stale';
+    saveAll.textContent = `Save all to ${saveTo}/`;
+    saveAll.title =
+      how === 'stale'
+        ? 'The model does not load now: fix its problems to save its diagrams'
+        : `Write every view as SVG into the ${saveTo} folder beside the model, as ortho render does`;
+  }
+
+  saveOne.addEventListener('click', () => {
+    const view = selected();
+    if (!view) return;
+    const link = element('a', { download: view.file });
+    link.href = URL.createObjectURL(new Blob([view.svg], { type: 'image/svg+xml' }));
+    link.click();
+    URL.revokeObjectURL(link.href);
+  });
+  saveAll.addEventListener('click', async () => {
+    const answer = await (await post('save', {})).json();
+    messages.querySelector('.saved')?.remove();
+    message({ message: answer.message }, answer.ok ? 'info saved' : 'error saved');
+  });
+
+  function show(data) {
+    // Another model's diagrams never stand in for this one's.
+    if (folder !== data.folder) views = [];
+    folder = data.folder;
+    messages.replaceChildren();
+    for (const error of data.errors) message(error, 'error');
+    for (const note of data.notes) message(note, 'info');
+    const time = new Date().toLocaleTimeString();
+    document.title = data.model ? `${data.model} · Ortho preview` : 'Ortho preview';
+    // The editor asked for a view: the page turns to it, once.
+    if (data.select && data.select.time !== state.select) {
+      state.select = data.select.time;
+      state.selected = data.select.file;
+      remember();
+    }
+    if (data.views.length > 0) {
+      views = data.views;
+      showTabs();
+      showSelected();
+      diagram.classList.remove('stale');
+      showActions('current', data.saveTo);
+      status.textContent = `${data.model}: ${views.length} view${views.length === 1 ? '' : 's'}, ${time}`;
+    } else if (views.length > 0) {
+      // The model does not load now: the last diagrams stay, faded, until it does.
+      diagram.classList.add('stale');
+      showActions('stale', data.saveTo);
+      status.textContent = `${data.model}: not rendered, ${time}`;
+    } else if (data.model) {
+      tabs.replaceChildren();
+      diagram.replaceChildren(element('p', { class: 'empty' }, 'No diagrams yet.'));
+      showActions('none', data.saveTo);
+      status.textContent = `${data.model}: not rendered, ${time}`;
+    }
+  }
+
+  // Each answer comes when there is a render newer than the one shown, or after a
+  // while with the same one. An editor started again serves the same address, so the
+  // page finds it again by asking until it answers.
+  let session = '';
+  let version = 0;
+  async function follow() {
+    for (;;) {
+      try {
+        const answer = await fetch(`state?session=${session}&after=${version}`, { cache: 'no-store' });
+        const data = await answer.json();
+        status.classList.remove('lost');
+        if (data.session !== session || data.version !== version) {
+          session = data.session;
+          version = data.version;
+          show(data);
+        }
+      } catch {
+        status.classList.add('lost');
+        status.textContent = 'Waiting for the editor…';
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+    }
+  }
+  follow();
+})();
+</script>
+</body>
+</html>
