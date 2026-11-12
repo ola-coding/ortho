@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="850.2820000000002" height="370"
-     viewBox="0 0 850.2820000000002 370" font-family="Arial, Helvetica, Liberation Sans, DejaVu Sans, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="464.71900000000005" height="370"
+     viewBox="0 0 464.71900000000005 370" font-family="Arial, Helvetica, Liberation Sans, DejaVu Sans, sans-serif">
   <title>Use case view — Coffee Machine (generated from examples/coffee-machine/use-case.sysml)</title>
   <defs>
     <marker id="openArrow" markerWidth="12" markerHeight="12" refX="10" refY="5"
@@ -11,14 +11,14 @@
       <path d="M0,4 L6,0 L12,4 L6,8 z" fill="#1a1a1a" />
     </marker>
   </defs>
-  <rect x="0" y="0" width="850.2820000000002" height="370" fill="white" />
-  <rect x="8" y="8" width="834.2820000000002" height="354" rx="10" ry="10" fill="#f9fbfc" stroke="#40657e" stroke-width="1.25" />
+  <rect x="0" y="0" width="464.71900000000005" height="370" fill="white" />
+  <rect x="8" y="8" width="448.71900000000005" height="354" rx="10" ry="10" fill="#f9fbfc" stroke="#40657e" stroke-width="1.25" />
   <path d="M8,30 L8,18 A10,10 0 0 1 18,8 L271.483,8 L271.483,22 A8,8 0 0 1 263.483,30 Z"
         fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
   <text x="18" y="23" font-size="11" fill="#1a1a1a"><tspan font-style="italic" fill="#40657e">&#171;view&#187;</tspan><tspan font-weight="600"> Use case view — Coffee Machine</tspan></text>
-  <path d="M638.1280000000002,362 L638.1280000000002,353 A6,6 0 0 1 644.1280000000002,347 L842.2820000000002,347 L842.2820000000002,352 A10,10 0 0 1 832.2820000000002,362 Z"
+  <path d="M252.56500000000005,362 L252.56500000000005,353 A6,6 0 0 1 258.56500000000005,347 L456.71900000000005,347 L456.71900000000005,352 A10,10 0 0 1 446.71900000000005,362 Z"
         fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-  <text x="834.2820000000002" y="358" text-anchor="end" font-size="9" fill="#1a1a1a">examples/coffee-machine/use-case.sysml</text>
+  <text x="448.71900000000005" y="358" text-anchor="end" font-size="9" fill="#1a1a1a">examples/coffee-machine/use-case.sysml</text>
   
     <g data-file="examples/coffee-machine/use-case.sysml" data-line="16"><rect x="161.763" y="152" width="266.956" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
@@ -47,33 +47,10 @@
           font-size="9" font-style="italic" fill="#40657e">&#171;subject&#187;</text>
       <text x="295.24100000000004" y="90" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">machine : CoffeeMachine</text></g>
-    <g data-file="examples/coffee-machine/use-case.sysml" data-line="24"><rect x="610.4820000000001" y="152" width="203.8" height="40" rx="10" ry="10"
-          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <text x="712.3820000000001" y="169" text-anchor="middle"
-          font-size="9" font-style="italic" fill="#40657e">&#171;use case&#187;</text>
-      <text x="712.3820000000001" y="182" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">descale : OperateMachine</text></g>
-    <g data-file="examples/coffee-machine/use-case.sysml" data-line="13" stroke="#1a1a1a" stroke-width="1.5" fill="none">
-      <circle cx="519.6005" cy="157" r="8" fill="#ccdce5" />
-      <line x1="519.6005" y1="165" x2="519.6005" y2="184" />
-      <line x1="506.6005" y1="172" x2="532.6005" y2="172" />
-      <line x1="519.6005" y1="184" x2="508.6005" y2="200" />
-      <line x1="519.6005" y1="184" x2="530.6005" y2="200" />
-      <text x="519.6005" y="216" text-anchor="middle" stroke="none"
-          font-size="11" fill="#1a1a1a">user : User</text>
-    </g>
-    <g data-file="examples/coffee-machine/use-case.sysml" data-line="12"><rect x="613.1460000000001" y="60" width="198.472" height="40" rx="10" ry="10"
-          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <text x="712.3820000000001" y="77" text-anchor="middle"
-          font-size="9" font-style="italic" fill="#40657e">&#171;subject&#187;</text>
-      <text x="712.3820000000001" y="90" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">machine : CoffeeMachine</text></g>
   
     <polyline points="86.8815,172 161.763,172" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
     <polyline points="295.241,192 295.241,288" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-end="url(#openArrow)" />
     <text x="295.241" y="235" text-anchor="middle" font-size="9"
           fill="#40657e" paint-order="stroke" stroke="#f9fbfc" stroke-width="3">&#171;include&#187;</text>
     <polyline points="295.241,152 295.241,100" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
-    <polyline points="535.6005,172 610.4820000000001,172" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
-    <polyline points="712.3820000000001,152 712.3820000000001,100" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
 </svg>

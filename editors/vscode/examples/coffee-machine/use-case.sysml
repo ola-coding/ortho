@@ -21,11 +21,6 @@ package SystemUseCases {
 
     use case makeEspresso : OperateMachine;
 
-    use case descale : OperateMachine {
-        doc /* Looking after the machine is the user's job too: a task the machine
-             * asks its owner for, not a call-out. */
-    }
-
     view 'Use case view — Coffee Machine' : GeneralView {
         expose SystemUseCases;
     }

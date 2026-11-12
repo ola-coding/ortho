@@ -3,8 +3,9 @@ package Software {
     doc /* Two stacks and an app. The flight firmware is ArduPilot-style: control
          * libraries on a hardware abstraction layer over a real-time kernel, with
          * no Linux anywhere beneath it. The onboard applications run one Docker
-         * container per module and talk only through Zenoh, over a minimal Linux
-         * image. The operator's app reaches them through the same middleware,
+         * container per module and talk only through Zenoh, on a stock minimal
+         * Linux image, which is bought rather than built and so is not a module
+         * here. The operator's app reaches them through the same middleware,
          * across the encrypted radio link. */
 
     // Which computer runs what is deployment.sysml's business, not this file's.
@@ -71,10 +72,6 @@ package Software {
 
         port def TransportApi {
             inout attribute topic : String;
-        }
-
-        port def KernelApi {
-            inout attribute syscall : Integer;
         }
 
         // --- firmware, called directly ----------------------------------
@@ -179,8 +176,6 @@ package Software {
     }
 
     package Middleware {
-        private import Software::LinuxPlatform;
-
         part def ZenohRouter {
             doc /* Carries every message between the containers, and to the tablet. */
             port transport : Apis::TransportApi;
@@ -198,20 +193,6 @@ package Software {
         part def WireGuardTunnel {
             doc /* Encrypts everything that crosses the radio link. */
             port transport : ~Apis::TransportApi;
-        }
-    }
-
-    package LinuxPlatform {
-        doc /* The bottom of the onboard Linux stack. */
-
-        part def MinimalLinux {
-            doc /* A secure-booted Linux image, updated over the air as A/B images
-                 * so that a failed update rolls itself back. */
-            port kernel : Apis::KernelApi;
-        }
-
-        part def ContainerRuntime {
-            port kernel : ~Apis::KernelApi;
         }
     }
 
@@ -257,8 +238,8 @@ package Software {
     }
 
     package FlightPlatform {
-        doc /* The bottom of the firmware stack: the counterpart of LinuxPlatform,
-             * and the reason the flight code is portable across controller boards. */
+        doc /* The bottom of the firmware stack, and the reason the flight code is
+             * portable across controller boards. */
 
         // AP_HAL, AP_HAL_ChibiOS, and the sensor drivers on it: AP_InertialSensor,
         // AP_GPS, AP_Compass, AP_Baro.
@@ -289,8 +270,6 @@ package Software {
         part mavlinkBridge : Middleware::MavlinkBridge;
         part groundWireGuardTunnel : Middleware::WireGuardTunnel;
         part airWireGuardTunnel : Middleware::WireGuardTunnel;
-        part minimalLinux : LinuxPlatform::MinimalLinux;
-        part containerRuntime : LinuxPlatform::ContainerRuntime;
         part missionExecutor : Flight::MissionExecutor;
         part stateEstimator : Flight::StateEstimator;
         part flightControl : Flight::FlightControl;
@@ -299,7 +278,12 @@ package Software {
         part realTimeKernel : FlightPlatform::RealTimeKernel;
     }
 
+    // The view shows the packages themselves, without Software around them.
     view 'Implementation view — Survey Drone' : GeneralView {
-        expose Software;
+        expose Ground;
+        expose Onboard;
+        expose Middleware;
+        expose Flight;
+        expose FlightPlatform;
     }
 }

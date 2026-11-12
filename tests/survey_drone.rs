@@ -146,7 +146,7 @@ fn implementation_view_each_module_lists_the_functions_it_realizes() {
 
     // A platform module realizes nothing of the function tree: it is what the modules
     // above it stand on. It still has an API of its own.
-    for platform in ["RealTimeKernel", "MinimalLinux", "ZenohRouter", "HardwareAbstraction"] {
+    for platform in ["RealTimeKernel", "ZenohRouter", "HardwareAbstraction"] {
         assert_eq!(compartment_of(platform, "perform actions"), Vec::<&str>::new(), "{platform}");
     }
     assert_eq!(compartment_of("RealTimeKernel", "ports"), ["scheduler : SchedulerApi"]);
@@ -169,7 +169,6 @@ fn implementation_view_the_firmware_stack_and_the_linux_stack_never_import_each_
         [
             "Software::Flight -> Software::FlightPlatform",
             "Software::Ground -> Software::Middleware",
-            "Software::Middleware -> Software::LinuxPlatform",
             "Software::Onboard -> Software::Middleware",
         ]
     );
@@ -272,8 +271,8 @@ fn deployment_view_every_module_hosted_on_three_computers_in_two_devices() {
     // A module missing from this view would be a program with nowhere to run, so the
     // count is the whole of implementation.sysml's `sw`.
     let placed: Vec<&String> = hosts.iter().flat_map(|n| n.compartments.iter().flat_map(|c| &c.lines)).collect();
-    assert_eq!(placed.len(), 18);
-    assert_eq!(placed.iter().collect::<HashSet<_>>().len(), 18);
+    assert_eq!(placed.len(), 16);
+    assert_eq!(placed.iter().collect::<HashSet<_>>().len(), 16);
 }
 
 #[test]

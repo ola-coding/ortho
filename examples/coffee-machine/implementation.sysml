@@ -52,7 +52,6 @@ package Software {
 
         part def UiApp {
             perform beverage.controlMachine.selectBeverage;
-            perform maintenance.signalDescaleDue;
 
             port recipe : ~RecipeApi;
         }
@@ -78,10 +77,8 @@ package Software {
 
         part def BrewController {
             doc /* Doses, tamps and extracts, and keeps the brew group shut while
-                 * it is under pressure. It owns the brew group, so it owns flushing
-                 * it out. */
+                 * it is under pressure. */
             perform beverage.prepareCoffee.extractShot;
-            perform maintenance.runDescaleCycle;
 
             port brew : BrewApi;
         }
@@ -103,7 +100,9 @@ package Software {
         part milkController : Control::MilkController;
     }
 
+    // The view shows the two layers themselves, without Software around them.
     view 'Implementation view — Coffee Machine' : GeneralView {
-        expose Software;
+        expose Application;
+        expose Control;
     }
 }

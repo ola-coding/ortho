@@ -63,17 +63,17 @@ fn each_self_contained_view_parses_on_its_own() {
 }
 
 #[test]
-fn use_case_view_two_drinks_and_a_service_task_all_of_the_one_machine() {
+fn use_case_view_two_drinks_of_the_one_machine() {
     let workspace = parse_set(&["use-case.sysml"]);
     let graph = extract_use_case_graph(&workspace.ast, &exposed_by_view(&workspace));
     assert_eq!(
         sorted_names(graph.nodes.iter().filter(|n| n.keyword == "use case")),
-        ["descale : OperateMachine", "makeCappuccino : OperateMachine", "makeEspresso : OperateMachine"]
+        ["makeCappuccino : OperateMachine", "makeEspresso : OperateMachine"]
     );
     // The one use case def names the machine as the subject: one box, a line to each.
     let subjects: Vec<_> = graph.nodes.iter().filter(|n| n.keyword == "subject").collect();
     assert_eq!(names(subjects.iter().copied()), ["machine : CoffeeMachine"]);
-    assert_eq!(graph.edges.iter().filter(|e| e.target_id == subjects[0].id).count(), 3);
+    assert_eq!(graph.edges.iter().filter(|e| e.target_id == subjects[0].id).count(), 2);
 
     assert_eq!(sorted_names(graph.nodes.iter().filter(|n| n.shape == NodeShape::Actor)), ["user : User"]);
 
@@ -89,10 +89,9 @@ fn use_case_view_two_drinks_and_a_service_task_all_of_the_one_machine() {
 #[test]
 fn logical_view_a_strict_capability_tree_naming_no_realization() {
     let (_, graph) = logical();
-    // Two roots, one per use case definition: making a drink, and looking after the
-    // machine. A forest of n trees has n fewer edges than nodes.
+    // One root, making a drink: a tree has one fewer edge than nodes.
     let functions = graph.nodes.iter().filter(|n| !is_use_case_node(&n.keyword)).count();
-    assert_eq!(graph.edges.iter().filter(|e| e.kind == EdgeKind::Decomposition).count(), functions - 2);
+    assert_eq!(graph.edges.iter().filter(|e| e.kind == EdgeKind::Decomposition).count(), functions - 1);
 
     let all = names(&graph.nodes);
     assert!(all.contains(&"heatWater"));
@@ -104,10 +103,7 @@ fn logical_view_a_strict_capability_tree_naming_no_realization() {
     }
 
     let children: HashSet<&str> = graph.edges.iter().map(|e| e.target_id.as_str()).collect();
-    assert_eq!(
-        names(graph.nodes.iter().filter(|n| !children.contains(n.id.as_str()))),
-        ["MakeBeverage", "MaintainMachine"]
-    );
+    assert_eq!(names(graph.nodes.iter().filter(|n| !children.contains(n.id.as_str()))), ["MakeBeverage"]);
 }
 
 #[test]
@@ -124,7 +120,6 @@ fn logical_view_each_tree_refines_the_use_cases_it_details_and_none_goes_unrefin
         [
             ("Functions::MakeBeverage", "SystemUseCases::makeCappuccino"),
             ("Functions::MakeBeverage", "SystemUseCases::makeEspresso"),
-            ("Functions::MaintainMachine", "SystemUseCases::descale"),
         ]
     );
     // A use case no function tree details would be a hole in the design.

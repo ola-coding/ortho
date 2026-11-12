@@ -12,8 +12,8 @@ package Deployment {
     allocate sw.surveyPlanner to system.ground.tablet;
     allocate sw.groundWireGuardTunnel to system.ground.tablet;
 
-    // Every onboard container shares the GPU computer, with the middleware and
-    // the Linux platform they stand on.
+    // Every onboard container shares the GPU computer, with the middleware they
+    // talk through.
     allocate sw.routePlanner to system.drone.companion;
     allocate sw.obstacleAvoidance to system.drone.companion;
     allocate sw.videoStreamer to system.drone.companion;
@@ -22,8 +22,6 @@ package Deployment {
     allocate sw.zenohRouter to system.drone.companion;
     allocate sw.mavlinkBridge to system.drone.companion;
     allocate sw.airWireGuardTunnel to system.drone.companion;
-    allocate sw.minimalLinux to system.drone.companion;
-    allocate sw.containerRuntime to system.drone.companion;
 
     // The flight firmware has the control computer to itself, down to the kernel.
     allocate sw.missionExecutor to system.drone.fc;

@@ -494,17 +494,17 @@ git diff --exit-code diagrams/</div>
           <div class="code-mount">
             <div class="filename">examples/survey-drone/use-case.sysml</div>
 <pre class="code">
-part def Operator;
 part def SurveyDroneSystem;
+part def Operator;
 
 use case def SurveyTask {
     subject system : SurveyDroneSystem;
     actor operator : Operator;
 }
 
-// Surveying an area always means planning it
-// first and following it as it flies.
 use case surveyArea : SurveyTask {
+    doc /* Surveying an area always means planning
+         * it first and following it as it flies. */
     include planSurvey;
     include followProgress;
 }
@@ -544,30 +544,30 @@ use case followProgress : SurveyTask;
 <pre class="code">
 action def PerformAerialSurvey {
 
-    // Energy functions: medium-bound.
-    action operateVehicle {
-        action produceThrust;
-        action supplyPower;
-        action provideComputing;
+    action interactWithOperator {
+        action planMission;
+        action presentProgress;
     }
 
     // Control functions: the migratory ones.
     action guideNavigateAndControl {
+        action planRoute;
         action guide;
         action navigate;
         action control;
         action avoidObstacles;
     }
 
-    action perceive {
-        action captureVideo;
-        action fuseSensorData;
-        action maintainWorldModel;
+    // Energy functions: medium-bound.
+    action operateVehicle {
+        action supplyPower;
+        action produceThrust;
     }
 }
 
 // What the operator asks for, in more detail.
-#refinement dependency PerformAerialSurvey to SystemUseCases::SurveyTask;
+#refinement dependency PerformAerialSurvey
+    to SystemUseCases::surveyArea;
 </pre>
           </div>
           <div class="figure">
@@ -602,6 +602,11 @@ package Software {
 
     private import Functions::*;
 
+    package Middleware {
+        part def ZenohRouter;
+        part def MavlinkBridge;
+    }
+
     // Each module says which function it realizes.
     package Flight {
         private import Software::FlightPlatform;
@@ -616,13 +621,8 @@ package Software {
             perform survey.guideNavigateAndControl.control;
 
             // What it needs from the modules around it.
-            port vehicleState : ~Apis::StateApi;
             port target : ~Apis::TargetApi;
-        }
-
-        // GCS_MAVLink
-        part def MavlinkInterface {
-            perform survey.communicate.exchangeTelemetry;
+            port vehicleState : ~Apis::StateApi;
         }
     }
 
@@ -635,11 +635,12 @@ package Software {
         part def RealTimeKernel;
     }
 
-    package Middleware {
-        private import Software::LinuxPlatform;
-
-        part def ZenohRouter;
-        part def MavlinkBridge;
+    // The view shows the packages, not Software.
+    view 'Implementation view — Survey Drone'
+            : GeneralView {
+        expose Middleware;
+        expose Flight;
+        expose FlightPlatform;
     }
 }
 </pre>
@@ -672,46 +673,46 @@ package Software {
           <div class="code-mount">
             <div class="filename">examples/survey-drone/physical.sysml</div>
 <pre class="code">
-part def BrushlessMotor {
-    perform survey.operateVehicle.produceThrust;
-    ...
+port def PowerPort { out item power : ElectricPower; }
+
+part def LiPoBattery {
+    perform survey.operateVehicle.supplyPower;
+
+    attribute energy : EnergyValue = 222 ['W⋅h'];
+    port powerOut : PowerPort;
 }
 
 part def SurveyDrone {
-    port rfLink : RfPort;
-
-    part motors : BrushlessMotor [4];
-    part props : Propeller [4];
+    part motors : PropulsionUnit [4];
     part esc : FourInOneEsc;
+    part battery : LiPoBattery;
     part fc : ControlComputer;
     part companion : GpuComputer;
     part camera : Camera;
     part radio : IpRadio;
 
     connect esc.phasesOut to motors.phases;
-    connect motors.shaft to props.hub;
+    connect battery.powerOut to esc.powerIn;
     connect fc.mavlink to companion.autopilot;
     connect camera.videoOut to companion.cameraIn;
     connect companion.ethernet to radio.ethernet;
-    connect radio.rf to rfLink;
 }
 
 part def GroundStation {
-    port rfLink : RfPort;
-
     part tablet : OperatorTablet;
     part radio : IpRadio;
 
     connect tablet.network to radio.ethernet;
-    connect radio.rf to rfLink;
 }
 
-part def SurveyDroneSystem {
+// The system as built: the use cases' subject.
+part def SurveyDroneSystem
+        :> SystemUseCases::SurveyDroneSystem {
     part drone : SurveyDrone;
     part ground : GroundStation;
 
     interface : RadioLink
-        connect drone.rfLink to ground.rfLink;
+        connect drone.radio.rf to ground.radio.rf;
 }
 
 part system : SurveyDroneSystem;
@@ -729,7 +730,7 @@ part system : SurveyDroneSystem;
         </div>
       </div>
       <div class="titleblock">
-        <span>Project · ortho</span><span>Physical view · airframe, avionics, ground kit</span>
+        <span>Project · ortho</span><span>Physical view · propulsion, avionics, ground kit</span>
         <span class="sheet-no"></span>
       </div>
     </div>
@@ -745,18 +746,15 @@ part system : SurveyDroneSystem;
           <div class="code-mount">
             <div class="filename">examples/survey-drone/deployment.sysml</div>
 <pre class="code">
-// This file declares nothing of its own. Its whole
-// content is the mapping between the other two.
 package Deployment {
+    doc /* Declares nothing of its own: its whole
+         * content is the mapping between the other two. */
 
     private import Software::*;
     private import Hardware::*;
 
-    // The firmware has the control computer
-    // to itself, kernel included.
-    allocate sw.missionExecutor to system.drone.fc;
-    allocate sw.flightControl to system.drone.fc;
-    allocate sw.realTimeKernel to system.drone.fc;
+    allocate sw.surveyPlanner
+        to system.ground.tablet;
 
     // Every container shares the GPU computer.
     allocate sw.routePlanner
@@ -764,8 +762,11 @@ package Deployment {
     allocate sw.zenohRouter
         to system.drone.companion;
 
-    allocate sw.surveyPlanner
-        to system.ground.tablet;
+    // The firmware has the control computer
+    // to itself, kernel included.
+    allocate sw.missionExecutor to system.drone.fc;
+    allocate sw.flightControl to system.drone.fc;
+    allocate sw.realTimeKernel to system.drone.fc;
 }
 </pre>
           </div>
@@ -798,31 +799,29 @@ package Deployment {
             <div class="filename">examples/survey-drone/process.sysml</div>
 <pre class="code">
 occurrence def SurveyMission {
-    part operator;
-    part surveyPlanner : Ground::SurveyPlanner;
-    part mavlinkBridge : Middleware::MavlinkBridge;
-    part mavlinkInterface : Flight::MavlinkInterface;
-    part missionExecutor : Flight::MissionExecutor;
+    part operator : SystemUseCases::Operator;
+    part planner : Ground::SurveyPlanner;
+    part routePlanner : Onboard::RoutePlanner;
+    part bridge : Middleware::MavlinkBridge;
+    part mavlink : Flight::MavlinkInterface;
+    part executor : Flight::MissionExecutor;
 
-    message markArea from operator to surveyPlanner;
-    then message approve
-        from operator to surveyPlanner;
+    message markArea from operator to planner;
+    then message approve from operator to planner;
 
-    // MAVLink's mission protocol: the vehicle
-    // asks for each item in turn.
-    then message missionCount of MissionCount
-        from mavlinkBridge to mavlinkInterface;
-    then message requestItem of MissionRequestInt
-        from mavlinkInterface to mavlinkBridge;
-    then message missionItem of MissionItemInt
-        from mavlinkBridge to mavlinkInterface;
+    // Each message is an item an API carries.
+    then message uploadMission of MissionItems
+        from routePlanner to bridge;
+    then message missionUpload of MissionItems
+        from bridge to mavlink;
+    then message storeMission of MissionItems
+        from mavlink to executor;
     then message missionAck of MissionAck
-        from mavlinkInterface to mavlinkBridge;
+        from mavlink to bridge;
 
-    then message startAuto
-        from mavlinkInterface to missionExecutor;
+    then message startAuto from mavlink to executor;
     then message flySurveyLegs
-        from missionExecutor to missionExecutor;
+        from executor to executor;
 }
 </pre>
           </div>
@@ -869,7 +868,7 @@ occurrence def SurveyMission {
                 </thead>
                 <tbody>
                   <tr><td class="view">Survey drone</td><td>20 functions</td><td>10 parts · 11 connections</td><td>6 lifelines · 21 messages</td></tr>
-                  <tr><td class="view">Coffee machine</td><td>20 functions</td><td>11 parts · 14 connections</td><td>6 lifelines · 9 messages</td></tr>
+                  <tr><td class="view">Coffee machine</td><td>17 functions</td><td>11 parts · 14 connections</td><td>6 lifelines · 9 messages</td></tr>
                 </tbody>
               </table>
             </div>

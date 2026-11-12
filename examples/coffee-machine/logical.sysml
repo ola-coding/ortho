@@ -45,28 +45,14 @@ package Functions {
     // the parts that realize a function point into this one.
     action beverage : MakeBeverage;
 
-    // Not a step in making a beverage: the machine runs this cycle instead of
-    // brewing, so it is a capability of its own.
-    action def MaintainMachine {
-        // The machine knows when it is furred up; the owner has to be told.
-        action signalDescaleDue;
-        // Pumping and heating over again, with descaler instead of coffee.
-        action runDescaleCycle;
-    }
-
-    action maintenance : MaintainMachine;
-
     // What the user asks for, in more detail.
     #refinement dependency MakeBeverage to SystemUseCases::makeCappuccino;
     #refinement dependency MakeBeverage to SystemUseCases::makeEspresso;
-    #refinement dependency MaintainMachine to SystemUseCases::descale;
 
     view 'Logical view — Coffee Machine' : GeneralView {
         expose MakeBeverage;
-        expose MaintainMachine;
         expose SystemUseCases::makeCappuccino;
         expose SystemUseCases::makeEspresso;
-        expose SystemUseCases::descale;
         render asTreeDiagram;
     }
 }
