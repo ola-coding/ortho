@@ -50,7 +50,16 @@ fn parses_and_links_all_six_files_as_one_workspace() {
         workspace.packages().into_iter().map(|p| workspace.ast.text(p, Prop::Name).unwrap()).collect();
     assert_eq!(
         packages,
-        ["SystemUseCases", "Functions", "Software", "Hardware", "Deployment", "MakeCappuccinoScenario"]
+        [
+            "SystemUseCases",
+            "Functions",
+            "Apis",
+            "Application",
+            "Control",
+            "Hardware",
+            "Deployment",
+            "MakeCappuccinoScenario"
+        ]
     );
 }
 
@@ -140,7 +149,7 @@ fn logical_view_each_tree_refines_the_use_cases_it_details_and_none_goes_unrefin
 fn implementation_view_the_application_layer_depends_on_control_never_the_reverse() {
     let graph = implementation();
     let imports: Vec<String> = graph.edges.iter().map(|e| format!("{} -> {}", e.source_id, e.target_id)).collect();
-    assert_eq!(imports, ["Software::Application -> Software::Control"]);
+    assert_eq!(imports, ["Application -> Control"]);
 
     // `sw`, the tree of deployable parts, is an instance, not a module.
     let all = names(all_nodes(&graph.nodes));

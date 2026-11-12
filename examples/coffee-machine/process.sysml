@@ -3,7 +3,7 @@ package MakeCappuccinoScenario {
     doc /* The user picks a cappuccino on the panel; the recipe engine heats,
          * brews and froths in turn. */
 
-    private import Software::*;
+    private import Apis::*;
     private import StandardViewDefinitions::*;
 
     // The lifelines are the user and the modules of implementation.sysml; each

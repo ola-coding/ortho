@@ -16,7 +16,7 @@
         fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
   <text x="1425.5320000000002" y="982" text-anchor="end" font-size="9" fill="#1a1a1a">examples/survey-drone/process.sysml</text>
   
-    <g data-file="examples/survey-drone/process.sysml" data-line="15"><rect x="24" y="48" width="156.876" height="36" rx="10" ry="10"
+    <g data-file="examples/survey-drone/process.sysml" data-line="14"><rect x="24" y="48" width="156.876" height="36" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="102.438" y="63" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
@@ -24,7 +24,7 @@
           font-size="12" font-weight="600" fill="#1a1a1a">operator : Operator</text>
       <line x1="102.438" y1="84" x2="102.438" y2="960"
           stroke="#1a1a1a" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g data-file="examples/survey-drone/process.sysml" data-line="16"><rect x="210.87600000000003" y="48" width="188.136" height="36" rx="10" ry="10"
+    <g data-file="examples/survey-drone/process.sysml" data-line="15"><rect x="210.87600000000003" y="48" width="188.136" height="36" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="304.944" y="63" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
@@ -32,7 +32,7 @@
           font-size="12" font-weight="600" fill="#1a1a1a">planner : SurveyPlanner</text>
       <line x1="304.944" y1="84" x2="304.944" y2="960"
           stroke="#1a1a1a" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g data-file="examples/survey-drone/process.sysml" data-line="17"><rect x="429.01200000000006" y="48" width="217.932" height="36" rx="10" ry="10"
+    <g data-file="examples/survey-drone/process.sysml" data-line="16"><rect x="429.01200000000006" y="48" width="217.932" height="36" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="537.9780000000001" y="63" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
@@ -40,7 +40,7 @@
           font-size="12" font-weight="600" fill="#1a1a1a">routePlanner : RoutePlanner</text>
       <line x1="537.9780000000001" y1="84" x2="537.9780000000001" y2="960"
           stroke="#1a1a1a" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g data-file="examples/survey-drone/process.sysml" data-line="18"><rect x="704.488" y="48" width="178.212" height="36" rx="10" ry="10"
+    <g data-file="examples/survey-drone/process.sysml" data-line="17"><rect x="704.488" y="48" width="178.212" height="36" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="793.594" y="63" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
@@ -48,7 +48,7 @@
           font-size="12" font-weight="600" fill="#1a1a1a">bridge : MavlinkBridge</text>
       <line x1="793.594" y1="84" x2="793.594" y2="960"
           stroke="#1a1a1a" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g data-file="examples/survey-drone/process.sysml" data-line="19"><rect x="912.7" y="48" width="204.324" height="36" rx="10" ry="10"
+    <g data-file="examples/survey-drone/process.sysml" data-line="18"><rect x="912.7" y="48" width="204.324" height="36" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="1014.8620000000001" y="63" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
@@ -56,7 +56,7 @@
           font-size="12" font-weight="600" fill="#1a1a1a">mavlink : MavlinkInterface</text>
       <line x1="1014.8620000000001" y1="84" x2="1014.8620000000001" y2="960"
           stroke="#1a1a1a" stroke-width="1" stroke-dasharray="4 4" /></g>
-    <g data-file="examples/survey-drone/process.sysml" data-line="20"><rect x="1170.318" y="48" width="207.588" height="36" rx="10" ry="10"
+    <g data-file="examples/survey-drone/process.sysml" data-line="19"><rect x="1170.318" y="48" width="207.588" height="36" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="1274.112" y="63" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>

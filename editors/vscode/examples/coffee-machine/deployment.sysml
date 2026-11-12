@@ -1,12 +1,22 @@
 // Deployment view: which board runs which software.
 package Deployment {
-    doc /* Declares nothing of its own: its whole content is the mapping between
-         * the parts in implementation.sysml and the parts in physical.sysml, so
-         * it is rendered together with both. */
+    doc /* The mapping between the modules of implementation.sysml and the parts
+         * of physical.sysml, so it is rendered together with both. */
 
-    private import Software::*;
+    private import Application::*;
+    private import Control::*;
     private import Hardware::*;
     private import StandardViewDefinitions::*;
+
+    // The deployable software: one usage of each module, named after it, for
+    // the allocations below to start from.
+    part sw {
+        part uiApp : UiApp;
+        part recipeEngine : RecipeEngine;
+        part temperatureController : TemperatureController;
+        part brewController : BrewController;
+        part milkController : MilkController;
+    }
 
     // The panel runs its own UI.
     allocate sw.uiApp to machine.display;

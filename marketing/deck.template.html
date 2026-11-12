@@ -598,50 +598,43 @@ action def PerformAerialSurvey {
           <div class="code-mount">
             <div class="filename">examples/survey-drone/implementation.sysml</div>
 <pre class="code">
-package Software {
+// Each layer is a package of its own.
+package Middleware {
+    part def ZenohRouter;
+    part def MavlinkBridge;
+}
 
+package Flight {
     private import Functions::*;
+    private import FlightPlatform;
 
-    package Middleware {
-        part def ZenohRouter;
-        part def MavlinkBridge;
+    // AP_Mission: each module says which
+    // function it realizes.
+    part def MissionExecutor {
+        perform survey.guideNavigateAndControl.guide;
     }
 
-    // Each module says which function it realizes.
-    package Flight {
-        private import Software::FlightPlatform;
+    // AP_Motors
+    part def FlightControl {
+        perform survey.guideNavigateAndControl.control;
 
-        // AP_Mission
-        part def MissionExecutor {
-            perform survey.guideNavigateAndControl.guide;
-        }
-
-        // AP_Motors
-        part def FlightControl {
-            perform survey.guideNavigateAndControl.control;
-
-            // What it needs from the modules around it.
-            port target : ~Apis::TargetApi;
-            port vehicleState : ~Apis::StateApi;
-        }
+        // What it needs from the modules around it.
+        port target : ~Apis::TargetApi;
+        port vehicleState : ~Apis::StateApi;
     }
+}
 
-    // A platform realizes no function of its own.
-    package FlightPlatform {
-        // AP_HAL
-        part def HardwareAbstraction;
+// A platform realizes no function of its own.
+package FlightPlatform {
+    part def HardwareAbstraction;  // AP_HAL
+    part def RealTimeKernel;       // ChibiOS
+}
 
-        // ChibiOS
-        part def RealTimeKernel;
-    }
-
-    // The view shows the packages, not Software.
-    view 'Implementation view — Survey Drone'
-            : GeneralView {
-        expose Middleware;
-        expose Flight;
-        expose FlightPlatform;
-    }
+view 'Implementation view — Survey Drone'
+        : StandardViewDefinitions::GeneralView {
+    expose Middleware;
+    expose Flight;
+    expose FlightPlatform;
 }
 </pre>
           </div>
@@ -747,11 +740,17 @@ part system : SurveyDroneSystem;
             <div class="filename">examples/survey-drone/deployment.sysml</div>
 <pre class="code">
 package Deployment {
-    doc /* Declares nothing of its own: its whole
-         * content is the mapping between the other two. */
+    doc /* The mapping between the modules
+         * and the parts they run on. */
 
-    private import Software::*;
     private import Hardware::*;
+
+    // One usage of each module, to allocate.
+    part sw {
+        part surveyPlanner : Ground::SurveyPlanner;
+        part routePlanner : Onboard::RoutePlanner;
+        // ...
+    }
 
     allocate sw.surveyPlanner
         to system.ground.tablet;

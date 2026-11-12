@@ -20,12 +20,12 @@
         fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
   <text x="625.421" y="635" text-anchor="end" font-size="9" fill="#1a1a1a">examples/coffee-machine/implementation.sysml</text>
   
-    <g data-file="examples/coffee-machine/implementation.sysml" data-line="50"><rect x="115.78650000000002" y="60" width="86.18" height="18"
+    <g data-file="examples/coffee-machine/implementation.sysml" data-line="48"><rect x="115.78650000000002" y="60" width="86.18" height="18"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <rect x="115.78650000000002" y="78" width="409.848" height="201"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <text x="123.78650000000002" y="73" font-size="11" font-weight="600" fill="#1a1a1a">Application</text></g>
-    <g data-file="examples/coffee-machine/implementation.sysml" data-line="53"><rect x="140.78650000000002" y="127.5" width="125.197" height="104"
+    <g data-file="examples/coffee-machine/implementation.sysml" data-line="54"><rect x="140.78650000000002" y="127.5" width="125.197" height="104"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M141.28650000000002,159.5 L141.28650000000002,128 L265.48350000000005,128 L265.48350000000005,159.5 Z" fill="#ccdce5" />
       <text x="203.38500000000002" y="140.5" text-anchor="middle"
@@ -44,7 +44,7 @@
           font-size="9" font-style="italic" fill="#40657e">ports</text>
       <text x="148.78650000000002" y="220.5"
           font-size="11" fill="#1a1a1a">recipe : ~RecipeApi</text></g>
-    <g data-file="examples/coffee-machine/implementation.sysml" data-line="59"><rect x="305.98350000000005" y="105" width="194.651" height="149"
+    <g data-file="examples/coffee-machine/implementation.sysml" data-line="60"><rect x="305.98350000000005" y="105" width="194.651" height="149"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M306.48350000000005,137 L306.48350000000005,105.5 L500.13450000000006,105.5 L500.13450000000006,137 Z" fill="#ccdce5" />
       <text x="403.3090000000001" y="118" text-anchor="middle"
@@ -69,12 +69,12 @@
           font-size="11" fill="#1a1a1a">brew : ~BrewApi</text>
       <text x="313.98350000000005" y="243"
           font-size="11" fill="#1a1a1a">milk : ~MilkApi</text></g>
-    <g data-file="examples/coffee-machine/implementation.sysml" data-line="71"><rect x="36" y="431" width="61.474" height="18"
+    <g data-file="examples/coffee-machine/implementation.sysml" data-line="72"><rect x="36" y="431" width="61.474" height="18"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <rect x="36" y="449" width="569.421" height="156"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <text x="44" y="444" font-size="11" font-weight="600" fill="#1a1a1a">Control</text></g>
-    <g data-file="examples/coffee-machine/implementation.sysml" data-line="72"><rect x="61" y="476" width="185.433" height="104"
+    <g data-file="examples/coffee-machine/implementation.sysml" data-line="76"><rect x="61" y="476" width="185.433" height="104"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M61.5,508 L61.5,476.5 L245.933,476.5 L245.933,508 Z" fill="#ccdce5" />
       <text x="153.7165" y="489" text-anchor="middle"
@@ -93,7 +93,7 @@
           font-size="9" font-style="italic" fill="#40657e">ports</text>
       <text x="69" y="569"
           font-size="11" fill="#1a1a1a">temperature : TemperatureApi</text></g>
-    <g data-file="examples/coffee-machine/implementation.sysml" data-line="78"><rect x="286.433" y="476" width="130.06" height="104"
+    <g data-file="examples/coffee-machine/implementation.sysml" data-line="82"><rect x="286.433" y="476" width="130.06" height="104"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M286.933,508 L286.933,476.5 L415.993,476.5 L415.993,508 Z" fill="#ccdce5" />
       <text x="351.46299999999997" y="489" text-anchor="middle"
@@ -112,7 +112,7 @@
           font-size="9" font-style="italic" fill="#40657e">ports</text>
       <text x="294.433" y="569"
           font-size="11" fill="#1a1a1a">brew : BrewApi</text></g>
-    <g data-file="examples/coffee-machine/implementation.sysml" data-line="86"><rect x="456.493" y="476" width="123.928" height="104"
+    <g data-file="examples/coffee-machine/implementation.sysml" data-line="90"><rect x="456.493" y="476" width="123.928" height="104"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M456.993,508 L456.993,476.5 L579.921,476.5 L579.921,508 Z" fill="#ccdce5" />
       <text x="518.457" y="489" text-anchor="middle"

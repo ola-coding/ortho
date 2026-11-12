@@ -50,7 +50,19 @@ fn parses_and_links_all_six_files_as_one_workspace() {
         workspace.packages().into_iter().map(|p| workspace.ast.text(p, Prop::Name).unwrap()).collect();
     assert_eq!(
         packages,
-        ["SystemUseCases", "Functions", "Software", "Hardware", "Deployment", "SurveyMissionScenario"]
+        [
+            "SystemUseCases",
+            "Functions",
+            "Apis",
+            "Ground",
+            "Onboard",
+            "Middleware",
+            "Flight",
+            "FlightPlatform",
+            "Hardware",
+            "Deployment",
+            "SurveyMissionScenario"
+        ]
     );
 }
 
@@ -164,19 +176,12 @@ fn implementation_view_the_firmware_stack_and_the_linux_stack_never_import_each_
     let graph = implementation();
     let mut imports: Vec<String> = graph.edges.iter().map(|e| format!("{} -> {}", e.source_id, e.target_id)).collect();
     imports.sort();
-    assert_eq!(
-        imports,
-        [
-            "Software::Flight -> Software::FlightPlatform",
-            "Software::Ground -> Software::Middleware",
-            "Software::Onboard -> Software::Middleware",
-        ]
-    );
+    assert_eq!(imports, ["Flight -> FlightPlatform", "Ground -> Middleware", "Onboard -> Middleware",]);
 
     // The two stacks meet over MAVLink at runtime, never through a compile-time
     // dependency: the firmware knows nothing of Zenoh or Linux, and nothing in the
     // Linux stack builds against the firmware.
-    let firmware = ["Software::Flight", "Software::FlightPlatform"];
+    let firmware = ["Flight", "FlightPlatform"];
     for edge in &graph.edges {
         assert_eq!(firmware.contains(&edge.source_id.as_str()), firmware.contains(&edge.target_id.as_str()));
     }
@@ -269,7 +274,7 @@ fn deployment_view_every_module_hosted_on_three_computers_in_two_devices() {
     );
 
     // A module missing from this view would be a program with nowhere to run, so the
-    // count is the whole of implementation.sysml's `sw`.
+    // count is the whole of `sw`, one usage of every module.
     let placed: Vec<&String> = hosts.iter().flat_map(|n| n.compartments.iter().flat_map(|c| &c.lines)).collect();
     assert_eq!(placed.len(), 16);
     assert_eq!(placed.iter().collect::<HashSet<_>>().len(), 16);

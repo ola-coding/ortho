@@ -5,8 +5,7 @@ package SurveyMissionScenario {
          * them in Auto mode while progress streams back, then returns and lands.
          * The obstacle-avoidance deviation would be a scenario of its own. */
 
-    private import Software::*;
-    private import Software::Apis::*;
+    private import Apis::*;
     private import StandardViewDefinitions::*;
 
     // The lifelines are the operator and the modules of implementation.sysml;
