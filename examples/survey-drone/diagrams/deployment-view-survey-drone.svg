@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="919.6310000000001" height="526"
-     viewBox="0 0 919.6310000000001 526" font-family="Arial, Helvetica, Liberation Sans, DejaVu Sans, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="617.903" height="628"
+     viewBox="0 0 617.903 628" font-family="Arial, Helvetica, Liberation Sans, DejaVu Sans, sans-serif">
   <title>Deployment view — Survey Drone (generated from examples/survey-drone/deployment.sysml)</title>
   <defs>
     <marker id="openArrow" markerWidth="12" markerHeight="12" refX="10" refY="5"
@@ -11,122 +11,110 @@
       <path d="M0,4 L6,0 L12,4 L6,8 z" fill="#1a1a1a" />
     </marker>
   </defs>
-  <rect x="0" y="0" width="919.6310000000001" height="526" fill="white" />
-  <rect x="8" y="8" width="903.6310000000001" height="510" rx="10" ry="10" fill="#f9fbfc" stroke="#40657e" stroke-width="1.25" />
+  <rect x="0" y="0" width="617.903" height="628" fill="white" />
+  <rect x="8" y="8" width="601.903" height="612" rx="10" ry="10" fill="#f9fbfc" stroke="#40657e" stroke-width="1.25" />
   <path d="M8,30 L8,18 A10,10 0 0 1 18,8 L280.217,8 L280.217,22 A8,8 0 0 1 272.217,30 Z"
         fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
   <text x="18" y="23" font-size="11" fill="#1a1a1a"><tspan font-style="italic" fill="#40657e">&#171;view&#187;</tspan><tspan font-weight="600"> Deployment view — Survey Drone</tspan></text>
-  <path d="M703.6070000000001,518 L703.6070000000001,509 A6,6 0 0 1 709.6070000000001,503 L911.6310000000001,503 L911.6310000000001,508 A10,10 0 0 1 901.6310000000001,518 Z"
+  <path d="M401.879,620 L401.879,611 A6,6 0 0 1 407.879,605 L609.903,605 L609.903,610 A10,10 0 0 1 599.903,620 Z"
         fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-  <text x="903.6310000000001" y="514" text-anchor="end" font-size="9" fill="#1a1a1a">examples/survey-drone/deployment.sysml</text>
+  <text x="601.903" y="616" text-anchor="end" font-size="9" fill="#1a1a1a">examples/survey-drone/deployment.sysml</text>
   
-    <g data-file="examples/survey-drone/physical.sysml" data-line="188"><rect x="39" y="63" width="841.6310000000001" height="418" rx="10" ry="10"
+    <g data-file="examples/survey-drone/physical.sysml" data-line="150"><rect x="39" y="63" width="539.903" height="520" rx="10" ry="10"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <path d="M39.5,95 L39.5,73 A9.5,9.5 0 0 1 49,63.5 L870.6310000000001,63.5 A9.5,9.5 0 0 1 880.1310000000001,73 L880.1310000000001,95 Z" fill="#ccdce5" />
-      <text x="459.81550000000004" y="76" text-anchor="middle"
+      <path d="M39.5,95 L39.5,73 A9.5,9.5 0 0 1 49,63.5 L568.903,63.5 A9.5,9.5 0 0 1 578.403,73 L578.403,95 Z" fill="#ccdce5" />
+      <text x="308.9515" y="76" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
-      <text x="459.81550000000004" y="89" text-anchor="middle"
+      <text x="308.9515" y="89" text-anchor="middle"
           font-size="12" font-weight="600" fill="#1a1a1a">system : SurveyDroneSystem</text>
-      <line x1="39" y1="95" x2="880.6310000000001" y2="95"
+      <line x1="39" y1="95" x2="578.903" y2="95"
           stroke="#40657e" stroke-width="1" /></g>
-    <g data-file="examples/survey-drone/physical.sysml" data-line="179"><rect x="64" y="108" width="489.903" height="348" rx="10" ry="10"
+    <g data-file="examples/survey-drone/physical.sysml" data-line="143"><rect x="64" y="108" width="277.728" height="153" rx="10" ry="10"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <path d="M64.5,140 L64.5,118 A9.5,9.5 0 0 1 74,108.5 L543.903,108.5 A9.5,9.5 0 0 1 553.403,118 L553.403,140 Z" fill="#ccdce5" />
-      <text x="308.9515" y="121" text-anchor="middle"
+      <path d="M64.5,140 L64.5,118 A9.5,9.5 0 0 1 74,108.5 L331.728,108.5 A9.5,9.5 0 0 1 341.228,118 L341.228,140 Z" fill="#ccdce5" />
+      <text x="202.864" y="121" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
-      <text x="308.9515" y="134" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">drone : SurveyDrone</text>
-      <line x1="64" y1="140" x2="553.903" y2="140"
+      <text x="202.864" y="134" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">ground : GroundStation</text>
+      <line x1="64" y1="140" x2="341.728" y2="140"
           stroke="#40657e" stroke-width="1" /></g>
-    <g data-file="examples/survey-drone/physical.sysml" data-line="144"><rect x="89" y="153" width="207.279" height="158" rx="10" ry="10"
+    <g data-file="examples/survey-drone/physical.sysml" data-line="134"><rect x="89" y="153" width="227.728" height="83" rx="10" ry="10"
           fill="white" stroke="#40657e" stroke-width="1.25" />
-      <path d="M89.5,185 L89.5,163 A9.5,9.5 0 0 1 99,153.5 L286.279,153.5 A9.5,9.5 0 0 1 295.779,163 L295.779,185 Z" fill="#ccdce5" />
-      <text x="192.6395" y="166" text-anchor="middle"
+      <path d="M89.5,185 L89.5,163 A9.5,9.5 0 0 1 99,153.5 L306.728,153.5 A9.5,9.5 0 0 1 316.228,163 L316.228,185 Z" fill="#ccdce5" />
+      <text x="202.864" y="166" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
-      <text x="192.6395" y="179" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">fc : ControlComputer</text>
-      <line x1="89" y1="185" x2="296.279" y2="185"
+      <text x="202.864" y="179" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">tablet : OperatorTablet</text>
+      <line x1="89" y1="185" x2="316.728" y2="185"
           stroke="#40657e" stroke-width="1" />
-      <text x="192.6395" y="196" text-anchor="middle"
+      <text x="202.864" y="196" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">relationships</text>
       <text x="97" y="210"
-          font-size="11" fill="#1a1a1a">allocated sw::missionExecutor</text>
-      <text x="97" y="225"
-          font-size="11" fill="#1a1a1a">allocated sw::stateEstimator</text>
-      <text x="97" y="240"
-          font-size="11" fill="#1a1a1a">allocated sw::flightControl</text>
-      <text x="97" y="255"
-          font-size="11" fill="#1a1a1a">allocated sw::sensorDrivers</text>
-      <text x="97" y="270"
-          font-size="11" fill="#1a1a1a">allocated sw::mavlinkInterface</text>
-      <text x="97" y="285"
-          font-size="11" fill="#1a1a1a">allocated sw::hardwareAbstraction</text>
-      <text x="97" y="300"
-          font-size="11" fill="#1a1a1a">allocated sw::realTimeKernel</text></g>
-    <g data-file="examples/survey-drone/physical.sysml" data-line="145"><rect x="320.279" y="153" width="208.624" height="278" rx="10" ry="10"
-          fill="white" stroke="#40657e" stroke-width="1.25" />
-      <path d="M320.779,185 L320.779,163 A9.5,9.5 0 0 1 330.279,153.5 L518.903,153.5 A9.5,9.5 0 0 1 528.403,163 L528.403,185 Z" fill="#ccdce5" />
-      <text x="424.591" y="166" text-anchor="middle"
-          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
-      <text x="424.591" y="179" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">companion : GpuComputer</text>
-      <line x1="320.279" y1="185" x2="528.903" y2="185"
-          stroke="#40657e" stroke-width="1" />
-      <text x="424.591" y="196" text-anchor="middle"
-          font-size="9" font-style="italic" fill="#40657e">relationships</text>
-      <text x="328.279" y="210"
-          font-size="11" fill="#1a1a1a">allocated sw::routePlanner</text>
-      <text x="328.279" y="225"
-          font-size="11" fill="#1a1a1a">allocated sw::obstacleAvoidance</text>
-      <text x="328.279" y="240"
-          font-size="11" fill="#1a1a1a">allocated sw::videoStreamer</text>
-      <text x="328.279" y="255"
-          font-size="11" fill="#1a1a1a">allocated sw::sensorFusion</text>
-      <text x="328.279" y="270"
-          font-size="11" fill="#1a1a1a">allocated sw::worldModel</text>
-      <text x="328.279" y="285"
-          font-size="11" fill="#1a1a1a">allocated sw::diagnostics</text>
-      <text x="328.279" y="300"
-          font-size="11" fill="#1a1a1a">allocated sw::dataLogger</text>
-      <text x="328.279" y="315"
-          font-size="11" fill="#1a1a1a">allocated sw::zenohRouter</text>
-      <text x="328.279" y="330"
-          font-size="11" fill="#1a1a1a">allocated sw::mavlinkBridge</text>
-      <text x="328.279" y="345"
-          font-size="11" fill="#1a1a1a">allocated sw::gStreamer</text>
-      <text x="328.279" y="360"
-          font-size="11" fill="#1a1a1a">allocated sw::airWireGuardTunnel</text>
-      <text x="328.279" y="375"
-          font-size="11" fill="#1a1a1a">allocated sw::containerRuntime</text>
-      <text x="328.279" y="390"
-          font-size="11" fill="#1a1a1a">allocated sw::otaUpdateAgent</text>
-      <text x="328.279" y="405"
-          font-size="11" fill="#1a1a1a">allocated sw::minimalLinux</text>
-      <text x="328.279" y="420"
-          font-size="11" fill="#1a1a1a">allocated sw::secureBoot</text></g>
-    <g data-file="examples/survey-drone/physical.sysml" data-line="180"><rect x="577.903" y="108" width="277.728" height="153" rx="10" ry="10"
-          fill="white" stroke="#40657e" stroke-width="1.25" />
-      <path d="M578.403,140 L578.403,118 A9.5,9.5 0 0 1 587.903,108.5 L845.6310000000001,108.5 A9.5,9.5 0 0 1 855.1310000000001,118 L855.1310000000001,140 Z" fill="#ccdce5" />
-      <text x="716.767" y="121" text-anchor="middle"
-          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
-      <text x="716.767" y="134" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">ground : GroundStation</text>
-      <line x1="577.903" y1="140" x2="855.6310000000001" y2="140"
-          stroke="#40657e" stroke-width="1" /></g>
-    <g data-file="examples/survey-drone/physical.sysml" data-line="171"><rect x="602.903" y="153" width="227.728" height="83" rx="10" ry="10"
-          fill="white" stroke="#40657e" stroke-width="1.25" />
-      <path d="M603.403,185 L603.403,163 A9.5,9.5 0 0 1 612.903,153.5 L820.6310000000001,153.5 A9.5,9.5 0 0 1 830.1310000000001,163 L830.1310000000001,185 Z" fill="#ccdce5" />
-      <text x="716.767" y="166" text-anchor="middle"
-          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
-      <text x="716.767" y="179" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">tablet : OperatorTablet</text>
-      <line x1="602.903" y1="185" x2="830.6310000000001" y2="185"
-          stroke="#40657e" stroke-width="1" />
-      <text x="716.767" y="196" text-anchor="middle"
-          font-size="9" font-style="italic" fill="#40657e">relationships</text>
-      <text x="610.903" y="210"
           font-size="11" fill="#1a1a1a">allocated sw::surveyPlanner</text>
-      <text x="610.903" y="225"
+      <text x="97" y="225"
           font-size="11" fill="#1a1a1a">allocated sw::groundWireGuardTunnel</text></g>
+    <g data-file="examples/survey-drone/physical.sysml" data-line="142"><rect x="64" y="285" width="489.903" height="273" rx="10" ry="10"
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M64.5,317 L64.5,295 A9.5,9.5 0 0 1 74,285.5 L543.903,285.5 A9.5,9.5 0 0 1 553.403,295 L553.403,317 Z" fill="#ccdce5" />
+      <text x="308.9515" y="298" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
+      <text x="308.9515" y="311" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">drone : SurveyDrone</text>
+      <line x1="64" y1="317" x2="553.903" y2="317"
+          stroke="#40657e" stroke-width="1" /></g>
+    <g data-file="examples/survey-drone/physical.sysml" data-line="117"><rect x="89" y="330" width="208.624" height="203" rx="10" ry="10"
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M89.5,362 L89.5,340 A9.5,9.5 0 0 1 99,330.5 L287.624,330.5 A9.5,9.5 0 0 1 297.124,340 L297.124,362 Z" fill="#ccdce5" />
+      <text x="193.312" y="343" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
+      <text x="193.312" y="356" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">companion : GpuComputer</text>
+      <line x1="89" y1="362" x2="297.624" y2="362"
+          stroke="#40657e" stroke-width="1" />
+      <text x="193.312" y="373" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">relationships</text>
+      <text x="97" y="387"
+          font-size="11" fill="#1a1a1a">allocated sw::routePlanner</text>
+      <text x="97" y="402"
+          font-size="11" fill="#1a1a1a">allocated sw::obstacleAvoidance</text>
+      <text x="97" y="417"
+          font-size="11" fill="#1a1a1a">allocated sw::videoStreamer</text>
+      <text x="97" y="432"
+          font-size="11" fill="#1a1a1a">allocated sw::worldModel</text>
+      <text x="97" y="447"
+          font-size="11" fill="#1a1a1a">allocated sw::diagnostics</text>
+      <text x="97" y="462"
+          font-size="11" fill="#1a1a1a">allocated sw::zenohRouter</text>
+      <text x="97" y="477"
+          font-size="11" fill="#1a1a1a">allocated sw::mavlinkBridge</text>
+      <text x="97" y="492"
+          font-size="11" fill="#1a1a1a">allocated sw::airWireGuardTunnel</text>
+      <text x="97" y="507"
+          font-size="11" fill="#1a1a1a">allocated sw::minimalLinux</text>
+      <text x="97" y="522"
+          font-size="11" fill="#1a1a1a">allocated sw::containerRuntime</text></g>
+    <g data-file="examples/survey-drone/physical.sysml" data-line="116"><rect x="321.624" y="330" width="207.279" height="143" rx="10" ry="10"
+          fill="white" stroke="#40657e" stroke-width="1.25" />
+      <path d="M322.124,362 L322.124,340 A9.5,9.5 0 0 1 331.624,330.5 L518.903,330.5 A9.5,9.5 0 0 1 528.403,340 L528.403,362 Z" fill="#ccdce5" />
+      <text x="425.2635" y="343" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
+      <text x="425.2635" y="356" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">fc : ControlComputer</text>
+      <line x1="321.624" y1="362" x2="528.903" y2="362"
+          stroke="#40657e" stroke-width="1" />
+      <text x="425.2635" y="373" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">relationships</text>
+      <text x="329.624" y="387"
+          font-size="11" fill="#1a1a1a">allocated sw::missionExecutor</text>
+      <text x="329.624" y="402"
+          font-size="11" fill="#1a1a1a">allocated sw::stateEstimator</text>
+      <text x="329.624" y="417"
+          font-size="11" fill="#1a1a1a">allocated sw::flightControl</text>
+      <text x="329.624" y="432"
+          font-size="11" fill="#1a1a1a">allocated sw::mavlinkInterface</text>
+      <text x="329.624" y="447"
+          font-size="11" fill="#1a1a1a">allocated sw::hardwareAbstraction</text>
+      <text x="329.624" y="462"
+          font-size="11" fill="#1a1a1a">allocated sw::realTimeKernel</text></g>
   
 </svg>

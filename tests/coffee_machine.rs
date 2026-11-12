@@ -68,9 +68,9 @@ fn use_case_view_two_drinks_and_a_service_task_all_of_the_one_machine() {
     let graph = extract_use_case_graph(&workspace.ast, &exposed_by_view(&workspace));
     assert_eq!(
         sorted_names(graph.nodes.iter().filter(|n| n.keyword == "use case")),
-        ["descale : ServiceMachine", "makeCappuccino : OperateMachine", "makeEspresso : OperateMachine"]
+        ["descale : OperateMachine", "makeCappuccino : OperateMachine", "makeEspresso : OperateMachine"]
     );
-    // Both use case defs name the machine as their subject: one box, a line to each.
+    // The one use case def names the machine as the subject: one box, a line to each.
     let subjects: Vec<_> = graph.nodes.iter().filter(|n| n.keyword == "subject").collect();
     assert_eq!(names(subjects.iter().copied()), ["machine : CoffeeMachine"]);
     assert_eq!(graph.edges.iter().filter(|e| e.target_id == subjects[0].id).count(), 3);
@@ -111,7 +111,7 @@ fn logical_view_a_strict_capability_tree_naming_no_realization() {
 }
 
 #[test]
-fn logical_view_each_tree_refines_its_use_case_and_no_use_case_goes_unrefined() {
+fn logical_view_each_tree_refines_the_use_cases_it_details_and_none_goes_unrefined() {
     let (workspace, graph) = logical();
     let refinements: Vec<(&str, &str)> = graph
         .edges
@@ -122,8 +122,9 @@ fn logical_view_each_tree_refines_its_use_case_and_no_use_case_goes_unrefined() 
     assert_eq!(
         refinements,
         [
-            ("Functions::MakeBeverage", "SystemUseCases::OperateMachine"),
-            ("Functions::MaintainMachine", "SystemUseCases::ServiceMachine"),
+            ("Functions::MakeBeverage", "SystemUseCases::makeCappuccino"),
+            ("Functions::MakeBeverage", "SystemUseCases::makeEspresso"),
+            ("Functions::MaintainMachine", "SystemUseCases::descale"),
         ]
     );
     // A use case no function tree details would be a hole in the design.
@@ -133,7 +134,7 @@ fn logical_view_each_tree_refines_its_use_case_and_no_use_case_goes_unrefined() 
     let refined: HashSet<&str> = refinements.iter().map(|(_, target)| *target).collect();
     let unrefined: Vec<String> = ast
         .children(use_cases, Prop::Members)
-        .filter(|m| ast[*m].ty == Type::UseCaseDef)
+        .filter(|m| ast[*m].ty == Type::UseCaseUsage)
         .map(|m| qualified_name(ast, m))
         .filter(|name| !refined.contains(name.as_str()))
         .collect();
@@ -162,7 +163,7 @@ fn implementation_view_the_recipe_engine_offers_one_api_and_needs_three() {
     // calling those.
     assert_eq!(
         ports("RecipeEngine"),
-        ["recipe : RecipeApi", "brew : ~BrewApi", "temperature : ~TemperatureApi", "milk : ~MilkApi"]
+        ["recipe : RecipeApi", "temperature : ~TemperatureApi", "brew : ~BrewApi", "milk : ~MilkApi"]
     );
     // The panel asks the engine; the engine drives the controllers.
     assert_eq!(ports("UiApp"), ["recipe : ~RecipeApi"]);
@@ -187,7 +188,7 @@ fn physical_view_the_machine_as_nested_parts_looms_named_by_their_interface() {
 }
 
 #[test]
-fn realization_every_function_is_performed_by_something_and_some_parts_by_nothing() {
+fn realization_every_function_is_performed_by_something_and_every_part_but_the_board_performs_one() {
     let (_, logical) = logical();
     let parents: HashSet<&str> = logical.edges.iter().map(|e| e.source_id.as_str()).collect();
     let leaves =
@@ -207,11 +208,11 @@ fn realization_every_function_is_performed_by_something_and_some_parts_by_nothin
         boxes.iter().copied().filter(|n| n.compartments.iter().any(|c| c.lines.iter().any(|l| l == "frothMilk"))),
     );
     assert_eq!(frothers, ["MilkController", "wand : SteamWand"]);
-    // The other direction is a part that realizes nothing: the panel and the supply
-    // are there for the parts that do.
-    let idle = names(all_nodes(&hardware.nodes).into_iter().filter(|n| n.compartments.is_empty()));
-    assert!(idle.contains(&"display : TouchDisplay"));
-    assert!(idle.contains(&"psu : MainsSupply"));
+    // The other direction: every part inside the machine performs a function of its
+    // own, except the board, whose functions are those of the software deployed on it.
+    let parts = hardware.nodes[0].children.as_deref().unwrap();
+    let idle = names(parts.iter().filter(|n| n.compartments.is_empty()));
+    assert_eq!(idle, ["controller : ControlBoard"]);
 }
 
 #[test]
@@ -240,7 +241,7 @@ fn process_view_one_press_produces_a_cappuccino() {
     assert_eq!(
         lifelines,
         [
-            "user",
+            "user : User",
             "uiApp : UiApp",
             "recipeEngine : RecipeEngine",
             "temperatureController : TemperatureController",
