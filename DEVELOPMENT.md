@@ -209,21 +209,26 @@ from another view**, except:
 
 ```text
 logical                   →  use case
-implementation, physical  →  logical
+implementation            →  logical
+physical                  →  logical, use case
 deployment                →  implementation, physical
-process                   →  implementation
+process                   →  implementation, use case
 ```
 
 Every dependency points back towards what users need: a function tree names
-the use case it refines, and a component names its functions, never the other
-way round. A view draws only what it exposes, so the files it refers to supply
+the use case it refines, a component names its functions, the product
+specializes the use cases' subject, and a scenario's people are their actors,
+never the other way round. A view draws only what it exposes, so the files it refers to supply
 names, and boxes only where it exposes what they declare.
 
 These rules are the examples' only: [any link can be left out](VIEWS.md). The
 example tests load each view with only the files it depends on, so a name from
 any other fails. Both ends of an allocation are named once: one
-`part sw { ... }` tree of software, and one usage of the whole product, which
-also heads the physical view.
+`part sw { ... }` tree of software, in the deployment file beside the
+allocations that use it, and one usage of the whole product, which also heads
+the physical view. The implementation file has no package around all the
+software: each layer is a package, the APIs another, and the view stands
+outside them.
 
 ## Working on the code
 
@@ -508,8 +513,8 @@ Open, in priority order:
     on that line; a flow with no `connect` draws a line of its own, as the
     spec draws a flow (§8.2.3).
   - [ ] Flows in the examples: water, steam, grounds and milk in the coffee
-    machine, power and video in the drone. Mounts stay `connect`s, since
-    nothing flows through them.
+    machine, power and video in the drone. Their port defs already say which
+    item goes which way.
   - [ ] 38 of OMG's model files use flows, some between action parameters:
     they must keep loading once the ends are resolved.
 - [ ] **Requirements as a table ortho writes,** and on the parts that satisfy

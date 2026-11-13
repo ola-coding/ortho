@@ -1018,19 +1018,12 @@ fn warns_at_the_function_when_the_coffee_machine_loses_a_perform() {
 
 #[test]
 fn warns_at_the_tree_when_the_coffee_machine_loses_a_refinement() {
-    let refinement = "#refinement dependency MakeBeverage to SystemUseCases::OperateMachine;";
+    let refinement = "#refinement dependency MakeBeverage to SystemUseCases::makeEspresso;";
     let (warnings, logical) = coffee_machine_without(refinement, "unrefined");
-    let line = coffee_machine_logical_line("action def MakeBeverage {");
-    // Both ends of the lost refinement: the tree, and the use case it detailed.
+    // The tree still refines the cappuccino, so only the espresso is left over.
     let use_cases = logical.replace("logical.sysml", "use-case.sysml");
-    let use_case_line = coffee_machine_line("use-case.sysml", "use case def OperateMachine {");
-    assert_eq!(
-        warnings,
-        [
-            format!("{logical} line {line}: {}", unrefined("MakeBeverage")),
-            format!("{use_cases} line {use_case_line}: {}", unrefined_use_case("OperateMachine")),
-        ]
-    );
+    let use_case_line = coffee_machine_line("use-case.sysml", "use case makeEspresso : OperateMachine;");
+    assert_eq!(warnings, [format!("{use_cases} line {use_case_line}: {}", unrefined_use_case("makeEspresso"))]);
 }
 
 #[test]

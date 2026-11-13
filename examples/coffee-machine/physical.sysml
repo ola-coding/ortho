@@ -1,132 +1,154 @@
-// Physical view: the product itself — mechanics, electronics and cabling.
-//
-// Topology only. Which part connects, feeds or wires to which; never where a
-// part sits or how big it is. A cable is a connection, so the control looms
-// below are `interface` usages, typed by the contract they carry.
+// Physical view: the product itself, mechanics, electronics and cabling.
 package Hardware {
+    doc /* Topology only: which part connects, feeds or wires to which; never
+         * where a part sits or how big it is. */
 
-    // Real, Integer and String are value types from the spec's library.
-    private import ScalarValues::*;
-
-    // The functions this hardware realizes, said on the part that realizes
-    // each one.
+    // A part performs the functions it does itself. The control board performs
+    // its own through the software deployed on it.
     private import Functions::*;
+    private import ScalarValues::*;
+    private import ISQ::*;
+    private import SI::*;
     private import StandardViewDefinitions::*;
 
-    port def WaterPort;
-    port def SteamPort;
-    port def CoffeePort;
-    port def BeveragePort;
-    port def PowerPort;
-    port def DataPort;
+    // What flows through the ports. A port def says which way its item goes;
+    // the receiving end is the same port conjugated, `~WaterPort`.
+    item def Water;
+    item def Steam;
+    item def Coffee;
+    item def Milk;
+    item def Beverage;
+    item def ElectricPower;
+    item def Command;
+    item def Status;
 
-    // The contract every control loom satisfies.
+    port def WaterPort { out item water : Water; }
+    port def SteamPort { out item steam : Steam; }
+    port def CoffeePort { out item coffee : Coffee; }
+    port def MilkPort { out item milk : Milk; }
+    port def BeveragePort { out item beverage : Beverage; }
+    port def PowerPort { out item power : ElectricPower; }
+    port def ControlPort {
+        out item command : Command;
+        in item status : Status;
+    }
+
+    // A cable is a connection, so every control loom is an `interface` usage
+    // typed by the contract it carries.
     interface def ControlLink {
-        end controller : DataPort;
-        end device : DataPort;
+        end controller : ControlPort;
+        end device : ~ControlPort;
+    }
+
+    enum def BurrKind {
+        conicalCeramic;
+        flatSteel;
     }
 
     // --- water path --------------------------------------------------------
     part def WaterTank {
         perform beverage.prepareWater.storeWater;
 
-        attribute capacity_l : Real = 1.9;
+        attribute capacity : VolumeValue = 1.9 [L];
         port waterOut : WaterPort;
     }
 
     part def WaterPump {
         perform beverage.prepareWater.pumpWater;
 
-        attribute maxPressure_bar : Real = 15;
-        port waterIn : WaterPort;
+        attribute maxPressure : PressureValue = 1.5E6 [Pa];
+        port waterIn : ~WaterPort;
         port waterOut : WaterPort;
-        port ctrlIn : DataPort;
+        port ctrlIn : ~ControlPort;
     }
 
     part def Thermoblock {
         perform beverage.prepareWater.heatWater;
 
-        attribute targetTemp_C : Real = 92;
-        port waterIn : WaterPort;
+        attribute targetTemperature : CelsiusTemperatureValue = 92 ['°C'];
+        port waterIn : ~WaterPort;
         port hotWaterOut : WaterPort;
         port steamOut : SteamPort;
-        port ctrlIn : DataPort;
+        port ctrlIn : ~ControlPort;
     }
 
     // --- coffee path -------------------------------------------------------
     part def BeanHopper {
         perform beverage.prepareCoffee.storeBeans;
 
-        attribute capacity_g : Real = 280;
+        attribute capacity : MassValue = 280 [g];
         port beansOut : CoffeePort;
     }
 
     part def Grinder {
         perform beverage.prepareCoffee.grindBeans;
 
-        attribute burrs : String = "conical_ceramic";
-        port beansIn : CoffeePort;
+        attribute burrs : BurrKind = BurrKind::conicalCeramic;
+        port beansIn : ~CoffeePort;
         port groundsOut : CoffeePort;
-        port ctrlIn : DataPort;
+        port ctrlIn : ~ControlPort;
     }
 
     part def BrewUnit {
+        doc /* The coffee leaves the machine here. */
         perform beverage.prepareCoffee.extractShot;
-        // The coffee leaves the machine here.
-        perform beverage.serveBeverage;
 
-        attribute chamberVolume_g : Real = 16;
-        port waterIn : WaterPort;
-        port groundsIn : CoffeePort;
+        attribute maxDose : MassValue = 16 [g];
+        port waterIn : ~WaterPort;
+        port groundsIn : ~CoffeePort;
         port coffeeOut : BeveragePort;
-        port ctrlIn : DataPort;
+        port ctrlIn : ~ControlPort;
     }
 
     // --- milk --------------------------------------------------------------
-    // A tube the user drops into a milk carton. The carton is not part of the
-    // machine, so the pickup end connects to nothing here: it is where the
-    // product meets whatever the kitchen provides.
     part def MilkTube {
+        doc /* A tube the user drops into a milk carton. The carton is not part of
+             * the machine, so the pickup end connects to nothing here: it is where
+             * the product meets whatever the kitchen provides. */
         perform beverage.prepareMilk.drawMilk;
 
-        port pickup : BeveragePort;
-        port milkOut : BeveragePort;
+        port pickup : ~MilkPort;
+        port milkOut : MilkPort;
     }
 
     part def SteamWand {
+        doc /* Steam through the wand pulls milk up the tube; nothing pumps it.
+             * The milk leaves the machine here. */
         perform beverage.prepareMilk.frothMilk;
-        // And the milk, here.
-        perform beverage.serveBeverage;
 
-        port steamIn : SteamPort;
-        // Steam through the wand pulls milk up the tube; nothing pumps it.
-        port milkIn : BeveragePort;
+        port steamIn : ~SteamPort;
+        port milkIn : ~MilkPort;
         port milkOut : BeveragePort;
-        port ctrlIn : DataPort;
+        port ctrlIn : ~ControlPort;
     }
 
     // --- electronics -------------------------------------------------------
     part def ControlBoard {
         attribute mcuCores : Integer = 2;
-        port powerIn : PowerPort;
-        port uiLink : DataPort;
-        port waterCtrl : DataPort;
-        port coffeeCtrl : DataPort;
-        port milkCtrl : DataPort;
+        port powerIn : ~PowerPort;
+        port uiLink : ControlPort;
+        port waterCtrl : ControlPort;
+        port coffeeCtrl : ControlPort;
+        port milkCtrl : ControlPort;
     }
 
     part def TouchDisplay {
-        attribute diagonal_in : Real = 4.3;
-        port ctrlOut : DataPort;
+        perform beverage.controlMachine.selectBeverage;
+
+        attribute diagonal : LengthValue = 109 [mm];
+        port ctrlIn : ~ControlPort;
     }
 
     part def MainsSupply {
+        perform beverage.supplyPower;
+
         port powerOut : PowerPort;
     }
 
     // --- the machine -------------------------------------------------------
-    part def CoffeeMachine {
-        attribute width_mm : Real = 280;
+    // The machine as built: the subject of every use case, opened up.
+    part def CoffeeMachine :> SystemUseCases::CoffeeMachine {
+        attribute width : LengthValue = 280 [mm];
 
         part tank : WaterTank;
         part pump : WaterPump;
@@ -160,7 +182,7 @@ package Hardware {
         interface : ControlLink connect controller.coffeeCtrl to grinder.ctrlIn;
         interface : ControlLink connect controller.coffeeCtrl to brewUnit.ctrlIn;
         interface : ControlLink connect controller.milkCtrl to wand.ctrlIn;
-        interface : ControlLink connect controller.uiLink to display.ctrlOut;
+        interface : ControlLink connect controller.uiLink to display.ctrlIn;
     }
 
     // The machine itself, named once so deployment.sysml can allocate to the
