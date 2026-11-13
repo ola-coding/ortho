@@ -27,6 +27,8 @@ fn block<'a>(section: &'a str, fence: &str) -> Option<&'a str> {
 #[test]
 fn each_mistake_draws_the_message_it_shows_and_its_fix_loads_cleanly() {
     let doc = std::fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join("ai/MISTAKES.md")).unwrap();
+    // Git may check the page out with Windows line ends.
+    let doc = doc.replace("\r\n", "\n");
     let mistakes: Vec<&str> = doc.split("\n### ").skip(1).collect();
     assert!(mistakes.len() >= 10, "{} mistakes", mistakes.len());
     for mistake in mistakes {
