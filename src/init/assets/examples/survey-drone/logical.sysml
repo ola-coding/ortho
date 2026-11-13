@@ -1,27 +1,25 @@
 // Logical view: what the system does, independent of what does it.
-//
-// A capability tree. Every function appears exactly once and has exactly one
-// parent. No airframe, computer or program is named here — realization lives
-// in physical.sysml and implementation.sysml. What it does answer to is
-// use-case.sysml: the tree details what the operator asks for.
 package Functions {
+    doc /* A capability tree. Every function appears exactly once and has exactly
+         * one parent. No airframe, computer or program is named here. */
     private import StandardViewDefinitions::*;
     private import Views::*;
     private import ModelingMetadata::*;
 
+    // Branches in the order a survey meets them: the operator plans it, the
+    // vehicle flies it, and its results come home.
     action def PerformAerialSurvey {
 
-        // Energy functions: medium-bound, and staying that way.
-        action operateVehicle {
-            action produceThrust;
-            action supplyPower;
-            action provideComputing;
+        action interactWithOperator {
+            action planMission;
+            action presentProgress;
         }
 
         // Control functions: the migratory ones. Each of these was a person's
-        // job before it was software — a pilot holding the lines, a navigator
-        // with a chart, a spotter watching for wires.
+        // job before it was software: a navigator with a chart, a pilot holding
+        // the lines, a spotter watching for wires.
         action guideNavigateAndControl {
+            action planRoute;
             action guide;
             action navigate;
             action control;
@@ -30,7 +28,6 @@ package Functions {
 
         action perceive {
             action captureVideo;
-            action fuseSensorData;
             action maintainWorldModel;
         }
 
@@ -39,37 +36,30 @@ package Functions {
             action exchangeTelemetry;
         }
 
-        action plan {
-            action planMission;
-            action planRoute;
+        // Energy functions: medium-bound, and staying that way.
+        action operateVehicle {
+            action supplyPower;
+            action produceThrust;
         }
 
-        action interactWithOperator {
-            action presentInformation;
-            action acceptOperatorInput;
-        }
-
-        // Watching the other branches rather than belonging to one: health
-        // monitoring and flight recording serve every function above, so their
-        // lowest common ancestor is the survey itself.
-        action superviseSystem {
-            action monitorHealth;
-            action recordFlightData;
-        }
+        // Health monitoring and flight recording serve every branch above, so
+        // their lowest common ancestor is the survey itself.
+        action superviseSystem;
     }
 
-    // The survey itself. The tree above says what is done; this names one
-    // performance of it, so the parts that realize a function can point into
-    // the tree — a `perform` chain has to start at a usage.
+    // One performance of the tree. A `perform` chain has to start at a usage,
+    // so the parts that realize a function point into this one.
     action survey : PerformAerialSurvey;
 
-    // What the operator asks for, in more detail: that is what a refinement says.
-    #refinement dependency PerformAerialSurvey to SystemUseCases::SurveyTask;
+    // What the operator asks for, in more detail. Planning a survey and
+    // following one are use cases of their own, which the operator can also ask
+    // for alone, so each is refined, not only the survey that includes them.
+    #refinement dependency PerformAerialSurvey to SystemUseCases::surveyArea;
+    #refinement dependency PerformAerialSurvey to SystemUseCases::planSurvey;
+    #refinement dependency PerformAerialSurvey to SystemUseCases::followProgress;
 
     view 'Logical view — Survey Drone' : GeneralView {
         expose PerformAerialSurvey;
-        expose SystemUseCases::SurveyTask;
-        // Drawn as a tree: the standard library's tree rendering (§7.26.2).
         render asTreeDiagram;
     }
 }

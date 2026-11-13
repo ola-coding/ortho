@@ -8,6 +8,7 @@
 use super::ast::{Ast, NodeId, Prop, Type};
 use super::scope::Logged;
 use super::workspace::{Diagnostic, Severity};
+use crate::diagrams::use_case::drawn_use_cases;
 use crate::model::graph::effective_name;
 use crate::model::library::{LIBRARY, LibraryPackage};
 use crate::model::packages::{collect_packages, exposed_members};
@@ -234,8 +235,9 @@ fn is_structure(ast: &Ast, node: NodeId) -> bool {
 /// physical view draws, to perform it. A model without a solution view is not
 /// warned of, as `perform` is optional; neither is one without a logical view, such
 /// as a cloud solution drawn as an implementation view alone. In a model with a use
-/// case view, only a tree that refines a use case is in scope, so a catalogue of
-/// functions needs no solution until a use case asks for it.
+/// case view, only a tree that refines a use case, at its top or in one of its
+/// branches, is in scope, so a catalogue of functions needs no solution until a
+/// use case asks for it.
 ///
 /// Performing a function performs everything under it, and performing a typed
 /// action, `perform beverage;`, performs its definition's tree. A typed action
@@ -468,7 +470,8 @@ fn warn_unperformed(ast: &Ast, function: NodeId, diagnostics: &mut Vec<Diagnosti
 /// refinement it points at, and the view would then draw as if complete, the tree
 /// without its arrow up to its use case. A tree is named by the function at its
 /// top, also where a view draws one of its branches; a dependency from a typed
-/// action, `beverage : MakeBeverage`, refines its definition's tree.
+/// action, `beverage : MakeBeverage`, refines its definition's tree, and one from
+/// a branch refines the tree it is in.
 fn unrefined_trees(ast: &Ast, roots: &[NodeId]) -> HashSet<NodeId> {
     let mut drawn = Vec::new();
     for view in views_of(ast, roots, DiagramKind::Logical) {
@@ -481,59 +484,76 @@ fn unrefined_trees(ast: &Ast, roots: &[NodeId]) -> HashSet<NodeId> {
     drawn.into_iter().filter(|tree| !refined.contains(tree)).collect()
 }
 
-/// The use cases a logical view draws beside function trees that no tree refines:
-/// the other end of `unrefined_trees`. A use case that nothing details would stand
-/// alone on the view, without a tree under it.
+/// The use cases of the model that no function refines: the other end of
+/// `unrefined_trees`, checked across the model rather than on one view.
+///
+/// Once a model has both a use case view and a logical view, each use case the
+/// use case view draws needs a function tree, or a branch of one, that details it,
+/// wherever the `#refinement` is written and whether or not a logical view draws
+/// the use case too. A model with only one of the two views is not warned of: the
+/// other half is missing, not wrong. A use case a logical view draws beside its
+/// trees is checked as well. A refinement of a use case def refines every use case
+/// of that kind; one of the use case that includes another does not refine the
+/// included one, which is a use case of its own.
 fn unrefined_use_cases(ast: &Ast, roots: &[NodeId]) -> HashSet<NodeId> {
-    let mut drawn = Vec::new();
+    let logical = views_of(ast, roots, DiagramKind::Logical);
+    if logical.is_empty() {
+        return HashSet::new();
+    }
+    let mut checked = Vec::new();
+    for view in views_of(ast, roots, DiagramKind::UseCase) {
+        checked.extend(drawn_use_cases(ast, &exposed_elements(ast, view)));
+    }
     // A logical view always draws a tree: one that exposes none is a use case view.
-    for view in views_of(ast, roots, DiagramKind::Logical) {
+    for view in logical {
         let members = exposed_members(ast, &exposed_elements(ast, view));
-        drawn.extend(members.into_iter().filter(|member| is_use_case(ast, *member)));
+        checked.extend(members.into_iter().filter(|member| is_use_case(ast, *member)));
     }
-    let is_tree = |node: NodeId| matches!(ast[node].ty, Type::ActionDef | Type::ActionUsage);
-    let mut refined = HashSet::new();
-    for dependency in roots.iter().flat_map(|root| ast.with_all_contents(*root)) {
-        if ast[dependency].ty != Type::Dependency {
-            continue;
-        }
-        let ends =
-            |prop: Prop| ast.references_of(dependency, prop).into_iter().filter_map(|end| ast.reference_target(end));
-        if ends(Prop::Clients).any(is_tree) {
-            refined.extend(ends(Prop::Suppliers));
-        }
-    }
-    drawn.into_iter().filter(|use_case| !refined.contains(use_case)).collect()
+    let refined: HashSet<NodeId> = refinements(ast, roots).into_iter().map(|(_, use_case)| use_case).collect();
+    let is_refined = |use_case: &NodeId| {
+        refined.contains(use_case) || ast.target(*use_case, Prop::Type).is_some_and(|kind| refined.contains(&kind))
+    };
+    checked.into_iter().filter(|use_case| !is_refined(use_case)).collect()
 }
 
 fn warn_unrefined_use_case(ast: &Ast, use_case: NodeId, diagnostics: &mut Vec<Diagnostic>) {
-    let named = effective_name(ast, use_case).map_or("This use case".to_string(), |name| format!("'{name}'"));
+    let named = effective_name(ast, use_case).map_or("this use case".to_string(), |name| format!("'{name}'"));
     diagnostics.push(Diagnostic {
         severity: Severity::Warning,
         offset: offset_of(ast, use_case, Prop::Name),
         message: format!(
-            "No function tree refines {named}, though a logical view draws it beside trees. Add a #refinement dependency to it from the tree that details it."
+            "No function of the logical view refines {named}. Add a #refinement dependency to it from the function tree, or the branch of one, that details it."
         ),
     });
 }
 
-/// What a dependency on a use case names as its client, and for a typed action
-/// its definition: the trees that refine a use case.
-fn refined_trees(ast: &Ast, roots: &[NodeId]) -> HashSet<NodeId> {
-    let is_use_case = |node: NodeId| is_use_case(ast, node);
-    let mut refined = HashSet::new();
+/// Each dependency from a function to a use case, as the pair it joins.
+fn refinements(ast: &Ast, roots: &[NodeId]) -> Vec<(NodeId, NodeId)> {
+    let is_function = |node: NodeId| matches!(ast[node].ty, Type::ActionDef | Type::ActionUsage);
+    let mut pairs = Vec::new();
     for dependency in roots.iter().flat_map(|root| ast.with_all_contents(*root)) {
         if ast[dependency].ty != Type::Dependency {
             continue;
         }
-        let ends =
-            |prop: Prop| ast.references_of(dependency, prop).into_iter().filter_map(|end| ast.reference_target(end));
-        if ends(Prop::Suppliers).any(is_use_case) {
-            for client in ends(Prop::Clients) {
-                refined.insert(client);
-                refined.extend(ast.target(client, Prop::Type));
-            }
+        let ends = |prop: Prop| -> Vec<NodeId> {
+            ast.references_of(dependency, prop).into_iter().filter_map(|end| ast.reference_target(end)).collect()
+        };
+        let suppliers: Vec<NodeId> = ends(Prop::Suppliers).into_iter().filter(|s| is_use_case(ast, *s)).collect();
+        for client in ends(Prop::Clients).into_iter().filter(|client| is_function(*client)) {
+            pairs.extend(suppliers.iter().map(|use_case| (client, *use_case)));
         }
+    }
+    pairs
+}
+
+/// The trees that refine a use case: each function a refinement starts at, for a
+/// typed action its definition too, and the tree each of those is in.
+fn refined_trees(ast: &Ast, roots: &[NodeId]) -> HashSet<NodeId> {
+    let mut refined = HashSet::new();
+    for (client, _) in refinements(ast, roots) {
+        refined.insert(client);
+        refined.insert(top_of_tree(ast, client));
+        refined.extend(ast.target(client, Prop::Type));
     }
     refined
 }

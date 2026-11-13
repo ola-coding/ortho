@@ -1,7 +1,7 @@
 //! Writes the VS Code extension's SysML v2 grammar, `editors/vscode/syntaxes/sysml.tmLanguage.json`,
 //! from ortho's own keyword list, so the editor colours exactly the words ortho reserves,
-//! copies LANGUAGE.md to `editors/vscode/ai/LANGUAGE.md`, which the extension's
-//! *Add AI instructions* command hands to agents, and copies each example's model to
+//! copies the files the extension's *Add AI instructions* command hands to agents,
+//! LANGUAGE.md, VIEWS.md and those in `ai/`, to `editors/vscode/ai/`, and copies each example's model to
 //! `editors/vscode/examples/`, which its *Open example* command copies for the user,
 //! and copies the licence and the icon, which the Marketplace shows.
 //! CI runs it and fails if any committed file differs.
@@ -15,7 +15,10 @@ use ortho::parser::KEYWORDS;
 use serde_json::{Value, json};
 
 const OUT: &str = "editors/vscode/syntaxes/sysml.tmLanguage.json";
-const LANGUAGE_OUT: &str = "editors/vscode/ai/LANGUAGE.md";
+const AI_OUT: &str = "editors/vscode/ai";
+/// What the AI instructions are written from, by path in the repository. They are
+/// written into one folder, so a link from one to another stays a link to the copy.
+pub const AI_FILES: [&str; 5] = ["LANGUAGE.md", "VIEWS.md", "ai/WORKFLOW.md", "ai/MISTAKES.md", "ai/AGENTS.md"];
 const EXAMPLES_OUT: &str = "editors/vscode/examples";
 /// Files the extension carries as they are: `vsce` packs only what is in its folder.
 const COPIES: [(&str, &str); 2] =
@@ -224,10 +227,13 @@ pub fn run() -> Result {
     let text = serde_json::to_string_pretty(&grammar()?).map_err(|error| error.to_string())?;
     write(OUT, &format!("{text}\n"))?;
     println!("Wrote {OUT}");
-    let language = std::fs::read_to_string("LANGUAGE.md").map_err(|error| format!("LANGUAGE.md: {error}"))?;
-    std::fs::create_dir_all("editors/vscode/ai").map_err(|error| error.to_string())?;
-    write(LANGUAGE_OUT, &language_copy(&language, "vscode-grammar"))?;
-    println!("Wrote {LANGUAGE_OUT}");
+    std::fs::create_dir_all(AI_OUT).map_err(|error| error.to_string())?;
+    for from in AI_FILES {
+        let text = std::fs::read_to_string(from).map_err(|error| format!("{from}: {error}"))?;
+        let to = format!("{AI_OUT}/{}", file_name(from));
+        write(&to, &ai_copy(from, &text, "vscode-grammar"))?;
+        println!("Wrote {to}");
+    }
     copy_examples(EXAMPLES_OUT)?;
     println!("Wrote {EXAMPLES_OUT}");
     for (from, to) in COPIES {
@@ -260,20 +266,61 @@ pub fn copy_examples(out_folder: &str) -> Result {
     Ok(())
 }
 
-/// LANGUAGE.md as it reads outside the repository: a link to another of its files,
-/// `[VIEWS.md](VIEWS.md)`, points at it on GitHub. A link within the page stays.
-pub fn language_copy(language: &str, task: &str) -> String {
-    let mut copy = format!("<!-- Copied from ortho's LANGUAGE.md by `cargo xtask {task}`. -->\n\n");
-    let mut rest = language;
+pub fn file_name(path: &str) -> &str {
+    path.rsplit('/').next().unwrap_or(path)
+}
+
+/// A file of `AI_FILES` as it reads outside the repository, beside the others: a link to
+/// another of them, `[VIEWS.md](VIEWS.md)` or `[LANGUAGE.md](../LANGUAGE.md)`, points at
+/// its copy, and a link to any other file of the repository at it on GitHub. A link
+/// within the page stays. `task` is the task that copies it.
+pub fn ai_copy(from: &str, text: &str, task: &str) -> String {
+    let mut copy = format!("<!-- Copied from ortho's {from} by `cargo xtask {task}`. -->\n\n");
+    let folder = from.rsplit_once('/').map_or("", |(folder, _)| folder);
+    let mut rest = text;
     while let Some(at) = rest.find("](") {
         let (before, after) = rest.split_at(at + 2);
         copy.push_str(before);
-        let relative = !after.starts_with("http") && !after.starts_with('#');
-        if relative {
-            copy.push_str(REPOSITORY);
+        let end = after.find(')').unwrap_or(after.len());
+        let target = &after[..end];
+        rest = &after[end..];
+        if target.starts_with("http") || target.starts_with('#') {
+            copy.push_str(target);
+            continue;
         }
-        rest = after;
+        let (path, anchor) = target.split_once('#').map_or((target, ""), |(path, anchor)| (path, anchor));
+        let in_repository = path.strip_prefix("../").map_or_else(
+            || if folder.is_empty() { path.to_string() } else { format!("{folder}/{path}") },
+            str::to_string,
+        );
+        let anchor = if anchor.is_empty() { String::new() } else { format!("#{anchor}") };
+        if AI_FILES.contains(&in_repository.as_str()) {
+            copy.push_str(&format!("{}{anchor}", file_name(&in_repository)));
+        } else {
+            copy.push_str(&format!("{REPOSITORY}{in_repository}{anchor}"));
+        }
     }
     copy.push_str(rest);
     copy
+}
+
+#[cfg(test)]
+mod ai_copy_tests {
+    use super::ai_copy;
+
+    #[test]
+    fn links_to_the_files_copied_beside_it_stay_and_others_point_at_github() {
+        let copy = ai_copy(
+            "ai/MISTAKES.md",
+            "[L](../LANGUAGE.md#views), [W](WORKFLOW.md), [D](../DEVELOPMENT.md), [x](#x)",
+            "t",
+        );
+        assert!(copy.ends_with(
+            "[L](LANGUAGE.md#views), [W](WORKFLOW.md), [D](https://github.com/ola-coding/ortho/blob/main/DEVELOPMENT.md), [x](#x)"
+        ));
+        let copy = ai_copy("LANGUAGE.md", "[V](VIEWS.md) [D](DEVELOPMENT.md) [s](https://omg.org)", "t");
+        assert!(copy.ends_with(
+            "[V](VIEWS.md) [D](https://github.com/ola-coding/ortho/blob/main/DEVELOPMENT.md) [s](https://omg.org)"
+        ));
+    }
 }

@@ -783,8 +783,82 @@ fn a_refinement_from_the_tree_or_a_use_of_it_refines_the_tree_also_on_a_view_of_
 
 fn unrefined_use_case(name: &str) -> String {
     format!(
-        "No function tree refines '{name}', though a logical view draws it beside trees. Add a #refinement dependency to it from the tree that details it."
+        "No function of the logical view refines '{name}'. Add a #refinement dependency to it from the function tree, or the branch of one, that details it."
     )
+}
+
+/// Use cases on a use case view, a function tree on a logical view that draws the
+/// tree alone, and `refinements` between them. Either view is left out when its
+/// line is empty.
+fn traced(use_case_view: &str, logical_view: &str, refinements: &str) -> String {
+    format!(
+        "package SystemUseCases {{
+            private import StandardViewDefinitions::*;
+            use case def Operate;
+            use case makeCappuccino : Operate {{ include makeEspresso; }}
+            use case makeEspresso : Operate;
+            {use_case_view}
+        }}
+        package Functions {{
+            private import StandardViewDefinitions::*;
+            private import ModelingMetadata::*;
+            action def MakeBeverage {{ action prepareCoffee; action foamMilk; }}
+            {refinements}
+            {logical_view}
+        }}"
+    )
+}
+
+const USE_CASE_VIEW: &str = "view useCases : GeneralView { expose SystemUseCases; }";
+const LOGICAL_VIEW: &str = "view logical : GeneralView { expose MakeBeverage; }";
+
+#[test]
+fn warns_of_a_use_case_no_function_refines_though_the_logical_view_draws_only_trees() {
+    // What a compact logical view leaves once an agent deletes a refinement.
+    let refinement = "#refinement dependency MakeBeverage to SystemUseCases::makeCappuccino;";
+    let workspace = build(&traced(USE_CASE_VIEW, LOGICAL_VIEW, refinement));
+    assert_eq!(reported(&workspace, Severity::Warning), [unrefined_use_case("makeEspresso")]);
+    assert_eq!(reported(&workspace, Severity::Error), Vec::<String>::new());
+    // Refined from a branch, the use case is detailed all the same.
+    let both =
+        format!("{refinement} #refinement dependency MakeBeverage::prepareCoffee to SystemUseCases::makeEspresso;");
+    assert_eq!(reported(&build(&traced(USE_CASE_VIEW, LOGICAL_VIEW, &both)), Severity::Warning), Vec::<String>::new());
+}
+
+#[test]
+fn a_refinement_of_a_use_case_def_refines_every_use_case_of_that_kind() {
+    let refinement = "#refinement dependency MakeBeverage to SystemUseCases::Operate;";
+    let workspace = build(&traced(USE_CASE_VIEW, LOGICAL_VIEW, refinement));
+    assert_eq!(reported(&workspace, Severity::Warning), Vec::<String>::new());
+}
+
+#[test]
+fn a_model_missing_the_use_case_or_the_logical_view_is_not_warned_of_unrefined_use_cases() {
+    // Each half on its own is incomplete, not inconsistent.
+    for (use_case_view, logical_view) in [(USE_CASE_VIEW, ""), ("", LOGICAL_VIEW)] {
+        let workspace = build(&traced(use_case_view, logical_view, ""));
+        assert_eq!(reported(&workspace, Severity::Warning), Vec::<String>::new(), "{use_case_view}{logical_view}");
+    }
+    // With both, every use case the use case view draws is asked for.
+    assert_eq!(
+        reported(&build(&traced(USE_CASE_VIEW, LOGICAL_VIEW, "")), Severity::Warning),
+        [unrefined_use_case("makeCappuccino"), unrefined_use_case("makeEspresso")]
+    );
+}
+
+#[test]
+fn a_refinement_from_a_branch_ties_its_whole_tree_to_the_use_cases() {
+    // On a view that draws use cases, the tree's top is not warned of.
+    let branches = "#refinement dependency MakeBeverage::prepareCoffee to SystemUseCases::makeEspresso;
+                    #refinement dependency MakeBeverage::foamMilk to SystemUseCases::makeCappuccino;";
+    let drawn = "view logical : GeneralView { expose MakeBeverage; expose SystemUseCases::makeCappuccino; expose SystemUseCases::makeEspresso; }";
+    assert_eq!(reported(&build(&traced(USE_CASE_VIEW, drawn, branches)), Severity::Warning), Vec::<String>::new());
+    // And the tree needs a solution: a branch's refinement puts it in scope.
+    let solution = format!("{branches} view modules : GeneralView {{ expose Functions; }} part def Grinder;");
+    assert_eq!(
+        reported(&build(&traced(USE_CASE_VIEW, LOGICAL_VIEW, &solution)), Severity::Warning),
+        [unperformed("prepareCoffee"), unperformed("foamMilk")]
+    );
 }
 
 #[test]
@@ -1017,20 +1091,14 @@ fn warns_at_the_function_when_the_coffee_machine_loses_a_perform() {
 }
 
 #[test]
-fn warns_at_the_tree_when_the_coffee_machine_loses_a_refinement() {
-    let refinement = "#refinement dependency MakeBeverage to SystemUseCases::OperateMachine;";
+fn warns_at_the_use_case_when_the_coffee_machine_loses_a_refinement() {
+    // The logical view draws the tree alone, so the warning comes from the model:
+    // the use case view draws a use case no function details any more.
+    let refinement = "#refinement dependency MakeBeverage to SystemUseCases::makeEspresso;";
     let (warnings, logical) = coffee_machine_without(refinement, "unrefined");
-    let line = coffee_machine_logical_line("action def MakeBeverage {");
-    // Both ends of the lost refinement: the tree, and the use case it detailed.
     let use_cases = logical.replace("logical.sysml", "use-case.sysml");
-    let use_case_line = coffee_machine_line("use-case.sysml", "use case def OperateMachine {");
-    assert_eq!(
-        warnings,
-        [
-            format!("{logical} line {line}: {}", unrefined("MakeBeverage")),
-            format!("{use_cases} line {use_case_line}: {}", unrefined_use_case("OperateMachine")),
-        ]
-    );
+    let line = coffee_machine_line("use-case.sysml", "use case makeEspresso : OperateMachine;");
+    assert_eq!(warnings, [format!("{use_cases} line {line}: {}", unrefined_use_case("makeEspresso"))]);
 }
 
 #[test]

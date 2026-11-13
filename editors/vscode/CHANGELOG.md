@@ -2,6 +2,14 @@
 
 The extension has the version of the ortho it carries.
 
+## Unreleased
+
+- **Add AI Instructions** also writes an `AGENTS.md`, for Zed, Codex, Cursor
+  and other agents, unless the workspace has an agent file already. The skill
+  now carries what each view is for, the order to build a model in, the
+  mistakes agents make with what ortho prints for each, how to split a view
+  too big for its page, and how to review a model.
+
 ## 0.3.0 (2026-11-08)
 
 The first release on the VS Code Marketplace and Open VSX.

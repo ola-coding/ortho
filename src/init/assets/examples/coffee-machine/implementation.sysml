@@ -1,95 +1,100 @@
 // Implementation view: the software that realizes the control functions.
 //
-// Two layers: the application decides what beverage to make, the control layer
-// drives one device each. The dependency runs one way, application → control.
-// Nothing here says which board the software runs on; that is deployment.
-package Software {
+// Each layer is a package of its own, and the APIs between them another.
+// Which board runs what is deployment.sysml's business, not this file's.
 
-    // The functions this software realizes, said on the module that realizes
-    // each one. Which board runs it is deployment's business.
-    private import Functions::*;
+package Apis {
+    doc /* What the modules offer each other. A module that offers an API
+         * declares a port of that type; a module that needs it declares the
+         * same type conjugated, `~RecipeApi`, so the two ends mirror each other. */
     private import ScalarValues::*;
-    private import StandardViewDefinitions::*;
+    private import ISQ::*;
 
-    // The APIs the modules offer each other. A module that offers one declares
-    // a port of that type; a module that needs it declares the same type
-    // conjugated, `~RecipeApi`, so the two ends mirror each other.
-    port def RecipeApi {
-        in attribute beverage : String;
-        out attribute progress : String;
+    // What crosses the APIs. process.sysml sends the same items.
+    item def BeverageRecipe {
+        attribute beverage : String;
+    }
+    item def TempSetpoint {
+        attribute temperature : CelsiusTemperatureValue;
+    }
+    item def DoseSetting {
+        attribute dose : MassValue;
+    }
+    item def MilkSetting {
+        attribute frothTime : DurationValue;
     }
 
-    port def BrewApi {
-        in attribute dose_g : Real;
-        out attribute shotPoured : Boolean;
+    port def RecipeApi {
+        in item recipe : BeverageRecipe;
+        out attribute ready : Boolean;
     }
 
     port def TemperatureApi {
-        in attribute setpoint_C : Real;
+        in item setpoint : TempSetpoint;
         out attribute atSetpoint : Boolean;
     }
 
+    port def BrewApi {
+        in item dose : DoseSetting;
+        out attribute shotPoured : Boolean;
+    }
+
     port def MilkApi {
-        in attribute frothSeconds : Real;
+        in item milk : MilkSetting;
         out attribute frothed : Boolean;
     }
+}
 
-    package Control {
-        part def BrewController {
-            perform beverage.prepareCoffee.doseGrounds;
-            perform beverage.controlMachine.interlockBrewGroup;
-            // It owns the brew group, so it owns flushing it out.
-            perform maintenance.runDescaleCycle;
+package Application {
+    doc /* Decides what beverage to make. Depends on the control layer, never
+         * the other way round. */
+    private import Functions::*;
+    private import Control;
 
-            port brew : BrewApi;
-        }
+    part def UiApp {
+        perform beverage.controlMachine.selectBeverage;
 
-        part def TemperatureController {
-            perform beverage.controlMachine.regulateTemperature;
-
-            port temperature : TemperatureApi;
-        }
-
-        part def MilkController {
-            perform beverage.prepareMilk.frothMilk;
-
-            port milk : MilkApi;
-        }
+        port recipe : ~Apis::RecipeApi;
     }
 
-    package Application {
-        private import Software::Control;
+    part def RecipeEngine {
+        doc /* Offers one API and drives three: the whole of the machine's
+             * control is this module calling those. */
+        perform beverage.controlMachine.sequenceRecipe;
 
-        // It offers one API and drives three: the whole of the machine's
-        // control is this module calling those.
-        part def RecipeEngine {
-            perform beverage.controlMachine.sequenceRecipe;
+        port recipe : Apis::RecipeApi;
+        port temperature : ~Apis::TemperatureApi;
+        port brew : ~Apis::BrewApi;
+        port milk : ~Apis::MilkApi;
+    }
+}
 
-            port recipe : RecipeApi;
-            port brew : ~BrewApi;
-            port temperature : ~TemperatureApi;
-            port milk : ~MilkApi;
-        }
+package Control {
+    doc /* Drives one device each. */
+    private import Functions::*;
 
-        part def UiApp {
-            perform beverage.controlMachine.selectBeverage;
-            perform maintenance.signalDescaleDue;
+    part def TemperatureController {
+        perform beverage.controlMachine.regulateTemperature;
 
-            port recipe : ~RecipeApi;
-        }
+        port temperature : Apis::TemperatureApi;
     }
 
-    // The deployable parts, named once so deployment.sysml can allocate them,
-    // and after their modules so the two views read alike.
-    part sw {
-        part recipeEngine : Application::RecipeEngine;
-        part uiApp : Application::UiApp;
-        part brewController : Control::BrewController;
-        part temperatureController : Control::TemperatureController;
-        part milkController : Control::MilkController;
+    part def BrewController {
+        doc /* Doses, tamps and extracts, and keeps the brew group shut while it
+             * is under pressure. */
+        perform beverage.prepareCoffee.extractShot;
+
+        port brew : Apis::BrewApi;
     }
 
-    view 'Implementation view — Coffee Machine' : GeneralView {
-        expose Software;
+    part def MilkController {
+        perform beverage.prepareMilk.frothMilk;
+
+        port milk : Apis::MilkApi;
     }
+}
+
+view 'Implementation view — Coffee Machine' : StandardViewDefinitions::GeneralView {
+    expose Application;
+    expose Control;
 }

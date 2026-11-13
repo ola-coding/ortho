@@ -1,20 +1,20 @@
 //! Writes the Zed extension's highlighting, `editors/zed/languages/sysml/highlights.scm`,
 //! from the keyword groups of the VS Code grammar, so both editors colour the same words
 //! alike, and copies the licence into the extension, which Zed's extension registry
-//! requires. It also copies LANGUAGE.md and the examples into `src/init/assets/`, which
-//! `ortho init` carries:
-//! crates.io gets only `src/`. CI runs it and fails if any committed file differs.
+//! requires. It also copies what the AI instructions are written from, LANGUAGE.md,
+//! VIEWS.md and the files of `ai/`, and the examples into `src/init/assets/`, which
+//! `ortho init` carries: crates.io gets only `src/`. CI runs it and fails if any committed file differs.
 //!
 //! Zed parses with Nomograph's Tree-sitter grammar, whose keywords are its anonymous
 //! nodes. A query naming a node the grammar lacks fails as a whole, so the words that
 //! grammar does not have are left out; `null` it reads as a literal.
-use crate::vscode_grammar::{GROUPS, copy_examples, language_copy};
+use crate::vscode_grammar::{AI_FILES, GROUPS, ai_copy, copy_examples, file_name};
 use crate::{Result, write};
 use ortho::parser::KEYWORDS;
 
 const OUT: &str = "editors/zed/languages/sysml/highlights.scm";
 const COPIES: [(&str, &str); 1] = [("LICENSE", "editors/zed/LICENSE")];
-const LANGUAGE_OUT: &str = "src/init/assets/LANGUAGE.md";
+const AI_OUT: &str = "src/init/assets/ai";
 const EXAMPLES_OUT: &str = "src/init/assets/examples";
 
 /// ortho's keywords that are not keywords of the Tree-sitter grammar: `typed by` it
@@ -130,10 +130,13 @@ pub fn run() -> Result {
         std::fs::copy(from, to).map_err(|error| format!("{from}: {error}"))?;
         println!("Wrote {to}");
     }
-    let language = std::fs::read_to_string("LANGUAGE.md").map_err(|error| format!("LANGUAGE.md: {error}"))?;
-    std::fs::create_dir_all("src/init/assets").map_err(|error| error.to_string())?;
-    write(LANGUAGE_OUT, &language_copy(&language, "zed-grammar"))?;
-    println!("Wrote {LANGUAGE_OUT}");
+    std::fs::create_dir_all(AI_OUT).map_err(|error| error.to_string())?;
+    for from in AI_FILES {
+        let text = std::fs::read_to_string(from).map_err(|error| format!("{from}: {error}"))?;
+        let to = format!("{AI_OUT}/{}", file_name(from));
+        write(&to, &ai_copy(from, &text, "zed-grammar"))?;
+        println!("Wrote {to}");
+    }
     copy_examples(EXAMPLES_OUT)?;
     println!("Wrote {EXAMPLES_OUT}");
     Ok(())

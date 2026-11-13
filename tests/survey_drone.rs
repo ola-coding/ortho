@@ -5,9 +5,9 @@ use ortho::diagrams::logical::extract_logical_graph;
 use ortho::diagrams::physical::extract_physical_graph;
 use ortho::diagrams::sequence::extract_sequence_model;
 use ortho::diagrams::use_case::extract_use_case_graph;
-use ortho::model::graph::{DiagramGraph, EdgeKind, NodeShape, is_use_case_node, qualified_name};
+use ortho::model::graph::{DiagramGraph, EdgeKind, NodeShape, is_use_case_node};
 use ortho::model::views::{DiagramKind, diagram_kind, view_heading};
-use ortho::parser::ast::{Prop, Type};
+use ortho::parser::ast::Prop;
 use ortho::parser::workspace::Workspace;
 use ortho::pipeline::render_views;
 use ortho::render::theme::LIGHT;
@@ -50,7 +50,19 @@ fn parses_and_links_all_six_files_as_one_workspace() {
         workspace.packages().into_iter().map(|p| workspace.ast.text(p, Prop::Name).unwrap()).collect();
     assert_eq!(
         packages,
-        ["SystemUseCases", "Functions", "Software", "Hardware", "Deployment", "SurveyMissionScenario"]
+        [
+            "SystemUseCases",
+            "Functions",
+            "Apis",
+            "Ground",
+            "Onboard",
+            "Middleware",
+            "Flight",
+            "FlightPlatform",
+            "Hardware",
+            "Deployment",
+            "SurveyMissionScenario"
+        ]
     );
 }
 
@@ -95,12 +107,12 @@ fn logical_view_a_strict_capability_tree_naming_nothing_that_realizes_a_function
     let (_, graph) = logical();
     let functions = graph.nodes.iter().filter(|n| !is_use_case_node(&n.keyword)).count();
     assert_eq!(graph.edges.iter().filter(|e| e.kind == EdgeKind::Decomposition).count(), functions - 1);
-    assert!(functions > 20);
+    assert_eq!(functions, 20);
 
     let all = names(&graph.nodes);
-    // Every onboard module answers to a function here, health monitoring and flight
-    // recording included.
-    for function in ["avoidObstacles", "maintainWorldModel", "monitorHealth", "recordFlightData"] {
+    // Every onboard module answers to a function here, supervising the system
+    // included.
+    for function in ["avoidObstacles", "maintainWorldModel", "superviseSystem"] {
         assert!(all.contains(&function), "{function}");
     }
     // Nothing that performs a function appears on this view. (`supplyPower` is a
@@ -120,27 +132,19 @@ fn logical_view_a_strict_capability_tree_naming_nothing_that_realizes_a_function
 }
 
 #[test]
-fn logical_view_the_tree_refines_its_use_case_and_no_use_case_goes_unrefined() {
+fn logical_view_the_tree_refines_each_use_case_and_the_view_draws_the_tree_alone() {
     let (workspace, graph) = logical();
-    let refinements: Vec<(&str, &str)> = graph
-        .edges
-        .iter()
-        .filter(|e| e.kind == EdgeKind::Dependency)
-        .map(|e| (e.source_id.as_str(), e.target_id.as_str()))
-        .collect();
-    assert_eq!(refinements, [("Functions::PerformAerialSurvey", "SystemUseCases::SurveyTask")]);
-    // A use case no function tree details would be a hole in the design.
-    let ast = &workspace.ast;
-    let use_cases =
-        workspace.packages().into_iter().find(|p| ast.text(*p, Prop::Name) == Some("SystemUseCases")).unwrap();
-    let refined: HashSet<&str> = refinements.iter().map(|(_, target)| *target).collect();
-    let unrefined: Vec<String> = ast
-        .children(use_cases, Prop::Members)
-        .filter(|m| ast[*m].ty == Type::UseCaseDef)
-        .map(|m| qualified_name(ast, m))
-        .filter(|name| !refined.contains(name.as_str()))
-        .collect();
-    assert_eq!(unrefined, Vec::<String>::new());
+    // Surveying an area includes planning it and following it, which the operator
+    // can also ask for alone: use cases of their own, so each is refined too.
+    let refinements = common::refinements(&workspace);
+    let tree = "Functions::PerformAerialSurvey".to_string();
+    assert_eq!(
+        refinements,
+        ["surveyArea", "planSurvey", "followProgress"].map(|u| (tree.clone(), format!("SystemUseCases::{u}")))
+    );
+    // The view draws the tree alone; use-case.sysml draws the use cases.
+    assert!(!graph.nodes.iter().any(|n| is_use_case_node(&n.keyword)));
+    assert!(!graph.edges.iter().any(|e| e.kind == EdgeKind::Dependency));
 }
 
 #[test]
@@ -150,21 +154,18 @@ fn implementation_view_each_module_lists_the_functions_it_realizes() {
     let compartment_of = |name: &str, title: &str| lines_of(all.iter().find(|n| n.name == name).unwrap(), title);
 
     assert_eq!(compartment_of("VideoStreamer", "perform actions"), ["streamVideo"]);
-    assert_eq!(
-        compartment_of("SurveyPlanner", "perform actions"),
-        ["planMission", "presentInformation", "acceptOperatorInput"]
-    );
+    assert_eq!(compartment_of("SurveyPlanner", "perform actions"), ["planMission", "presentProgress"]);
 
     // A platform module realizes nothing of the function tree: it is what the modules
     // above it stand on. It still has an API of its own.
-    for platform in ["RealTimeKernel", "MinimalLinux", "ZenohRouter", "SensorDrivers"] {
+    for platform in ["RealTimeKernel", "ZenohRouter", "HardwareAbstraction"] {
         assert_eq!(compartment_of(platform, "perform actions"), Vec::<&str>::new(), "{platform}");
     }
     assert_eq!(compartment_of("RealTimeKernel", "ports"), ["scheduler : SchedulerApi"]);
 
     // The containers publish and subscribe: one topic, two ends.
     assert_eq!(compartment_of("VideoStreamer", "ports"), ["video : VideoTopic"]);
-    assert_eq!(compartment_of("DataLogger", "ports"), ["health : ~HealthTopic", "video : ~VideoTopic"]);
+    assert_eq!(compartment_of("Diagnostics", "ports"), ["health : HealthTopic", "video : ~VideoTopic"]);
 
     // The function tree is a companion file, not part of this view.
     assert!(!names(&graph.nodes).contains(&"Functions"));
@@ -175,21 +176,12 @@ fn implementation_view_the_firmware_stack_and_the_linux_stack_never_import_each_
     let graph = implementation();
     let mut imports: Vec<String> = graph.edges.iter().map(|e| format!("{} -> {}", e.source_id, e.target_id)).collect();
     imports.sort();
-    assert_eq!(
-        imports,
-        [
-            "Software::Flight -> Software::FlightPlatform",
-            "Software::Ground -> Software::Middleware",
-            "Software::Middleware -> Software::LinuxPlatform",
-            "Software::Onboard -> Software::Middleware",
-            "Software::Onboard::Autonomy -> Software::Onboard::Perception",
-        ]
-    );
+    assert_eq!(imports, ["Flight -> FlightPlatform", "Ground -> Middleware", "Onboard -> Middleware",]);
 
     // The two stacks meet over MAVLink at runtime, never through a compile-time
     // dependency: the firmware knows nothing of Zenoh or Linux, and nothing in the
     // Linux stack builds against the firmware.
-    let firmware = ["Software::Flight", "Software::FlightPlatform"];
+    let firmware = ["Flight", "FlightPlatform"];
     for edge in &graph.edges {
         assert_eq!(firmware.contains(&edge.source_id.as_str()), firmware.contains(&edge.target_id.as_str()));
     }
@@ -201,8 +193,8 @@ fn physical_view_the_product_as_nested_parts_each_radio_wired_on_its_own() {
     assert_eq!(names(&graph.nodes), ["system : SurveyDroneSystem"]);
     let devices = graph.nodes[0].children.as_deref().unwrap();
     assert_eq!(names(devices), ["drone : SurveyDrone", "ground : GroundStation"]);
-    assert_eq!(devices[0].children.as_deref().unwrap().len(), 12);
-    assert_eq!(graph.edges.len(), 18);
+    assert_eq!(devices[0].children.as_deref().unwrap().len(), 8);
+    assert_eq!(graph.edges.len(), 11);
     assert!(graph.edges.iter().all(|e| e.kind == EdgeKind::Connection));
 
     let wires: Vec<(&str, &str)> = graph
@@ -222,7 +214,7 @@ fn physical_view_the_product_as_nested_parts_each_radio_wired_on_its_own() {
         .filter(|e| e.label.as_deref() == Some(": RadioLink"))
         .map(|e| (e.source_port_id.as_deref(), e.target_port_id.as_deref()))
         .collect();
-    assert_eq!(typed, [(Some("Hardware::system.drone#rfLink"), Some("Hardware::system.ground#rfLink"))]);
+    assert_eq!(typed, [(Some("Hardware::system.drone.radio#rf"), Some("Hardware::system.ground.radio#rf"))]);
 }
 
 #[test]
@@ -231,13 +223,16 @@ fn physical_view_a_part_inherits_what_its_definition_performs() {
     let all = all_nodes(&graph.nodes);
     let compartments = |name: &str| &all.iter().find(|n| n.name == name).unwrap().compartments;
 
-    // The perform sits on BrushlessMotor; the box is the usage.
-    assert_eq!(*compartments("motors : BrushlessMotor [4]"), [compartment("perform actions", &["produceThrust"])]);
-    // Both computers provide computing: realization is many to many.
-    assert_eq!(compartments("fc : ControlComputer")[0].lines, ["provideComputing"]);
-    assert_eq!(compartments("companion : GpuComputer")[0].lines, ["provideComputing"]);
-    // The radio carries what the software says; it performs nothing.
-    assert!(compartments("radio : IpRadio").is_empty());
+    // The perform sits on PropulsionUnit; the box is the usage.
+    assert_eq!(*compartments("motors : PropulsionUnit [4]"), [compartment("perform actions", &["produceThrust"])]);
+    // The motors and the board that drives them produce thrust together:
+    // realization is many to many.
+    assert_eq!(compartments("esc : FourInOneEsc")[0].lines, ["produceThrust"]);
+    // A radio performs a whole branch of the tree.
+    assert_eq!(compartments("radio : IpRadio")[0].lines, ["communicate"]);
+    // The computers perform theirs through the software deployed on them.
+    assert!(compartments("fc : ControlComputer").is_empty());
+    assert!(compartments("companion : GpuComputer").is_empty());
 }
 
 #[test]
@@ -272,7 +267,6 @@ fn deployment_view_every_module_hosted_on_three_computers_in_two_devices() {
             "allocated sw::missionExecutor",
             "allocated sw::stateEstimator",
             "allocated sw::flightControl",
-            "allocated sw::sensorDrivers",
             "allocated sw::mavlinkInterface",
             "allocated sw::hardwareAbstraction",
             "allocated sw::realTimeKernel",
@@ -280,27 +274,27 @@ fn deployment_view_every_module_hosted_on_three_computers_in_two_devices() {
     );
 
     // A module missing from this view would be a program with nowhere to run, so the
-    // count is the whole of implementation.sysml's `sw`.
+    // count is the whole of `sw`, one usage of every module.
     let placed: Vec<&String> = hosts.iter().flat_map(|n| n.compartments.iter().flat_map(|c| &c.lines)).collect();
-    assert_eq!(placed.len(), 24);
-    assert_eq!(placed.iter().collect::<HashSet<_>>().len(), 24);
+    assert_eq!(placed.len(), 16);
+    assert_eq!(placed.iter().collect::<HashSet<_>>().len(), 16);
 }
 
 #[test]
 fn process_view_a_survey_mission_uploaded_over_the_mavlink_mission_protocol() {
     let workspace = parse_set(&["process.sysml", "implementation.sysml", "logical.sysml", "use-case.sysml"]);
     let sequence = extract_sequence_model(&workspace.ast, &exposed_by_view(&workspace));
-    assert_eq!(sequence.lifelines.len(), 7);
-    // The operator starts it: a person, untyped in the model.
-    assert_eq!(sequence.lifelines[0].label, "operator");
+    assert_eq!(sequence.lifelines.len(), 6);
+    // The operator starts it: the actor of the use cases.
+    assert_eq!(sequence.lifelines[0].label, "operator : Operator");
     assert_eq!(sequence.messages[0].label, "markArea");
 
-    // The upload handshake runs in MAVLink's own order, vehicle-driven.
+    // The mission travels down both stacks, and the vehicle acknowledges it.
     let labels: Vec<&str> = sequence.messages.iter().map(|m| m.label.as_str()).collect();
     let handshake = [
-        "missionCount of MissionCount",
-        "requestItem of MissionRequestInt",
-        "missionItem of MissionItemInt",
+        "uploadMission of MissionItems",
+        "missionUpload of MissionItems",
+        "storeMission of MissionItems",
         "missionAck of MissionAck",
     ];
     let positions: Vec<usize> = handshake.iter().map(|l| labels.iter().position(|m| m == l).unwrap()).collect();

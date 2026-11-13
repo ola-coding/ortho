@@ -7,7 +7,7 @@ use ortho::parser::workspace::parse_sysml_files;
 use ortho::pipeline::render_views;
 use ortho::render::theme::LIGHT;
 
-const EXAMPLES: &[&str] = &["examples/survey-drone", "examples/coffee-machine", "tests/views"];
+const EXAMPLES: &[&str] = &["examples/survey-drone", "examples/coffee-machine", "examples/web-shop", "tests/views"];
 
 pub fn run() -> Result {
     for base in EXAMPLES {

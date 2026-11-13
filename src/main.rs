@@ -33,8 +33,9 @@ enum Command {
         #[arg(short, long)]
         watch: bool,
     },
-    /// Write AI instructions for Claude Code and GitHub Copilot into a folder, so an
-    /// agent there knows the SysML v2 ortho reads and checks its work with ortho
+    /// Write AI instructions for Claude Code, GitHub Copilot and other agents into a
+    /// folder, so an agent there knows the SysML v2 ortho reads and checks its work
+    /// with ortho
     Init {
         /// The folder to write into
         #[arg(value_name = "FOLDER", default_value = ".")]

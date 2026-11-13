@@ -4,6 +4,7 @@
 mod assets;
 mod instructions;
 
+use instructions::InstructionFile;
 use std::path::Path;
 
 /// The examples there are, by the name `--example` takes.
@@ -16,11 +17,16 @@ pub fn example_names() -> Vec<&'static str> {
 /// Instructions that are there and differ are replaced only with `force`: they may be
 /// the user's own.
 pub fn init(folder: &Path, example: Option<&str>, force: bool) -> Result<Vec<String>, String> {
-    let files = instructions::instruction_files(assets::LANGUAGE);
-    let differs = |(path, content): &&(String, String)| {
-        std::fs::read_to_string(folder.join(path)).is_ok_and(|there| there != *content)
+    let mut files = instructions::instruction_files(&assets::AI);
+    // A project's own instructions for its agents are never written over.
+    let theirs = instructions::AGENT_FILES.iter().find(|name| folder.join(name).exists());
+    if theirs.is_some() {
+        files.retain(|file| !file.unless_agent_file);
+    }
+    let differs = |file: &&InstructionFile| {
+        std::fs::read_to_string(folder.join(&file.path)).is_ok_and(|there| there != file.content)
     };
-    let changed: Vec<&str> = files.iter().filter(differs).map(|(path, _)| path.as_str()).collect();
+    let changed: Vec<&str> = files.iter().filter(differs).map(|file| file.path.as_str()).collect();
     if !changed.is_empty() && !force {
         return Err(format!(
             "The AI instructions here differ from the ones ortho writes:\n  {}\nRun ortho init --force to replace them.",
@@ -28,14 +34,20 @@ pub fn init(folder: &Path, example: Option<&str>, force: bool) -> Result<Vec<Str
         ));
     }
     let mut done = Vec::new();
-    for (path, content) in &files {
-        let to = folder.join(path);
-        if std::fs::read_to_string(&to).is_ok_and(|there| there == *content) {
+    for file in &files {
+        let to = folder.join(&file.path);
+        if std::fs::read_to_string(&to).is_ok_and(|there| there == file.content) {
             done.push(format!("Up to date: {}", to.display()));
             continue;
         }
-        write(&to, content)?;
+        write(&to, &file.content)?;
         done.push(format!("Wrote {}", to.display()));
+    }
+    if let Some(theirs) = theirs {
+        done.push(format!(
+            "Kept {}, which holds this project's instructions for agents",
+            folder.join(theirs).display()
+        ));
     }
     if let Some(name) = example {
         let example = assets::EXAMPLES

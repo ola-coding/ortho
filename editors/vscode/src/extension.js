@@ -154,9 +154,10 @@ async function showWithPreview(uri) {
 }
 
 /**
- * Writes the AI instructions into a workspace folder: a skill for Claude Code and
- * instructions for Copilot, from the copy of ortho's LANGUAGE.md the extension carries.
- * Files that are already there are replaced only once the user says so.
+ * Writes the AI instructions into a workspace folder: a skill for Claude Code,
+ * instructions for Copilot, and an AGENTS.md for other agents, from the files the
+ * extension carries in ai/. Files that are already there are replaced only once the
+ * user says so; AGENTS.md is never replaced, nor written beside another agent file.
  * @param {vscode.ExtensionContext} context
  */
 async function addAiInstructions(context) {
@@ -169,8 +170,29 @@ async function addAiInstructions(context) {
     if (folders.length === 0) vscode.window.showInformationMessage('Open a folder to add AI instructions to.');
     return;
   }
-  const bytes = await vscode.workspace.fs.readFile(vscode.Uri.joinPath(context.extensionUri, 'ai', 'LANGUAGE.md'));
-  const files = instructionFiles(new TextDecoder().decode(bytes));
+  const ai = /** @type {import('./instructions').Sources} */ ({});
+  for (const name of ['LANGUAGE', 'VIEWS', 'WORKFLOW', 'MISTAKES', 'AGENTS']) {
+    const bytes = await vscode.workspace.fs.readFile(vscode.Uri.joinPath(context.extensionUri, 'ai', `${name}.md`));
+    ai[/** @type {keyof typeof ai} */ (name)] = new TextDecoder().decode(bytes);
+  }
+  const files = [];
+  /** @type {{ path: string, content: string, there: string } | undefined} */
+  let kept;
+  for (const file of instructionFiles(ai)) {
+    if (!file.unlessAny) {
+      files.push(file);
+      continue;
+    }
+    let there;
+    for (const name of file.unlessAny) {
+      if (await exists(vscode.Uri.joinPath(folder.uri, name))) {
+        there = name;
+        break;
+      }
+    }
+    if (there) kept = { ...file, there };
+    else files.push(file);
+  }
   const existing = [];
   for (const file of files) {
     const uri = vscode.Uri.joinPath(folder.uri, file.path);
@@ -190,9 +212,18 @@ async function addAiInstructions(context) {
     await vscode.workspace.fs.createDirectory(vscode.Uri.joinPath(uri, '..'));
     await vscode.workspace.fs.writeFile(uri, new TextEncoder().encode(file.content));
   }
+  if (kept) {
+    const copy = 'Copy the lines';
+    const answer = await vscode.window.showInformationMessage(
+      `Added AI instructions for Claude Code and Copilot to ${folder.name}. ${kept.there} is already there, so AGENTS.md was not written: add its lines to ${kept.there} for other agents.`,
+      copy,
+    );
+    if (answer === copy) await vscode.env.clipboard.writeText(kept.content);
+    return;
+  }
   const open = 'Open the skill';
   const answer = await vscode.window.showInformationMessage(
-    `Added AI instructions for Claude Code and Copilot to ${folder.name}.`,
+    `Added AI instructions for Claude Code, Copilot and other agents to ${folder.name}.`,
     open,
   );
   if (answer === open) {

@@ -64,7 +64,7 @@ jobs:
         run: |
           if [ -n "$(git status --porcelain -- editors/vscode)" ]; then
             git diff -- editors/vscode
-            echo "::error::The VS Code grammar, or its copy of LANGUAGE.md, the examples, the licence or the icon, is stale. Run 'cargo xtask vscode-grammar' and commit the result."
+            echo "::error::The VS Code grammar, or its copies of the AI instructions' sources, the examples, the licence or the icon, is stale. Run 'cargo xtask vscode-grammar' and commit the result."
             exit 1
           fi
       - run: cargo xtask zed-grammar
@@ -72,7 +72,7 @@ jobs:
         run: |
           if [ -n "$(git status --porcelain -- editors/zed src/init/assets)" ]; then
             git diff -- editors/zed src/init/assets
-            echo "::error::The Zed extension's highlighting, its copy of the licence, or ortho init's copies of LANGUAGE.md and the examples, are stale. Run 'cargo xtask zed-grammar' and commit the result."
+            echo "::error::The Zed extension's highlighting, its copy of the licence, or ortho init's copies of the AI instructions' sources and the examples, are stale. Run 'cargo xtask zed-grammar' and commit the result."
             exit 1
           fi
 

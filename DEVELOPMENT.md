@@ -78,8 +78,8 @@ rules are only warnings, which the CLI prints before carrying on:
   (`unperformed_functions`, with what those views draw in `solution_owners`);
 - a tree a logical view draws beside use cases that refines none
   (`unrefined_trees`);
-- a use case a logical view draws that no tree refines
-  (`unrefined_use_cases`);
+- a use case that no function refines, once the model has a use case view
+  and a logical view, whichever views draw it (`unrefined_use_cases`);
 - an `allocate` end that neither the implementation nor the physical view
   draws (`foreign_allocation_ends`);
 - software that no deployment view allocates to a host (`unhosted_software`).
@@ -107,12 +107,13 @@ two apart:
 
 | When the model declares… | ortho warns of… |
 |---|---|
-| use cases and a logical view | a tree drawn beside use cases that refines none, and a use case drawn beside trees that none refines |
+| a use case view and a logical view | a use case the use case view draws that no function refines, whether or not a logical view draws it |
+| use cases and trees on one logical view | a tree drawn there that refines none |
 | a logical view, and an implementation or physical view | a function in scope that no module or part those views draw performs |
 | a deployment view | an `allocate` end that is not a module of an implementation view or a part of a physical view, and a module no host runs |
 
 A function is in scope when a logical view draws it and, in a model with use
-cases, its tree refines one. A catalogue of functions kept beside the product's
+cases, its tree refines one, at its root or in a branch. A catalogue of functions kept beside the product's
 trees needs no solution until a use case asks for it. SysML v2's own way to say
 which functions one product of a range addresses is variability, `variation`
 and `variant` (§7.6), which ortho parses but does not yet read.
@@ -211,21 +212,27 @@ from another view**, except:
 
 ```text
 logical                   →  use case
-implementation, physical  →  logical
+implementation            →  logical
+physical                  →  logical, use case
 deployment                →  implementation, physical
-process                   →  implementation
+process                   →  implementation, use case
 ```
 
 Every dependency points back towards what users need: a function tree names
-the use case it refines, and a component names its functions, never the other
-way round. A view draws only what it exposes, so the files it refers to supply
+the use case it refines, a component names its functions, the product
+specializes the use cases' subject, and a scenario's people are their actors,
+never the other way round. A view draws only what it exposes, so the files it refers to supply
 names, and boxes only where it exposes what they declare.
 
-These rules are the examples' only: [any link can be left out](VIEWS.md). The
+These rules are the examples' only: [any link can be left out](VIEWS.md), and
+the web shop, which has no hardware, leaves out physical and deployment. The
 example tests load each view with only the files it depends on, so a name from
 any other fails. Both ends of an allocation are named once: one
-`part sw { ... }` tree of software, and one usage of the whole product, which
-also heads the physical view.
+`part sw { ... }` tree of software, in the deployment file beside the
+allocations that use it, and one usage of the whole product, which also heads
+the physical view. The implementation file has no package around all the
+software: each layer is a package, the APIs another, and the view stands
+outside them.
 
 ## Working on the code
 
@@ -274,8 +281,9 @@ deck to GitHub Pages.
   package carries that ortho, and a test fails if `package.json` and
   `Cargo.toml` differ. Its grammar,
   `syntaxes/sysml.tmLanguage.json`, is written from `KEYWORDS`, never by hand,
-  its `ai/LANGUAGE.md`, which the AI instructions carry, is copied from
-  LANGUAGE.md, its `examples/`, which *Open Example* copies, from each
+  its `ai/`, which the AI instructions are written from, is copied from
+  LANGUAGE.md, VIEWS.md and the repository's `ai/` (see *The AI
+  instructions* below), its `examples/`, which *Open Example* copies, from each
   example's `.sysml` files, and its LICENSE and `icon.png` from the
   repository's, since `vsce` packs only what is in the extension's folder:
   run `cargo xtask vscode-grammar` after changing any of them. Its
@@ -321,16 +329,17 @@ deck to GitHub Pages.
   request under another host name is refused, and so is a post from another
   page, so no site can read a model or open files through it.
 - **`ortho init`** (`src/init/`) writes what a project starts with: the AI
-  instructions, a skill for Claude Code and instructions for GitHub Copilot,
-  and with `--example` an example model in a folder of its own. ortho carries
-  them, so it needs no editor: Zed gives an extension no commands, and its
-  language extensions leave setting a project up to the language's own
-  command, as `cargo new`. The text is the VS Code extension's
-  (`editors/vscode/src/instructions.js`), without that editor's paths or any
-  path of the machine, since the files are committed. Instructions changed by
-  hand are kept unless `--force`. The language reference and the examples are
-  copied into `src/init/assets/` by `cargo xtask zed-grammar`, since crates.io
-  gets only `src/`.
+  instructions, and with `--example` an example model in a folder of its own.
+  ortho carries them, so it needs no editor: Zed gives an extension no
+  commands, and its language extensions leave setting a project up to the
+  language's own command, as `cargo new`. `src/init/instructions.rs` puts the
+  instructions together as `editors/vscode/src/instructions.js` does, from the
+  same files, but names no path of an editor or of the machine, since the
+  files are committed. Instructions changed by hand are kept unless `--force`,
+  and AGENTS.md is written only where the project has no such file yet. The
+  files of `ai/`, LANGUAGE.md, VIEWS.md and the examples are copied into
+  `src/init/assets/` by `cargo xtask zed-grammar`, since crates.io gets only
+  `src/`.
 - **The Zed extension** is in `editors/zed/`: a Rust crate, built to
   WebAssembly by Zed itself, that starts `ortho lsp` (`src/ortho.rs`), and the
   language's Tree-sitter queries in `languages/sysml/`. It parses with
@@ -345,8 +354,21 @@ deck to GitHub Pages.
   `ortho lsp` opens in the browser.
   The language is named *SysML v2*, as the Spec42 extension names it too, so
   both run on the same files.
-- **The examples** cover two different domains, so a rendering change that
-  only suits one shows up. Regenerate their SVGs and look at them in a browser
+- **The AI instructions** are what ortho hands to the agents that write
+  models: a Claude Code skill, GitHub Copilot instructions and an `AGENTS.md`.
+  What they say is written once, in LANGUAGE.md, VIEWS.md and `ai/`:
+  `ai/WORKFLOW.md` is the skill's body, how to build a model, check it with
+  ortho and review it; `ai/MISTAKES.md` the mistakes agents make, each with
+  what ortho prints; `ai/AGENTS.md` the short file other agents read. Only
+  how they are put together, and where an editor keeps ortho, belongs to each
+  way in: `editors/vscode/src/instructions.js` for VS Code, and
+  `src/init/instructions.rs` for `ortho init`. A test (`tests/agent_files.rs`) checks that
+  each mistake draws the message MISTAKES.md shows and that its fix loads
+  cleanly, so change the page when a message changes.
+- **The examples** cover three different domains, so a rendering change that
+  only suits one shows up. The web shop has no hardware, so it has no physical
+  or deployment view, and its implementation view shows modules built on a
+  vendor's services. Regenerate their SVGs and look at them in a browser
   whenever rendering changes. They carry no requirements, since no view would
   show them.
 - **The views written by hand** in `tests/views/` draw what no example does,
@@ -542,7 +564,8 @@ Done, one line each; the commits and the sections above hold the detail:
 - [x] **A deployment view adds nothing of its own** (`foreign_allocation_ends`).
 - [x] **Refuse a part typed by behaviour or data.**
 - [x] **Warn of software that runs nowhere** (`unhosted_software`).
-- [x] **Warn of a use case no tree refines** (`unrefined_use_cases`).
+- [x] **Warn of a use case no tree refines** (`unrefined_use_cases`), from the
+  whole model, so a logical view may draw its trees alone.
 - [x] **Suggest the name meant** in a chain (`chain_hint`); not for plain names.
 - [x] **A VS Code extension** in `editors/vscode/`, with ortho inside, on the
   Marketplace and Open VSX; see *Working on the code* and *Releasing*.
@@ -586,8 +609,8 @@ Open, in priority order:
     on that line; a flow with no `connect` draws a line of its own, as the
     spec draws a flow (§8.2.3).
   - [ ] Flows in the examples: water, steam, grounds and milk in the coffee
-    machine, power and video in the drone. Mounts stay `connect`s, since
-    nothing flows through them.
+    machine, power and video in the drone. Their port defs already say which
+    item goes which way.
   - [ ] 38 of OMG's model files use flows, some between action parameters:
     they must keep loading once the ends are resolved.
 - [ ] **Requirements as a table ortho writes,** and on the parts that satisfy

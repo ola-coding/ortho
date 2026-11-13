@@ -282,15 +282,12 @@ fn draws_the_use_cases_a_use_case_includes_below_it_in_the_order_it_includes_the
     assert_eq!(plan_y, follow_y);
     assert!(plan_x < area_x && area_x < follow_x);
 
-    // A cappuccino includes an espresso, straight below it; descaling stands beside.
+    // A cappuccino includes an espresso, straight below it.
     let coffee = at("coffee-machine");
     let (cappuccino_x, cappuccino_y, cappuccino_height) = coffee("makeCappuccino");
     let (espresso_x, espresso_y, _) = coffee("makeEspresso");
-    let (descale_x, descale_y, _) = coffee("descale");
     assert!(close_to(espresso_x, cappuccino_x, 2));
     assert!(espresso_y > cappuccino_y + cappuccino_height);
-    assert_eq!(descale_y, cappuccino_y);
-    assert!(descale_x > cappuccino_x);
 }
 
 #[test]

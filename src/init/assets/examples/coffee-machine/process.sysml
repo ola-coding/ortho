@@ -1,20 +1,15 @@
-// Process view: one scenario — the software making a cappuccino.
-//
-// The lifelines are the software modules from implementation.sysml, so that
-// file is rendered alongside this one.
+// Process view: one scenario, the software making a cappuccino.
 package MakeCappuccinoScenario {
+    doc /* The user picks a cappuccino on the panel; the recipe engine heats,
+         * brews and froths in turn. */
 
-    private import Software::*;
+    private import Apis::*;
     private import StandardViewDefinitions::*;
 
-    // What the messages carry.
-    item def BeverageRecipe;
-    item def TempSetpoint;
-    item def DoseSetting;
-    item def MilkSetting;
-
+    // The lifelines are the user and the modules of implementation.sysml; each
+    // message is an item one of their APIs carries.
     occurrence def MakeCappuccino {
-        part user;
+        part user : SystemUseCases::User;
         part uiApp : Application::UiApp;
         part recipeEngine : Application::RecipeEngine;
         part temperatureController : Control::TemperatureController;

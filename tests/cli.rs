@@ -53,22 +53,13 @@ fn says_its_version() {
 
 #[test]
 fn renders_the_examples_as_their_committed_diagrams() {
-    for example in ["coffee-machine", "survey-drone"] {
+    // The web shop has no hardware, so no physical or deployment view.
+    for (example, views) in [("coffee-machine", 6), ("survey-drone", 6), ("web-shop", 4)] {
         let out = scratch(example);
         let output = ortho(&["render", &format!("examples/{example}"), "-o", path(&out)]);
         assert!(output.status.success(), "{}", stderr(&output));
-        // The survey drone's three biggest views are more than landscape A4 holds.
-        let too_big: Vec<String> =
-            stderr(&output).lines().map(|line| line.split(" is too ").next().unwrap_or(line).to_string()).collect();
-        let expected: &[&str] = match example {
-            "survey-drone" => &[
-                "Warning: 'Implementation view — Survey Drone'",
-                "Warning: 'Physical view — Survey Drone'",
-                "Warning: 'Process view — Survey Drone'",
-            ],
-            _ => &[],
-        };
-        assert_eq!(too_big, expected, "{example}");
+        // Every example fits landscape A4, so ortho warns of none.
+        assert_eq!(stderr(&output).lines().collect::<Vec<_>>(), Vec::<&str>::new(), "{example}");
         let committed = repository().join("examples").join(example).join("diagrams");
         let written = files_in(&out);
         assert_eq!(written, files_in(&committed));
@@ -80,9 +71,9 @@ fn renders_the_examples_as_their_committed_diagrams() {
         }
         // One line for each file, saying what it holds.
         let said: Vec<String> = stdout(&output).lines().map(String::from).collect();
-        assert_eq!(said.len(), 6);
-        let physical = out.join(format!("physical-view-{example}.svg"));
-        assert!(said.iter().any(|line| line.starts_with(&format!("Wrote {} (", physical.display()))), "{said:?}");
+        assert_eq!(said.len(), views, "{example}");
+        let logical = out.join(format!("logical-view-{example}.svg"));
+        assert!(said.iter().any(|line| line.starts_with(&format!("Wrote {} (", logical.display()))), "{said:?}");
         assert!(said.iter().any(|line| line.ends_with("message(s))")), "{said:?}");
     }
 }
@@ -264,14 +255,18 @@ fn init_writes_the_ai_instructions_and_keeps_changed_ones() {
     let output = ortho(&["init", path(&folder)]);
     assert!(output.status.success(), "{}", stderr(&output));
     let skill = folder.join(".claude/skills/sysml-v2-ortho/SKILL.md");
-    assert!(std::fs::read_to_string(&skill).unwrap().contains("ortho render <model folder>"));
-    assert!(folder.join(".claude/skills/sysml-v2-ortho/LANGUAGE.md").exists());
+    assert!(std::fs::read_to_string(&skill).unwrap().contains("ortho render"));
+    for reference in ["LANGUAGE.md", "VIEWS.md", "MISTAKES.md"] {
+        assert!(folder.join(".claude/skills/sysml-v2-ortho").join(reference).exists(), "{reference}");
+    }
     assert!(folder.join(".github/instructions/sysml-v2.instructions.md").exists());
-    assert_eq!(stdout(&output).lines().filter(|line| line.starts_with("Wrote ")).count(), 3);
+    assert!(std::fs::read_to_string(folder.join("AGENTS.md")).unwrap().starts_with("# "));
+    assert_eq!(stdout(&output).lines().filter(|line| line.starts_with("Wrote ")).count(), 6);
 
     // Again changes nothing; once changed by hand, they are replaced only when told to.
     let again = ortho(&["init", path(&folder)]);
-    assert_eq!(stdout(&again).lines().filter(|line| line.starts_with("Up to date: ")).count(), 3);
+    assert_eq!(stdout(&again).lines().filter(|line| line.starts_with("Up to date: ")).count(), 5);
+    assert!(stdout(&again).contains("Kept "), "{}", stdout(&again));
     std::fs::write(&skill, "mine").unwrap();
     let kept = ortho(&["init", path(&folder)]);
     assert!(!kept.status.success());
@@ -279,6 +274,17 @@ fn init_writes_the_ai_instructions_and_keeps_changed_ones() {
     assert_eq!(std::fs::read_to_string(&skill).unwrap(), "mine");
     assert!(ortho(&["init", path(&folder), "--force"]).status.success());
     assert_ne!(std::fs::read_to_string(&skill).unwrap(), "mine");
+}
+
+#[test]
+fn init_leaves_a_projects_own_agent_file_alone() {
+    let folder = scratch("init-agents");
+    std::fs::write(folder.join("CLAUDE.md"), "ours").unwrap();
+    let output = ortho(&["init", path(&folder), "--force"]);
+    assert!(output.status.success(), "{}", stderr(&output));
+    assert!(!folder.join("AGENTS.md").exists());
+    assert_eq!(std::fs::read_to_string(folder.join("CLAUDE.md")).unwrap(), "ours");
+    assert!(stdout(&output).contains("CLAUDE.md"), "{}", stdout(&output));
 }
 
 #[test]

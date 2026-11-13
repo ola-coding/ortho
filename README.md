@@ -178,10 +178,10 @@ ortho ran in. A viewer can take you from a box to the text, as the VS Code
 extension does when you click one.
 
 `ortho init` writes AI instructions into the current folder, a skill for
-Claude Code and instructions for GitHub Copilot, so an agent there knows the
-SysML v2 ortho reads and checks its work with ortho.
-`ortho init --example coffee-machine` also copies that example, or
-`survey-drone`, into a folder of its own.
+Claude Code, instructions for GitHub Copilot and an `AGENTS.md` for other
+agents, so an agent there knows the SysML v2 ortho reads and checks its work
+with ortho. `ortho init --example coffee-machine` also copies that example,
+or `survey-drone` or `web-shop`, into a folder of its own.
 
 `ortho lsp` runs ortho as a language server, for an editor that speaks the
 Language Server Protocol, such as Zed, Neovim, Helix or Emacs: the problems
@@ -219,16 +219,20 @@ place of `releases/latest/download/`.
 
 ## Examples
 
-Two complete models, each with all six views rendered in its `diagrams/`
+Three complete models, each with its views rendered in its `diagrams/`
 folder:
 
 - [examples/coffee-machine/](examples/coffee-machine/): a bean-to-cup coffee
   machine. The smaller one, and the best place to start reading.
 - [examples/survey-drone/](examples/survey-drone/): a quadcopter that surveys
   an area from the air, with a tablet ground station.
+- [examples/web-shop/](examples/web-shop/): an online shop built on AWS, with
+  no hardware of its own, so four views: use case, logical, implementation and
+  process. For the software-only part of a system, such as a product's cloud
+  back end.
 
 The [pitch deck](https://ola-coding.github.io/ortho/) shows every view of
-both, with the model source beside each diagram.
+the first two, with the model source beside each diagram.
 
 ## What ortho does not do
 

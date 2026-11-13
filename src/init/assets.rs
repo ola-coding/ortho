@@ -1,9 +1,24 @@
-//! What ortho carries for `ortho init`: the language reference that the AI
-//! instructions hand to agents, and the examples it copies into a project. Copied into
-//! `assets/` from LANGUAGE.md and `examples/` by `cargo xtask zed-grammar`.
+//! What ortho carries for `ortho init`: what the AI instructions are written from,
+//! and the examples it copies into a project. Copied into `assets/` from LANGUAGE.md,
+//! VIEWS.md, `ai/` and `examples/` by `cargo xtask zed-grammar`.
 
-/// LANGUAGE.md, its links made absolute so they work from wherever it is copied.
-pub const LANGUAGE: &str = include_str!("assets/LANGUAGE.md");
+/// What the AI instructions are written from: each a file of `assets/ai/`, its links
+/// to the others kept and the rest pointing at GitHub, so they work wherever it is.
+pub struct Sources {
+    pub language: &'static str,
+    pub views: &'static str,
+    pub workflow: &'static str,
+    pub mistakes: &'static str,
+    pub agents: &'static str,
+}
+
+pub const AI: Sources = Sources {
+    language: include_str!("assets/ai/LANGUAGE.md"),
+    views: include_str!("assets/ai/VIEWS.md"),
+    workflow: include_str!("assets/ai/WORKFLOW.md"),
+    mistakes: include_str!("assets/ai/MISTAKES.md"),
+    agents: include_str!("assets/ai/AGENTS.md"),
+};
 
 /// An example model the user can copy into a project.
 pub struct Example {
@@ -24,7 +39,7 @@ macro_rules! example {
     };
 }
 
-pub const EXAMPLES: [Example; 2] = [
+pub const EXAMPLES: [Example; 3] = [
     example!(
         "coffee-machine",
         "Coffee machine",
@@ -49,6 +64,7 @@ pub const EXAMPLES: [Example; 2] = [
             "use-case.sysml"
         ]
     ),
+    example!("web-shop", "Web shop", ["implementation.sysml", "logical.sysml", "process.sysml", "use-case.sysml"]),
 ];
 
 /// The file opened first in a copied example: the use case view, where a model starts.

@@ -43,13 +43,16 @@ Zed's terminal, with any ortho, in any editor:
 
 ```sh
 ortho init                           # AI instructions, into this folder
-ortho init --example coffee-machine  # and an example model, or survey-drone
+ortho init --example coffee-machine  # and an example model, or survey-drone, or web-shop
 ```
 
-The AI instructions are a skill for Claude Code and instructions for GitHub
-Copilot. They carry the SysML v2 that ortho reads, and tell the agent to
-render the model after every change and fix what ortho reports, rather than
-delete the line it points at. Each example has all six views.
+The AI instructions are a skill for Claude Code, instructions for GitHub
+Copilot, and an `AGENTS.md`, which Zed's own agent reads, written only if the
+project has no such file yet. They carry the SysML v2 that ortho reads, and
+tell the agent to render the model after every change and fix what ortho
+reports, rather than delete the line it points at. The coffee machine and
+the survey drone have all six views; the web shop is software only, with
+four.
 
 ## Your model
 

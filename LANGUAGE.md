@@ -11,16 +11,19 @@ for is in [VIEWS.md](VIEWS.md).
 
 ## Rules for every file
 
-**Packages and imports** (§7.5). A file holds one or more `package`s. An
-`import` states its visibility (§7.5.3), and `private import` is almost
-always the right one.
+**Packages and imports** (§7.5). A file holds one or more `package`s. What it
+declares outside them belongs to the root namespace, which every file sees:
+the examples' implementation view stands there, beside the packages it
+exposes, since no package holds them all. An `import` states its visibility
+(§7.5.3), and `private import` is almost always the right one.
 
 ```sysml
 package Hardware {
-    private import ScalarValues::*;
+    private import ISQ::*;
+    private import SI::*;
 
     part def Battery {
-        attribute capacity_mAh : Real = 10000;
+        attribute energy : EnergyValue = 222 ['W⋅h'];
     }
 }
 ```
@@ -35,11 +38,15 @@ package Units {
 }
 ```
 
-- **Imports make names visible.** After `private import Software::*;`,
-  `sw.videoStreamer` is `Software::sw.videoStreamer`. A package's own members
+- **Imports make names visible.** After `private import Deployment::*;`,
+  `sw.videoStreamer` is `Deployment::sw.videoStreamer`. A package's own members
   come before what it imports.
-- **Attribute types are not resolved.** Import `ScalarValues`, where `Real`,
-  `String`, `Integer` and `Boolean` live, so that other tools find them.
+- **Attribute types are not resolved.** Import the library packages they come
+  from anyway, so that other tools find them: `ScalarValues` for `Real`,
+  `String`, `Integer` and `Boolean`, `ISQ` for quantities such as `MassValue`
+  and `LengthValue`, and `SI` for their units, such as `[g]`, `[mm]` and
+  `['°C']`. A value with its unit, `capacity : VolumeValue = 1.9 [L]`, says
+  more than a unit in the name, `capacity_l : Real = 1.9`.
 
 **Definitions and usages** (§7.6). `part def Motor` defines a kind of part;
 `part motor : Motor` uses one, optionally with a multiplicity: `[4]`,
@@ -87,7 +94,17 @@ their own kind of definition at all.
 
 **Comments** (§8.2.2.4). `// ...` and `//* ... */` are notes, which no tool
 keeps. `/* ... */`, `doc /* ... */` and `comment about x /* ... */` are part of
-the model; no view draws them.
+the model; no view draws them. So say what an element is with a `doc` in its
+body, which other tools show, and keep `//` for notes on how the model is
+written.
+
+```sysml
+package Hardware {
+    part def MilkTube {
+        doc /* A tube the user drops into a milk carton. */
+    }
+}
+```
 
 ## Views
 
@@ -123,7 +140,7 @@ package Functions {
 |---|---|---|
 | use case | `GeneralView` | the package of use cases |
 | logical | `GeneralView` | the `action def` of each function tree, and the use cases they refine |
-| implementation | `GeneralView` | the package of software |
+| implementation | `GeneralView` | the packages of software, one per layer or stack |
 | physical | `InterconnectionView` | the product's `part` usage |
 | deployment | `GeneralView` | the package of allocations |
 | process | `SequenceView` | the scenario's `occurrence def` |
@@ -138,8 +155,10 @@ ortho draws for landscape A4 and warns of a view whose names would print
 smaller than 6 pt once it is shrunk to fit. ortho already sets out what it can
 in rows: use cases, packages that import nothing from each other, and packages
 that all import the same one. What it cannot shorten is a view that simply
-holds too much. Then split the view, since more views, each about one thing,
-read better than one crowded one:
+holds too much. A real model outgrows one page, and that is as it should be:
+split it into views, each about one concern and one level of the system's
+breakdown, the way MBSE practice divides a model. More views, each about one
+thing, read better than one crowded one:
 
 - **Logical view:** expose one branch of a big tree, `expose MakeBeverage::prepareWater;`,
   in a view of its own, and keep the whole tree's view to its upper levels by
@@ -147,8 +166,8 @@ read better than one crowded one:
   than seven side by side under one parent, rarely fits.
 - **Use case view:** one view for each actor, or each kind of use case,
   exposing a package of its own.
-- **Implementation view:** expose one package, `expose Software::Onboard;`, in
-  a view for each layer or stack, rather than the whole software at once.
+- **Implementation view:** expose fewer packages, `expose Onboard;`, in a view
+  for each layer or stack, rather than the whole software at once.
 - **Physical view:** expose one subsystem's `part`, not the whole product.
 - **Process view:** one scenario per view; a scenario with more than about
   eight lifelines is two scenarios.
@@ -194,7 +213,9 @@ The subject is a use case's first parameter, so a use case that declares an
 actor states its `subject` first, as `descale` does. Restated, it keeps its
 type: `descale`'s `machine` is the same `machine : CoffeeMachine`. Type the
 subject by a part def of its own, the system as a black box, as OMG's models
-do.
+do, and let the product's part def on the physical view specialize it,
+`part def CoffeeMachine :> SystemUseCases::CoffeeMachine`, so the product as
+built is the subject of every use case.
 
 ## Logical view
 
@@ -218,8 +239,8 @@ package Functions {
 | `action name;` or `action name { ... }` nested in another | an «action» box under its parent, which owns it: a filled diamond at the parent's end |
 | `action name : Def;` in a package | nothing. It is the usage a `perform` chain starts from. |
 | `expose Tree::branch;` in the view, naming a nested `action` | that branch alone, the function at its root: a tree too big for one page, split |
-| `#refinement dependency Tree to SystemUseCases::Name;` in a package | a dashed arrow from the tree's root up to the use case, when the view exposes both |
-| `expose SystemUseCases::Name;` in the view | the use case, above the trees that refine it. One nothing refines stands alone, and ortho warns of it. |
+| `#refinement dependency Tree to SystemUseCases::Name;` in a package | a dashed arrow from the tree's root up to the use case, when the view exposes both. `Name` may be a use case or its definition; the examples refine the use cases themselves, `makeEspresso`, and leave them off their logical views, which draw the trees alone; the use case view draws the use cases. |
+| `expose SystemUseCases::Name;` in the view | the use case, above the trees that refine it. One nothing refines stands alone. |
 
 **Refining a use case** (§7.3). A function tree says which use case it details
 with a dependency, tagged from the standard library's `ModelingMetadata`, whose
@@ -228,8 +249,17 @@ is optional, but its ends are checked: once it names a use case, that use case
 has to be loaded. A logical view that shows use cases is there to tie its trees
 to them, though, so ortho warns of a tree it draws that refines no use case,
 and renders anyway. For a view of a single branch, the tree the branch belongs
-to has to refine one. The other way round, ortho warns of a use case the view
-draws that no tree refines.
+to has to refine one, at its root or in one of its branches.
+
+The other way round, ortho checks the whole model, not one view. Once a model
+declares both a use case view and a logical view, ortho warns of each use case
+the use case view draws that no function refines, wherever the refinement is
+written and whether or not a logical view draws the use case. A refinement may
+start at a tree's root or at one of its branches, and one of a use case
+definition refines every use case of that kind. An `include` does not pass a
+refinement on: an included use case is a use case of its own and needs its own.
+A model with only one of the two views gets no warning, since the other half is
+missing, not wrong.
 
 ```sysml
 package SystemUseCases {
@@ -255,37 +285,41 @@ package Functions {
 
 ## Implementation view
 
-The software, as packages of modules (§7.5, §7.11).
+The software, as packages of modules (§7.5, §7.11). Each layer or stack is a
+package of its own, and the view exposes them. A package around them all,
+called `Software`, would say nothing, since everything this view draws is
+software; it would only draw a frame around the rest.
 
 ```sysml
-package Software {
+package Application {
+    private import Functions::*;
+    private import Control::*;
+
+    part def RecipeEngine {
+        perform beverage.controlMachine.sequenceRecipe;
+    }
+}
+
+package Control {
     private import Functions::*;
 
-    package Control {
-        part def BrewController {
-            perform beverage.controlMachine.interlockBrewGroup;
-        }
+    part def BrewController {
+        perform beverage.prepareCoffee.extractShot;
     }
+}
 
-    package Application {
-        private import Software::Control::*;
-
-        part def RecipeEngine {
-            perform beverage.controlMachine.sequenceRecipe;
-        }
-    }
-
-    part sw {
-        part recipeEngine : Application::RecipeEngine;
-        part brewController : Control::BrewController;
-    }
+view 'Implementation view' : StandardViewDefinitions::GeneralView {
+    expose Application;
+    expose Control;
 }
 
 package Functions {
     action def MakeBeverage {
+        action prepareCoffee {
+            action extractShot;
+        }
         action controlMachine {
             action sequenceRecipe;
-            action interlockBrewGroup;
         }
     }
     action beverage : MakeBeverage;
@@ -294,11 +328,11 @@ package Functions {
 
 | You write | The view draws |
 |---|---|
-| `package Name { ... }` | a package box, nested inside its parent package |
+| `package Name { ... }` that the view exposes | a package box, or one nested inside its parent package |
 | `part def Name;` in a package | a module, a «part def» box, inside its package |
 | `part def Name :> Base;` | the same, headed `Name :> Base` |
 | `private import Pkg::*;` (or `Pkg::Element`, `Pkg::**`) | a dashed arrow to `Pkg`: «import»* (or «import», «import»**) |
-| `part sw { part x : Module; ... }` in a package | nothing. The deployment view allocates from it. |
+| `part sw { part x : Module; ... }`, in the deployment's package | nothing here. The deployment view allocates from it. |
 | `perform Functions::use.branch.leaf;` in a module | a line in its *perform actions* compartment |
 | `port api : SomeApi;` in a module | a line in its *ports* compartment: an API it offers |
 | `port api : ~SomeApi;` in a module | the same, conjugated: an API it needs |
@@ -311,22 +345,35 @@ needs the API declares the port conjugated with `~`, which reverses every
 direction (§7.12.3). Where modules publish and subscribe, the port definition
 is the topic.
 
+What crosses can be an `item`, with a definition of its own, and the process
+view's messages can then carry the same item (`message brew of DoseSetting`).
+Keep the APIs in a package of their own, since they belong to no one layer.
+
 ```sysml
-package Software {
+package Apis {
     private import ScalarValues::*;
+    private import ISQ::*;
+
+    item def DoseSetting {
+        attribute dose : MassValue;
+    }
 
     port def BrewApi {
-        in attribute dose_g : Real;
+        in item dose : DoseSetting;
         out attribute shotPoured : Boolean;
         inout attribute profile : String;
     }
+}
 
+package Control {
     part def BrewController {
-        port brew : BrewApi;
+        port brew : Apis::BrewApi;
     }
+}
 
+package Application {
     part def RecipeEngine {
-        port brew : ~BrewApi;
+        port brew : ~Apis::BrewApi;
     }
 }
 ```
@@ -364,20 +411,23 @@ ports (§7.11–§7.14).
 
 ```sysml
 package Hardware {
-    port def WaterPort;
-    port def DataPort;
+    item def Water;
+    item def Command;
+
+    port def WaterPort { out item water : Water; }
+    port def ControlPort { out item command : Command; }
 
     interface def ControlLink {
-        end controller : DataPort;
-        end device : DataPort;
+        end controller : ControlPort;
+        end device : ~ControlPort;
     }
 
     part def Tank { port waterOut : WaterPort; }
     part def Pump {
-        port waterIn : WaterPort;
-        port ctrlIn : DataPort;
+        port waterIn : ~WaterPort;
+        port ctrlIn : ~ControlPort;
     }
-    part def Board { port pumpCtrl : DataPort; }
+    part def Board { port pumpCtrl : ControlPort; }
 
     part def Machine {
         part tank : Tank;
@@ -396,7 +446,7 @@ package Hardware {
 |---|---|
 | `part name : Def [n];` | a «part» box, `name : Def [n]`, with the parts of `Def` nested inside |
 | the `part` the view exposes | the top-level box |
-| `port name : PortDef;` | a port on the box's edge. `~PortDef` conjugates it. |
+| `port name : PortDef;` | a port on the box's edge. `~PortDef` conjugates it: the receiving end of what the port def sends `out`. |
 | `connect a.p to b.q;` | a line between the two ports (or parts) |
 | `interface : Def connect a.p to b.q;` (optionally named), or a `connection` of a `connection def` | the same line, labelled as declared: `: Def` |
 | `interface def` with its `end`s, `port def` | nothing. They type interfaces and ports. |
@@ -406,19 +456,23 @@ package Hardware {
 What a part inherits through `:>`, or performs through its definition, is
 drawn as if declared.
 
+A port definition says which way its item goes, `out item water : Water`, and
+the port that receives it is conjugated, `~WaterPort`, as an API is on the
+implementation view. A port with nothing flowing through it, such as a mount,
+may stay empty, `port def MountPort;`. The product's part def specializes the
+use cases' subject, `part def Machine :> SystemUseCases::Machine`, so the
+product as built is what the use cases are about.
+
 ## Deployment view
 
-Which computer runs which software (§7.15). The file declares nothing of its
-own: it maps software usages onto hardware usages.
+Which computer runs which software (§7.15). The file declares the deployable
+software, `part sw`, one usage of each module, and maps those onto hardware
+usages.
 
 ```sysml
-package Software {
+package Application {
     part def RecipeEngine;
     part def UiApp;
-    part sw {
-        part recipeEngine : RecipeEngine;
-        part uiApp : UiApp;
-    }
 }
 
 package Hardware {
@@ -432,8 +486,13 @@ package Hardware {
 }
 
 package Deployment {
-    private import Software::*;
+    private import Application::*;
     private import Hardware::*;
+
+    part sw {
+        part recipeEngine : RecipeEngine;
+        part uiApp : UiApp;
+    }
 
     allocate sw.recipeEngine to machine.controller;
     allocation uiOnPanel allocate sw.uiApp to machine.display;
@@ -450,7 +509,7 @@ after its module, `part recipeEngine : RecipeEngine`: this view lists it by name
 alone, and the implementation view draws the module. Two usages of one module
 need names of their own.
 
-The view adds nothing of its own: it maps what the other views draw onto each
+The view draws nothing of its own: it maps what the other views draw onto each
 other. Once a model declares an implementation view, ortho warns of software
 that is not a usage of a module that view draws; once it declares a physical
 view, of a host that is not a part that view draws. A port stands for the part
@@ -468,13 +527,14 @@ One scenario: who sends what to whom, in order (§7.9, §7.16).
 
 ```sysml
 package Scenario {
+    part def User;
     part def RecipeEngine;
     part def BrewController;
 
     item def DoseSetting;
 
     occurrence def Brew {
-        part user;
+        part user : User;
         part recipeEngine : RecipeEngine;
         part brewController : BrewController;
 
@@ -488,10 +548,10 @@ package Scenario {
 
 | You write | The view draws |
 |---|---|
-| `part name : Def;`, or a person's untyped `part name;`, in the scenario's `occurrence def` | a lifeline headed by a «part» box, once a message names it, in order of first appearance |
+| `part name : Def;` in the scenario's `occurrence def`: a module, or a person typed by the use cases' actor, `part user : User;`. An untyped `part user;` works too. | a lifeline headed by a «part» box, once a message names it, in order of first appearance |
 | `message name from a to b;` | an arrow from `a` to `b`, labelled `name`, in document order. The ends are parts, or `event occurrence`s on them. |
 | `message name of Payload from a to b;` | the same arrow, labelled `name of Payload` |
-| `item def Payload;` | nothing. It types a payload. |
+| `item def Payload;` | nothing. It types a payload, best the item an API carries. |
 | `then` before a message | nothing. Document order already gives the order. |
 
 ## Realization
@@ -529,7 +589,7 @@ view, and no part of the physical view, performs, either itself or through a
 function above it, and renders anyway. A `perform` in a part that no view
 draws does not count. Performing a typed action, `perform beverage;`, performs
 its definition's whole tree. In a model with a use case view, only a tree that
-refines a use case needs a solution, so a catalogue of functions can sit beside
+refines a use case, at its root or in a branch, needs a solution, so a catalogue of functions can sit beside
 the product's until a use case asks for one. A model with no implementation or
 physical view gets no warning, since `perform` is optional.
 
@@ -600,7 +660,8 @@ Tests keep this page honest: every `sysml` block above parses on its own, with
 no errors or warnings. Another loads all 252 of OMG's own example, training and
 validation models.
 
-Both example models and every block on this page also passed the OMG pilot
+The example models and the blocks on this page passed the OMG pilot
 implementation, release 0.63.1, on 2026-10-31, with no errors or warnings.
-That is a one-off check, not part of CI; [DEVELOPMENT.md](DEVELOPMENT.md)
-describes how to repeat it when the grammar grows.
+The examples have been reworked or added since, and that check has not yet
+been repeated on them. It is a one-off check, not part of CI;
+[DEVELOPMENT.md](DEVELOPMENT.md) describes how to repeat it.

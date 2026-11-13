@@ -1,50 +1,51 @@
-//! The AI instructions `ortho init` writes into a project: a skill for Claude Code and
-//! instructions for GitHub Copilot, each telling an agent how to write a model ortho
-//! draws and to check its work with ortho. The same as the VS Code extension writes
-//! (`editors/vscode/src/instructions.js`), but for where ortho is: they name no path
-//! of this machine, since they are committed and shared.
+//! The AI instructions `ortho init` writes into a project: a skill for Claude Code,
+//! instructions for GitHub Copilot, and an AGENTS.md for every other agent, each
+//! telling an agent how to write a model ortho draws and to check its work with ortho.
+//! What they say is written once, in ortho's `ai/` folder and its LANGUAGE.md and
+//! VIEWS.md, which ortho carries; only how they are put together is here, as the VS
+//! Code extension does it (`editors/vscode/src/instructions.js`), but for where ortho
+//! is: they name no path of this machine, since they are committed and shared.
+use super::assets::Sources;
 
 const SKILL: &str = "sysml-v2-ortho";
 
-/// What an agent does with a model, in either tool. `language` says where the language
-/// reference is, as the sentence's object.
-fn workflow(language: &str) -> String {
-    format!(
-        r#"The `.sysml` files in a folder are one SysML v2 model. ortho reads them together and draws, as SVG, every view the model declares. {language} says what ortho reads and what each view draws from it. Read it before you change a model, and write only what it describes.
+/// When the skill is used: whenever an agent works on a model, or is asked for one.
+const DESCRIPTION: &str = "Write, change and review SysML v2 models, .sysml files, that ortho draws as architecture views, and check them with ortho. \
+Use whenever you create, edit or review a .sysml file, or are asked to model a system in SysML v2: \
+its use cases, functions, software, hardware or deployment.";
 
-## Check your work with ortho
+/// Files that, when a project has one, already hold its agents' instructions. Zed
+/// reads the first of them it finds, so an AGENTS.md written beside a CLAUDE.md would
+/// hide it there: AGENTS.md is written only when none is there.
+pub const AGENT_FILES: [&str; 4] = ["AGENTS.md", "AGENT.md", "CLAUDE.md", "GEMINI.md"];
 
-After every change, render the model's folder and read everything ortho prints:
-
-```sh
-ortho render <model folder> -o <a temporary folder>
-```
-
-Write the diagrams into the model's own folder only when asked to update them.
-
-- **Errors**, under `Failed to parse:`, are what SysML v2 forbids, or a name that resolves to nothing. ortho draws nothing until they are fixed.
-- **Warnings**, each starting `Warning:`, are views of the model that disagree: a function no part or module performs, a use case no function tree refines, software that no deployment allocates to a host. The model draws, but it is not finished.
-
-Each problem names its file and line. Fix every error and every warning before you finish. If you leave a warning, say which one and why.
-
-## Fix the cause, not the line
-
-Never delete or comment out the line a problem points at to make it go away. A `perform`, a `#refinement dependency` or an `allocate` that no longer resolves means a name changed: find the new name, which the error suggests in a chain such as `beverage.prepareCoffee.storeBeans`, and update the reference. A deleted line leaves a function with nothing to realize it, or a use case nothing details.
-
-When you rename an element, update every reference to it in every file of the folder, then render again.
-
+/// Where ortho is, from an agent in any editor, and what it offers a project.
+const WHERE: &str = "
 ## Where ortho is
 
 Run `ortho`. If it is not found, try `~/.cargo/bin/ortho`. To install it: `cargo install ortho`, or download it from https://github.com/ola-coding/ortho/releases.
-"#
-    )
+
+`ortho init --example <name>` copies an example model into the project; `ortho init --help` names them.
+";
+
+/// A file to write, by path from the project's folder.
+pub struct InstructionFile {
+    pub path: String,
+    pub content: String,
+    /// Written only if none of `AGENT_FILES` is in the project, and never replaced.
+    pub unless_agent_file: bool,
 }
 
-/// The language reference, a level deeper, to follow the instructions in one file: its
-/// title becomes a section. A heading inside a code block is SysML, and stays.
-fn nested(language: &str) -> String {
+/// A copied file without the comment that says where it was copied from.
+fn body(text: &str) -> &str {
+    text.strip_prefix("<!--").and_then(|rest| rest.split_once("-->\n\n")).map_or(text, |(_, body)| body)
+}
+
+/// A reference, a level deeper, to follow the instructions in one file: its title
+/// becomes a section. A heading inside a code block is SysML, and stays.
+fn nested(text: &str) -> String {
     let mut fenced = false;
-    let lines = language.split('\n').map(|line| {
+    let lines = text.split('\n').map(|line| {
         if line.starts_with("```") {
             fenced = !fenced;
         }
@@ -54,21 +55,44 @@ fn nested(language: &str) -> String {
     lines.collect::<Vec<_>>().join("\n")
 }
 
-/// The files to write, by path from the project's folder, from ortho's LANGUAGE.md.
-pub fn instruction_files(language: &str) -> Vec<(String, String)> {
+/// Text written outside the skill's folder: a link to one of the files beside the
+/// skill points into that folder, from `.github/instructions/`.
+fn from_instructions(text: &str) -> String {
+    let mut text = text.to_string();
+    for name in ["WORKFLOW.md", "LANGUAGE.md", "VIEWS.md", "MISTAKES.md"] {
+        for end in [')', '#'] {
+            text = text.replace(&format!("]({name}{end}"), &format!("](../../.claude/skills/{SKILL}/{name}{end}"));
+        }
+    }
+    text
+}
+
+/// The files to write, from what ortho carries.
+pub fn instruction_files(ai: &Sources) -> Vec<InstructionFile> {
+    let workflow = body(ai.workflow);
+    let folder = format!(".claude/skills/{SKILL}");
     let skill = format!(
-        "---\nname: {SKILL}\ndescription: Write and change SysML v2 models, .sysml files, that ortho draws as architecture views, and check them with ortho. Use whenever you create or edit a .sysml file.\n---\n\n# SysML v2 models that ortho draws\n\n{}",
-        workflow("[LANGUAGE.md](LANGUAGE.md), beside this file,")
+        "---\nname: {SKILL}\ndescription: {DESCRIPTION}\n---\n\n# SysML v2 models that ortho draws\n\n{workflow}{WHERE}"
     );
     let copilot = format!(
-        "---\napplyTo: \"**/*.sysml\"\n---\n\n# SysML v2 models that ortho draws\n\n{}\n{}",
-        workflow("The language reference below"),
-        nested(language)
+        "---\napplyTo: \"**/*.sysml\"\n---\n\n# SysML v2 models that ortho draws\n\n{}{WHERE}\n{}\n{}",
+        from_instructions(workflow),
+        nested(&from_instructions(body(ai.language))),
+        nested(&from_instructions(body(ai.mistakes)))
     );
+    let file =
+        |path: String, content: &str| InstructionFile { path, content: content.to_string(), unless_agent_file: false };
     vec![
-        (format!(".claude/skills/{SKILL}/SKILL.md"), skill),
-        (format!(".claude/skills/{SKILL}/LANGUAGE.md"), language.to_string()),
-        (".github/instructions/sysml-v2.instructions.md".to_string(), copilot),
+        file(format!("{folder}/SKILL.md"), &skill),
+        file(format!("{folder}/LANGUAGE.md"), ai.language),
+        file(format!("{folder}/VIEWS.md"), ai.views),
+        file(format!("{folder}/MISTAKES.md"), ai.mistakes),
+        file(".github/instructions/sysml-v2.instructions.md".to_string(), &copilot),
+        InstructionFile {
+            path: "AGENTS.md".to_string(),
+            content: body(ai.agents).to_string(),
+            unless_agent_file: true,
+        },
     ]
 }
 
@@ -83,11 +107,23 @@ mod tests {
     }
 
     #[test]
-    fn writes_a_skill_its_reference_and_copilot_instructions() {
-        let files = instruction_files("# L");
-        assert_eq!(files.len(), 3);
-        assert!(files[0].1.contains("ortho render <model folder>"));
-        assert_eq!(files[1].1, "# L");
-        assert!(files[2].1.ends_with("## L"));
+    fn puts_the_files_together_from_their_sources() {
+        let ai = Sources {
+            language: "<!-- Copied. -->\n\n# L\nsee [V](VIEWS.md#x)",
+            views: "# V",
+            workflow: "<!-- Copied. -->\n\nRead [L](LANGUAGE.md).\n",
+            mistakes: "# M",
+            agents: "<!-- Copied. -->\n\n# A",
+        };
+        let files = instruction_files(&ai);
+        let paths: Vec<&str> = files.iter().map(|file| file.path.as_str()).collect();
+        assert_eq!(paths[0], ".claude/skills/sysml-v2-ortho/SKILL.md");
+        assert_eq!(paths[4..], [".github/instructions/sysml-v2.instructions.md", "AGENTS.md"]);
+        assert!(files[0].content.contains("\n\nRead [L](LANGUAGE.md).\n\n## Where ortho is"));
+        assert_eq!(files[1].content, ai.language);
+        assert!(files[4].content.contains("Read [L](../../.claude/skills/sysml-v2-ortho/LANGUAGE.md)."));
+        assert!(files[4].content.contains("## L\nsee [V](../../.claude/skills/sysml-v2-ortho/VIEWS.md#x)\n## M"));
+        assert_eq!(files[5].content, "# A");
+        assert!(files[5].unless_agent_file && !files[4].unless_agent_file);
     }
 }
