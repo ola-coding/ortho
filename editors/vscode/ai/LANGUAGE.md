@@ -241,7 +241,7 @@ package Functions {
 | `action name;` or `action name { ... }` nested in another | an «action» box under its parent, which owns it: a filled diamond at the parent's end |
 | `action name : Def;` in a package | nothing. It is the usage a `perform` chain starts from. |
 | `expose Tree::branch;` in the view, naming a nested `action` | that branch alone, the function at its root: a tree too big for one page, split |
-| `#refinement dependency Tree to SystemUseCases::Name;` in a package | a dashed arrow from the tree's root up to the use case, when the view exposes both. `Name` may be a use case or its definition; the examples refine the use cases themselves, `makeEspresso`, so the view shows what is asked for. |
+| `#refinement dependency Tree to SystemUseCases::Name;` in a package | a dashed arrow from the tree's root up to the use case, when the view exposes both. `Name` may be a use case or its definition; the examples refine the use cases themselves, `makeEspresso`, and leave them off their logical views, which draw the trees alone; the use case view draws the use cases. |
 | `expose SystemUseCases::Name;` in the view | the use case, above the trees that refine it. One nothing refines stands alone, and ortho warns of it. |
 
 **Refining a use case** (§7.3). A function tree says which use case it details

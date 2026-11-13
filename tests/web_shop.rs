@@ -96,6 +96,18 @@ fn logical_view_one_tree_naming_no_service_and_no_use_case() {
     // the use cases out, so the tree stands alone.
     assert_eq!(functions, graph.nodes.len());
     assert_eq!(graph.edges.iter().filter(|e| e.kind == EdgeKind::Dependency).count(), 0);
+    let workspace = parse_set(&["logical.sysml", "use-case.sysml"]);
+    let refined: Vec<String> = common::refinements(&workspace).into_iter().map(|(_, use_case)| use_case).collect();
+    assert_eq!(
+        refined,
+        [
+            "SystemUseCases::findProduct",
+            "SystemUseCases::placeOrder",
+            "SystemUseCases::payOrder",
+            "SystemUseCases::fulfilOrder",
+            "SystemUseCases::trackOrder"
+        ]
+    );
     let all = names(&graph.nodes);
     for realization in ["Lambda", "DynamoDB", "OrderFunction", "StorefrontApp"] {
         assert!(!all.contains(&realization), "{realization}");

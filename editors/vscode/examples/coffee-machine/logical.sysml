@@ -51,8 +51,6 @@ package Functions {
 
     view 'Logical view — Coffee Machine' : GeneralView {
         expose MakeBeverage;
-        expose SystemUseCases::makeCappuccino;
-        expose SystemUseCases::makeEspresso;
         render asTreeDiagram;
     }
 }

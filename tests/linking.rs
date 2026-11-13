@@ -1017,13 +1017,13 @@ fn warns_at_the_function_when_the_coffee_machine_loses_a_perform() {
 }
 
 #[test]
-fn warns_at_the_tree_when_the_coffee_machine_loses_a_refinement() {
+fn the_coffee_machine_losing_a_refinement_goes_unwarned_since_its_logical_view_draws_no_use_case() {
+    // ortho checks that a use case is refined only where a logical view draws it
+    // (see the tests of `refining` above). The examples keep their logical views to
+    // the trees alone, so a lost refinement there is a trade-off they accept.
     let refinement = "#refinement dependency MakeBeverage to SystemUseCases::makeEspresso;";
-    let (warnings, logical) = coffee_machine_without(refinement, "unrefined");
-    // The tree still refines the cappuccino, so only the espresso is left over.
-    let use_cases = logical.replace("logical.sysml", "use-case.sysml");
-    let use_case_line = coffee_machine_line("use-case.sysml", "use case makeEspresso : OperateMachine;");
-    assert_eq!(warnings, [format!("{use_cases} line {use_case_line}: {}", unrefined_use_case("makeEspresso"))]);
+    let (warnings, _) = coffee_machine_without(refinement, "unrefined");
+    assert_eq!(warnings, Vec::<String>::new());
 }
 
 #[test]

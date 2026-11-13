@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1291.9560000000001" height="564"
-     viewBox="0 0 1291.9560000000001 564" font-family="Arial, Helvetica, Liberation Sans, DejaVu Sans, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="1291.9560000000001" height="480"
+     viewBox="0 0 1291.9560000000001 480" font-family="Arial, Helvetica, Liberation Sans, DejaVu Sans, sans-serif">
   <title>Logical view — Survey Drone (generated from examples/survey-drone/logical.sysml)</title>
   <defs>
     <marker id="openArrow" markerWidth="12" markerHeight="12" refX="10" refY="5"
@@ -11,160 +11,153 @@
       <path d="M0,4 L6,0 L12,4 L6,8 z" fill="#1a1a1a" />
     </marker>
   </defs>
-  <rect x="0" y="0" width="1291.9560000000001" height="564" fill="white" />
-  <rect x="8" y="8" width="1275.9560000000001" height="548" rx="10" ry="10" fill="#f9fbfc" stroke="#40657e" stroke-width="1.25" />
+  <rect x="0" y="0" width="1291.9560000000001" height="480" fill="white" />
+  <rect x="8" y="8" width="1275.9560000000001" height="464" rx="10" ry="10" fill="#f9fbfc" stroke="#40657e" stroke-width="1.25" />
   <path d="M8,30 L8,18 A10,10 0 0 1 18,8 L249.17499999999998,8 L249.17499999999998,22 A8,8 0 0 1 241.17499999999998,30 Z"
         fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
   <text x="18" y="23" font-size="11" fill="#1a1a1a"><tspan font-style="italic" fill="#40657e">&#171;view&#187;</tspan><tspan font-weight="600"> Logical view — Survey Drone</tspan></text>
-  <path d="M1100.574,556 L1100.574,547 A6,6 0 0 1 1106.574,541 L1283.9560000000001,541 L1283.9560000000001,546 A10,10 0 0 1 1273.9560000000001,556 Z"
+  <path d="M1100.574,472 L1100.574,463 A6,6 0 0 1 1106.574,457 L1283.9560000000001,457 L1283.9560000000001,462 A10,10 0 0 1 1273.9560000000001,472 Z"
         fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-  <text x="1275.9560000000001" y="552" text-anchor="end" font-size="9" fill="#1a1a1a">examples/survey-drone/logical.sysml</text>
+  <text x="1275.9560000000001" y="468" text-anchor="end" font-size="9" fill="#1a1a1a">examples/survey-drone/logical.sysml</text>
   
-    <g data-file="examples/survey-drone/logical.sysml" data-line="11"><rect x="568.921" y="144" width="169.288" height="40"
-          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <text x="653.565" y="161" text-anchor="middle"
-          font-size="9" font-style="italic" fill="#40657e">&#171;action def&#187;</text>
-      <text x="653.565" y="174" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">PerformAerialSurvey</text></g>
-    <g data-file="examples/survey-drone/logical.sysml" data-line="13"><rect x="36" y="228" width="173.872" height="40" rx="10" ry="10"
-          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <text x="122.936" y="245" text-anchor="middle"
-          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
-      <text x="122.936" y="258" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">interactWithOperator</text></g>
-    <g data-file="examples/survey-drone/logical.sysml" data-line="14"><rect x="70" y="282" width="110" height="40" rx="10" ry="10"
-          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <text x="125" y="299" text-anchor="middle"
-          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
-      <text x="125" y="312" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">planMission</text></g>
-    <g data-file="examples/survey-drone/logical.sysml" data-line="15"><rect x="70" y="332" width="140.07999999999998" height="40" rx="10" ry="10"
-          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <text x="140.04" y="349" text-anchor="middle"
-          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
-      <text x="140.04" y="362" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">presentProgress</text></g>
-    <g data-file="examples/survey-drone/logical.sysml" data-line="21"><rect x="238.07999999999998" y="228" width="202.66" height="40" rx="10" ry="10"
-          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <text x="339.40999999999997" y="245" text-anchor="middle"
-          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
-      <text x="339.40999999999997" y="258" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">guideNavigateAndControl</text></g>
-    <g data-file="examples/survey-drone/logical.sysml" data-line="22"><rect x="272.08" y="282" width="110" height="40" rx="10" ry="10"
-          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <text x="327.08" y="299" text-anchor="middle"
-          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
-      <text x="327.08" y="312" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">planRoute</text></g>
-    <g data-file="examples/survey-drone/logical.sysml" data-line="23"><rect x="272.08" y="332" width="110" height="40" rx="10" ry="10"
-          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <text x="327.08" y="349" text-anchor="middle"
-          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
-      <text x="327.08" y="362" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">guide</text></g>
-    <g data-file="examples/survey-drone/logical.sysml" data-line="24"><rect x="272.08" y="382" width="110" height="40" rx="10" ry="10"
-          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <text x="327.08" y="399" text-anchor="middle"
-          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
-      <text x="327.08" y="412" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">navigate</text></g>
-    <g data-file="examples/survey-drone/logical.sysml" data-line="25"><rect x="272.08" y="432" width="110" height="40" rx="10" ry="10"
-          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <text x="327.08" y="449" text-anchor="middle"
-          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
-      <text x="327.08" y="462" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">control</text></g>
-    <g data-file="examples/survey-drone/logical.sysml" data-line="26"><rect x="272.08" y="482" width="131.152" height="40" rx="10" ry="10"
-          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <text x="337.65599999999995" y="499" text-anchor="middle"
-          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
-      <text x="337.65599999999995" y="512" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">avoidObstacles</text></g>
-    <g data-file="examples/survey-drone/logical.sysml" data-line="29"><rect x="468.74" y="228" width="110" height="40" rx="10" ry="10"
-          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <text x="523.74" y="245" text-anchor="middle"
-          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
-      <text x="523.74" y="258" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">perceive</text></g>
-    <g data-file="examples/survey-drone/logical.sysml" data-line="30"><rect x="502.74" y="282" width="118.516" height="40" rx="10" ry="10"
-          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <text x="561.998" y="299" text-anchor="middle"
-          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
-      <text x="561.998" y="312" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">captureVideo</text></g>
-    <g data-file="examples/survey-drone/logical.sysml" data-line="31"><rect x="502.74" y="332" width="168.892" height="40" rx="10" ry="10"
-          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <text x="587.186" y="349" text-anchor="middle"
-          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
-      <text x="587.186" y="362" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">maintainWorldModel</text></g>
-    <g data-file="examples/survey-drone/logical.sysml" data-line="34"><rect x="699.6320000000001" y="228" width="118.66" height="40" rx="10" ry="10"
-          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <text x="758.9620000000001" y="245" text-anchor="middle"
-          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
-      <text x="758.9620000000001" y="258" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">communicate</text></g>
-    <g data-file="examples/survey-drone/logical.sysml" data-line="35"><rect x="733.6320000000001" y="282" width="113.908" height="40" rx="10" ry="10"
-          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <text x="790.586" y="299" text-anchor="middle"
-          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
-      <text x="790.586" y="312" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">streamVideo</text></g>
-    <g data-file="examples/survey-drone/logical.sysml" data-line="36"><rect x="733.6320000000001" y="332" width="161.596" height="40" rx="10" ry="10"
-          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <text x="814.4300000000001" y="349" text-anchor="middle"
-          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
-      <text x="814.4300000000001" y="362" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">exchangeTelemetry</text></g>
-    <g data-file="examples/survey-drone/logical.sysml" data-line="40"><rect x="923.2280000000001" y="228" width="130.312" height="40" rx="10" ry="10"
-          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <text x="988.384" y="245" text-anchor="middle"
-          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
-      <text x="988.384" y="258" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">operateVehicle</text></g>
-    <g data-file="examples/survey-drone/logical.sysml" data-line="41"><rect x="957.2280000000001" y="282" width="114.988" height="40" rx="10" ry="10"
-          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <text x="1014.7220000000001" y="299" text-anchor="middle"
-          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
-      <text x="1014.7220000000001" y="312" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">supplyPower</text></g>
-    <g data-file="examples/survey-drone/logical.sysml" data-line="42"><rect x="957.2280000000001" y="332" width="127.204" height="40" rx="10" ry="10"
-          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <text x="1020.83" y="349" text-anchor="middle"
-          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
-      <text x="1020.83" y="362" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">produceThrust</text></g>
-    <g data-file="examples/survey-drone/logical.sysml" data-line="47"><rect x="1112.432" y="228" width="143.524" height="40" rx="10" ry="10"
-          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
-      <text x="1184.194" y="245" text-anchor="middle"
-          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
-      <text x="1184.194" y="258" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">superviseSystem</text></g>
-    <g data-file="examples/survey-drone/use-case.sysml" data-line="17"><rect x="555.433" y="60" width="196.264" height="40" rx="10" ry="10"
+    <g data-file="examples/survey-drone/logical.sysml" data-line="11"><rect x="568.921" y="60" width="169.288" height="40"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="653.565" y="77" text-anchor="middle"
-          font-size="9" font-style="italic" fill="#40657e">&#171;use case&#187;</text>
+          font-size="9" font-style="italic" fill="#40657e">&#171;action def&#187;</text>
       <text x="653.565" y="90" text-anchor="middle"
-          font-size="12" font-weight="600" fill="#1a1a1a">surveyArea : SurveyTask</text></g>
+          font-size="12" font-weight="600" fill="#1a1a1a">PerformAerialSurvey</text></g>
+    <g data-file="examples/survey-drone/logical.sysml" data-line="13"><rect x="36" y="144" width="173.872" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="122.936" y="161" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
+      <text x="122.936" y="174" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">interactWithOperator</text></g>
+    <g data-file="examples/survey-drone/logical.sysml" data-line="14"><rect x="70" y="198" width="110" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="125" y="215" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
+      <text x="125" y="228" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">planMission</text></g>
+    <g data-file="examples/survey-drone/logical.sysml" data-line="15"><rect x="70" y="248" width="140.07999999999998" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="140.04" y="265" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
+      <text x="140.04" y="278" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">presentProgress</text></g>
+    <g data-file="examples/survey-drone/logical.sysml" data-line="21"><rect x="238.07999999999998" y="144" width="202.66" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="339.40999999999997" y="161" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
+      <text x="339.40999999999997" y="174" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">guideNavigateAndControl</text></g>
+    <g data-file="examples/survey-drone/logical.sysml" data-line="22"><rect x="272.08" y="198" width="110" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="327.08" y="215" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
+      <text x="327.08" y="228" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">planRoute</text></g>
+    <g data-file="examples/survey-drone/logical.sysml" data-line="23"><rect x="272.08" y="248" width="110" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="327.08" y="265" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
+      <text x="327.08" y="278" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">guide</text></g>
+    <g data-file="examples/survey-drone/logical.sysml" data-line="24"><rect x="272.08" y="298" width="110" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="327.08" y="315" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
+      <text x="327.08" y="328" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">navigate</text></g>
+    <g data-file="examples/survey-drone/logical.sysml" data-line="25"><rect x="272.08" y="348" width="110" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="327.08" y="365" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
+      <text x="327.08" y="378" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">control</text></g>
+    <g data-file="examples/survey-drone/logical.sysml" data-line="26"><rect x="272.08" y="398" width="131.152" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="337.65599999999995" y="415" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
+      <text x="337.65599999999995" y="428" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">avoidObstacles</text></g>
+    <g data-file="examples/survey-drone/logical.sysml" data-line="29"><rect x="468.74" y="144" width="110" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="523.74" y="161" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
+      <text x="523.74" y="174" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">perceive</text></g>
+    <g data-file="examples/survey-drone/logical.sysml" data-line="30"><rect x="502.74" y="198" width="118.516" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="561.998" y="215" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
+      <text x="561.998" y="228" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">captureVideo</text></g>
+    <g data-file="examples/survey-drone/logical.sysml" data-line="31"><rect x="502.74" y="248" width="168.892" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="587.186" y="265" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
+      <text x="587.186" y="278" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">maintainWorldModel</text></g>
+    <g data-file="examples/survey-drone/logical.sysml" data-line="34"><rect x="699.6320000000001" y="144" width="118.66" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="758.9620000000001" y="161" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
+      <text x="758.9620000000001" y="174" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">communicate</text></g>
+    <g data-file="examples/survey-drone/logical.sysml" data-line="35"><rect x="733.6320000000001" y="198" width="113.908" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="790.586" y="215" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
+      <text x="790.586" y="228" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">streamVideo</text></g>
+    <g data-file="examples/survey-drone/logical.sysml" data-line="36"><rect x="733.6320000000001" y="248" width="161.596" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="814.4300000000001" y="265" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
+      <text x="814.4300000000001" y="278" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">exchangeTelemetry</text></g>
+    <g data-file="examples/survey-drone/logical.sysml" data-line="40"><rect x="923.2280000000001" y="144" width="130.312" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="988.384" y="161" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
+      <text x="988.384" y="174" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">operateVehicle</text></g>
+    <g data-file="examples/survey-drone/logical.sysml" data-line="41"><rect x="957.2280000000001" y="198" width="114.988" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="1014.7220000000001" y="215" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
+      <text x="1014.7220000000001" y="228" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">supplyPower</text></g>
+    <g data-file="examples/survey-drone/logical.sysml" data-line="42"><rect x="957.2280000000001" y="248" width="127.204" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="1020.83" y="265" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
+      <text x="1020.83" y="278" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">produceThrust</text></g>
+    <g data-file="examples/survey-drone/logical.sysml" data-line="47"><rect x="1112.432" y="144" width="143.524" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="1184.194" y="161" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;action&#187;</text>
+      <text x="1184.194" y="174" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">superviseSystem</text></g>
   
-    <polyline points="54,268 54,302 70,302" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
-    <polyline points="54,268 54,352 70,352" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
-    <polyline points="653.565,184 653.565,206 122.936,206 122.936,228" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
-    <polyline points="256.08,268 256.08,302 272.08,302" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
-    <polyline points="256.08,268 256.08,352 272.08,352" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
-    <polyline points="256.08,268 256.08,402 272.08,402" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
-    <polyline points="256.08,268 256.08,452 272.08,452" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
-    <polyline points="256.08,268 256.08,502 272.08,502" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
-    <polyline points="653.565,184 653.565,206 339.40999999999997,206 339.40999999999997,228" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
-    <polyline points="486.74,268 486.74,302 502.74,302" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
-    <polyline points="486.74,268 486.74,352 502.74,352" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
-    <polyline points="653.565,184 653.565,206 523.74,206 523.74,228" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
-    <polyline points="717.6320000000001,268 717.6320000000001,302 733.6320000000001,302" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
-    <polyline points="717.6320000000001,268 717.6320000000001,352 733.6320000000001,352" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
-    <polyline points="653.565,184 653.565,206 758.9620000000001,206 758.9620000000001,228" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
-    <polyline points="941.2280000000001,268 941.2280000000001,302 957.2280000000001,302" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
-    <polyline points="941.2280000000001,268 941.2280000000001,352 957.2280000000001,352" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
-    <polyline points="653.565,184 653.565,206 988.384,206 988.384,228" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
-    <polyline points="653.565,184 653.565,206 1184.194,206 1184.194,228" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
-    <polyline points="653.565,144 653.565,100" fill="none" stroke="#1a1a1a" stroke-width="1.25" stroke-dasharray="6 4" marker-end="url(#openArrow)" />
+    <polyline points="54,184 54,218 70,218" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
+    <polyline points="54,184 54,268 70,268" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
+    <polyline points="653.565,100 653.565,122 122.936,122 122.936,144" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
+    <polyline points="256.08,184 256.08,218 272.08,218" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
+    <polyline points="256.08,184 256.08,268 272.08,268" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
+    <polyline points="256.08,184 256.08,318 272.08,318" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
+    <polyline points="256.08,184 256.08,368 272.08,368" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
+    <polyline points="256.08,184 256.08,418 272.08,418" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
+    <polyline points="653.565,100 653.565,122 339.40999999999997,122 339.40999999999997,144" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
+    <polyline points="486.74,184 486.74,218 502.74,218" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
+    <polyline points="486.74,184 486.74,268 502.74,268" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
+    <polyline points="653.565,100 653.565,122 523.74,122 523.74,144" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
+    <polyline points="717.6320000000001,184 717.6320000000001,218 733.6320000000001,218" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
+    <polyline points="717.6320000000001,184 717.6320000000001,268 733.6320000000001,268" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
+    <polyline points="653.565,100 653.565,122 758.9620000000001,122 758.9620000000001,144" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
+    <polyline points="941.2280000000001,184 941.2280000000001,218 957.2280000000001,218" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
+    <polyline points="941.2280000000001,184 941.2280000000001,268 957.2280000000001,268" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
+    <polyline points="653.565,100 653.565,122 988.384,122 988.384,144" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
+    <polyline points="653.565,100 653.565,122 1184.194,122 1184.194,144" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-start="url(#diamond)" />
 </svg>
