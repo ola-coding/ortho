@@ -1,9 +1,9 @@
 //! What the tests of the views share: models to load, and ways to look at what they draw.
 // Each test file uses some of these, and is compiled on its own.
 #![allow(dead_code)]
-use ortho::model::graph::{Compartment, GraphNode};
+use ortho::model::graph::{Compartment, GraphNode, qualified_name};
 use ortho::model::views::{declared_views, exposed_elements};
-use ortho::parser::ast::NodeId;
+use ortho::parser::ast::{NodeId, Prop, Type};
 use ortho::parser::workspace::{Severity, Workspace, parse_sysml_files};
 use ortho::render::svg::DiagramTitle;
 use std::path::PathBuf;
@@ -39,6 +39,33 @@ pub fn example(example: &str, files: &[&str]) -> Workspace {
     let folder = repository().join("examples").join(example);
     let paths: Vec<String> = files.iter().map(|file| folder.join(file).to_string_lossy().into_owned()).collect();
     parse_sysml_files(&paths).unwrap().workspace
+}
+
+/// Every refinement the model declares, client to supplier, by qualified name, in
+/// document order: what ties a function tree to the use case it details, whether or
+/// not a view draws the two.
+pub fn refinements(workspace: &Workspace) -> Vec<(String, String)> {
+    let ast = &workspace.ast;
+    let end = |dependency: NodeId, prop: Prop| {
+        ast.references_of(dependency, prop)
+            .into_iter()
+            .filter_map(|reference| ast.reference_target(reference))
+            .map(|target| qualified_name(ast, target))
+            .collect::<Vec<_>>()
+    };
+    let mut found = Vec::new();
+    for document in &workspace.documents {
+        for node in ast.with_all_contents(document.root) {
+            if ast[node].ty == Type::Dependency {
+                for client in end(node, Prop::Clients) {
+                    for supplier in end(node, Prop::Suppliers) {
+                        found.push((client.clone(), supplier));
+                    }
+                }
+            }
+        }
+    }
+    found
 }
 
 /// The packages of every file: what a view of the whole model exposes.

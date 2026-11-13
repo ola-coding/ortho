@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="925.1574999999999" height="626"
+     viewBox="0 0 925.1574999999999 626" font-family="Arial, Helvetica, Liberation Sans, DejaVu Sans, sans-serif">
+  <title>Use case view — Web Shop (generated from examples/web-shop/use-case.sysml)</title>
+  <defs>
+    <marker id="openArrow" markerWidth="12" markerHeight="12" refX="10" refY="5"
+            orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    </marker>
+    <marker id="diamond" markerWidth="12" markerHeight="8" refX="0" refY="4"
+            orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,4 L6,0 L12,4 L6,8 z" fill="#1a1a1a" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="925.1574999999999" height="626" fill="white" />
+  <rect x="8" y="8" width="909.1574999999999" height="610" rx="10" ry="10" fill="#f9fbfc" stroke="#40657e" stroke-width="1.25" />
+  <path d="M8,30 L8,18 A10,10 0 0 1 18,8 L238.23,8 L238.23,22 A8,8 0 0 1 230.23,30 Z"
+        fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+  <text x="18" y="23" font-size="11" fill="#1a1a1a"><tspan font-style="italic" fill="#40657e">&#171;view&#187;</tspan><tspan font-weight="600"> Use case view — Web Shop</tspan></text>
+  <path d="M739.3195,618 L739.3195,609 A6,6 0 0 1 745.3195,603 L917.1574999999999,603 L917.1574999999999,608 A10,10 0 0 1 907.1574999999999,618 Z"
+        fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+  <text x="909.1574999999999" y="614" text-anchor="end" font-size="9" fill="#1a1a1a">examples/web-shop/use-case.sysml</text>
+  
+    <g data-file="examples/web-shop/use-case.sysml" data-line="24"><rect x="218.19299999999998" y="152" width="154.588" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="295.48699999999997" y="169" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;use case&#187;</text>
+      <text x="295.48699999999997" y="182" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">findProduct : Shop</text></g>
+    <g data-file="examples/web-shop/use-case.sysml" data-line="16" stroke="#1a1a1a" stroke-width="1.5" fill="none">
+      <circle cx="99.09649999999999" cy="157" r="8" fill="#ccdce5" />
+      <line x1="99.09649999999999" y1="165" x2="99.09649999999999" y2="184" />
+      <line x1="86.09649999999999" y1="172" x2="112.09649999999999" y2="172" />
+      <line x1="99.09649999999999" y1="184" x2="88.09649999999999" y2="200" />
+      <line x1="99.09649999999999" y1="184" x2="110.09649999999999" y2="200" />
+      <text x="99.09649999999999" y="216" text-anchor="middle" stroke="none"
+          font-size="11" fill="#1a1a1a">customer : Customer</text>
+    </g>
+    <g data-file="examples/web-shop/use-case.sysml" data-line="15"><rect x="226.659" y="60" width="137.656" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="295.48699999999997" y="77" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;subject&#187;</text>
+      <text x="295.48699999999997" y="90" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">shop : WebShop</text></g>
+    <g data-file="examples/web-shop/use-case.sysml" data-line="26"><rect x="610.9739999999999" y="152" width="149.99200000000002" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="685.9699999999999" y="169" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;use case&#187;</text>
+      <text x="685.9699999999999" y="182" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">placeOrder : Shop</text></g>
+    <g data-file="examples/web-shop/use-case.sysml" data-line="16" stroke="#1a1a1a" stroke-width="1.5" fill="none">
+      <circle cx="491.87749999999994" cy="157" r="8" fill="#ccdce5" />
+      <line x1="491.87749999999994" y1="165" x2="491.87749999999994" y2="184" />
+      <line x1="478.87749999999994" y1="172" x2="504.87749999999994" y2="172" />
+      <line x1="491.87749999999994" y1="184" x2="480.87749999999994" y2="200" />
+      <line x1="491.87749999999994" y1="184" x2="502.87749999999994" y2="200" />
+      <text x="491.87749999999994" y="216" text-anchor="middle" stroke="none"
+          font-size="11" fill="#1a1a1a">customer : Customer</text>
+    </g>
+    <g data-file="examples/web-shop/use-case.sysml" data-line="31"><rect x="482.78249999999997" y="292" width="138.44799999999998" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="552.0065" y="309" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;use case&#187;</text>
+      <text x="552.0065" y="322" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">payOrder : Shop</text></g>
+    <g data-file="examples/web-shop/use-case.sysml" data-line="35" stroke="#1a1a1a" stroke-width="1.5" fill="none">
+      <circle cx="783.1939999999998" cy="297" r="8" fill="#ccdce5" />
+      <line x1="783.1939999999998" y1="305" x2="783.1939999999998" y2="324" />
+      <line x1="770.1939999999998" y1="312" x2="796.1939999999998" y2="312" />
+      <line x1="783.1939999999998" y1="324" x2="772.1939999999998" y2="340" />
+      <line x1="783.1939999999998" y1="324" x2="794.1939999999998" y2="340" />
+      <text x="783.1939999999998" y="356" text-anchor="middle" stroke="none"
+          font-size="11" fill="#1a1a1a">paymentProvider : PaymentProvider</text>
+    </g>
+    <g data-file="examples/web-shop/use-case.sysml" data-line="15"><rect x="617.1419999999999" y="60" width="137.656" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="685.9699999999999" y="77" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;subject&#187;</text>
+      <text x="685.9699999999999" y="90" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">shop : WebShop</text></g>
+    <g data-file="examples/web-shop/use-case.sysml" data-line="38"><rect x="218.19299999999998" y="512" width="148.78" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="292.58299999999997" y="529" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;use case&#187;</text>
+      <text x="292.58299999999997" y="542" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">trackOrder : Shop</text></g>
+    <g data-file="examples/web-shop/use-case.sysml" data-line="16" stroke="#1a1a1a" stroke-width="1.5" fill="none">
+      <circle cx="99.09649999999999" cy="517" r="8" fill="#ccdce5" />
+      <line x1="99.09649999999999" y1="525" x2="99.09649999999999" y2="544" />
+      <line x1="86.09649999999999" y1="532" x2="112.09649999999999" y2="532" />
+      <line x1="99.09649999999999" y1="544" x2="88.09649999999999" y2="560" />
+      <line x1="99.09649999999999" y1="544" x2="110.09649999999999" y2="560" />
+      <text x="99.09649999999999" y="576" text-anchor="middle" stroke="none"
+          font-size="11" fill="#1a1a1a">customer : Customer</text>
+    </g>
+    <g data-file="examples/web-shop/use-case.sysml" data-line="15"><rect x="223.755" y="420" width="137.656" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="292.58299999999997" y="437" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;subject&#187;</text>
+      <text x="292.58299999999997" y="450" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">shop : WebShop</text></g>
+    <g data-file="examples/web-shop/use-case.sysml" data-line="40"><rect x="555.0939999999999" y="512" width="171.592" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="640.89" y="529" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;use case&#187;</text>
+      <text x="640.89" y="542" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">fulfilOrder : RunShop</text></g>
+    <g data-file="examples/web-shop/use-case.sysml" data-line="21" stroke="#1a1a1a" stroke-width="1.5" fill="none">
+      <circle cx="461.03349999999995" cy="517" r="8" fill="#ccdce5" />
+      <line x1="461.03349999999995" y1="525" x2="461.03349999999995" y2="544" />
+      <line x1="448.03349999999995" y1="532" x2="474.03349999999995" y2="532" />
+      <line x1="461.03349999999995" y1="544" x2="450.03349999999995" y2="560" />
+      <line x1="461.03349999999995" y1="544" x2="472.03349999999995" y2="560" />
+      <text x="461.03349999999995" y="576" text-anchor="middle" stroke="none"
+          font-size="11" fill="#1a1a1a">clerk : Clerk</text>
+    </g>
+    <g data-file="examples/web-shop/use-case.sysml" data-line="43" stroke="#1a1a1a" stroke-width="1.5" fill="none">
+      <circle cx="830.1624999999999" cy="517" r="8" fill="#ccdce5" />
+      <line x1="830.1624999999999" y1="525" x2="830.1624999999999" y2="544" />
+      <line x1="817.1624999999999" y1="532" x2="843.1624999999999" y2="532" />
+      <line x1="830.1624999999999" y1="544" x2="819.1624999999999" y2="560" />
+      <line x1="830.1624999999999" y1="544" x2="841.1624999999999" y2="560" />
+      <text x="830.1624999999999" y="576" text-anchor="middle" stroke="none"
+          font-size="11" fill="#1a1a1a">carrier : Carrier</text>
+    </g>
+    <g data-file="examples/web-shop/use-case.sysml" data-line="15"><rect x="572.0619999999999" y="420" width="137.656" height="40" rx="10" ry="10"
+          fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
+      <text x="640.8899999999999" y="437" text-anchor="middle"
+          font-size="9" font-style="italic" fill="#40657e">&#171;subject&#187;</text>
+      <text x="640.8899999999999" y="450" text-anchor="middle"
+          font-size="12" font-weight="600" fill="#1a1a1a">shop : WebShop</text></g>
+  
+    <polyline points="115.0965,172 218.19299999999998,172" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="295.48699999999997,152 295.48699999999997,100" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="507.87749999999994,172 610.9739999999999,172" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="621.2304999999999,312 767.194,312" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="685.97,192 685.97,256 552.0065,256 552.0065,292" fill="none" stroke="#1a1a1a" stroke-width="1.25" marker-end="url(#openArrow)" />
+    <text x="632.98825" y="251" text-anchor="middle" font-size="9"
+          fill="#40657e" paint-order="stroke" stroke="#f9fbfc" stroke-width="3">&#171;include&#187;</text>
+    <polyline points="685.97,152 685.97,100" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="115.0965,532 218.19299999999998,532" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="292.58299999999997,512 292.58299999999997,460" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="477.03349999999995,532 555.0939999999999,532" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="726.6859999999999,532 814.1624999999999,532" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+    <polyline points="640.8899999999999,512 640.8899999999999,460" fill="none" stroke="#1a1a1a" stroke-width="1.25" />
+</svg>

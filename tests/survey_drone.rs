@@ -132,19 +132,15 @@ fn logical_view_a_strict_capability_tree_naming_nothing_that_realizes_a_function
 }
 
 #[test]
-fn logical_view_the_tree_refines_the_use_case_it_draws() {
-    let (_, graph) = logical();
-    let refinements: Vec<(&str, &str)> = graph
-        .edges
-        .iter()
-        .filter(|e| e.kind == EdgeKind::Dependency)
-        .map(|e| (e.source_id.as_str(), e.target_id.as_str()))
-        .collect();
+fn logical_view_the_tree_refines_the_survey_and_the_view_draws_the_tree_alone() {
+    let (workspace, graph) = logical();
     // Surveying an area includes planning it and following it, so the tree that
-    // details the survey details those too, and the view draws only the survey.
-    assert_eq!(refinements, [("Functions::PerformAerialSurvey", "SystemUseCases::surveyArea")]);
-    let drawn: Vec<&str> = graph.nodes.iter().filter(|n| is_use_case_node(&n.keyword)).map(|n| n.id.as_str()).collect();
-    assert_eq!(drawn, ["SystemUseCases::surveyArea"]);
+    // details the survey details those too.
+    let refinements = common::refinements(&workspace);
+    assert_eq!(refinements, [("Functions::PerformAerialSurvey".to_string(), "SystemUseCases::surveyArea".to_string())]);
+    // The view draws the tree alone; use-case.sysml draws the use cases.
+    assert!(!graph.nodes.iter().any(|n| is_use_case_node(&n.keyword)));
+    assert!(!graph.edges.iter().any(|e| e.kind == EdgeKind::Dependency));
 }
 
 #[test]

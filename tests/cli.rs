@@ -53,11 +53,12 @@ fn says_its_version() {
 
 #[test]
 fn renders_the_examples_as_their_committed_diagrams() {
-    for example in ["coffee-machine", "survey-drone"] {
+    // The web shop has no hardware, so no physical or deployment view.
+    for (example, views) in [("coffee-machine", 6), ("survey-drone", 6), ("web-shop", 4)] {
         let out = scratch(example);
         let output = ortho(&["render", &format!("examples/{example}"), "-o", path(&out)]);
         assert!(output.status.success(), "{}", stderr(&output));
-        // Both examples fit landscape A4, so ortho warns of neither.
+        // Every example fits landscape A4, so ortho warns of none.
         assert_eq!(stderr(&output).lines().collect::<Vec<_>>(), Vec::<&str>::new(), "{example}");
         let committed = repository().join("examples").join(example).join("diagrams");
         let written = files_in(&out);
@@ -70,9 +71,9 @@ fn renders_the_examples_as_their_committed_diagrams() {
         }
         // One line for each file, saying what it holds.
         let said: Vec<String> = stdout(&output).lines().map(String::from).collect();
-        assert_eq!(said.len(), 6);
-        let physical = out.join(format!("physical-view-{example}.svg"));
-        assert!(said.iter().any(|line| line.starts_with(&format!("Wrote {} (", physical.display()))), "{said:?}");
+        assert_eq!(said.len(), views, "{example}");
+        let logical = out.join(format!("logical-view-{example}.svg"));
+        assert!(said.iter().any(|line| line.starts_with(&format!("Wrote {} (", logical.display()))), "{said:?}");
         assert!(said.iter().any(|line| line.ends_with("message(s))")), "{said:?}");
     }
 }

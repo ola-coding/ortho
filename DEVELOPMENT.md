@@ -221,7 +221,8 @@ specializes the use cases' subject, and a scenario's people are their actors,
 never the other way round. A view draws only what it exposes, so the files it refers to supply
 names, and boxes only where it exposes what they declare.
 
-These rules are the examples' only: [any link can be left out](VIEWS.md). The
+These rules are the examples' only: [any link can be left out](VIEWS.md), and
+the web shop, which has no hardware, leaves out physical and deployment. The
 example tests load each view with only the files it depends on, so a name from
 any other fails. Both ends of an allocation are named once: one
 `part sw { ... }` tree of software, in the deployment file beside the
@@ -307,8 +308,10 @@ deck to GitHub Pages.
   should read the same files. A test (`tests/agent_files.rs`) checks that
   each mistake draws the message MISTAKES.md shows and that its fix loads
   cleanly, so change the page when a message changes.
-- **The examples** cover two different domains, so a rendering change that
-  only suits one shows up. Regenerate their SVGs and look at them in a browser
+- **The examples** cover three different domains, so a rendering change that
+  only suits one shows up. The web shop has no hardware, so it has no physical
+  or deployment view, and its implementation view shows modules built on a
+  vendor's services. Regenerate their SVGs and look at them in a browser
   whenever rendering changes. They carry no requirements, since no view would
   show them.
 - **The views written by hand** in `tests/views/` draw what no example does,

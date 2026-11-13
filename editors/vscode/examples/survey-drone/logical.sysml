@@ -56,7 +56,6 @@ package Functions {
 
     view 'Logical view — Survey Drone' : GeneralView {
         expose PerformAerialSurvey;
-        expose SystemUseCases::surveyArea;
         render asTreeDiagram;
     }
 }

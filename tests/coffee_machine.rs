@@ -118,12 +118,11 @@ fn logical_view_a_strict_capability_tree_naming_no_realization() {
 #[test]
 fn logical_view_each_tree_refines_the_use_cases_it_details_and_none_goes_unrefined() {
     let (workspace, graph) = logical();
-    let refinements: Vec<(&str, &str)> = graph
-        .edges
-        .iter()
-        .filter(|e| e.kind == EdgeKind::Dependency)
-        .map(|e| (e.source_id.as_str(), e.target_id.as_str()))
-        .collect();
+    // The view draws the tree alone; the model ties it to the use cases.
+    assert!(!graph.nodes.iter().any(|n| is_use_case_node(&n.keyword)));
+    assert!(!graph.edges.iter().any(|e| e.kind == EdgeKind::Dependency));
+    let refinements = common::refinements(&workspace);
+    let refinements: Vec<(&str, &str)> = refinements.iter().map(|(a, b)| (a.as_str(), b.as_str())).collect();
     assert_eq!(
         refinements,
         [
