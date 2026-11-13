@@ -9,7 +9,7 @@ numbers (§) point into **OMG SysML v2.0, Part 1, formal/2026-03-02**,
 
 Where a view draws, ortho checks a model as SysML v2 does; elsewhere, only
 its syntax ([how this is checked](#how-this-is-checked)). What each view is
-for is in [VIEWS.md](https://github.com/ola-coding/ortho/blob/main/VIEWS.md).
+for is in [VIEWS.md](VIEWS.md).
 
 ## Rules for every file
 

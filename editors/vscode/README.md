@@ -43,10 +43,12 @@ system.
   `#Safety`. The keywords are exactly the ones ortho reads. Ctrl+/ comments a
   line.
 - **AI instructions.** *Ortho: Add AI Instructions* writes a skill for Claude
-  Code and instructions for GitHub Copilot into your workspace. They carry the
-  SysML v2 that ortho reads, and tell the agent to render the model after
-  every change and fix what ortho reports, rather than delete the line it
-  points at.
+  Code, instructions for GitHub Copilot and an `AGENTS.md`, which Zed, Codex,
+  Cursor and other agents read, into your workspace. They carry the SysML v2
+  that ortho reads, what each view is for, the order to build them in and the
+  mistakes agents make, and tell the agent to render the model after every
+  change and fix what ortho reports, rather than delete the line it points at
+  or drop elements to make a view fit its page.
 - **Two examples,** a coffee machine and a survey drone, each with all six
   views, copied into a folder you pick by *Ortho: Open Example*.
 
@@ -68,7 +70,7 @@ view shows.
 | Ortho: Render Again | Draws the views again without a save. |
 | Ortho: Save Diagram as SVG... | Saves the view shown in the preview. |
 | Ortho: Save All Diagrams as SVG... | Saves every view into a folder. |
-| Ortho: Add AI Instructions | Writes the Claude Code skill and the Copilot instructions into the workspace. It asks before replacing files that are already there. |
+| Ortho: Add AI Instructions | Writes the Claude Code skill, the Copilot instructions and an `AGENTS.md` into the workspace. It asks before replacing files that are already there, and leaves an `AGENTS.md`, `CLAUDE.md` or `GEMINI.md` that is there alone, offering the lines to add to it. |
 | Ortho: Open Example | Copies an example into a folder you pick and opens it. |
 
 ## Settings
