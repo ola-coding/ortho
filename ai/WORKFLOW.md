@@ -20,7 +20,7 @@ Every view is optional, so start where the user's question is. Once two views ex
 - every use case the logical view shows is refined by a function tree;
 - every program is allocated to a computer.
 
-Two complete models to follow, a coffee machine and a survey drone, are in https://github.com/ola-coding/ortho/tree/main/examples.
+Three complete models to follow are in https://github.com/ola-coding/ortho/tree/main/examples: a coffee machine and a survey drone, products with hardware and all six views, and a web shop on AWS, software only, with no physical or deployment view.
 
 ## Check your work with ortho
 

@@ -49,8 +49,8 @@ system.
   mistakes agents make, and tell the agent to render the model after every
   change and fix what ortho reports, rather than delete the line it points at
   or drop elements to make a view fit its page.
-- **Two examples,** a coffee machine and a survey drone, each with all six
-  views, copied into a folder you pick by *Ortho: Open Example*.
+- **Three examples,** a coffee machine and a survey drone, each with all six
+  views, and a web shop on AWS, with no hardware of its own, copied into a folder you pick by *Ortho: Open Example*.
 
 ## Your model
 

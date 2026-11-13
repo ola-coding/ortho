@@ -653,6 +653,6 @@ validation models.
 
 The example models and the blocks on this page passed the OMG pilot
 implementation, release 0.63.1, on 2026-10-31, with no errors or warnings.
-Both examples have been reworked since, and that check has not yet been
-repeated on them. It is a one-off check, not part of CI;
+The examples have been reworked or added since, and that check has not yet
+been repeated on them. It is a one-off check, not part of CI;
 [DEVELOPMENT.md](DEVELOPMENT.md) describes how to repeat it.

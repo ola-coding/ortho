@@ -207,16 +207,20 @@ place of `releases/latest/download/`.
 
 ## Examples
 
-Two complete models, each with all six views rendered in its `diagrams/`
+Three complete models, each with its views rendered in its `diagrams/`
 folder:
 
 - [examples/coffee-machine/](examples/coffee-machine/): a bean-to-cup coffee
   machine. The smaller one, and the best place to start reading.
 - [examples/survey-drone/](examples/survey-drone/): a quadcopter that surveys
   an area from the air, with a tablet ground station.
+- [examples/web-shop/](examples/web-shop/): an online shop built on AWS, with
+  no hardware of its own, so four views: use case, logical, implementation and
+  process. For the software-only part of a system, such as a product's cloud
+  back end.
 
 The [pitch deck](https://ola-coding.github.io/ortho/) shows every view of
-both, with the model source beside each diagram.
+the first two, with the model source beside each diagram.
 
 ## What ortho does not do
 

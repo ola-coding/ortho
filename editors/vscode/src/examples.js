@@ -18,6 +18,11 @@ const EXAMPLES = [
     label: 'Survey drone',
     detail: 'A drone and its ground tablet: a larger model, its software deployed over three computers.',
   },
+  {
+    name: 'web-shop',
+    label: 'Web shop',
+    detail: 'Software only, on AWS: four views, from customers and staff to Lambda functions and their events.',
+  },
 ];
 
 /** The file opened first: the use case view, where a model starts. */
