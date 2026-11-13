@@ -38,7 +38,9 @@ pub struct InstructionFile {
 
 /// A copied file without the comment that says where it was copied from.
 fn body(text: &str) -> &str {
-    text.strip_prefix("<!--").and_then(|rest| rest.split_once("-->\n\n")).map_or(text, |(_, body)| body)
+    // Checked out on Windows, the lines may end in a carriage return too.
+    let after = text.strip_prefix("<!--").and_then(|rest| rest.split_once("-->"));
+    after.map_or(text, |(_, body)| body.trim_start_matches(['\r', '\n']))
 }
 
 /// A reference, a level deeper, to follow the instructions in one file: its title
@@ -113,7 +115,7 @@ mod tests {
             views: "# V",
             workflow: "<!-- Copied. -->\n\nRead [L](LANGUAGE.md).\n",
             mistakes: "# M",
-            agents: "<!-- Copied. -->\n\n# A",
+            agents: "<!-- Copied. -->\r\n\r\n# A",
         };
         let files = instruction_files(&ai);
         let paths: Vec<&str> = files.iter().map(|file| file.path.as_str()).collect();
