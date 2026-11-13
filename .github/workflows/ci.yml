@@ -62,7 +62,7 @@ jobs:
         run: |
           if [ -n "$(git status --porcelain -- editors/vscode)" ]; then
             git diff -- editors/vscode
-            echo "::error::The VS Code grammar, or its copy of LANGUAGE.md, the examples, the licence or the icon, is stale. Run 'cargo xtask vscode-grammar' and commit the result."
+            echo "::error::The VS Code grammar, or its copies of the AI instructions' sources, the examples, the licence or the icon, is stale. Run 'cargo xtask vscode-grammar' and commit the result."
             exit 1
           fi
 

@@ -275,8 +275,9 @@ deck to GitHub Pages.
   package carries that ortho, and a test fails if `package.json` and
   `Cargo.toml` differ. Its grammar,
   `syntaxes/sysml.tmLanguage.json`, is written from `KEYWORDS`, never by hand,
-  its `ai/LANGUAGE.md`, which the AI instructions carry, is copied from
-  LANGUAGE.md, its `examples/`, which *Open Example* copies, from each
+  its `ai/`, which the AI instructions are written from, is copied from
+  LANGUAGE.md, VIEWS.md and the repository's `ai/` (see *The AI
+  instructions* below), its `examples/`, which *Open Example* copies, from each
   example's `.sysml` files, and its LICENSE and `icon.png` from the
   repository's, since `vsce` packs only what is in the extension's folder:
   run `cargo xtask vscode-grammar` after changing any of them. Its
@@ -295,6 +296,17 @@ deck to GitHub Pages.
   moved to its own commit, once that commit is pushed. Anything that changes
   what `ortho render` prints, its `Wrote` lines or its `file line n: message`
   problems, must keep those tests passing.
+- **The AI instructions** are what ortho hands to the agents that write
+  models: a Claude Code skill, GitHub Copilot instructions and an `AGENTS.md`.
+  What they say is written once, in LANGUAGE.md, VIEWS.md and `ai/`:
+  `ai/WORKFLOW.md` is the skill's body, how to build a model, check it with
+  ortho and review it; `ai/MISTAKES.md` the mistakes agents make, each with
+  what ortho prints; `ai/AGENTS.md` the short file other agents read. Only
+  how they are put together, and where an editor keeps ortho, belongs to each
+  editor: `editors/vscode/src/instructions.js` for VS Code, and `ortho init`
+  should read the same files. A test (`tests/agent_files.rs`) checks that
+  each mistake draws the message MISTAKES.md shows and that its fix loads
+  cleanly, so change the page when a message changes.
 - **The examples** cover two different domains, so a rendering change that
   only suits one shows up. Regenerate their SVGs and look at them in a browser
   whenever rendering changes. They carry no requirements, since no view would
