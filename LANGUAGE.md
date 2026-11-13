@@ -155,11 +155,10 @@ ortho draws for landscape A4 and warns of a view whose names would print
 smaller than 6 pt once it is shrunk to fit. ortho already sets out what it can
 in rows: use cases, packages that import nothing from each other, and packages
 that all import the same one. What it cannot shorten is a view that simply
-holds too much. Then first see what can go: two functions that are always done
-together are one function, two modules always deployed together may be one
-module, and a part that only holds others, such as a frame, can often be left
-out. The examples fit A4 that way. Only then split the view, since more views,
-each about one thing, read better than one crowded one:
+holds too much. A real model outgrows one page, and that is as it should be:
+split it into views, each about one concern and one level of the system's
+breakdown, the way MBSE practice divides a model. More views, each about one
+thing, read better than one crowded one:
 
 - **Logical view:** expose one branch of a big tree, `expose MakeBeverage::prepareWater;`,
   in a view of its own, and keep the whole tree's view to its upper levels by
