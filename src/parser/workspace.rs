@@ -41,13 +41,26 @@ impl Workspace {
     /// Parses, links and validates files given as path and text. If any does not
     /// parse, says which, and goes no further.
     pub fn build(sources: Vec<(String, String)>) -> Result<Workspace, Vec<String>> {
+        let texts: Vec<(String, String)> = sources.clone();
+        Workspace::load(sources).map_err(|failures| {
+            let report_one = |(index, error): (usize, SyntaxError)| {
+                let (path, text) = &texts[index];
+                report(path, text, error.offset, &error.message)
+            };
+            failures.into_iter().map(report_one).collect()
+        })
+    }
+
+    /// As `build`, but a file that does not parse is given by its place among the
+    /// sources and its error, as an editor marks it.
+    pub fn load(sources: Vec<(String, String)>) -> Result<Workspace, Vec<(usize, SyntaxError)>> {
         let mut ast = Ast::default();
         let mut documents = Vec::with_capacity(sources.len());
         let mut failures = Vec::new();
-        for (path, text) in sources {
+        for (index, (path, text)) in sources.into_iter().enumerate() {
             match parse(&mut ast, &text) {
                 Ok(root) => documents.push(Document { path, text, root, diagnostics: Vec::new() }),
-                Err(SyntaxError { offset, message }) => failures.push(report(&path, &text, offset, &message)),
+                Err(error) => failures.push((index, error)),
             }
         }
         if !failures.is_empty() {

@@ -18,7 +18,7 @@ const OUT: &str = "editors/vscode/syntaxes/sysml.tmLanguage.json";
 const AI_OUT: &str = "editors/vscode/ai";
 /// What the AI instructions are written from, by path in the repository. They are
 /// written into one folder, so a link from one to another stays a link to the copy.
-const AI_FILES: [&str; 5] = ["LANGUAGE.md", "VIEWS.md", "ai/WORKFLOW.md", "ai/MISTAKES.md", "ai/AGENTS.md"];
+pub const AI_FILES: [&str; 5] = ["LANGUAGE.md", "VIEWS.md", "ai/WORKFLOW.md", "ai/MISTAKES.md", "ai/AGENTS.md"];
 const EXAMPLES_OUT: &str = "editors/vscode/examples";
 /// Files the extension carries as they are: `vsce` packs only what is in its folder.
 const COPIES: [(&str, &str); 2] =
@@ -32,7 +32,7 @@ const REPOSITORY: &str = "https://github.com/ola-coding/ortho/blob/main/";
 /// like `if` and `import`; words that relate one element to another read as operators.
 /// The theme picks the colours; the groups decide which words share one. Every word here
 /// must be one of ortho's keywords; the rest are `storage.type`, the kinds of element.
-const GROUPS: &[(&str, &[&str])] = &[
+pub const GROUPS: &[(&str, &[&str])] = &[
     ("constant.language.sysml", &["true", "false", "null"]),
     ("keyword.operator.logical.sysml", &["and", "or", "xor", "not", "implies"]),
     (
@@ -231,10 +231,10 @@ pub fn run() -> Result {
     for from in AI_FILES {
         let text = std::fs::read_to_string(from).map_err(|error| format!("{from}: {error}"))?;
         let to = format!("{AI_OUT}/{}", file_name(from));
-        write(&to, &ai_copy(from, &text))?;
+        write(&to, &ai_copy(from, &text, "vscode-grammar"))?;
         println!("Wrote {to}");
     }
-    copy_examples()?;
+    copy_examples(EXAMPLES_OUT)?;
     println!("Wrote {EXAMPLES_OUT}");
     for (from, to) in COPIES {
         std::fs::copy(from, to).map_err(|error| format!("{from}: {error}"))?;
@@ -245,16 +245,16 @@ pub fn run() -> Result {
 
 /// Each example's `.sysml` files, as they are, without the diagrams: the preview draws
 /// those. The folder is written afresh, so a file removed from an example goes too.
-fn copy_examples() -> Result {
+pub fn copy_examples(out_folder: &str) -> Result {
     let error = |error: std::io::Error| error.to_string();
-    if std::path::Path::new(EXAMPLES_OUT).exists() {
-        std::fs::remove_dir_all(EXAMPLES_OUT).map_err(error)?;
+    if std::path::Path::new(out_folder).exists() {
+        std::fs::remove_dir_all(out_folder).map_err(error)?;
     }
     let mut examples: Vec<_> =
         std::fs::read_dir("examples").map_err(error)?.collect::<std::io::Result<_>>().map_err(error)?;
     examples.sort_by_key(|entry| entry.file_name());
     for example in examples.iter().filter(|entry| entry.path().is_dir()) {
-        let out = std::path::Path::new(EXAMPLES_OUT).join(example.file_name());
+        let out = std::path::Path::new(out_folder).join(example.file_name());
         std::fs::create_dir_all(&out).map_err(error)?;
         for file in std::fs::read_dir(example.path()).map_err(error)? {
             let path = file.map_err(error)?.path();
@@ -266,16 +266,16 @@ fn copy_examples() -> Result {
     Ok(())
 }
 
-fn file_name(path: &str) -> &str {
+pub fn file_name(path: &str) -> &str {
     path.rsplit('/').next().unwrap_or(path)
 }
 
 /// A file of `AI_FILES` as it reads outside the repository, beside the others: a link to
 /// another of them, `[VIEWS.md](VIEWS.md)` or `[LANGUAGE.md](../LANGUAGE.md)`, points at
 /// its copy, and a link to any other file of the repository at it on GitHub. A link
-/// within the page stays.
-fn ai_copy(from: &str, text: &str) -> String {
-    let mut copy = format!("<!-- Copied from ortho's {from} by `cargo xtask vscode-grammar`. -->\n\n");
+/// within the page stays. `task` is the task that copies it.
+pub fn ai_copy(from: &str, text: &str, task: &str) -> String {
+    let mut copy = format!("<!-- Copied from ortho's {from} by `cargo xtask {task}`. -->\n\n");
     let folder = from.rsplit_once('/').map_or("", |(folder, _)| folder);
     let mut rest = text;
     while let Some(at) = rest.find("](") {
@@ -310,12 +310,15 @@ mod ai_copy_tests {
 
     #[test]
     fn links_to_the_files_copied_beside_it_stay_and_others_point_at_github() {
-        let copy =
-            ai_copy("ai/MISTAKES.md", "[L](../LANGUAGE.md#views), [W](WORKFLOW.md), [D](../DEVELOPMENT.md), [x](#x)");
+        let copy = ai_copy(
+            "ai/MISTAKES.md",
+            "[L](../LANGUAGE.md#views), [W](WORKFLOW.md), [D](../DEVELOPMENT.md), [x](#x)",
+            "t",
+        );
         assert!(copy.ends_with(
             "[L](LANGUAGE.md#views), [W](WORKFLOW.md), [D](https://github.com/ola-coding/ortho/blob/main/DEVELOPMENT.md), [x](#x)"
         ));
-        let copy = ai_copy("LANGUAGE.md", "[V](VIEWS.md) [D](DEVELOPMENT.md) [s](https://omg.org)");
+        let copy = ai_copy("LANGUAGE.md", "[V](VIEWS.md) [D](DEVELOPMENT.md) [s](https://omg.org)", "t");
         assert!(copy.ends_with(
             "[V](VIEWS.md) [D](https://github.com/ola-coding/ortho/blob/main/DEVELOPMENT.md) [s](https://omg.org)"
         ));

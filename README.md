@@ -177,6 +177,18 @@ as `data-file` and `data-line` on its group, the file named from the folder
 ortho ran in. A viewer can take you from a box to the text, as the VS Code
 extension does when you click one.
 
+`ortho init` writes AI instructions into the current folder, a skill for
+Claude Code, instructions for GitHub Copilot and an `AGENTS.md` for other
+agents, so an agent there knows the SysML v2 ortho reads and checks its work
+with ortho. `ortho init --example coffee-machine` also copies that example,
+or `survey-drone` or `web-shop`, into a folder of its own.
+
+`ortho lsp` runs ortho as a language server, for an editor that speaks the
+Language Server Protocol, such as Zed, Neovim, Helix or Emacs: the problems
+of every file in a model's folder as you type, go to definition, and a live
+preview of the diagrams, a page it opens in your browser and draws again on
+every save.
+
 Diagrams are drawn for landscape A4. A view too big for that page, one whose
 names would print smaller than 6 pt once it is shrunk to fit, is still drawn,
 with a warning that says so: split it into smaller views, as

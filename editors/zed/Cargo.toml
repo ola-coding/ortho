@@ -1,0 +1,17 @@
+[package]
+name = "zed-ortho"
+version = "0.1.0"
+edition = "2024"
+publish = false
+license = "MIT"
+description = "The Zed extension for ortho: SysML v2 highlighting, problems and diagrams"
+
+# Zed builds the extension on its own, from this folder, not as part of ortho.
+[workspace]
+
+[lib]
+path = "src/ortho.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+zed_extension_api = "0.7.0"

@@ -248,3 +248,59 @@ fn watching_outlasts_a_model_that_does_not_load() {
     std::fs::write(folder.join("model.sysml"), FUNCTIONS).unwrap();
     eventually(&folder.join("diagrams").join("functions.svg"), |text| text.contains("Brew"));
 }
+
+#[test]
+fn init_writes_the_ai_instructions_and_keeps_changed_ones() {
+    let folder = scratch("init");
+    let output = ortho(&["init", path(&folder)]);
+    assert!(output.status.success(), "{}", stderr(&output));
+    let skill = folder.join(".claude/skills/sysml-v2-ortho/SKILL.md");
+    assert!(std::fs::read_to_string(&skill).unwrap().contains("ortho render"));
+    for reference in ["LANGUAGE.md", "VIEWS.md", "MISTAKES.md"] {
+        assert!(folder.join(".claude/skills/sysml-v2-ortho").join(reference).exists(), "{reference}");
+    }
+    assert!(folder.join(".github/instructions/sysml-v2.instructions.md").exists());
+    assert!(std::fs::read_to_string(folder.join("AGENTS.md")).unwrap().starts_with("# "));
+    assert_eq!(stdout(&output).lines().filter(|line| line.starts_with("Wrote ")).count(), 6);
+
+    // Again changes nothing; once changed by hand, they are replaced only when told to.
+    let again = ortho(&["init", path(&folder)]);
+    assert_eq!(stdout(&again).lines().filter(|line| line.starts_with("Up to date: ")).count(), 5);
+    assert!(stdout(&again).contains("Kept "), "{}", stdout(&again));
+    std::fs::write(&skill, "mine").unwrap();
+    let kept = ortho(&["init", path(&folder)]);
+    assert!(!kept.status.success());
+    assert!(stderr(&kept).contains("--force"), "{}", stderr(&kept));
+    assert_eq!(std::fs::read_to_string(&skill).unwrap(), "mine");
+    assert!(ortho(&["init", path(&folder), "--force"]).status.success());
+    assert_ne!(std::fs::read_to_string(&skill).unwrap(), "mine");
+}
+
+#[test]
+fn init_leaves_a_projects_own_agent_file_alone() {
+    let folder = scratch("init-agents");
+    std::fs::write(folder.join("CLAUDE.md"), "ours").unwrap();
+    let output = ortho(&["init", path(&folder), "--force"]);
+    assert!(output.status.success(), "{}", stderr(&output));
+    assert!(!folder.join("AGENTS.md").exists());
+    assert_eq!(std::fs::read_to_string(folder.join("CLAUDE.md")).unwrap(), "ours");
+    assert!(stdout(&output).contains("CLAUDE.md"), "{}", stdout(&output));
+}
+
+#[test]
+fn init_copies_an_example_that_renders_into_a_free_folder() {
+    let folder = scratch("init-example");
+    std::fs::create_dir(folder.join("coffee-machine")).unwrap();
+    let output = ortho(&["init", path(&folder), "--example", "coffee-machine"]);
+    assert!(output.status.success(), "{}", stderr(&output));
+    let copied = folder.join("coffee-machine-2");
+    let source = repository().join("examples/coffee-machine");
+    let models: Vec<String> = files_in(&source).into_iter().filter(|name| name.ends_with(".sysml")).collect();
+    assert_eq!(files_in(&copied), models);
+    for name in &models {
+        assert_eq!(std::fs::read(copied.join(name)).unwrap(), std::fs::read(source.join(name)).unwrap(), "{name}");
+    }
+    let rendered = ortho(&["render", path(&copied), "-o", path(&folder.join("out"))]);
+    assert!(rendered.status.success(), "{}", stderr(&rendered));
+    assert!(!ortho(&["init", path(&folder), "--example", "teapot"]).status.success());
+}

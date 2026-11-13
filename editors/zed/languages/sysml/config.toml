@@ -1,0 +1,15 @@
+name = "SysML v2"
+grammar = "sysml"
+path_suffixes = ["sysml"]
+# A note, which is not part of the model. A /* */ comment is, as a docstring is part of
+# Python, so commenting out a line makes it a note.
+line_comments = ["// "]
+tab_size = 4
+brackets = [
+    { start = "{", end = "}", close = true, newline = true },
+    { start = "[", end = "]", close = true, newline = false },
+    { start = "(", end = ")", close = true, newline = false },
+    { start = "\"", end = "\"", close = true, newline = false, not_in = ["string", "comment"] },
+    { start = "'", end = "'", close = true, newline = false, not_in = ["string", "comment"] },
+    { start = "/*", end = " */", close = true, newline = false, not_in = ["string", "comment"] },
+]
