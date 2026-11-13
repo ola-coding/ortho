@@ -242,7 +242,7 @@ package Functions {
 | `action name : Def;` in a package | nothing. It is the usage a `perform` chain starts from. |
 | `expose Tree::branch;` in the view, naming a nested `action` | that branch alone, the function at its root: a tree too big for one page, split |
 | `#refinement dependency Tree to SystemUseCases::Name;` in a package | a dashed arrow from the tree's root up to the use case, when the view exposes both. `Name` may be a use case or its definition; the examples refine the use cases themselves, `makeEspresso`, and leave them off their logical views, which draw the trees alone; the use case view draws the use cases. |
-| `expose SystemUseCases::Name;` in the view | the use case, above the trees that refine it. One nothing refines stands alone, and ortho warns of it. |
+| `expose SystemUseCases::Name;` in the view | the use case, above the trees that refine it. One nothing refines stands alone. |
 
 **Refining a use case** (§7.3). A function tree says which use case it details
 with a dependency, tagged from the standard library's `ModelingMetadata`, whose
@@ -251,8 +251,17 @@ is optional, but its ends are checked: once it names a use case, that use case
 has to be loaded. A logical view that shows use cases is there to tie its trees
 to them, though, so ortho warns of a tree it draws that refines no use case,
 and renders anyway. For a view of a single branch, the tree the branch belongs
-to has to refine one. The other way round, ortho warns of a use case the view
-draws that no tree refines.
+to has to refine one, at its root or in one of its branches.
+
+The other way round, ortho checks the whole model, not one view. Once a model
+declares both a use case view and a logical view, ortho warns of each use case
+the use case view draws that no function refines, wherever the refinement is
+written and whether or not a logical view draws the use case. A refinement may
+start at a tree's root or at one of its branches, and one of a use case
+definition refines every use case of that kind. An `include` does not pass a
+refinement on: an included use case is a use case of its own and needs its own.
+A model with only one of the two views gets no warning, since the other half is
+missing, not wrong.
 
 ```sysml
 package SystemUseCases {
@@ -582,7 +591,7 @@ view, and no part of the physical view, performs, either itself or through a
 function above it, and renders anyway. A `perform` in a part that no view
 draws does not count. Performing a typed action, `perform beverage;`, performs
 its definition's whole tree. In a model with a use case view, only a tree that
-refines a use case needs a solution, so a catalogue of functions can sit beside
+refines a use case, at its root or in a branch, needs a solution, so a catalogue of functions can sit beside
 the product's until a use case asks for one. A model with no implementation or
 physical view gets no warning, since `perform` is optional.
 
