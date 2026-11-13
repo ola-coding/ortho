@@ -88,11 +88,14 @@ fn use_case_view_customers_and_staff_with_two_outside_parties() {
 }
 
 #[test]
-fn logical_view_one_tree_refining_every_use_case_and_naming_no_service() {
+fn logical_view_one_tree_naming_no_service_and_no_use_case() {
     let graph = logical();
     let functions = graph.nodes.iter().filter(|n| !is_use_case_node(&n.keyword)).count();
     assert_eq!(graph.edges.iter().filter(|e| e.kind == EdgeKind::Decomposition).count(), functions - 1);
-    assert_eq!(graph.edges.iter().filter(|e| e.kind == EdgeKind::Dependency).count(), 5);
+    // Each branch refines the use case it delivers, in the model; the view leaves
+    // the use cases out, so the tree stands alone.
+    assert_eq!(functions, graph.nodes.len());
+    assert_eq!(graph.edges.iter().filter(|e| e.kind == EdgeKind::Dependency).count(), 0);
     let all = names(&graph.nodes);
     for realization in ["Lambda", "DynamoDB", "OrderFunction", "StorefrontApp"] {
         assert!(!all.contains(&realization), "{realization}");

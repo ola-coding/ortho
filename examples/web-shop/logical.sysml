@@ -39,20 +39,17 @@ package Functions {
     // so the modules that realize a function point into this one.
     action sale : SellOnline;
 
-    // What customers and staff ask for, in more detail.
-    #refinement dependency SellOnline to SystemUseCases::findProduct;
-    #refinement dependency SellOnline to SystemUseCases::placeOrder;
-    #refinement dependency SellOnline to SystemUseCases::payOrder;
-    #refinement dependency SellOnline to SystemUseCases::trackOrder;
-    #refinement dependency SellOnline to SystemUseCases::fulfilOrder;
+    // What customers and staff ask for, in more detail: each branch refines
+    // the use case it delivers. The view leaves the use cases out, so the tree
+    // stands alone; use-case.sysml draws them.
+    #refinement dependency SellOnline::presentCatalogue to SystemUseCases::findProduct;
+    #refinement dependency SellOnline::takeOrders to SystemUseCases::placeOrder;
+    #refinement dependency SellOnline::takeOrders to SystemUseCases::payOrder;
+    #refinement dependency SellOnline::fulfilOrders to SystemUseCases::fulfilOrder;
+    #refinement dependency SellOnline::informCustomers to SystemUseCases::trackOrder;
 
     view 'Logical view — Web Shop' : GeneralView {
         expose SellOnline;
-        expose SystemUseCases::findProduct;
-        expose SystemUseCases::placeOrder;
-        expose SystemUseCases::payOrder;
-        expose SystemUseCases::trackOrder;
-        expose SystemUseCases::fulfilOrder;
         render asTreeDiagram;
     }
 }
