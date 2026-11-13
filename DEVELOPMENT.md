@@ -592,6 +592,10 @@ Open, in priority order:
     `ortho lsp`, with the ortho on the PATH or else the release archive for
     the user's system, which it downloads.
   - [ ] Try the preview in Zed, on macOS, Linux and Windows.
+  - [ ] Report to Nomograph that tree-sitter-sysml reads a dependency whose
+    client has a qualified name, `dependency A::b to C;`, only with `from`:
+    the web shop's refinements are an error node each, so CI passes over
+    that file when it parses the examples.
   - [ ] Release ortho 0.4.0, with `ortho lsp`, before the extension.
   - [ ] Publish it by a pull request to zed-industries/extensions, and add
     that to [Releasing](#releasing).
