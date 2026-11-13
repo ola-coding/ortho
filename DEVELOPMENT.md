@@ -76,8 +76,8 @@ rules are only warnings, which the CLI prints before carrying on:
   (`unperformed_functions`, with what those views draw in `solution_owners`);
 - a tree a logical view draws beside use cases that refines none
   (`unrefined_trees`);
-- a use case a logical view draws that no tree refines
-  (`unrefined_use_cases`);
+- a use case that no function refines, once the model has a use case view
+  and a logical view, whichever views draw it (`unrefined_use_cases`);
 - an `allocate` end that neither the implementation nor the physical view
   draws (`foreign_allocation_ends`);
 - software that no deployment view allocates to a host (`unhosted_software`).
@@ -105,12 +105,13 @@ two apart:
 
 | When the model declares… | ortho warns of… |
 |---|---|
-| use cases and a logical view | a tree drawn beside use cases that refines none, and a use case drawn beside trees that none refines |
+| a use case view and a logical view | a use case the use case view draws that no function refines, whether or not a logical view draws it |
+| use cases and trees on one logical view | a tree drawn there that refines none |
 | a logical view, and an implementation or physical view | a function in scope that no module or part those views draw performs |
 | a deployment view | an `allocate` end that is not a module of an implementation view or a part of a physical view, and a module no host runs |
 
 A function is in scope when a logical view draws it and, in a model with use
-cases, its tree refines one. A catalogue of functions kept beside the product's
+cases, its tree refines one, at its root or in a branch. A catalogue of functions kept beside the product's
 trees needs no solution until a use case asks for it. SysML v2's own way to say
 which functions one product of a range addresses is variability, `variation`
 and `variant` (§7.6), which ortho parses but does not yet read.
@@ -487,7 +488,8 @@ Done, one line each; the commits and the sections above hold the detail:
 - [x] **A deployment view adds nothing of its own** (`foreign_allocation_ends`).
 - [x] **Refuse a part typed by behaviour or data.**
 - [x] **Warn of software that runs nowhere** (`unhosted_software`).
-- [x] **Warn of a use case no tree refines** (`unrefined_use_cases`).
+- [x] **Warn of a use case no tree refines** (`unrefined_use_cases`), from the
+  whole model, so a logical view may draw its trees alone.
 - [x] **Suggest the name meant** in a chain (`chain_hint`); not for plain names.
 - [x] **A VS Code extension** in `editors/vscode/`, with ortho inside, on the
   Marketplace and Open VSX; see *Working on the code* and *Releasing*.

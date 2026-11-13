@@ -132,12 +132,16 @@ fn logical_view_a_strict_capability_tree_naming_nothing_that_realizes_a_function
 }
 
 #[test]
-fn logical_view_the_tree_refines_the_survey_and_the_view_draws_the_tree_alone() {
+fn logical_view_the_tree_refines_each_use_case_and_the_view_draws_the_tree_alone() {
     let (workspace, graph) = logical();
-    // Surveying an area includes planning it and following it, so the tree that
-    // details the survey details those too.
+    // Surveying an area includes planning it and following it, which the operator
+    // can also ask for alone: use cases of their own, so each is refined too.
     let refinements = common::refinements(&workspace);
-    assert_eq!(refinements, [("Functions::PerformAerialSurvey".to_string(), "SystemUseCases::surveyArea".to_string())]);
+    let tree = "Functions::PerformAerialSurvey".to_string();
+    assert_eq!(
+        refinements,
+        ["surveyArea", "planSurvey", "followProgress"].map(|u| (tree.clone(), format!("SystemUseCases::{u}")))
+    );
     // The view draws the tree alone; use-case.sysml draws the use cases.
     assert!(!graph.nodes.iter().any(|n| is_use_case_node(&n.keyword)));
     assert!(!graph.edges.iter().any(|e| e.kind == EdgeKind::Dependency));

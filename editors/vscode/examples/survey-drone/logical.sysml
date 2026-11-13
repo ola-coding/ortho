@@ -51,8 +51,12 @@ package Functions {
     // so the parts that realize a function point into this one.
     action survey : PerformAerialSurvey;
 
-    // What the operator asks for, in more detail.
+    // What the operator asks for, in more detail. Planning a survey and
+    // following one are use cases of their own, which the operator can also ask
+    // for alone, so each is refined, not only the survey that includes them.
     #refinement dependency PerformAerialSurvey to SystemUseCases::surveyArea;
+    #refinement dependency PerformAerialSurvey to SystemUseCases::planSurvey;
+    #refinement dependency PerformAerialSurvey to SystemUseCases::followProgress;
 
     view 'Logical view — Survey Drone' : GeneralView {
         expose PerformAerialSurvey;

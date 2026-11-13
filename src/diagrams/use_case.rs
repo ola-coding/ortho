@@ -76,6 +76,19 @@ fn is_use_case(ast: &Ast, node: NodeId) -> bool {
 /// each joined to their use cases by a plain line (§8.2.3.21), and an «include»
 /// arrow to each included use case.
 pub fn extract_use_case_graph(ast: &Ast, exposed: &[NodeId]) -> DiagramGraph {
+    let (use_cases, rendered) = reached_and_drawn(ast, exposed);
+    graph_of(ast, &use_cases, &rendered)
+}
+
+/// The use cases a use case view exposing `exposed` draws a box for: each one
+/// exposed, and each one an `include use case` declares, but not a def that use
+/// cases of its kind stand for.
+pub fn drawn_use_cases(ast: &Ast, exposed: &[NodeId]) -> Vec<NodeId> {
+    reached_and_drawn(ast, exposed).1
+}
+
+/// The use cases reached from `exposed`, defs among them, and those of them drawn.
+fn reached_and_drawn(ast: &Ast, exposed: &[NodeId]) -> (Vec<NodeId>, Vec<NodeId>) {
     let mut use_cases: Vec<NodeId> = Vec::new();
     for member in exposed_members(ast, exposed) {
         if is_use_case(ast, member) && !use_cases.contains(&member) {
@@ -101,6 +114,10 @@ pub fn extract_use_case_graph(ast: &Ast, exposed: &[NodeId]) -> DiagramGraph {
         .collect();
     let rendered: Vec<NodeId> =
         use_cases.iter().copied().filter(|u| !(ast[*u].ty == Type::UseCaseDef && typed_defs.contains(u))).collect();
+    (use_cases, rendered)
+}
+
+fn graph_of(ast: &Ast, use_cases: &[NodeId], rendered: &[NodeId]) -> DiagramGraph {
     let mut nodes: Vec<GraphNode> = rendered.iter().map(|u| use_case_node(ast, *u)).collect();
     // Each rendered use case's box is the node at the same place.
     let box_of_use_case: HashMap<NodeId, usize> = rendered.iter().enumerate().map(|(i, u)| (*u, i)).collect();

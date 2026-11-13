@@ -66,7 +66,8 @@ a volume, raising a temperature — do not.
 Each function appears once, and names nothing that realizes it: the parts on
 the Implementation and Physical views name their functions themselves. A
 function nothing performs is a gap. Each tree details what a use case asks for,
-and says so: it refines that use case. A use case nothing refines is a gap too.
+and says so: it refines that use case. A use case nothing refines is a gap too,
+which ortho finds from the model, so the view may draw the trees alone.
 
 Drawn as a work-breakdown chart: one box per function, the root an «action
 def» and the rest «action»s, each parent above its children on a single stem.

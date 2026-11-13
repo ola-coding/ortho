@@ -19,7 +19,7 @@ A model answers its questions in this order, one view each:
 Every view is optional, so start where the user's question is. Once two views exist, though, they have to agree, and ortho warns where they do not:
 
 - every function at the bottom of a tree is performed by a module or a part;
-- every use case the logical view shows is refined by a function tree;
+- every use case of the use case view is refined by a function tree, or a branch of one, even when the logical view draws the trees alone; an included use case needs its own refinement;
 - every program is allocated to a computer.
 
 Three complete models to follow are in https://github.com/ola-coding/ortho/tree/main/examples: a coffee machine and a survey drone, products with hardware and all six views, and a web shop on AWS, software only, with no physical or deployment view.
