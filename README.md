@@ -7,10 +7,9 @@
 
 **Architecture diagrams from SysML v2 text.** Write your model in the SysML v2
 textual notation, commit it next to your code, and `ortho` draws six
-architectural views of it as SVG, in SysML v2's own graphical notation: use
-case, logical, implementation, physical, deployment and process. Just as a
-technical drawing shows one object through several standard views, so the
-diagrams show one model.
+architectural views of it as SVG, in SysML v2's own graphical notation. Just
+as a technical drawing shows one object through several standard views, so
+the diagrams show one model.
 
 <p align="center">
   <img src="examples/coffee-machine/diagrams/physical-view-coffee-machine.svg"
@@ -23,23 +22,23 @@ diagrams show one model.
 - **The model is the source, the diagrams follow.** Every view is drawn from
   the text, so a diagram cannot drift from the model, and a review shows the
   change to both.
-- **Standard SysML v2.** ortho reads the textual notation of OMG SysML v2.0
-  and loads all 252 of OMG's example, training and validation models. A view is
-  declared with the standard view definitions, so another SysML v2 tool can
-  read the same model.
-- **SysML v2's graphical notation** (§8.2.3): definitions and usages, «part»
-  and «action» keywords, ports on the border, «include» and «import» arrows.
+- **Standard SysML v2, in and out.** ortho reads OMG SysML v2.0's textual
+  notation, loading all 252 of OMG's example, training and validation models,
+  and draws in its graphical notation (§8.2.3). Views are declared with the
+  standard view definitions, so another SysML v2 tool reads the same model.
+- **Written by AI agents, reviewed by people.** `ortho init` tells an agent
+  the SysML v2 ortho reads and has it check its work with ortho; you review
+  the text and the diagrams.
 - **One program, nothing else.** No modelling tool, no licence server, no
-  Java, no browser and no network calls. The same model gives the same SVG on
-  a laptop and in CI.
-- **Drawn to be read on paper and slides.** Diagrams are sized for landscape
-  A4, ortho warns of one too big to read there, and a dark theme suits slides.
+  Java and no network calls. The same model gives the same SVG on a laptop
+  and in CI.
+- **Made for paper and slides.** Diagrams are sized for landscape A4, with a
+  dark theme for slides.
 
 ## The six views
 
-One model, six views of it, each answering one question. These are the
-[coffee machine example](examples/coffee-machine/); click a diagram to see it
-full size.
+The [coffee machine example](examples/coffee-machine/), one model in six
+views. Click a diagram to see it full size.
 
 <table>
   <tr>
@@ -71,9 +70,8 @@ full size.
 | Deployment | Which hardware runs which software | `allocate` |
 | Process | How the software modules talk at run time, as a sequence of messages | `occurrence def`, `message` |
 
-Every view stands alone: a model needs only the views it wants, and a view
-names another only where it refers to something in it. [VIEWS.md](VIEWS.md)
-says what each view is for, and [LANGUAGE.md](LANGUAGE.md) what to write for it.
+A model needs only the views it wants. [VIEWS.md](VIEWS.md) says what each
+view is for, and [LANGUAGE.md](LANGUAGE.md) what to write for it.
 
 ## Install
 
@@ -81,11 +79,11 @@ In VS Code, install
 [Ortho for SysML v2](https://marketplace.visualstudio.com/items?itemName=ola-coding.ortho)
 from the Marketplace; in Cursor or VSCodium, from
 [Open VSX](https://open-vsx.org/extension/ola-coding/ortho). It carries
-ortho, draws the views beside the model as you edit it, and puts ortho on
-the PATH of VS Code's terminals, so there is nothing else to install.
+ortho, so there is nothing else to install.
 
 Otherwise, download ortho for your system from the
-[latest release](https://github.com/ola-coding/ortho/releases/latest):
+[latest release](https://github.com/ola-coding/ortho/releases/latest), unpack
+it and put `ortho` (`ortho.exe` on Windows) in a folder on your `PATH`:
 
 | System               | File                                      |
 | -------------------- | ----------------------------------------- |
@@ -95,26 +93,10 @@ Otherwise, download ortho for your system from the
 | Linux, x86-64        | `ortho-x86_64-unknown-linux-musl.tar.gz`  |
 | Linux, ARM           | `ortho-aarch64-unknown-linux-musl.tar.gz` |
 
-Unpack it and put `ortho` (`ortho.exe` on Windows) in a folder on your `PATH`.
-On Linux or macOS, from a terminal:
-
-```sh
-curl -L https://github.com/ola-coding/ortho/releases/latest/download/ortho-aarch64-apple-darwin.tar.gz | tar xz
-sudo mv ortho-aarch64-apple-darwin/ortho /usr/local/bin/
-```
-
-with the file for your system in place of the Apple silicon one. On macOS, a
-file downloaded with a browser is quarantined, and macOS refuses to open it;
-`xattr -d com.apple.quarantine ortho` lifts that. Check that it works with
-`ortho --version`.
-
-With [Rust](https://rustup.rs) installed, ortho is also on
-[crates.io](https://crates.io/crates/ortho):
-
-```sh
-cargo install ortho    # builds it from source
-cargo binstall ortho   # downloads the release binary, with cargo-binstall
-```
+macOS refuses to open a file downloaded with a browser until
+`xattr -d com.apple.quarantine ortho` lifts the quarantine. With
+[Rust](https://rustup.rs) installed, `cargo install ortho` builds it from
+[crates.io](https://crates.io/crates/ortho).
 
 ## Your first diagram
 
@@ -145,66 +127,40 @@ package Functions {
 }
 ```
 
-The `view` at the end is the diagram: its name is the heading, and it shows
-what it exposes. Render it:
+The `view` is the diagram: its name is the heading, and it shows what it
+exposes. Render it:
 
 ```sh
 ortho render logical.sysml -o diagrams
 ```
 
-Open `diagrams/logical-view-coffee-machine.svg` in a browser: a tree of ten
-functions, headed "Logical view — Coffee Machine".
+and open `diagrams/logical-view-coffee-machine.svg` in a browser.
 
-## Options
+## Commands
 
 ```text
-ortho render <models...> -o <folder> [--theme <name>] [--watch]
+ortho render <models...> -o <folder> [--theme light|dark-glass] [--watch]
+ortho init [--example coffee-machine|survey-drone|web-shop]
+ortho lsp
 ```
 
-- `<models...>`: `.sysml` files, or folders of them, read as one model.
-- `-o, --out`: the folder to write to, one SVG per view, named after the view:
-  `view 'Logical view'` writes `logical-view.svg`, and a short name,
-  `view <logical> 'Logical view'`, `logical.svg`. Missing folders are created.
-- `--theme`: `light` (default) or `dark-glass`, a transparent version for dark
-  slides. PowerPoint, Keynote and Google Slides all insert SVG directly.
-- `-w, --watch`: keep running and render again whenever a model file is saved,
-  so an SVG preview open beside the model in your editor follows the text. A
-  `.sysml` file added to a folder you named is picked up too, and a model that
-  does not load is reported and waited on. Stop it with Ctrl+C.
+- **`render`** reads the `.sysml` files and folders given as one model and
+  writes an SVG for each view, named after it: `view 'Logical view'` writes
+  `logical-view.svg`, and `view <logical> 'Logical view'` writes
+  `logical.svg`. `--watch` renders again on every save. A view too big to
+  read on its page is still drawn, with a warning;
+  [split it](LANGUAGE.md#keeping-a-view-on-one-page).
+- **`init`** writes AI instructions into the folder: a skill for Claude Code,
+  instructions for GitHub Copilot and an `AGENTS.md` for other agents.
+  `--example` also copies an example model.
+- **`lsp`** is a language server for Zed, Neovim, Helix, Emacs or any editor
+  that speaks LSP: problems as you type, go to definition, and a live preview
+  of the diagrams in your browser.
 
-Each box in a diagram carries the file and line that declare its element,
-as `data-file` and `data-line` on its group, the file named from the folder
-ortho ran in. A viewer can take you from a box to the text, as the VS Code
-extension does when you click one.
+## In CI
 
-`ortho init` writes AI instructions into the current folder, a skill for
-Claude Code, instructions for GitHub Copilot and an `AGENTS.md` for other
-agents, so an agent there knows the SysML v2 ortho reads and checks its work
-with ortho. `ortho init --example coffee-machine` also copies that example,
-or `survey-drone` or `web-shop`, into a folder of its own.
-
-`ortho lsp` runs ortho as a language server, for an editor that speaks the
-Language Server Protocol, such as Zed, Neovim, Helix or Emacs: the problems
-of every file in a model's folder as you type, go to definition, and a live
-preview of the diagrams, a page it opens in your browser and draws again on
-every save.
-
-Diagrams are drawn for landscape A4. A view too big for that page, one whose
-names would print smaller than 6 pt once it is shrunk to fit, is still drawn,
-with a warning that says so: split it into smaller views, as
-[LANGUAGE.md](LANGUAGE.md#keeping-a-view-on-one-page) shows.
-
-## Using it in a project
-
-ortho renders every view a model declares, so one command draws them all.
-Commit your models and the generated SVGs:
-
-```sh
-ortho render models -o diagrams
-```
-
-Rendering is deterministic, so CI can render again and fail if Git shows a
-change: the diagrams can never drift from the models. In GitHub Actions:
+Commit the models and their SVGs. Rendering is deterministic, so CI can
+render again and fail if anything changed. In GitHub Actions:
 
 ```yaml
 - name: Diagrams are up to date
@@ -214,44 +170,34 @@ change: the diagrams can never drift from the models. In GitHub Actions:
     test -z "$(git status --porcelain diagrams)" || { git status diagrams; exit 1; }
 ```
 
-To keep every run on the same version, use `releases/download/v0.3.0/` in
-place of `releases/latest/download/`.
+To stay on one version, use `releases/download/v0.3.0/` in place of
+`releases/latest/download/`.
 
 ## Examples
 
-Three complete models, each with its views rendered in its `diagrams/`
-folder:
+Three complete models, each with its views in its `diagrams/` folder:
 
-- [examples/coffee-machine/](examples/coffee-machine/): a bean-to-cup coffee
-  machine. The smaller one, and the best place to start reading.
-- [examples/survey-drone/](examples/survey-drone/): a quadcopter that surveys
-  an area from the air, with a tablet ground station.
-- [examples/web-shop/](examples/web-shop/): an online shop built on AWS, with
-  no hardware of its own, so four views: use case, logical, implementation and
-  process. For the software-only part of a system, such as a product's cloud
-  back end.
+- [coffee-machine](examples/coffee-machine/): a bean-to-cup coffee machine,
+  the best place to start reading.
+- [survey-drone](examples/survey-drone/): a quadcopter that surveys an area
+  from the air, with a tablet ground station.
+- [web-shop](examples/web-shop/): an online shop on AWS, software only, so
+  four views.
 
 The [pitch deck](https://ola-coding.github.io/ortho/) shows every view of
-the first two, with the model source beside each diagram.
+the first two beside the model source.
 
-## What ortho does not do
+## Limits
 
-- **It is not an editor.** Write the model in any text editor; ortho only
-  draws it.
-- **It draws six views, not every SysML v2 diagram.** Requirements, states,
-  calculations and constraints parse, so a full model loads, but no view draws
-  them yet ([LANGUAGE.md](LANGUAGE.md#parsed-not-drawn)).
-- **It does not load the standard library.** It knows the library's names, so
-  a model may use them, and shows them as written.
+- **Six views, not every SysML v2 diagram.** Requirements, states,
+  calculations and constraints load, but no view draws them yet
+  ([LANGUAGE.md](LANGUAGE.md#parsed-not-drawn)).
+- **No standard library.** ortho knows the library's names, so a model may
+  use them, but does not load it.
 
 ortho is young, at version 0.3. The [backlog](DEVELOPMENT.md#backlog) lists
-what comes next, and issues are welcome.
-
-## Learn more
-
-- [VIEWS.md](VIEWS.md): what each view is for, and how it looks.
-- [LANGUAGE.md](LANGUAGE.md): what to write, view by view.
-- [DEVELOPMENT.md](DEVELOPMENT.md): for working on ortho itself.
+what comes next, [DEVELOPMENT.md](DEVELOPMENT.md) how ortho works inside, and
+issues are welcome.
 
 ## License
 

@@ -106,8 +106,14 @@ struct Server {
     reported: HashMap<PathBuf, Value>,
     /// The page that shows the diagrams, once the editor has said where the project is.
     preview: Option<Preview>,
-    /// Whether the page is opened in the browser when the first model file is.
+    /// Whether the page is opened in the browser when a model file is opened and no
+    /// page is open.
     opens_preview: bool,
+    /// The folder of the model the page shows.
+    shown: Option<PathBuf>,
+    /// The folders of the models worked on, the one opened, edited or saved last at
+    /// the end, for the page to turn to when the model it shows is closed.
+    recent: Vec<PathBuf>,
     theme: &'static Theme,
     shut_down: bool,
 }
@@ -121,6 +127,8 @@ impl Server {
             reported: HashMap::new(),
             preview: None,
             opens_preview: true,
+            shown: None,
+            recent: Vec::new(),
             theme: &LIGHT,
             shut_down: false,
         }
@@ -147,8 +155,9 @@ impl Server {
                 if let Some(path) = document_path(&params) {
                     let text = params["textDocument"]["text"].as_str().unwrap_or("").to_string();
                     self.open.insert(path.clone(), text);
+                    self.worked_on(&path);
                     self.check(&path, true)?;
-                    if std::mem::take(&mut self.opens_preview)
+                    if self.opens_preview
                         && let Some(preview) = &self.preview
                     {
                         preview.open_unless_watched();
@@ -160,7 +169,11 @@ impl Server {
                 let text = params["contentChanges"].as_array().and_then(|changes| changes.last());
                 if let (Some(path), Some(text)) = (document_path(&params), text.and_then(|c| c["text"].as_str())) {
                     self.open.insert(path.clone(), text.to_string());
-                    self.check(&path, false)?;
+                    self.worked_on(&path);
+                    // A model other than the one the page shows is drawn there once
+                    // edited, as when it is opened.
+                    let elsewhere = path.parent() != self.shown.as_deref();
+                    self.check(&path, elsewhere)?;
                 }
                 None
             }
@@ -169,6 +182,7 @@ impl Server {
                     if let Some(text) = params["text"].as_str() {
                         self.open.insert(path.clone(), text.to_string());
                     }
+                    self.worked_on(&path);
                     self.check(&path, true)?;
                 }
                 None
@@ -177,6 +191,7 @@ impl Server {
                 if let Some(path) = document_path(&params) {
                     self.open.remove(&path);
                     self.check(&path, false)?;
+                    self.follow_open_files()?;
                 }
                 None
             }
@@ -224,6 +239,36 @@ impl Server {
             },
             "serverInfo": { "name": "ortho", "version": env!("CARGO_PKG_VERSION") },
         })
+    }
+
+    /// Puts a file's model last among those worked on.
+    fn worked_on(&mut self, file: &Path) {
+        if let Some(folder) = file.parent() {
+            self.recent.retain(|recent| recent != folder);
+            self.recent.push(folder.to_path_buf());
+        }
+    }
+
+    /// Once a file is closed: when no file of the model the page shows is open, the
+    /// page turns to the model worked on last that has one, and closes with the last.
+    fn follow_open_files(&mut self) -> io::Result<()> {
+        let open = &self.open;
+        let has_open = |folder: &Path| open.keys().any(|file| file.parent() == Some(folder));
+        if self.shown.as_deref().is_none_or(has_open) {
+            return Ok(());
+        }
+        self.recent.retain(|folder| has_open(folder));
+        let first_open = |folder: &Path| open.keys().filter(|file| file.parent() == Some(folder)).min().cloned();
+        match self.recent.last().and_then(|folder| first_open(folder)) {
+            Some(file) => self.check(&file, true),
+            None => {
+                self.shown = None;
+                if let Some(preview) = &self.preview {
+                    preview.close();
+                }
+                Ok(())
+            }
+        }
     }
 
     /// The model files of a folder, each with its text: what the editor has open, as
@@ -320,6 +365,7 @@ impl Server {
     /// it from loading, with the last diagrams left on the page. What rendering warns
     /// of is kept to be reported on the view it is about, too.
     fn draw(&mut self, folder: &Path, errors: Vec<Found>, warnings: Vec<Found>) {
+        self.shown = Some(folder.to_path_buf());
         let (Some(preview), Some(model)) = (&self.preview, self.models.get_mut(folder)) else { return };
         let note = |(path, text, problem): &Found| {
             let line = crate::parser::position(text, problem.offset.min(text.len())).0;
@@ -429,6 +475,7 @@ impl Server {
         if params["command"].as_str() == Some(SHOW_IN_PREVIEW)
             && let (Some(view), Some(file)) = (arguments[0].as_str(), arguments[1].as_str().and_then(uri_to_path))
         {
+            self.worked_on(&file);
             self.check(&file, true)?;
             if let Some(preview) = &self.preview {
                 preview.open_at(view)?;

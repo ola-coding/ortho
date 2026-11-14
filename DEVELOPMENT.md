@@ -195,6 +195,9 @@ and `variant` (§7.6), which ortho parses but does not yet read.
 - **The notation** is described in [VIEWS.md](VIEWS.md). The frame's tab shows
   the view's definition, which is optional there, only for a view without a
   name. A box gets its corners and keyword from what it draws (`box_of`).
+  Each box's group carries the file and line that declare its element, as
+  `data-file` and `data-line`, the file named from the folder ortho ran in,
+  so a viewer can open the line when a box is clicked.
 - **Drawn for landscape A4** (`src/render/page.rs`). An SVG shrinks to fit its
   page, and its text with it, so `ortho render` warns of a view whose names
   would print smaller than 6 pt on landscape A4, 277 × 190 mm inside 10 mm
@@ -269,8 +272,8 @@ deck to GitHub Pages.
   and `cargo xtask zed-grammar` after, so both extensions colour it.
 - **The VS Code extension** is in `editors/vscode/`. AI agents will write
   most of the models, so it helps people check and review them rather than
-  type them: rename, completion and other editing help are left to the agents
-  and to SysIDE, since ortho's checks catch what an agent misses. Its
+  type them: rename, completion and other editing help are left to the
+  agents, since ortho's checks catch what an agent misses. Its
   [README](editors/vscode/README.md) is its page on the Marketplace, written
   for systems engineers deciding to install it, so how to work on it is here.
   Press F5 with the repository, or `editors/vscode`, open in VS Code: a
@@ -322,12 +325,22 @@ deck to GitHub Pages.
   `state` for each newer render, a request the server holds until there is
   one, and posts `open` when a box is clicked, which the server passes to the
   editor as `window/showDocument` with the line selected. The same request
-  with `external` opens the page in the browser, when the first model file is
-  opened, unless a page left open asks within a moment; the port is chosen
-  from the project's path, so that page finds the server again. A code action
-  on a view turns the page to it. Only this machine's browser is served: a
-  request under another host name is refused, and so is a post from another
-  page, so no site can read a model or open files through it.
+  with `external` opens the page in the browser when a model file is opened
+  and no page is open, unless a page left open asks within a moment; the port
+  is chosen from the project's path, so that page finds the server again. A
+  held request sees at once that its page has closed, so the next model file
+  opened opens it again. Opening, editing or saving a file of another model
+  turns the page to it. When no file of the model shown is open any more, the
+  page turns to the model worked on last that still has one; with none open,
+  `state` says `closed` and the page closes itself. Zed says the last file
+  is closed only when another is opened, so there the page stays. A browser
+  lets a page close only the tab it was opened in, and only while it has not
+  navigated, which the page never does; where one refuses, the page says why
+  it stays. A page that loses the server waits five seconds, longer than a
+  restart of `ortho lsp` takes, before it closes. A code action on a view
+  turns the page to it. Only this machine's browser is served: a request
+  under another host name is refused, and so is a post from another page, so
+  no site can read a model or open files through it.
 - **`ortho init`** (`src/init/`) writes what a project starts with: the AI
   instructions, and with `--example` an example model in a folder of its own.
   ortho carries them, so it needs no editor: Zed gives an extension no
@@ -581,11 +594,13 @@ Open, in priority order:
     of the whole model folder as typed and go-to-definition. Neovim, Helix,
     Emacs and JetBrains' editors can use it too.
   - [x] The live preview: a page with a tab for each view, opened in the
-    browser with the first model file and drawn again on every save. With a
-    problem in the model the last diagrams stay, faded; a click on a box
-    opens its line in the editor; and nothing is written beside the model
-    until *Save all* is pressed. Writing the diagrams on every save, for
-    Zed's image viewer to show, took too many steps to see one, and is gone.
+    browser when a model file is opened and none is, turned to the model
+    opened or edited, closed with the last model file where the editor says
+    so (Zed does not), and drawn again on every save. With a problem in the
+    model the last diagrams stay, faded; a click on a box opens its line in
+    the editor; and nothing is written beside the model until *Save all* is
+    pressed. Writing the diagrams on every save, for Zed's image viewer to
+    show, took too many steps to see one, and is gone.
   - [x] Highlighting from Nomograph's tree-sitter-sysml (MIT), coloured as
     the VS Code grammar colours.
   - [x] The extension: a Rust crate built to WebAssembly that starts
