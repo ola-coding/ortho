@@ -170,7 +170,7 @@ render again and fail if anything changed. In GitHub Actions:
     test -z "$(git status --porcelain diagrams)" || { git status diagrams; exit 1; }
 ```
 
-To stay on one version, use `releases/download/v0.3.0/` in place of
+To stay on one version, use `releases/download/v0.4.0/` in place of
 `releases/latest/download/`.
 
 ## Examples
@@ -195,7 +195,7 @@ the first two beside the model source.
 - **No standard library.** ortho knows the library's names, so a model may
   use them, but does not load it.
 
-ortho is young, at version 0.3. The [backlog](DEVELOPMENT.md#backlog) lists
+ortho is young, at version 0.4. The [backlog](DEVELOPMENT.md#backlog) lists
 what comes next, [DEVELOPMENT.md](DEVELOPMENT.md) how ortho works inside, and
 issues are welcome.
 

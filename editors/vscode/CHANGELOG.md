@@ -2,13 +2,28 @@
 
 The extension has the version of the ortho it carries.
 
-## Unreleased
+## 0.4.0 (2026-11-14)
 
 - **Add AI Instructions** also writes an `AGENTS.md`, for Zed, Codex, Cursor
   and other agents, unless the workspace has an agent file already. The skill
   now carries what each view is for, the order to build a model in, the
   mistakes agents make with what ortho prints for each, how to split a view
   too big for its page, and how to review a model.
+- **Open Example** offers a third model, a web shop on AWS: software only,
+  with four views. The logical views of all three draw the function trees
+  alone, with the refinements to the use cases kept in the model.
+
+It carries ortho 0.4.0, which since 0.3.0:
+
+- warns of a use case no function refines once the model has both a use
+  case view and a logical view, whether or not a logical view draws the use
+  case, and counts a refinement from a branch for its whole tree;
+- tells actors of one type apart by their names: `user : User` and
+  `serviceGuy : User` are two actors;
+- runs as a language server, `ortho lsp`, for Zed and other editors, with a
+  live preview of the diagrams in the browser;
+- writes the AI instructions, and an example with `--example`, by
+  `ortho init`.
 
 ## 0.3.0 (2026-11-08)
 
