@@ -267,7 +267,28 @@ main svg [data-line]:hover { filter: brightness(0.93); }
     message({ message: answer.message }, answer.ok ? 'info saved' : 'error saved');
   });
 
+  // The page closes itself when the editor has no model file open, or has been gone
+  // for longer than a restart of ortho takes. A browser lets a page close the tab it
+  // was opened in, and no other; where it refuses, the page says why it stays, and
+  // picks up again once a model file is opened.
+  const GONE = 5000;
+  let showing = false;
+  function leave(reason) {
+    if (showing) window.close();
+    showing = false;
+    diagram.classList.add('stale');
+    actions.hidden = true;
+    messages.replaceChildren();
+    message({ message: reason }, 'info');
+    status.textContent = 'Nothing to show';
+  }
+
   function show(data) {
+    if (data.closed) {
+      leave('No model file is open in the editor. Open one, and its diagrams are drawn here.');
+      return;
+    }
+    showing = Boolean(data.model);
     // Another model's diagrams never stand in for this one's.
     if (folder !== data.folder) views = [];
     folder = data.folder;
@@ -307,11 +328,13 @@ main svg [data-line]:hover { filter: brightness(0.93); }
   // page finds it again by asking until it answers.
   let session = '';
   let version = 0;
+  let lost = 0;
   async function follow() {
     for (;;) {
       try {
         const answer = await fetch(`state?session=${session}&after=${version}`, { cache: 'no-store' });
         const data = await answer.json();
+        lost = 0;
         status.classList.remove('lost');
         if (data.session !== session || data.version !== version) {
           session = data.session;
@@ -319,8 +342,12 @@ main svg [data-line]:hover { filter: brightness(0.93); }
           show(data);
         }
       } catch {
+        lost ||= Date.now();
         status.classList.add('lost');
         status.textContent = 'Waiting for the editor…';
+        if (showing && Date.now() - lost > GONE) {
+          leave('The editor has closed this project. Open a model file in it, and its diagrams are drawn here.');
+        }
         await new Promise((resolve) => setTimeout(resolve, 1000));
       }
     }

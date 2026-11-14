@@ -19,6 +19,9 @@ const PAGE: &str = include_str!("preview.html");
 /// the same one, to ask again.
 const HOLD: Duration = Duration::from_secs(25);
 
+/// How often a held request looks whether its page is still there.
+const CHECK: Duration = Duration::from_millis(250);
+
 /// What the page shows of a model.
 pub struct Shown {
     /// The model's folder.
@@ -58,12 +61,15 @@ struct State {
     /// How many pages are waiting for a newer render, and when one last asked.
     waiting: usize,
     asked: Option<Instant>,
+    /// Whether the editor has closed every model file, for the page to close too.
+    closed: bool,
 }
 
 impl State {
-    /// Whether a page is open: one is waiting, or has just been answered.
+    /// Whether a page is open: one is waiting, or was answered a moment ago and is
+    /// about to ask again.
     fn watched(&self) -> bool {
-        self.waiting > 0 || self.asked.is_some_and(|asked| asked.elapsed() < Duration::from_secs(3))
+        self.waiting > 0 || self.asked.is_some_and(|asked| asked.elapsed() < Duration::from_secs(1))
     }
 }
 
@@ -120,6 +126,15 @@ impl Preview {
     pub fn show(&self, shown: Shown) {
         let mut state = self.shared.state.lock().unwrap();
         state.shown = Some(shown);
+        state.closed = false;
+        state.version += 1;
+        self.shared.changed.notify_all();
+    }
+
+    /// Tells every page open that the editor has no model file open now, so it closes.
+    pub fn close(&self) {
+        let mut state = self.shared.state.lock().unwrap();
+        state.closed = true;
         state.version += 1;
         self.shared.changed.notify_all();
     }
@@ -190,7 +205,11 @@ fn answer(stream: TcpStream, shared: &Shared) -> io::Result<()> {
     let (status, kind, content) = match (method.as_str(), path) {
         _ if !ours => ("403 Forbidden", "text/plain", "Not the preview's address.".to_string()),
         ("GET", "/") => ("200 OK", "text/html; charset=utf-8", PAGE.to_string()),
-        ("GET", "/state") => ("200 OK", json, state(shared, query).to_string()),
+        ("GET", "/state") => match state(shared, query, &stream) {
+            Some(state) => ("200 OK", json, state.to_string()),
+            // The page has gone, and nothing is there to answer.
+            None => return Ok(()),
+        },
         ("POST", "/open" | "/save") if !from_page => ("403 Forbidden", "text/plain", "Not from the preview.".into()),
         ("POST", "/open") => {
             let asked: Value = serde_json::from_slice(&body).unwrap_or(Value::Null);
@@ -209,25 +228,36 @@ fn answer(stream: TcpStream, shared: &Shared) -> io::Result<()> {
     stream.flush()
 }
 
-/// What is shown, once it is newer than what the page asking has, or after a while.
-fn state(shared: &Shared, query: &str) -> Value {
+/// What is shown, once it is newer than what the page asking has, or after a while;
+/// nothing if the page closes meanwhile.
+fn state(shared: &Shared, query: &str, page: &TcpStream) -> Option<Value> {
     let asked = |name: &str| query.split('&').find_map(|pair| pair.strip_prefix(name)?.strip_prefix('='));
     let has = (asked("session") == Some(shared.session.as_str())).then(|| asked("after")?.parse::<u64>().ok());
     let mut state = shared.state.lock().unwrap();
     state.waiting += 1;
     let until = Instant::now() + HOLD;
+    let mut gone = false;
     while has.flatten() == Some(state.version) {
         let left = until.saturating_duration_since(Instant::now());
         if left.is_zero() {
             break;
         }
-        state = shared.changed.wait_timeout(state, left).unwrap().0;
+        state = shared.changed.wait_timeout(state, left.min(CHECK)).unwrap().0;
+        // A page closed, by its user or by itself, stops counting as open at once, so
+        // the next model file opened opens it again.
+        if hung_up(page) {
+            gone = true;
+            break;
+        }
     }
     state.waiting -= 1;
+    if gone {
+        return None;
+    }
     state.asked = Some(Instant::now());
     let mut answer = json!({
         "session": shared.session, "version": state.version, "saveTo": state.save_to,
-        "model": "", "folder": "", "views": [], "errors": [], "notes": [],
+        "closed": state.closed, "model": "", "folder": "", "views": [], "errors": [], "notes": [],
     });
     if let Some((file, time)) = &state.select {
         answer["select"] = json!({ "file": file, "time": format!("{}-{time}", shared.session) });
@@ -246,7 +276,20 @@ fn state(shared: &Shared, query: &str) -> Value {
         answer["errors"] = shown.errors.iter().map(Note::json).collect();
         answer["notes"] = shown.notes.iter().map(Note::json).collect();
     }
-    answer
+    Some(answer)
+}
+
+/// Whether the page waiting on a connection has gone, closed or with its browser.
+fn hung_up(page: &TcpStream) -> bool {
+    if page.set_nonblocking(true).is_err() {
+        return false;
+    }
+    let peeked = page.peek(&mut [0]);
+    let _ = page.set_nonblocking(false);
+    match peeked {
+        Ok(read) => read == 0,
+        Err(error) => error.kind() != io::ErrorKind::WouldBlock,
+    }
 }
 
 /// Opens a line of a file of the model shown in the editor. A box of a diagram names

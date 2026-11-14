@@ -76,6 +76,10 @@ fn save(path: &Path) -> Value {
     json!({ "jsonrpc": "2.0", "method": "textDocument/didSave", "params": { "textDocument": { "uri": uri(path) } } })
 }
 
+fn close(path: &Path) -> Value {
+    json!({ "jsonrpc": "2.0", "method": "textDocument/didClose", "params": { "textDocument": { "uri": uri(path) } } })
+}
+
 fn request(id: u64, method: &str, params: Value) -> Value {
     json!({ "jsonrpc": "2.0", "id": id, "method": method, "params": params })
 }
@@ -230,6 +234,19 @@ impl Live {
         }
     }
 
+    /// Whether the server asks the editor to show nothing for a while.
+    fn shows_nothing(&mut self, within: std::time::Duration) -> bool {
+        let until = std::time::Instant::now() + within;
+        while let Some(left) = until.checked_duration_since(std::time::Instant::now()) {
+            match self.sent.recv_timeout(left) {
+                Ok(message) if message["method"] == "window/showDocument" => return false,
+                Ok(_) => {}
+                Err(_) => break,
+            }
+        }
+        true
+    }
+
     /// Opens a model file, and gives the port of the preview the server opens for it.
     fn preview(&mut self, file: &Path) -> u16 {
         self.send(&open(file, &std::fs::read_to_string(file).unwrap()));
@@ -255,6 +272,54 @@ fn http(port: u16, method: &str, path: &str, headers: &str, body: &str) -> (u16,
     stream.read_to_string(&mut answer).unwrap();
     let (head, body) = answer.split_once("\r\n\r\n").unwrap();
     (head.split(' ').nth(1).unwrap().parse().unwrap(), body.to_string())
+}
+
+/// A page left open in the browser: it asks the preview for each newer render, as the
+/// page does, until the test ends.
+fn page(port: u16) {
+    std::thread::spawn(move || {
+        let (mut session, mut version) = (String::new(), Value::from(0));
+        loop {
+            let Ok(mut stream) = std::net::TcpStream::connect(("127.0.0.1", port)) else { return };
+            let path = format!("/state?session={session}&after={version}");
+            if write!(stream, "GET {path} HTTP/1.1\r\nHost: 127.0.0.1:{port}\r\n\r\n").is_err() {
+                return;
+            }
+            let mut answer = String::new();
+            let read = stream.read_to_string(&mut answer);
+            let Some(state) = read.ok().and_then(|_| answer.split_once("\r\n\r\n")).map(|(_, body)| body.to_string())
+            else {
+                return;
+            };
+            let Ok(state) = serde_json::from_str::<Value>(&state) else { return };
+            session = state["session"].as_str().unwrap_or("").to_string();
+            version = state["version"].clone();
+        }
+    });
+    // Waiting, as a page open in the browser is.
+    std::thread::sleep(std::time::Duration::from_millis(500));
+}
+
+/// What the preview shows now, without waiting for anything newer.
+fn now(port: u16) -> Value {
+    get(port, "/state?session=&after=0")
+}
+
+/// What the preview shows once it is as expected, since the server reads what the
+/// editor sends in its own time.
+fn shows(port: u16, expected: impl Fn(&Value) -> bool) -> Value {
+    for _ in 0..100 {
+        let state = now(port);
+        if expected(&state) {
+            return state;
+        }
+        std::thread::sleep(std::time::Duration::from_millis(100));
+    }
+    panic!("the preview shows {}", now(port)["model"]);
+}
+
+fn model_shown(port: u16, model: &str) -> Value {
+    shows(port, |state| state["model"] == model && state["closed"] == false)
 }
 
 fn get(port: u16, path: &str) -> Value {
@@ -379,4 +444,79 @@ fn a_code_action_on_a_view_shows_it_in_the_preview() {
     let state = get(port, "/state?session=&after=0");
     assert_eq!(state["select"]["file"], view);
     assert_eq!(state["views"].as_array().unwrap().len(), 6);
+}
+
+/// Two models in folders of their own, side by side in one project, as a test's own.
+fn two_models(test: &str) -> (PathBuf, PathBuf, PathBuf) {
+    let coffee = example("coffee-machine", test);
+    let drone = example("survey-drone", test);
+    let root = coffee.parent().unwrap().to_path_buf();
+    (root, coffee.join("logical.sysml"), drone.join("logical.sysml"))
+}
+
+#[test]
+fn opens_the_preview_again_for_a_model_file_opened_once_the_page_is_closed() {
+    let (root, coffee, drone) = two_models("reopen");
+    let mut live = Live::start(&root);
+    let port = live.preview(&coffee);
+    // A page that opens and is closed again, by its user or by itself.
+    let state = now(port);
+    let mut held = std::net::TcpStream::connect(("127.0.0.1", port)).unwrap();
+    let path = format!("/state?session={}&after={}", state["session"].as_str().unwrap(), state["version"]);
+    write!(held, "GET {path} HTTP/1.1\r\nHost: 127.0.0.1:{port}\r\n\r\n").unwrap();
+    std::thread::sleep(std::time::Duration::from_millis(300));
+    drop(held);
+    std::thread::sleep(std::time::Duration::from_millis(1500));
+
+    live.send(&open(&drone, &std::fs::read_to_string(&drone).unwrap()));
+    let shown = live.shown();
+    assert_eq!(shown["external"], true);
+    assert_eq!(shown["uri"], format!("http://127.0.0.1:{port}/"));
+    model_shown(port, "survey-drone");
+}
+
+#[test]
+fn with_a_page_open_the_preview_turns_to_the_model_opened_or_edited_and_opens_no_second() {
+    let (root, coffee, drone) = two_models("follow");
+    let mut live = Live::start(&root);
+    let port = live.preview(&coffee);
+    page(port);
+
+    live.send(&open(&drone, &std::fs::read_to_string(&drone).unwrap()));
+    assert!(live.shows_nothing(std::time::Duration::from_secs(3)), "a second page was opened");
+    model_shown(port, "survey-drone");
+
+    // Edited, unsaved, the first model is drawn again: it is the one worked on.
+    let text = std::fs::read_to_string(&coffee).unwrap();
+    live.send(&change(&coffee, &format!("{text}\n")));
+    model_shown(port, "coffee-machine");
+    assert!(live.shows_nothing(std::time::Duration::from_secs(2)), "a second page was opened");
+}
+
+#[test]
+fn the_preview_turns_to_a_model_still_open_when_one_is_closed_and_closes_with_the_last() {
+    let (root, coffee, drone) = two_models("close");
+    let other = coffee.with_file_name("physical.sysml");
+    let mut live = Live::start(&root);
+    let port = live.preview(&coffee);
+    live.send(&open(&other, &std::fs::read_to_string(&other).unwrap()));
+    live.send(&open(&drone, &std::fs::read_to_string(&drone).unwrap()));
+    let opened = model_shown(port, "survey-drone");
+
+    // The drone's only file closed: the coffee machine, still open, is shown.
+    live.send(&close(&drone));
+    model_shown(port, "coffee-machine");
+    // One of its two files closed: it stays, and is not drawn again.
+    let version = now(port)["version"].clone();
+    live.send(&close(&coffee));
+    // The last closed: the page is told to close.
+    live.send(&close(&other));
+    let closed = shows(port, |state| state["closed"] == true);
+    assert_eq!(closed["version"], version.as_u64().unwrap() + 1);
+    assert!(opened["version"].as_u64() < version.as_u64());
+
+    // Opened again, it shows the model, and opens the browser for it.
+    live.send(&open(&drone, &std::fs::read_to_string(&drone).unwrap()));
+    assert_eq!(live.shown()["uri"], format!("http://127.0.0.1:{port}/"));
+    model_shown(port, "survey-drone");
 }
