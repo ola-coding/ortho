@@ -33,6 +33,8 @@ pub enum EdgeKind {
     Import,
     Decomposition,
     Dependency,
+    /// A flow with no connection under it: a line of its own (§8.2.3.16).
+    Flow,
 }
 
 /// How much height a box's compartments take below its header.
@@ -77,11 +79,31 @@ pub struct GraphEdge {
     pub target_port_id: Option<String>,
     /// Drawn beside the line as written: a keyword with its guillemets, «include».
     pub label: Option<String>,
+    /// What flows along a connection (§8.2.3.16): an arrowhead on the line for each.
+    pub flows: Vec<EdgeFlow>,
+}
+
+/// A flow drawn on a connection's line.
+#[derive(Clone, PartialEq, Debug)]
+pub struct EdgeFlow {
+    /// Its payload, or else its name.
+    pub label: String,
+    /// Whether it runs the way the line does, from its source to its target.
+    pub forward: bool,
 }
 
 impl GraphEdge {
     pub fn new(id: String, kind: EdgeKind, source_id: String, target_id: String) -> GraphEdge {
-        GraphEdge { id, kind, source_id, target_id, source_port_id: None, target_port_id: None, label: None }
+        GraphEdge {
+            id,
+            kind,
+            source_id,
+            target_id,
+            source_port_id: None,
+            target_port_id: None,
+            label: None,
+            flows: Vec::new(),
+        }
     }
 }
 
@@ -113,6 +135,7 @@ impl EdgeKind {
             EdgeKind::Import => "import",
             EdgeKind::Decomposition => "decomposition",
             EdgeKind::Dependency => "dependency",
+            EdgeKind::Flow => "flow",
         }
     }
 }

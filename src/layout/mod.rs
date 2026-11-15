@@ -1,4 +1,5 @@
 pub mod elk;
+pub mod flow_labels;
 pub mod tree;
 pub mod use_case;
 
@@ -8,6 +9,11 @@ use crate::parser::ast::NodeId;
 pub const PORT_SIZE: f64 = 10.0;
 /// Port labels' font size.
 pub const PORT_LABEL_FONT: f64 = 9.0;
+/// What flows along a line: a little larger than a line's own label, since it is
+/// what the reader follows through the product.
+pub const FLOW_LABEL_FONT: f64 = 10.0;
+/// How long a flow's arrowhead is.
+pub const FLOW_ARROW: f64 = 10.0;
 
 pub struct LaidOutPort {
     pub id: String,
@@ -65,6 +71,21 @@ pub struct LaidOutEdge {
     pub label: Option<String>,
     pub points: Vec<Point>,
     pub label_box: Option<LabelBox>,
+    /// The flows drawn on the line, each with where its label goes.
+    pub flows: Vec<LaidOutFlow>,
+}
+
+/// A flow on a connection's line: an arrowhead on the line, beside its label.
+pub struct LaidOutFlow {
+    pub label: String,
+    /// Whether it runs the way the line's points do.
+    pub forward: bool,
+    /// The box kept for the label, by ELK or in free space after it; without one
+    /// it sits at the line's middle.
+    pub label_box: Option<LabelBox>,
+    /// The arrowhead's centre on the line and the way the line's points run there,
+    /// when it was placed with the label in free space.
+    pub arrow: Option<(Point, Point)>,
 }
 
 pub struct LaidOutDiagram {

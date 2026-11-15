@@ -150,6 +150,7 @@ impl<'a> Linker<'a> {
         let found = self.candidate(reference, index, text);
         let (link, error) = match found {
             Ok(Some(target)) => (Link::To(target), None),
+            Ok(None) if self.on_an_action_in_a_flow(reference, index) => (Link::Failed, None),
             Ok(None) => {
                 let kind = Kind::of(self.ast[reference.node].ty, self.prop_of(reference));
                 let hint = self.chain_hint(reference, index, text);
@@ -163,6 +164,25 @@ impl<'a> Linker<'a> {
         let root = self.ast.root_of(reference.node);
         let file = self.roots.iter().position(|candidate| *candidate == root).unwrap();
         self.logs[file].push(Logged { reference, index, error });
+    }
+
+    /// Whether this is a later segment of a flow's end that follows anything but a
+    /// part or a port: `flow aa.target to snd.receiver`. An action has features of
+    /// the standard library, a send action's `receiver` among them, which ortho does
+    /// not load, so only what a part or a port has is known in full.
+    fn on_an_action_in_a_flow(&mut self, reference: RefId, index: Option<usize>) -> bool {
+        let end = reference.node;
+        let in_flow = self.ast[end].parent.is_some_and(|parent| self.ast[parent].ty == Type::FlowUsage);
+        if self.ast[end].ty != Type::ConnectorEnd || !in_flow {
+            return false;
+        }
+        let segments = self.ast.references_of(end, Prop::Segments);
+        let index = index.or_else(|| segments.iter().position(|segment| *segment == reference)).unwrap_or(0);
+        if index == 0 {
+            return false;
+        }
+        let previous = self.target_of(segments[index - 1]).ok().flatten();
+        !previous.is_some_and(|previous| matches!(self.ast[previous].ty, Type::PartUsage | Type::PortUsage))
     }
 
     /// For a chain's later segment that names nothing, what the segment before it

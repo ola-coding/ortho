@@ -1,7 +1,10 @@
 use super::number::{Js, hypot};
 use super::text_metrics::{Weight, measure_text};
 use super::theme::{Theme, radius_attrs};
-use crate::layout::{LaidOutDiagram, LaidOutEdge, LaidOutNode, PORT_LABEL_FONT, PORT_SIZE, Point, SourceMark};
+use crate::layout::{
+    FLOW_ARROW, FLOW_LABEL_FONT, LaidOutDiagram, LaidOutEdge, LaidOutFlow, LaidOutNode, PORT_LABEL_FONT, PORT_SIZE,
+    Point, SourceMark,
+};
 use crate::model::graph::{
     BOX_HEADER_HEIGHT as HEADER_HEIGHT, COMPARTMENT_LINE_HEIGHT as LINE_HEIGHT, COMPARTMENT_PADDING,
     COMPARTMENT_TITLE_HEIGHT, EdgeKind, NodeShape, USAGE_RADIUS,
@@ -430,7 +433,8 @@ fn render_edge(e: &LaidOutEdge, t: &Theme) -> String {
     // «include», «import» and a dependency carry an open arrowhead; the last two are
     // dashed (§8.2.3.3, §8.2.3.5), an «include» solid (§8.2.3.25). A branch of the
     // function tree is owned by its parent: a filled diamond at the parent's end
-    // (§8.2.3.6). Every other line is plain: a connection, or a use case's line.
+    // (§8.2.3.6). A flow ends in a filled arrowhead (§8.2.3.16). Every other line
+    // is plain: a connection, or a use case's line.
     let dashed = matches!(e.kind, EdgeKind::Import | EdgeKind::Dependency);
     let dash = if dashed { r#" stroke-dasharray="6 4""# } else { "" };
     let markers = if dashed || e.kind == EdgeKind::Include {
@@ -458,15 +462,126 @@ fn render_edge(e: &LaidOutEdge, t: &Theme) -> String {
         };
         svg.push_str(&format!(
             r#"
-    <text x="{x}" y="{y}" text-anchor="middle" font-size="9"
+    <text x="{x}" y="{y}" text-anchor="middle" font-size="{size}"
           fill="{fill}" paint-order="stroke" stroke="{halo}" stroke-width="3">{label}</text>"#,
             x = Js(text_x),
             y = Js(text_y),
-            fill = t.edge_label,
+            // What flows is written alike on a line of its own and on a connection.
+            size = if e.kind == EdgeKind::Flow { FLOW_LABEL_FONT } else { 9.0 },
+            fill = if e.kind == EdgeKind::Flow { t.text } else { t.edge_label },
             halo = t.halo,
             label = escape_xml(label),
         ));
     }
+    if e.kind == EdgeKind::Flow {
+        // Its tip on the line's end, drawn here and not as a marker, so a diagram
+        // without flows is written as it was.
+        let (tip, before) = (&e.points[e.points.len() - 1], &e.points[e.points.len() - 2]);
+        let length = hypot(tip.x - before.x, tip.y - before.y).max(1.0);
+        let way = ((tip.x - before.x) / length, (tip.y - before.y) / length);
+        let at = (tip.x - way.0 * FLOW_ARROW / 2.0, tip.y - way.1 * FLOW_ARROW / 2.0);
+        svg.push_str(&arrowhead(at, way, t));
+    }
+    for (i, flow) in e.flows.iter().enumerate() {
+        svg.push_str(&render_flow(e, i, flow, t));
+    }
+    svg
+}
+
+/// A filled arrowhead centred on `at`, pointing along `way`.
+fn arrowhead(at: (f64, f64), way: (f64, f64), t: &Theme) -> String {
+    let (half, wide) = (FLOW_ARROW / 2.0, FLOW_ARROW * 0.4);
+    let corner = |along: f64, across: f64| {
+        format!(
+            "{},{}",
+            Js(at.0 + way.0 * along - way.1 * across + PAD_X),
+            Js(at.1 + way.1 * along + way.0 * across + PAD_TOP)
+        )
+    };
+    format!(
+        r#"
+    <path d="M{} L{} L{} z" fill="{}" />"#,
+        corner(half, 0.0),
+        corner(-half, wide),
+        corner(-half, -wide),
+        t.stroke
+    )
+}
+
+/// Where on a line the arrowhead of a label goes, and the way the line runs there.
+/// The label's box is `width` by `height` around `(x, y)`: the arrowhead goes on
+/// the stretch nearest to that box, of those that pass it and are long enough to
+/// carry an arrowhead, or else on the nearest of any, kept off its ends.
+fn nearest_on(points: &[Point], (x, y): (f64, f64), (width, height): (f64, f64)) -> ((f64, f64), (f64, f64)) {
+    let mut best = ((points[0].x, points[0].y), (0.0, 1.0), f64::INFINITY);
+    for pair in points.windows(2) {
+        let (dx, dy) = (pair[1].x - pair[0].x, pair[1].y - pair[0].y);
+        let length = hypot(dx, dy);
+        if length == 0.0 {
+            continue;
+        }
+        let margin = (FLOW_ARROW / length).min(0.5);
+        let passing = ((x - pair[0].x) * dx + (y - pair[0].y) * dy) / (length * length);
+        let along = passing.clamp(margin, 1.0 - margin);
+        let at = (pair[0].x + dx * along, pair[0].y + dy * along);
+        // A bend or a short jog is a poor place: count it as far away.
+        let beside = along == passing && length >= FLOW_ARROW * 3.0;
+        let outside = (((at.0 - x).abs() - width / 2.0).max(0.0), ((at.1 - y).abs() - height / 2.0).max(0.0));
+        let distance = hypot(outside.0, outside.1) + if beside { 0.0 } else { 1000.0 };
+        if distance < best.2 {
+            best = (at, (dx / length, dy / length), distance);
+        }
+    }
+    (best.0, best.1)
+}
+
+/// A flow on a connection (§8.2.3.16): a filled arrowhead on the line, pointing
+/// the way the flow goes, beside its label. Both were placed in free space after
+/// the layout, or the label is where ELK kept room for it and the arrowhead on the
+/// line next to that.
+fn render_flow(e: &LaidOutEdge, index: usize, flow: &LaidOutFlow, t: &Theme) -> String {
+    let middle = point_at_fraction(&e.points, 0.5);
+    let centre = flow.label_box.as_ref().map(|b| (b.x + b.width / 2.0, b.y + b.height / 2.0));
+    let size = flow.label_box.as_ref().map_or((0.0, 0.0), |b| (b.width, b.height));
+    // Placed in free space with its label, or else on the line nearest the label.
+    let (mut at, way) = match flow.arrow {
+        Some((at, way)) => ((at.x, at.y), (way.x, way.y)),
+        None => nearest_on(&e.points, centre.unwrap_or(middle), size),
+    };
+    // Each stands beside its own label; with no place kept for the labels, the
+    // flows of one line stand one after the other at its middle.
+    if centre.is_none() {
+        let shift = (index as f64 - (e.flows.len() as f64 - 1.0) / 2.0) * (FLOW_ARROW + 4.0);
+        at = (at.0 + way.0 * shift, at.1 + way.1 * shift);
+    }
+    let wide = FLOW_ARROW * 0.4;
+    let mut svg = arrowhead(at, if flow.forward { way } else { (-way.0, -way.1) }, t);
+    if flow.label.is_empty() {
+        return svg;
+    }
+    // Beside a line going up or down, the label starts or ends clear of the
+    // arrowhead; above or below one going sideways, it is centred on it.
+    let (x, y, anchor) = match centre {
+        Some((cx, cy)) if way.0.abs() < 0.5 => {
+            let right = cx >= at.0;
+            let x = if right { at.0 + wide + 4.0 } else { at.0 - wide - 4.0 };
+            (x, cy + 3.5, if right { "start" } else { "end" })
+        }
+        Some((_, cy)) => (at.0, cy + 3.5, "middle"),
+        None if way.0.abs() < 0.5 => (at.0 + wide + 4.0, at.1 + 3.5, "start"),
+        None => (at.0, at.1 - wide - 4.0, "middle"),
+    };
+    svg.push_str(&format!(
+        r#"
+    <text x="{x}" y="{y}" text-anchor="{anchor}" font-size="{size}"
+          fill="{fill}" paint-order="stroke" stroke="{halo}" stroke-width="3">{label}</text>"#,
+        x = Js(x + PAD_X),
+        y = Js(y + PAD_TOP),
+        size = FLOW_LABEL_FONT,
+        fill = t.text,
+        halo = t.halo,
+        label = escape_xml(&flow.label),
+    ));
     svg
 }
 

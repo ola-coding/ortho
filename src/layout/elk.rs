@@ -1,6 +1,10 @@
 //! The implementation, physical and deployment views, laid out by the Eclipse Layout
 //! Kernel, given and giving back ELK's JSON graph format.
-use super::{LabelBox, LaidOutDiagram, LaidOutEdge, LaidOutNode, LaidOutPort, PORT_LABEL_FONT, PORT_SIZE, Point};
+use super::flow_labels::place_flow_labels;
+use super::{
+    FLOW_LABEL_FONT, LabelBox, LaidOutDiagram, LaidOutEdge, LaidOutFlow, LaidOutNode, LaidOutPort, PORT_LABEL_FONT,
+    PORT_SIZE, Point,
+};
 use crate::model::graph::{DiagramGraph, EdgeKind, GraphEdge, GraphNode, NodeShape, compartments_height};
 use crate::render::number::Js;
 use crate::render::page::{PAGE_HEIGHT, PAGE_WIDTH};
@@ -20,6 +24,9 @@ const PORT_LABEL_HEIGHT: f64 = 11.0;
 /// Wire labels ELK places (interface names on the physical view).
 const EDGE_LABEL_FONT: f64 = 9.0;
 const EDGE_LABEL_HEIGHT: f64 = 12.0;
+const FLOW_LABEL_HEIGHT: f64 = 14.0;
+/// Kept free beside a flow's label, so its arrowhead on the line touches no other.
+const FLOW_ARROW_ROOM: f64 = 8.0;
 
 /// Target width-to-height ratio when packing.
 const PACKING_ASPECT: &str = "1.6";
@@ -402,8 +409,13 @@ fn to_elk_node<'a>(n: &'a GraphNode, conversion: &mut Conversion<'a>) -> Value {
     Value::Object(node)
 }
 
-/// The JSON ELK is given for `graph`, and what ortho places itself.
-fn to_elk_graph<'a>(graph: &'a DiagramGraph, layout_options: LayoutOptions) -> (Value, Conversion<'a>) {
+/// The JSON ELK is given for `graph`, and what ortho places itself. With
+/// `flow_labels`, ELK keeps room for the name of what flows along each line too.
+fn to_elk_graph<'a>(
+    graph: &'a DiagramGraph,
+    layout_options: LayoutOptions,
+    flow_labels: bool,
+) -> (Value, Conversion<'a>) {
     let packing = layout_options.algorithm == Algorithm::RectPacking;
     let mut conversion = Conversion {
         packing,
@@ -447,13 +459,31 @@ fn to_elk_graph<'a>(graph: &'a DiagramGraph, layout_options: LayoutOptions) -> (
             // implementation view are real ELK labels, so the layout keeps them clear
             // of boxes and other lines; a midpoint label lands wherever the route
             // happens to be busiest, or on the arrowhead of a short edge.
+            // What flows along a wire is a label too when it found no free place
+            // after the layout, each with an arrowhead drawn on the line beside it.
+            let mut labels: Vec<Value> = Vec::new();
             if let Some(label) = &e.label {
-                edge["labels"] = json!([{
+                let (font, height) = match e.kind {
+                    EdgeKind::Flow => (FLOW_LABEL_FONT, FLOW_LABEL_HEIGHT),
+                    _ => (EDGE_LABEL_FONT, EDGE_LABEL_HEIGHT),
+                };
+                labels.push(json!({
                     "id": format!("{}@label", e.id),
                     "text": label,
-                    "width": measure_text(label, EDGE_LABEL_FONT, Weight::Regular) + 4.0,
-                    "height": EDGE_LABEL_HEIGHT,
-                }]);
+                    "width": measure_text(label, font, Weight::Regular) + 4.0,
+                    "height": height,
+                }));
+            }
+            for (i, flow) in e.flows.iter().enumerate().filter(|_| flow_labels) {
+                labels.push(json!({
+                    "id": format!("{}@flow{i}", e.id),
+                    "text": flow.label,
+                    "width": measure_text(&flow.label, FLOW_LABEL_FONT, Weight::Regular) + 4.0 + FLOW_ARROW_ROOM,
+                    "height": FLOW_LABEL_HEIGHT,
+                }));
+            }
+            if !labels.is_empty() {
+                edge["labels"] = Value::Array(labels);
             }
             edge
         })
@@ -464,7 +494,7 @@ fn to_elk_graph<'a>(graph: &'a DiagramGraph, layout_options: LayoutOptions) -> (
 
 /// The JSON ELK is given for `graph`.
 pub fn elk_graph(graph: &DiagramGraph, layout_options: LayoutOptions) -> Value {
-    to_elk_graph(graph, layout_options).0
+    to_elk_graph(graph, layout_options, false).0
 }
 
 fn number_or(value: &Value, key: &str, default: f64) -> f64 {
@@ -507,10 +537,19 @@ fn cell_node(cell: &Cell, x: f64, y: f64) -> LaidOutNode {
 }
 
 /// Lays out a graph with ELK, every box, port and route in root coordinates.
+///
+/// The name of what flows along a line is placed afterwards, in free space beside
+/// the line, so a diagram is as compact as it is without its flows. Only when a
+/// name finds no such place is the graph laid out again, with ELK keeping room for
+/// every flow's name, which makes the drawing taller.
 pub fn layout_graph(graph: &DiagramGraph, layout_options: LayoutOptions) -> Result<LaidOutDiagram, String> {
-    let (elk_graph, conversion) = to_elk_graph(graph, layout_options);
-    let result = layout(elk_graph)?;
-    Ok(laid_out(graph, &conversion, &result))
+    let (elk_graph, conversion) = to_elk_graph(graph, layout_options, false);
+    let mut diagram = laid_out(graph, &conversion, &layout(elk_graph)?);
+    if place_flow_labels(&mut diagram) {
+        return Ok(diagram);
+    }
+    let (elk_graph, conversion) = to_elk_graph(graph, layout_options, true);
+    Ok(laid_out(graph, &conversion, &layout(elk_graph)?))
 }
 
 /// What ELK placed, as ortho draws it.
@@ -617,13 +656,26 @@ fn laid_out(graph: &DiagramGraph, conversion: &Conversion, result: &Value) -> La
                 }
                 None => points,
             };
-            let label = e.get("labels").and_then(|labels| labels.get(0));
-            let label_box = label.filter(|l| l.get("x").is_some() && l.get("y").is_some()).map(|l| LabelBox {
-                x: number_or(l, "x", 0.0),
-                y: number_or(l, "y", 0.0),
-                width: number_or(l, "width", 0.0),
-                height: number_or(l, "height", 0.0),
-            });
+            let labels = list(e, "labels");
+            let box_of = |label_id: String| {
+                let label = labels.iter().find(|l| l["id"].as_str() == Some(label_id.as_str()));
+                label.filter(|l| l.get("x").is_some() && l.get("y").is_some()).map(|l| LabelBox {
+                    x: number_or(l, "x", 0.0),
+                    y: number_or(l, "y", 0.0),
+                    width: number_or(l, "width", 0.0),
+                    height: number_or(l, "height", 0.0),
+                })
+            };
+            let label_box = box_of(format!("{id}@label"));
+            let flows = source.map(|s| s.flows.as_slice()).unwrap_or_default().iter().enumerate();
+            let flows = flows
+                .map(|(i, flow)| LaidOutFlow {
+                    label: flow.label.clone(),
+                    forward: flow.forward,
+                    label_box: box_of(format!("{id}@flow{i}")),
+                    arrow: None,
+                })
+                .collect();
             LaidOutEdge {
                 id: id.to_string(),
                 kind: source.map_or(EdgeKind::Connection, |s| s.kind),
@@ -632,6 +684,7 @@ fn laid_out(graph: &DiagramGraph, conversion: &Conversion, result: &Value) -> La
                 label: source.and_then(|s| s.label.clone()),
                 points,
                 label_box,
+                flows,
             }
         })
         .collect();

@@ -14,13 +14,17 @@ package Hardware {
     // What flows through the ports. A port def says which way its item goes;
     // the receiving end is the same port conjugated, `~PowerPort`.
     item def ElectricPower;
-    item def MotorDrive;
-    item def Signal;
+    item def PhaseCurrent;
+    item def Throttle;
+    item def GpsFix;
+    item def VideoStream;
     item def Data;
 
     port def PowerPort { out item power : ElectricPower; }
-    port def DrivePort { out item drive : MotorDrive; }
-    port def SignalPort { out item signal : Signal; }
+    port def DrivePort { out item current : PhaseCurrent; }
+    port def ThrottlePort { out item throttle : Throttle; }
+    port def GpsPort { out item fix : GpsFix; }
+    port def VideoPort { out item video : VideoStream; }
     port def DataPort { inout item data : Data; }
     port def RfPort {
         inout item data : Data;
@@ -46,7 +50,7 @@ package Hardware {
         perform survey.operateVehicle.produceThrust;
 
         port powerIn : ~PowerPort;
-        port signalIn : ~SignalPort;
+        port signalIn : ~ThrottlePort;
         port phasesOut : DrivePort;
     }
 
@@ -65,15 +69,15 @@ package Hardware {
         doc /* ArduPilot-style flight controller with its inertial sensors on
              * board: drives the motors and talks MAVLink to the computer beside it. */
         port powerIn : ~PowerPort;
-        port gpsIn : ~SignalPort;
-        port motorOut : SignalPort;
+        port gpsIn : ~GpsPort;
+        port motorOut : ThrottlePort;
         port mavlink : DataPort;
     }
 
     part def GpuComputer {
         doc /* Jetson-style computer with a 100 TOPS GPU, for everything above flying. */
         port powerIn : ~PowerPort;
-        port cameraIn : ~SignalPort;
+        port cameraIn : ~VideoPort;
         port autopilot : DataPort;
         port ethernet : DataPort;
     }
@@ -82,7 +86,7 @@ package Hardware {
     part def Camera {
         perform survey.perceive.captureVideo;
 
-        port videoOut : SignalPort;
+        port videoOut : VideoPort;
     }
 
     part def GpsModule {
@@ -90,7 +94,7 @@ package Hardware {
              * takes its power over the same connector as its data. */
         perform survey.guideNavigateAndControl.navigate;
 
-        port dataOut : SignalPort;
+        port dataOut : GpsPort;
     }
 
     // --- radio link and ground kit -----------------------------------------
@@ -128,6 +132,16 @@ package Hardware {
         connect fc.mavlink to companion.autopilot;
         connect camera.videoOut to companion.cameraIn;
         connect companion.ethernet to radio.ethernet;
+
+        // What passes one way through those connections. Data goes both ways,
+        // so its lines carry no arrowhead.
+        flow of PhaseCurrent from esc.phasesOut.current to motors.phases.current;
+        flow of ElectricPower from battery.powerOut.power to esc.powerIn.power;
+        flow of ElectricPower from battery.powerOut.power to fc.powerIn.power;
+        flow of ElectricPower from battery.powerOut.power to companion.powerIn.power;
+        flow of Throttle from fc.motorOut.throttle to esc.signalIn.throttle;
+        flow of GpsFix from gps.dataOut.fix to fc.gpsIn.fix;
+        flow of VideoStream from camera.videoOut.video to companion.cameraIn.video;
     }
 
     part def GroundStation {

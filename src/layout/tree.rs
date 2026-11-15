@@ -67,6 +67,7 @@ fn edge_along(edge: &GraphEdge, points: Vec<Point>) -> LaidOutEdge {
         label: edge.label.clone(),
         points,
         label_box: None,
+        flows: Vec::new(),
     }
 }
 

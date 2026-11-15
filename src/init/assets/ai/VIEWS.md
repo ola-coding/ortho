@@ -103,8 +103,11 @@ part.
 Drawn as an interconnection view. Each part is a box headed `name : Type`,
 nested in the part that contains it, so a type fitted twice is two boxes.
 Ports are small squares on the border; connections are plain lines from port
-to port, labelled as declared, `: Interface` where they have one. A part lists
-the functions it realizes. Attribute values are not drawn.
+to port, labelled as declared, `: Interface` where they have one. What flows
+along a connection is a filled arrowhead on its line, pointing the way it goes,
+beside the name of what flows, `Water` (§8.2.3.16); a flow between ports no
+connection joins is a line of its own. A part lists the functions it realizes.
+Attribute values are not drawn.
 
 ## Deployment view
 
