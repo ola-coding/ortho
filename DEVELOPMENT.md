@@ -361,8 +361,11 @@ deck to GitHub Pages.
   keyword groups by `cargo xtask zed-grammar`, never by hand, so both editors
   colour alike. It is its own Cargo workspace, outside ortho's. To try it,
   run *zed: install dev extension* in Zed and pick `editors/zed`; Zed builds
-  it, and Rust must be installed with rustup. Set `lsp.ortho.binary.path` to
-  `target/debug/ortho` after `cargo build`, so it runs the ortho you build.
+  it, and Rust must be installed with rustup. Zed on Windows builds it on
+  Windows, so with the repository in WSL, copy `editors/zed` to a Windows
+  folder and pick that; Zed copies the built extension into WSL. Set
+  `lsp.ortho.binary.path` to `target/debug/ortho` after `cargo build`, so it
+  runs the ortho you build.
   Zed gives an extension no panel or web view, so the preview is the page
   `ortho lsp` opens in the browser.
   The language is named *SysML v2*, as the Spec42 extension names it too, so
@@ -508,6 +511,17 @@ it downloads ortho's latest release, so a release of ortho reaches Zed
 users without a new extension. A change to `ortho lsp` that the extension
 relies on must be released before the extension that relies on it.
 
+Try the extension at the commit submitted, as a dev extension with no
+`ortho` on the PATH, so that it downloads ortho's release as a user's
+would. The branch is made in the maintainer's fork, `ola-coding/extensions`,
+with `extensions.toml` and `.gitmodules` kept sorted, as its
+`pnpm sort-extensions` does. Zed's
+[AI policy](https://github.com/zed-industries/extensions/blob/main/AI_POLICY.md)
+lets no agent contribute: an agent may prepare the branch, but a person
+opens the pull request and writes its description and every reply to the
+maintainers, who close one left unanswered for three weeks. The account
+that opens it must have signed Zed's CLA, as `ola-coding` has.
+
 Both stores answer *Published* before a package can be installed: they
 check it first, for some minutes. For 0.3.0, the Marketplace dropped the
 seven packages uploaded while it checked the first, the one that created
@@ -606,14 +620,16 @@ Open, in priority order:
   - [x] The extension: a Rust crate built to WebAssembly that starts
     `ortho lsp`, with the ortho on the PATH or else the release archive for
     the user's system, which it downloads.
-  - [ ] Try the preview in Zed, on macOS, Linux and Windows.
+  - [x] Tried in Zed on Windows, with the project in WSL and on Windows
+    itself, the release the extension downloads included.
+  - [ ] Try it on macOS and on a Linux desktop.
   - [ ] Report to Nomograph that tree-sitter-sysml reads a dependency whose
     client has a qualified name, `dependency A::b to C;`, only with `from`:
     the web shop's refinements are an error node each, so CI passes over
     that file when it parses the examples.
-  - [ ] Release ortho 0.4.0, with `ortho lsp`, before the extension.
-  - [ ] Publish it by a pull request to zed-industries/extensions, and add
-    that to [Releasing](#releasing).
+  - [x] Release ortho 0.4.0, with `ortho lsp`, before the extension.
+  - [ ] Publish it by a pull request to zed-industries/extensions (see
+    [Releasing](#releasing)): #8349, opened on 2026-11-15, waits for review.
 - [ ] **Be found by SysML v2 users:** an entry in each SysML v2 awesome list
   (jgsystemsconsulting/awesome-sysml-v2, mycr0ft/awesome-sysml,
   daltskin/SysML-v2-Resources, jgsystemsconsulting/awesome-mbse) and a post
