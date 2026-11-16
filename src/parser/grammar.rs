@@ -412,12 +412,22 @@ impl<'a> Parser<'a> {
         self.note(";");
         self.expect("{")?;
         while !self.eat("}") {
-            if !self.annotation_ahead() {
+            if self.at_any(&["@", "metadata"]) {
+                self.add(n, P::Annotations, Self::owned_metadata)?;
+            } else if self.annotation_ahead() {
+                self.add(n, P::Annotations, Self::annotating_element)?;
+            } else {
                 return self.fail("}");
             }
-            self.add(n, P::Annotations, Self::annotating_element)?;
         }
         Ok(())
+    }
+
+    /// Metadata a relationship's body holds, as any annotation (SysML v2 §8.2.2.2).
+    fn owned_metadata(&mut self) -> R<NodeId> {
+        let n = self.node(T::MetadataUsage);
+        self.metadata_usage(n)?;
+        Ok(n)
     }
 
     fn body(&mut self, n: NodeId) -> R<()> {
@@ -426,6 +436,11 @@ impl<'a> Parser<'a> {
         }
         self.note(";");
         self.expect("{")?;
+        self.body_rest(n)
+    }
+
+    /// What a body holds after its `{`, up to and including its `}`.
+    fn body_rest(&mut self, n: NodeId) -> R<()> {
         loop {
             if self.eat("}") {
                 return Ok(());
@@ -1683,17 +1698,17 @@ impl<'a> Parser<'a> {
             self.expect(")")?;
             return Ok(n);
         }
+        // A body is an expression of its own (KerML §8.2.5.8.3), as a guard's `if { ... }.result`.
+        if self.at("{") {
+            return self.body_expression();
+        }
         self.fail("an expression")
     }
 
     fn body_expression(&mut self) -> R<NodeId> {
         let n = self.node(T::BodyExpression);
         self.expect("{")?;
-        while !self.eat("}") {
-            if !self.member_or_result(n)? {
-                break;
-            }
-        }
+        self.body_rest(n)?;
         Ok(n)
     }
 

@@ -249,3 +249,44 @@ fn reads_an_end_with_only_a_name_and_a_multiplicity_as_its_own() {
     assert_eq!(ast.text(ends[2], Prop::CrossName), Some("c"));
     assert!(ast.child(ends[2], Prop::EndMultiplicity).is_some());
 }
+
+#[test]
+fn reads_metadata_in_a_relationships_body_as_any_annotation() {
+    // SysML v2 §8.2.2.2: a relationship's body holds annotations, metadata among them.
+    let (ast, model) = parse_ok(
+        "package P {
+            dependency refineTag from Vehicle to CarIsVehicle {
+                doc /* A refinement, as the source model records it. */
+                @RefineData { isRefine = true; }
+            }
+        }",
+    );
+    let dependency = member_named(&ast, first_package(&ast, model), "refineTag");
+    let annotations: Vec<NodeId> = ast.children(dependency, Prop::Annotations).collect();
+    assert_eq!(annotations.iter().map(|a| ast[*a].ty).collect::<Vec<_>>(), [Type::Documentation, Type::MetadataUsage]);
+    assert_eq!(ast.text(annotations[1], Prop::Type), Some("RefineData"));
+}
+
+#[test]
+fn reads_a_body_as_an_expression_of_its_own_as_in_a_guard() {
+    // KerML §8.2.5.8.3: a body expression is a base expression.
+    let (ast, model) = parse_ok(
+        "package P {
+            action def Steps {
+                action a1;
+                action a2;
+                succession first a1 if { return : Boolean; language \"OCL2.0\" /* x > 0 */ }.result then a2;
+            }
+        }",
+    );
+    let steps = member_named(&ast, first_package(&ast, model), "Steps");
+    let guard = ast.children(steps, Prop::Members).find_map(|m| ast.child(m, Prop::Guard)).unwrap();
+    assert_eq!(ast[guard].ty, Type::FeatureChainExpression);
+    assert_eq!(ast.text(guard, Prop::Member), Some("result"));
+    let body = ast.child(guard, Prop::Source).unwrap();
+    assert_eq!(ast[body].ty, Type::BodyExpression);
+    assert_eq!(
+        ast.children(body, Prop::Annotations).map(|a| ast[a].ty).collect::<Vec<_>>(),
+        [Type::TextualRepresentation]
+    );
+}
