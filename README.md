@@ -66,7 +66,7 @@ views. Click a diagram to see it full size.
 | Use case | How the system is used, and by whom | `use case`, `subject`, `actor`, `include` |
 | Logical | What the system does: a tree of functions, and the use case each refines | `action def`, `action`, `#refinement dependency` |
 | Implementation | The static structure of the software: packages, modules, their APIs and the functions they perform | `package`, `part def`, `port`, `perform` |
-| Physical | The product itself: its parts, their ports and how they are wired | `part`, `port`, `connect`, `interface` |
+| Physical | The product itself: its parts, their ports, how they are wired and what flows between them | `part`, `port`, `connect`, `interface`, `flow` |
 | Deployment | Which hardware runs which software | `allocate` |
 | Process | How the software modules talk at run time, as a sequence of messages | `occurrence def`, `message` |
 

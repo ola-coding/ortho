@@ -189,6 +189,15 @@ and `variant` (§7.6), which ortho parses but does not yet read.
 - **Labels** for ports, wires and «import» are real ELK labels, so ELK
   reserves room for them; port labels are painted after every edge.
   Keywords get guillemets; names do not.
+- **Flow names are placed after the layout** (`src/layout/flow_labels.rs`).
+  A flow on a connection is a filled arrowhead on its line beside the name
+  of what flows (§8.2.3.16). As ELK labels, those names took a layer each
+  and pushed the survey drone's physical view off its page; placed after,
+  in free space beside the line and clear of every box, port, name and line,
+  they leave the layout as it is without them. Only when one finds no such
+  place is the diagram laid out again with ELK keeping room for every name.
+  An arrowhead may sit on a trunk that lines from one port share, never
+  where another line crosses, and a line's own stretches are tried first.
 - **Sequence diagrams bypass ELK** (`src/render/sequence.rs`): gaps
   between lifelines widen only where a label needs it. A message runs from
   lifeline to lifeline, since SysML v2 draws no activation bars.
@@ -596,6 +605,12 @@ Done, one line each; the commits and the sections above hold the detail:
 - [x] **Suggest the name meant** in a chain (`chain_hint`); not for plain names.
 - [x] **A VS Code extension** in `editors/vscode/`, with ortho inside, on the
   Marketplace and Open VSX; see *Working on the code* and *Releasing*.
+- [x] **Item flows on the physical view** (§8.2.3.16): an arrowhead and what
+  flows on a connection's line, or a line of its own. A flow's ends and
+  payload resolve; `of` names any definition, as §7.16.1 lets a payload be
+  anything. A later segment after an action, such as a send action's
+  `receiver` in OMG's models, stays unchecked, since it comes from the
+  standard library ortho does not load.
 
 Open, in priority order:
 
@@ -635,19 +650,6 @@ Open, in priority order:
   daltskin/SysML-v2-Resources, jgsystemsconsulting/awesome-mbse) and a post
   in the SysML Forum, made from the maintainer's own account. Tag and
   describe ortho as SysML v2, never plain SysML, which reads as v1.
-- [ ] **Item flows on the physical view** (`flow`): what passes between ports,
-  not only that they connect. ortho parses every flow already.
-  - [ ] Resolve a flow's ends and its `of` type, kept as written today, as
-    connection ends are, so a typo gets *did you mean*; `of` must name an
-    item definition.
-  - [ ] A flow between two connected ports puts an arrowhead and `of Water`
-    on that line; a flow with no `connect` draws a line of its own, as the
-    spec draws a flow (§8.2.3).
-  - [ ] Flows in the examples: water, steam, grounds and milk in the coffee
-    machine, power and video in the drone. Their port defs already say which
-    item goes which way.
-  - [ ] 38 of OMG's model files use flows, some between action parameters:
-    they must keep loading once the ends are resolved.
 - [ ] **Requirements as a table ortho writes,** and on the parts that satisfy
   them, rather than a seventh diagram. They are standard SysML,
   `requirement <'R1'> brewTime { doc /* ... */ }` and

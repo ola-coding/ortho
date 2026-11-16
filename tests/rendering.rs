@@ -45,6 +45,7 @@ fn use_cases() -> LaidOutDiagram {
             label: Some("«include»".to_string()),
             points: vec![Point { x: 0.0, y: 0.0 }, Point { x: 100.0, y: 0.0 }],
             label_box: None,
+            flows: Vec::new(),
         }],
     }
 }

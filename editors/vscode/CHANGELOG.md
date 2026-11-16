@@ -2,6 +2,13 @@
 
 The extension has the version of the ortho it carries.
 
+## Unreleased
+
+- **Flows on the physical view:** what passes between ports, such as water or
+  power, drawn as an arrowhead on the connection's line with the name of what
+  flows beside it, or as a line of its own where no connection joins the
+  ports. The coffee machine and the survey drone now show their flows.
+
 ## 0.4.0 (2026-11-14)
 
 - **Add AI Instructions** also writes an `AGENTS.md`, for Zed, Codex, Cursor

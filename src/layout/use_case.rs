@@ -200,6 +200,7 @@ impl Group {
             label: e.label.clone(),
             points,
             label_box: None,
+            flows: Vec::new(),
         });
     }
 

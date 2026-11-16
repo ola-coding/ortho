@@ -1175,3 +1175,24 @@ fn examples_load_with_no_warnings() {
         assert_eq!(parse_sysml_files(&files).unwrap().warnings, Vec::<String>::new(), "{example}");
     }
 }
+
+#[test]
+fn resolves_a_flows_ends_through_its_ports_and_its_payload_with_the_name_meant() {
+    let model = |flow: &str| {
+        errors_of(&format!(
+            "package P {{
+                item def Water;
+                port def WaterPort {{ out item water : Water; }}
+                part def Tank {{ port waterOut : WaterPort; }}
+                part def Pump {{ port waterIn : ~WaterPort; }}
+                part def Machine {{ part tank : Tank; part pump : Pump; {flow} }}
+            }}"
+        ))
+    };
+    assert_eq!(model("flow of Water from tank.waterOut.water to pump.waterIn.water;"), Vec::<String>::new());
+    assert_eq!(
+        model("flow of Water from tank.waterOut.watr to pump.waterIn.water;"),
+        [format!("{} Did you mean 'water'?", unresolved("Feature", "watr"))]
+    );
+    assert_eq!(model("flow of Watr from tank.waterOut to pump.waterIn;"), [unresolved("Definition", "Watr")]);
+}

@@ -14,8 +14,10 @@ package Hardware {
     // What flows through the ports. A port def says which way its item goes;
     // the receiving end is the same port conjugated, `~WaterPort`.
     item def Water;
+    item def HotWater :> Water;
     item def Steam;
-    item def Coffee;
+    item def CoffeeBeans;
+    item def GroundCoffee;
     item def Milk;
     item def Beverage;
     item def ElectricPower;
@@ -23,8 +25,10 @@ package Hardware {
     item def Status;
 
     port def WaterPort { out item water : Water; }
+    port def HotWaterPort { out item hotWater : HotWater; }
     port def SteamPort { out item steam : Steam; }
-    port def CoffeePort { out item coffee : Coffee; }
+    port def BeansPort { out item beans : CoffeeBeans; }
+    port def GroundsPort { out item grounds : GroundCoffee; }
     port def MilkPort { out item milk : Milk; }
     port def BeveragePort { out item beverage : Beverage; }
     port def PowerPort { out item power : ElectricPower; }
@@ -67,7 +71,7 @@ package Hardware {
 
         attribute targetTemperature : CelsiusTemperatureValue = 92 ['°C'];
         port waterIn : ~WaterPort;
-        port hotWaterOut : WaterPort;
+        port hotWaterOut : HotWaterPort;
         port steamOut : SteamPort;
         port ctrlIn : ~ControlPort;
     }
@@ -77,15 +81,15 @@ package Hardware {
         perform beverage.prepareCoffee.storeBeans;
 
         attribute capacity : MassValue = 280 [g];
-        port beansOut : CoffeePort;
+        port beansOut : BeansPort;
     }
 
     part def Grinder {
         perform beverage.prepareCoffee.grindBeans;
 
         attribute burrs : BurrKind = BurrKind::conicalCeramic;
-        port beansIn : ~CoffeePort;
-        port groundsOut : CoffeePort;
+        port beansIn : ~BeansPort;
+        port groundsOut : GroundsPort;
         port ctrlIn : ~ControlPort;
     }
 
@@ -94,8 +98,8 @@ package Hardware {
         perform beverage.prepareCoffee.extractShot;
 
         attribute maxDose : MassValue = 16 [g];
-        port waterIn : ~WaterPort;
-        port groundsIn : ~CoffeePort;
+        port waterIn : ~HotWaterPort;
+        port groundsIn : ~GroundsPort;
         port coffeeOut : BeveragePort;
         port ctrlIn : ~ControlPort;
     }
@@ -175,6 +179,16 @@ package Hardware {
 
         // Mains
         connect psu.powerOut to controller.powerIn;
+
+        // What passes through those connections, and which way
+        flow of Water from tank.waterOut.water to pump.waterIn.water;
+        flow of Water from pump.waterOut.water to heater.waterIn.water;
+        flow of HotWater from heater.hotWaterOut.hotWater to brewUnit.waterIn.hotWater;
+        flow of Steam from heater.steamOut.steam to wand.steamIn.steam;
+        flow of Milk from milkTube.milkOut.milk to wand.milkIn.milk;
+        flow of CoffeeBeans from hopper.beansOut.beans to grinder.beansIn.beans;
+        flow of GroundCoffee from grinder.groundsOut.grounds to brewUnit.groundsIn.grounds;
+        flow of ElectricPower from psu.powerOut.power to controller.powerIn.power;
 
         // Control looms, each carrying the same contract
         interface : ControlLink connect controller.waterCtrl to pump.ctrlIn;

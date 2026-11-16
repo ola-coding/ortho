@@ -407,7 +407,7 @@ package OrderSolution {
 ## Physical view
 
 The product: parts nested in the parts that contain them, wired through their
-ports (§7.11–§7.14).
+ports, and what flows between them (§7.11–§7.14, §7.16).
 
 ```sysml
 package Hardware {
@@ -436,6 +436,8 @@ package Hardware {
 
         connect tank.waterOut to pumps.waterIn;
         interface : ControlLink connect board.pumpCtrl to pumps.ctrlIn;
+
+        flow of Water from tank.waterOut.water to pumps.waterIn.water;
     }
 
     part machine : Machine;
@@ -449,6 +451,8 @@ package Hardware {
 | `port name : PortDef;` | a port on the box's edge. `~PortDef` conjugates it: the receiving end of what the port def sends `out`. |
 | `connect a.p to b.q;` | a line between the two ports (or parts) |
 | `interface : Def connect a.p to b.q;` (optionally named), or a `connection` of a `connection def` | the same line, labelled as declared: `: Def` |
+| `flow of Item from a.p.item to b.q.item;` between connected ports | a filled arrowhead on their line, pointing the way it flows, labelled `Item`, or with the flow's name when it has no `of` |
+| the same `flow` between ports no `connect` joins | a line of its own ending in a filled arrowhead, labelled `name of Item` |
 | `interface def` with its `end`s, `port def` | nothing. They type interfaces and ports. |
 | `attribute name : Type = value;` | nothing |
 | `perform Functions::use.branch.leaf;` in a part or its definition | a line in its *perform actions* compartment |
@@ -459,7 +463,14 @@ drawn as if declared.
 A port definition says which way its item goes, `out item water : Water`, and
 the port that receives it is conjugated, `~WaterPort`, as an API is on the
 implementation view. A port with nothing flowing through it, such as a mount,
-may stay empty, `port def MountPort;`. The product's part def specializes the
+may stay empty, `port def MountPort;`.
+
+A flow's ends name what flows out of one port and into the other,
+`tank.waterOut.water`, as §7.16.2 writes them; naming the ports alone,
+`tank.waterOut`, is read the same. A flow is checked as a connection is: a
+misspelt end gets *Did you mean*, and `of` must name a definition. Draw a flow
+where what passes, and which way, matters to the reader, such as water, steam
+and power; data that goes both ways over one cable needs none. The product's part def specializes the
 use cases' subject, `part def Machine :> SystemUseCases::Machine`, so the
 product as built is what the use cases are about.
 

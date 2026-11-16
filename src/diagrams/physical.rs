@@ -1,8 +1,9 @@
-//! The physical view: the product's parts, nested, with their ports and what connects them.
+//! The physical view: the product's parts, nested, with their ports, what connects
+//! them and what flows between them.
 use super::connector_ends::{box_size, perform_compartments, usage_label};
 use crate::model::graph::qualified_name;
 use crate::model::graph::{
-    Compartment, DiagramGraph, EdgeKind, GraphEdge, GraphNode, GraphPort, box_of, effective_name,
+    Compartment, DiagramGraph, EdgeFlow, EdgeKind, GraphEdge, GraphNode, GraphPort, box_of, effective_name,
 };
 use crate::parser::ast::{Ast, NodeId, Prop, Type};
 use std::collections::{HashMap, HashSet};
@@ -25,6 +26,15 @@ struct Instance {
 struct Pending {
     connection: NodeId,
     context: usize,
+}
+
+/// Where a line ends: a box, and the port on it.
+type End = (String, Option<String>);
+
+/// A flow's payload as written, `Water`, and its name, either of which may be missing.
+fn payload_and_name(ast: &Ast, flow: NodeId) -> (Option<&str>, &str) {
+    let payload = ast.reference_of(flow, Prop::Payload).map(|payload| ast.reference_text(payload));
+    (payload, ast.text(flow, Prop::Name).unwrap_or(""))
 }
 
 fn multiplicity_text(ast: &Ast, multiplicity: Option<NodeId>) -> String {
@@ -123,6 +133,8 @@ struct Extraction<'a> {
     ast: &'a Ast,
     instances: Vec<Instance>,
     pending: Vec<Pending>,
+    /// The flows, each with the part whose body declares it.
+    flows: Vec<Pending>,
 }
 
 impl Extraction<'_> {
@@ -158,10 +170,26 @@ impl Extraction<'_> {
         for connection in connections {
             self.pending.push(Pending { connection, context: owner });
         }
+        let mut flows = of_type(ast, body, Type::FlowUsage);
+        flows.extend(members_of(ast, ty, Type::FlowUsage));
+        for connection in flows {
+            self.flows.push(Pending { connection, context: owner });
+        }
+    }
+
+    /// Both ends of a connection or a flow, unless one names nothing drawn or both
+    /// name the same.
+    fn ends(&self, pending: &Pending) -> Option<(End, End)> {
+        let ast = self.ast;
+        let source = self.resolve_end(ast.child(pending.connection, Prop::Source), pending.context)?;
+        let target = self.resolve_end(ast.child(pending.connection, Prop::Target), pending.context)?;
+        (source != target).then_some((source, target))
     }
 
     /// Walks a connector end (`drone.rfLink`, `radio.rf`) from the part whose body
-    /// declares the connection down to the box it names, and the port on it.
+    /// declares the connection down to the box it names, and the port on it. A
+    /// flow's end goes on to what flows through the port, `tank.waterOut.water`,
+    /// and is drawn at the port too.
     /// Resolving per instance is the point: the drone's radio and the ground
     /// station's radio share a type but are two boxes, each wired on its own.
     fn resolve_end(&self, end: Option<NodeId>, context: usize) -> Option<(String, Option<String>)> {
@@ -218,7 +246,7 @@ impl Extraction<'_> {
 ///
 /// The top-level boxes are the exposed parts.
 pub fn extract_physical_graph(ast: &Ast, exposed: &[NodeId]) -> DiagramGraph {
-    let mut extraction = Extraction { ast, instances: Vec::new(), pending: Vec::new() };
+    let mut extraction = Extraction { ast, instances: Vec::new(), pending: Vec::new(), flows: Vec::new() };
     let mut roots = Vec::new();
     for usage in exposed.iter().copied().filter(|element| ast[*element].ty == Type::PartUsage) {
         let ty = ast.target(usage, Prop::Type);
@@ -230,14 +258,9 @@ pub fn extract_physical_graph(ast: &Ast, exposed: &[NodeId]) -> DiagramGraph {
 
     let mut edges: Vec<GraphEdge> = Vec::new();
     for pending in &extraction.pending {
-        let source = extraction.resolve_end(ast.child(pending.connection, Prop::Source), pending.context);
-        let target = extraction.resolve_end(ast.child(pending.connection, Prop::Target), pending.context);
-        let (Some(source), Some(target)) = (source, target) else {
+        let Some((source, target)) = extraction.ends(pending) else {
             continue;
         };
-        if source == target {
-            continue;
-        }
         // A connection is labelled as declared (§8.2.3.13): `: Interface` for an
         // unnamed typed one.
         let label = usage_label(ast, pending.connection);
@@ -246,6 +269,41 @@ pub fn extract_physical_graph(ast: &Ast, exposed: &[NodeId]) -> DiagramGraph {
         edge.target_port_id = target.1;
         edge.label = (!label.is_empty()).then_some(label);
         edges.push(edge);
+    }
+
+    // A flow between two ends that are connected is drawn on that line, an
+    // arrowhead labelled with what flows; any other is a line of its own, since a
+    // flow connects its ends by itself (§7.16.2, §8.2.3.16).
+    let end_of = |id: &String, port: &Option<String>| (id.clone(), port.clone());
+    for pending in &extraction.flows {
+        let Some((source, target)) = extraction.ends(pending) else {
+            continue;
+        };
+        let (payload, name) = payload_and_name(ast, pending.connection);
+        let along = edges.iter_mut().filter(|edge| edge.kind == EdgeKind::Connection).find_map(|edge| {
+            let from = end_of(&edge.source_id, &edge.source_port_id);
+            let to = end_of(&edge.target_id, &edge.target_port_id);
+            let forward = from == source && to == target;
+            (forward || (from == target && to == source)).then_some((edge, forward))
+        });
+        match along {
+            Some((edge, forward)) => {
+                let label = payload.unwrap_or(name).to_string();
+                edge.flows.push(EdgeFlow { label, forward });
+            }
+            None => {
+                let label = match payload {
+                    Some(payload) if name.is_empty() => format!("of {payload}"),
+                    Some(payload) => format!("{name} of {payload}"),
+                    None => name.to_string(),
+                };
+                let mut edge = GraphEdge::new(format!("e{}", edges.len()), EdgeKind::Flow, source.0, target.0);
+                edge.source_port_id = source.1;
+                edge.target_port_id = target.1;
+                edge.label = (!label.is_empty()).then_some(label);
+                edges.push(edge);
+            }
+        }
     }
 
     let nodes = roots.into_iter().map(|root| extraction.tree(root)).collect();

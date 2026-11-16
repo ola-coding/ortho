@@ -33,10 +33,16 @@ fn omg_models_load_as_many_as_counted() {
         (path.to_string_lossy().into_owned(), String::from_utf8_lossy(&std::fs::read(path).unwrap()).into_owned())
     });
     let workspace = Workspace::build(sources.collect()).unwrap_or_else(|failures| panic!("{failures:?}"));
-    let loaded = workspace
+    // Each file that does not load, with its first error and the line it is on.
+    let failing: Vec<String> = workspace
         .documents
         .iter()
-        .filter(|document| !document.diagnostics.iter().any(|d| d.severity == Severity::Error))
-        .count();
-    assert_eq!(loaded, LOADED, "{loaded} of {} load: update LOADED", files.len());
+        .filter_map(|document| {
+            let error = document.diagnostics.iter().find(|d| d.severity == Severity::Error)?;
+            let line = document.text[..error.offset].lines().count();
+            Some(format!("{}:{line}: {}", document.path, error.message))
+        })
+        .collect();
+    let loaded = files.len() - failing.len();
+    assert_eq!(loaded, LOADED, "{loaded} of {} load: update LOADED\n{}", files.len(), failing.join("\n"));
 }

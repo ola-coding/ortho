@@ -993,24 +993,18 @@ impl<'a> Parser<'a> {
             p.value_part(n)?;
             if p.eat("of") {
                 p.payload_name(n)?;
-                p.text(n, P::Payload, Self::type_name)?;
+                p.reference(n, P::Payload)?;
                 p.payload_rest(n)?;
             }
             if p.eat("from") {
-                p.flow_ends(n)?;
+                p.connector_ends(n)?;
             }
             p.body_next()
         });
         if !declared {
-            self.flow_ends(n)?;
+            self.connector_ends(n)?;
         }
         self.body(n)
-    }
-
-    fn flow_ends(&mut self, n: NodeId) -> R<()> {
-        self.text(n, P::Source, Self::feature_chain)?;
-        self.expect("to")?;
-        self.text(n, P::Target, Self::feature_chain)
     }
 
     fn metadata_usage(&mut self, n: NodeId) -> R<()> {
