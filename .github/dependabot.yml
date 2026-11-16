@@ -1,0 +1,39 @@
+# Monthly, and grouped: one pull request for each kind of dependency. Alerts of a
+# known vulnerability come at once, whatever is set here.
+version: 2
+updates:
+  # ortho and xtask, one workspace.
+  - package-ecosystem: cargo
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      rust:
+        patterns: ["*"]
+    ignore:
+      # Pinned in Cargo.toml: a new layout engine moves every diagram.
+      - dependency-name: org-eclipse-elk-graph-json
+
+  - package-ecosystem: cargo
+    directory: /editors/zed
+    schedule:
+      interval: monthly
+    groups:
+      zed-extension:
+        patterns: ["*"]
+
+  - package-ecosystem: npm
+    directory: /editors/vscode
+    schedule:
+      interval: monthly
+    groups:
+      vscode-extension:
+        patterns: ["*"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]
