@@ -97,7 +97,7 @@ jobs:
             tar -C dist -czf "dist/$name.tar.gz" "$name"
           fi
           rm -r "dist/$name"
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: ortho-${{ matrix.target }}
           path: dist/*
@@ -123,7 +123,7 @@ jobs:
           - { vscode: darwin-x64, target: x86_64-apple-darwin }
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v8
         with:
           name: ortho-${{ matrix.target }}
           path: dist
@@ -152,7 +152,7 @@ jobs:
           cd editors/vscode
           ORTHO_BIN="$GITHUB_WORKSPACE/unpacked/extension/bin/ortho" node --test
       # Named vscode-*, so the release, which takes ortho-*, leaves them out.
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: vscode-${{ matrix.vscode }}
           path: editors/vscode/ortho-vscode-${{ matrix.vscode }}.vsix
@@ -172,7 +172,7 @@ jobs:
           - { vscode: darwin-x64, os: macos-15-intel }
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v8
         with:
           name: vscode-${{ matrix.vscode }}
           path: dist
@@ -226,7 +226,7 @@ jobs:
             exit 1
           fi
           echo "TAG=$tag" >> "$GITHUB_ENV"
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v8
         with:
           path: dist
           pattern: ortho-*
@@ -276,7 +276,7 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v8
         with:
           path: dist
           pattern: vscode-*
@@ -296,7 +296,7 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v8
         with:
           path: dist
           pattern: vscode-*
