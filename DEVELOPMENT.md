@@ -14,208 +14,156 @@ How ortho works inside, and why. For using it, see [README.md](README.md).
   → .svg file
 ```
 
-ortho is written in Rust, one binary with no runtime. `src/main.rs` is the
-`ortho render` command, which renders every view the model declares, and
-`ortho lsp`, the same checks and diagrams for an editor (`src/lsp/`), and
-`ortho init`, what a project starts with (`src/init/`); they are the only
-ways in for users. The library in `src/lib.rs` is there for the tests
-and `xtask/`, not as a public API. `src/model/views.rs` says which of the six
-diagrams a view is and names its file, and `src/pipeline.rs` runs that
-diagram's extractor, layout and renderer on what the view exposes.
+ortho is one Rust binary with no runtime. Users reach it only through the
+commands in `src/main.rs`: `ortho render` renders every view the model
+declares, `ortho lsp` gives an editor the same checks and diagrams
+(`src/lsp/`), and `ortho init` writes what a project starts with
+(`src/init/`). The library in `src/lib.rs` serves the tests and `xtask/`; it
+is not a public API. `src/model/views.rs` says which of the six diagrams a
+view is and names its file, and `src/pipeline.rs` runs that diagram's
+extractor, layout and renderer on what the view exposes.
 
-- **The parser is ortho's own** (`src/parser/`): a lexer, a recursive-descent
-  parser with one method per rule, and name resolution and checks after it.
-  The grammar is written from the OMG specification, not copied from the
-  EPL-licensed pilot implementation. Existing parsers were tried first:
-  `sysml-v2-lsp` offers no parser API, and OpenSysML's does not expose what the
-  views draw.
-- **ELK**, the Eclipse Layout Kernel, lays out the implementation, physical and
-  deployment views, whose nested boxes and ports need it. It is
-  [elk-rs](https://github.com/openedges/elk-rs), a port of ELK to Rust compiled
-  into the binary — no Java, no service. The other three have a fixed shape, so
-  ortho lays them out itself.
-- **No renderer dependency.** SVG is written as text: no browser, no DOM, and
-  output that is deterministic and diffable.
+- **The parser is ortho's own:** a lexer, a recursive-descent parser with one
+  method per rule, then name resolution and checks. It is written from the OMG
+  specification, not copied from the EPL-licensed pilot implementation.
+  Existing parsers fell short: `sysml-v2-lsp` offers no parser API, and
+  OpenSysML's does not expose what the views draw.
+- **ELK** lays out the implementation, physical and deployment views, whose
+  nested boxes and ports need it. It is
+  [elk-rs](https://github.com/openedges/elk-rs), ELK ported to Rust and
+  compiled in: no Java, no service. The other three views have a fixed shape,
+  so ortho lays them out itself.
+- **No renderer dependency.** SVG is written as text, so the output is
+  deterministic and diffable.
 
 ## Parsing
 
-**Name resolution** (`src/parser/scope.rs`) follows SysML v2. A name
-is looked up where it is written, among the namespace's own members and
-aliases, what a definition inherits through `:>`, what a usage's type gives
-it, and what a namespace imports, then in each namespace around it, and last
-among the top-level elements; each `::` segment after that is a member of the
-one before, or a public import of it. A feature chain continues with dots,
-each segment a feature of the one before: its own, its type's, or one of what
-it subsets, references or redefines. An unnamed element answers to the name it
-takes on, `part :>> engine` to engine and `perform a.b` to b (`effective_name`);
-any element answers to its short name too, and a quoted name loses its quotes
-as it is parsed (`unquote` in `grammar.rs`). An import's target is a
-reference found the same way, which the implementation view follows for its
-«import» arrows; one ortho does not have, such as the standard library's,
-imports nothing (`validator.rs`). A dependency's ends are
-references too, which the logical view follows for its dashed arrows, so a typo
-in one fails.
+**Name resolution** (`src/parser/scope.rs`) follows SysML v2. A name is
+looked up where it is written: among the namespace's members and aliases,
+what a definition inherits through `:>`, what a usage's type gives it, and
+what the namespace imports; then in each namespace around it; last among the
+top-level elements. Each `::` segment is a member, or a public import, of the
+one before. A feature chain continues with dots, each segment a feature of
+the one before: its own, its type's, or one it subsets, references or
+redefines. An unnamed element answers to the name it takes on, `part :>>
+engine` to `engine` and `perform a.b` to `b` (`effective_name`); any element
+answers to its short name, and a quoted name loses its quotes as it is
+parsed. Imports, dependency ends and flow ends are references the views
+follow, so a typo in one fails, with *did you mean* for a segment of a chain
+(`chain_hint`). An import of what ortho does not have, such as the standard
+library, imports nothing.
 
-**Grammar** (`src/parser/grammar.rs`, with the tokens in `lexer.rs`). What the
-views draw has alternatives of its own, close to the spec's; every other
-definition and usage shares one of three, which keep what they name as
-written. All of them sit in one rule, `element`: its prefix is read once and
-the keyword after it picks the alternative, which keeps choosing among them
-cheap, also on a broken file. A file stops at its first syntax error, which
-says where it is and what was expected there.
+**Grammar** (`src/parser/grammar.rs`, tokens in `lexer.rs`). What the views
+draw has rules of its own, close to the spec's; every other definition and
+usage shares one of three, which keep what they name as written. All sit in
+one rule, `element`: its prefix is read once and the keyword after it picks
+the rule, which stays cheap on a broken file. A file stops at its first
+syntax error, which says where it is and what was expected.
 
-**Conformance** (`src/parser/validator.rs`). The grammar enforces what
-it can. After linking, the validator checks the rules it cannot, all listed
-in [LANGUAGE.md](LANGUAGE.md): no reserved word as a name, chains that start
-at a usage, a `perform` of behaviour rather than structure, a part or actor
-typed by a part definition, and a use case's subject before its actors. Six
-rules are only warnings, which the CLI prints before carrying on:
-
-- a top-level package named after a standard library package: ortho finds the
-  model's, while the pilot may find the library's, so such a model renders
-  here and may fail elsewhere;
-- a function in scope that no module or part of a solution view performs
-  (`unperformed_functions`, with what those views draw in `solution_owners`);
-- a tree a logical view draws beside use cases that refines none
-  (`unrefined_trees`);
-- a use case that no function refines, once the model has a use case view
-  and a logical view, whichever views draw it (`unrefined_use_cases`);
-- an `allocate` end that neither the implementation nor the physical view
-  draws (`foreign_allocation_ends`);
-- software that no deployment view allocates to a host (`unhosted_software`).
-
-All but the first are rules of ortho's method between two views, found once
-for the whole model (`Gaps`; see *Errors and warnings*). Told to fix an error,
-an agent may delete the line the error points at; the model still loads, so
-without these warnings its diagrams would look complete. A model may declare
-any view, so one ortho cannot draw is skipped with the reason
-(`why_undrawable`).
+**Conformance** (`src/parser/validator.rs`). After linking, the validator
+checks what the grammar cannot, all listed in [LANGUAGE.md](LANGUAGE.md): no
+reserved word as a name, chains that start at a usage, a `perform` of
+behaviour rather than structure, a part or actor typed by a part definition,
+and a use case's subject before its actors.
 
 **Errors and warnings.** The standard says when a model is well-formed, not
-when it is complete: `perform`, `allocate` and `#refinement` are all optional,
-and a view is a filter on the one model (§9.2.20), so a model with only an
-implementation view, for a cloud solution, is valid SysML v2. ortho keeps the
-two apart:
+when it is complete: `perform`, `allocate` and `#refinement` are optional,
+and a view is a filter on the one model (§9.2.20). ortho keeps three cases
+apart:
 
 - **An error** is what the standard forbids, or a name that resolves to
   nothing. The model does not load, and nothing is drawn.
 - **A warning** is a rule of ortho's method: two views that both exist and
-  disagree. The model renders anyway, so a systems engineer can work in any
-  order, and an agent knows what to fix.
-- **A view that is missing** is neither. Every view is optional; a check
-  between two views applies only once the model declares both.
+  disagree. The model renders anyway, so work can go in any order, and an
+  agent knows what to fix. Without them, an agent told to fix an error could
+  delete the line it points at, and the diagrams would look complete.
+- **A missing view** is neither. Every view is optional; a check between two
+  views applies once the model declares both.
+
+The warnings are found once for the whole model (`Gaps`):
 
 | When the model declares… | ortho warns of… |
 |---|---|
-| a use case view and a logical view | a use case the use case view draws that no function refines, whether or not a logical view draws it |
-| use cases and trees on one logical view | a tree drawn there that refines none |
-| a logical view, and an implementation or physical view | a function in scope that no module or part those views draw performs |
-| a deployment view | an `allocate` end that is not a module of an implementation view or a part of a physical view, and a module no host runs |
+| a use case view and a logical view | a use case that no function refines (`unrefined_use_cases`) |
+| use cases and trees on one logical view | a tree there that refines none (`unrefined_trees`) |
+| a logical view, and an implementation or physical view | a function in scope that no module or part those views draw performs (`unperformed_functions`) |
+| a deployment view | an `allocate` end that neither view draws (`foreign_allocation_ends`), and software no host runs (`unhosted_software`) |
+| any package | a top-level package named after a standard library package, which other tools may resolve to the library's |
 
 A function is in scope when a logical view draws it and, in a model with use
-cases, its tree refines one, at its root or in a branch. A catalogue of functions kept beside the product's
-trees needs no solution until a use case asks for it. SysML v2's own way to say
-which functions one product of a range addresses is variability, `variation`
-and `variant` (§7.6), which ortho parses but does not yet read.
+cases, its tree refines one. A view ortho cannot draw is skipped with the
+reason (`why_undrawable`). Variability, `variation` and `variant` (§7.6),
+SysML v2's way to say which functions one product of a range addresses, is
+parsed but not yet read.
 
 ## Layout and rendering
 
 - **Text is measured without a browser.** `src/render/text_metrics.rs` embeds
   the widths of Arial and DejaVu Sans, which the SVG's font list draws with on
-  Windows, Linux and Typst. `measure_text()` takes the wider for each character,
-  so text fits whichever is drawn and nobody installs a font. Boxes are sized
-  with it, never with character counts.
-- **Edges arrive in root coordinates.** ELK reports an edge relative to the
-  node that contains it, which for a line from a box's own port to its child
-  is that box. `src/layout/elk.rs` sets `org.eclipse.elk.json.edgeCoords: ROOT`;
-  without it the edges on the implementation and physical views move.
-- **Containers fit their contents and their name.** A container gets its
-  name's width as a minimum and centres narrower contents. Layering downwards,
-  ELK reads a container's minimum size and content alignment with their axes
-  swapped, so `elk.rs` gives them swapped.
-- **Packages no import reaches are gridded by ortho.** ELK's `layered` puts
-  boxes with no edge between them side by side, so twelve packages that import
-  nothing from each other stood in one row, 4522 px across. A package that no
-  edge or port reaches into, at any depth, is laid out by `grid_of` in
-  `elk.rs` instead: its contents in a grid, in declared order, each package in
-  it a grid of its own. ELK sees one box of the grid's size. Packages an
-  import joins are still layered by ELK, which needs the arrows.
-- **Packages that all import one package are a block.** ELK layers them side
-  by side too: nine stood 3412 px across. More than three siblings joined by
-  one line each to the same box, the same way, are one box to ELK
-  (`bundle_node` in `elk.rs`): ortho grids them in declared order, with as many
-  columns as bring the block nearest half again as wide as the page, and gives
-  the box a port for each line. A line leaves a box in the bottom row straight
-  down, and one from a row above runs down the gap beside its column; ELK
-  routes it on from the port. Pinning siblings to layers with hidden edges
-  instead set them out in a staircase.
-- **Declared order is kept.** ELK reorders boxes it is free to place; the
-  layered views set `considerModelOrder` (`NODES_AND_EDGES`, and
-  `MODEL_ORDER` for the parts with no edge between them) on the root and on
-  every container, so siblings stand in the order the model declares them
-  wherever no crossing forbids it. elk-rs names these options
-  `org.eclipse.elk.alg.layered.…`, not ELK's `org.eclipse.elk.layered.…`.
-- **Deployment is packed, not layered.** With no edges, ELK's `layered` put
-  every box in one row and `box` reorders by size, so the view uses
-  `rectpacking`, one level at a time, since packing cannot lay out a
-  hierarchy in one pass.
+  Windows, Linux and Typst, and `measure_text()` takes the wider for each
+  character, so text fits whichever is drawn. Boxes are sized with it, never
+  with character counts.
+- **ELK's quirks** (`src/layout/elk.rs`): edges come relative to the node
+  that contains them, so `org.eclipse.elk.json.edgeCoords: ROOT` is set, or
+  the lines on the implementation and physical views move. Layering
+  downwards, ELK reads a container's minimum size and content alignment with
+  their axes swapped, so they are given swapped. elk-rs names the layered
+  options `org.eclipse.elk.alg.layered.…`, not ELK's
+  `org.eclipse.elk.layered.…`.
+- **Declared order is kept:** `considerModelOrder` is set on the root and on
+  every container, so siblings stand in the order declared wherever no
+  crossing forbids it.
+- **Boxes ELK would set in one row are gridded by ortho.** ELK's `layered`
+  sets boxes with no line between them side by side: twelve packages stood
+  4522 px across. A package that no line reaches into is a grid in declared
+  order (`grid_of`), one box to ELK. More than three siblings joined the same
+  way to the same box are one block too (`bundle_node`), gridded about half
+  again as wide as the page, with a port for each line.
+- **Deployment is packed, not layered** (`rectpacking`, one level at a time):
+  with no lines, `layered` put every box in one row.
 - **The physical view draws instances, not types.** It walks down from the
-  exposed part, inherited parts and connections included, and
-  resolves each connection from the part that declares it, so a type fitted
-  twice is two boxes, each wired on its own. Drawing definitions merged the
-  drone's two radios into one.
-- **The logical view is laid out by ortho** (`src/layout/tree.rs`). A
-  family of leaves is listed vertically off a spine; any other family is
-  spread in a row off a bus, the parent over its middle child, or over the
-  middle of the row when there is none. ELK put every leaf in one row: 3322 px
-  across for 27 functions. A use case the view exposes stands in a row above,
-  centred over the functions that depend on it, and takes no part in the tree.
-- **The use case view is laid out by ortho** (`src/layout/use_case.rs`), each
-  use case as SysML v2 draws one (Part 1, Table 23, §8.2.3.25): its «subject»
-  above it, primary actors to its left and secondary ones to its right, and the
-  use cases it includes below it, joined by «include» arrows at right angles.
-  The subject and the actors are a use case's own parameters, so each group
-  draws its own; groups stand in rows as wide as landscape A4, in declared
-  order. One row of use cases sharing one subject and one set of actors grew a
-  line per use case, and those crossed. ELK, layering left to right, spread the
-  view out with long lines across it.
-- **Realization, APIs and allocation are compartments.** An edge from a
-  function to its realizer would need both on one diagram — a seventh view —
-  so the part's box lists them instead; `padding_of` adds the compartments'
-  height so nested parts start below them. A module's API is a *ports*
-  compartment too: a square on the border is for a port a wire lands on. A
-  host lists what is allocated to it in its *relationships* compartment,
-  since software drawn inside it would be its member.
-- **Labels** for ports, wires and «import» are real ELK labels, so ELK
-  reserves room for them; port labels are painted after every edge.
-  Keywords get guillemets; names do not.
-- **Flow names are placed after the layout** (`src/layout/flow_labels.rs`).
-  A flow on a connection is a filled arrowhead on its line beside the name
-  of what flows (§8.2.3.16). As ELK labels, those names took a layer each
-  and pushed the survey drone's physical view off its page; placed after,
-  in free space beside the line and clear of every box, port, name and line,
-  they leave the layout as it is without them. Only when one finds no such
-  place is the diagram laid out again with ELK keeping room for every name.
-  An arrowhead may sit on a trunk that lines from one port share, never
-  where another line crosses, and a line's own stretches are tried first.
-- **Sequence diagrams bypass ELK** (`src/render/sequence.rs`): gaps
-  between lifelines widen only where a label needs it. A message runs from
-  lifeline to lifeline, since SysML v2 draws no activation bars.
-- **The notation** is described in [VIEWS.md](VIEWS.md). The frame's tab shows
-  the view's definition, which is optional there, only for a view without a
-  name. A box gets its corners and keyword from what it draws (`box_of`).
-  Each box's group carries the file and line that declare its element, as
-  `data-file` and `data-line`, the file named from the folder ortho ran in,
-  so a viewer can open the line when a box is clicked.
-- **Drawn for landscape A4** (`src/render/page.rs`). An SVG shrinks to fit its
-  page, and its text with it, so `ortho render` warns of a view whose names
-  would print smaller than 6 pt on landscape A4, 277 × 190 mm inside 10 mm
-  margins. Names are 12 px, which is 9 pt at full size, so a diagram may be
-  half as big again as the page, about 1570 × 1077 px, and still read.
-- **Themes are colour only** (`src/render/theme.rs`). Every coordinate is
-  fixed before a theme is consulted, and a test asserts both themes place
-  everything alike. A theme adds nothing it does not paint, so the light
-  diagrams stay byte-for-byte stable.
+  exposed part, inherited parts and connections included, so a type fitted
+  twice is two boxes, each wired on its own.
+- **The logical view is laid out by ortho** (`src/layout/tree.rs`): a family
+  of leaves listed down a spine, any other family in a row off a bus, the
+  parent over its middle child. ELK put 27 functions in one row, 3322 px
+  across. Use cases the view exposes stand in a row above the functions that
+  depend on them.
+- **The use case view is laid out by ortho** (`src/layout/use_case.rs`), as
+  SysML v2 draws a use case (Part 1, Table 23, §8.2.3.25): its «subject»
+  above, primary actors to the left, secondary ones to the right, and
+  included use cases below, joined by «include» arrows. The subject and
+  actors are the use case's parameters, so each use case draws its own and no
+  lines cross; the groups fill rows as wide as landscape A4.
+- **Realization, APIs and allocation are compartments.** A line from a
+  function to its realizer would need both on one diagram, so a part lists
+  its *perform actions*; a module's API is a *ports* compartment, while a
+  square on the border is a port a wire lands on; a host lists what is
+  allocated to it under *relationships*. `padding_of` makes room for them
+  above nested parts.
+- **Labels** for ports, wires and «import» are ELK labels, so ELK keeps room
+  for them; port labels are painted after every line. Keywords get
+  guillemets, names do not.
+- **Flow names are placed after the layout** (`src/layout/flow_labels.rs`). A
+  flow on a connection is an arrowhead on its line, with what flows beside it
+  (§8.2.3.16). As ELK labels, the names took a layer each and pushed the
+  survey drone off its page. Placed after, in free space clear of every box,
+  port, name and line, they leave the layout as it is; an arrowhead may sit
+  on a trunk lines share, never where another line crosses. Only when a name
+  finds no place is the diagram laid out again with ELK keeping room for
+  every name.
+- **Sequence diagrams bypass ELK** (`src/render/sequence.rs`): the gaps
+  between lifelines widen only where a label needs it, and there are no
+  activation bars, since SysML v2 draws none.
+- **The notation** is in [VIEWS.md](VIEWS.md). A box's corners and keyword
+  come from what it draws (`box_of`). Each box carries the file and line that
+  declare it, as `data-file` and `data-line`, so a viewer can open the line
+  when the box is clicked.
+- **Drawn for landscape A4** (`src/render/page.rs`): `ortho render` warns of a
+  view whose 12 px names would print below 6 pt on A4 inside 10 mm margins,
+  which allows about 1570 × 1077 px.
+- **Themes are colour only** (`src/render/theme.rs`): every coordinate is
+  fixed first, and a test asserts both themes place everything alike.
 
 ## One model file per view
 
@@ -233,25 +181,23 @@ process                   →  implementation, use case
 Every dependency points back towards what users need: a function tree names
 the use case it refines, a component names its functions, the product
 specializes the use cases' subject, and a scenario's people are their actors,
-never the other way round. A view draws only what it exposes, so the files it refers to supply
-names, and boxes only where it exposes what they declare.
+never the other way round. A view draws only what it exposes, so the files it
+refers to supply names, not boxes.
 
 These rules are the examples' only: [any link can be left out](VIEWS.md), and
-the web shop, which has no hardware, leaves out physical and deployment. The
-example tests load each view with only the files it depends on, so a name from
-any other fails. Both ends of an allocation are named once: one
+the web shop, which has no hardware, has no physical or deployment view. The
+example tests load each view with only the files it depends on, so a name
+from any other fails. Both ends of an allocation are named once: one
 `part sw { ... }` tree of software, in the deployment file beside the
-allocations that use it, and one usage of the whole product, which also heads
-the physical view. The implementation file has no package around all the
-software: each layer is a package, the APIs another, and the view stands
-outside them.
+allocations, and one usage of the whole product, which also heads the
+physical view.
 
 ## Working on the code
 
 You need Rust; `rust-toolchain.toml` pins the version, which `rustup`
-installs on the first `cargo` command. The repository's own tasks are written
-in Rust too, in `xtask/`, and run as `cargo xtask <task>`; `cargo xtask` alone
-lists them.
+installs on the first `cargo` command. The repository's own chores are Rust
+too, in `xtask/`, run as `cargo xtask <task>`; `cargo xtask` alone lists
+them.
 
 ```sh
 cargo build                         # target/debug/ortho
@@ -268,154 +214,91 @@ cargo xtask vscode-grammar          # the extension's grammar, LANGUAGE.md and e
 cargo xtask zed-grammar             # the Zed highlighting, and the copies the extension and ortho init carry
 ```
 
-CI (`.github/workflows/ci.yml`) builds and tests on Linux, Windows and
-macOS, runs fmt and clippy, tests the VS Code extension, builds the Zed
-extension and checks its queries against the grammar it pins, counts OMG's
-models, fails if a fresh render differs from the committed diagrams or
-either extension's highlighting from a fresh one, and only then, on `main`, publishes the
-deck to GitHub Pages.
+**Changes reach `main` only by pull request.** The rule set *Protect main*,
+with no bypass, forbids deleting or force-pushing `main` and merges a pull
+request only once CI (`.github/workflows/ci.yml`) passes: the tests on Linux,
+Windows and macOS; fmt, clippy and the generated grammars and copies up to
+date; the committed diagrams matching a fresh render; OMG's models counted;
+the VS Code extension's tests; and the Zed extension built, with its queries
+checked against the grammar it pins. On `main`, CI then publishes the deck to
+GitHub Pages. Dependabot opens grouped update pull requests each month for
+the Rust crates, the Zed extension and the GitHub Actions; it leaves out the
+ELK crate, since a new version moves every diagram. Vulnerabilities are
+reported privately, as `SECURITY.md` says.
 
-- **The grammar** is `src/parser/grammar.rs`, with its keywords in `lexer.rs`.
-  A new keyword goes in `KEYWORDS`, which the deck highlights from too, and is
-  then reserved: it can no longer be a name. Run `cargo xtask vscode-grammar`
-  and `cargo xtask zed-grammar` after, so both extensions colour it.
-- **The VS Code extension** is in `editors/vscode/`. AI agents will write
-  most of the models, so it helps people check and review them rather than
-  type them: rename, completion and other editing help are left to the
-  agents, since ortho's checks catch what an agent misses. Its
-  [README](editors/vscode/README.md) is its page on the Marketplace, written
-  for systems engineers deciding to install it, so how to work on it is here.
-  Press F5 with the repository, or `editors/vscode`, open in VS Code: a
-  second window opens on the coffee machine example with the extension
-  loaded, and picks up your changes when you reload it. Run this way, it
-  carries no ortho and runs `ortho` from the PATH, so set **Ortho: Path** to
-  `target/debug/ortho` after `cargo build`. Its version is ortho's, since each
-  package carries that ortho, and a test fails if `package.json` and
-  `Cargo.toml` differ. Its grammar,
-  `syntaxes/sysml.tmLanguage.json`, is written from `KEYWORDS`, never by hand,
-  its `ai/`, which the AI instructions are written from, is copied from
-  LANGUAGE.md, VIEWS.md and the repository's `ai/` (see *The AI
-  instructions* below), its `examples/`, which *Open Example* copies, from each
-  example's `.sysml` files, and its LICENSE and `icon.png` from the
-  repository's, since `vsce` packs only what is in the extension's folder:
-  run `cargo xtask vscode-grammar` after changing any of them. Its
-  CHANGELOG.md, which the Marketplace shows, is written by hand.
-  Its code is plain JavaScript with no dependencies and no build step:
-  `src/extension.js` holds the commands, the preview panel and the Problems,
-  and `media/` the preview's page. What needs no VS Code is tested with Node
-  (`npm test` in `editors/vscode`, with `ORTHO_BIN` set to run the real ortho
-  too): `src/ortho.js`, which runs ortho and reads what it prints, and
-  `src/instructions.js` and `src/examples.js`, the AI instructions and the
-  examples offered. The README's screenshot, in `images/`, is left out of the
-  package: the Marketplace shows it from GitHub, by an absolute URL, since
-  `vsce` makes a relative one point at the repository's root folder. The URL
-  names the commit that added the image, not `main`, so a package built
-  before its branch is merged shows it too; a new screenshot needs the URL
-  moved to its own commit, once that commit is pushed. Anything that changes
-  what `ortho render` prints, its `Wrote` lines or its `file line n: message`
-  problems, must keep those tests passing.
-- **`ortho lsp`** (`src/lsp/`) is ortho as a language server over stdio, with
-  JSON-RPC written by hand on `serde_json`, like the SVG: no dependency.
-  The `.sysml` files of a folder are one model, as for `ortho render`. On
-  every change it checks the model of the file, with the open files as typed,
-  and reports every file of the folder. A diagram names its model file from
-  the folder the server runs in, which it moves to the editor's project root,
-  so the diagrams match `ortho render` run there. Go to definition follows
-  the references name resolution linked. It answers nothing else: no
-  completion, hover or rename. `tests/lsp.rs` drives the binary over stdio,
-  as an editor does, and asks the preview as a browser does.
-- **The live preview** (`src/lsp/preview.rs`, and its page `preview.html`,
-  carried in the binary) is how `ortho lsp` shows the diagrams, since a
-  language server has no panel to draw in and Zed gives an extension none:
-  it serves a page on `127.0.0.1`, as Typst's Tinymist does, with HTTP
-  written by hand on `std::net`. The server draws a model when a file of it
-  is opened or saved, and keeps the diagrams in memory: nothing is written
-  beside the model until the page's *Save all* is pressed. The page waits on
-  `state` for each newer render, a request the server holds until there is
-  one, and posts `open` when a box is clicked, which the server passes to the
-  editor as `window/showDocument` with the line selected. The same request
-  with `external` opens the page in the browser when a model file is opened
-  and no page is open, unless a page left open asks within a moment; the port
-  is chosen from the project's path, so that page finds the server again. A
-  held request sees at once that its page has closed, so the next model file
-  opened opens it again. Opening, editing or saving a file of another model
-  turns the page to it. When no file of the model shown is open any more, the
-  page turns to the model worked on last that still has one; with none open,
-  `state` says `closed` and the page closes itself. Zed says the last file
-  is closed only when another is opened, so there the page stays. A browser
-  lets a page close only the tab it was opened in, and only while it has not
-  navigated, which the page never does; where one refuses, the page says why
-  it stays. A page that loses the server waits five seconds, longer than a
-  restart of `ortho lsp` takes, before it closes. A code action on a view
-  turns the page to it. Only this machine's browser is served: a request
-  under another host name is refused, and so is a post from another page, so
-  no site can read a model or open files through it.
-- **`ortho init`** (`src/init/`) writes what a project starts with: the AI
-  instructions, and with `--example` an example model in a folder of its own.
-  ortho carries them, so it needs no editor: Zed gives an extension no
-  commands, and its language extensions leave setting a project up to the
-  language's own command, as `cargo new`. `src/init/instructions.rs` puts the
-  instructions together as `editors/vscode/src/instructions.js` does, from the
-  same files, but names no path of an editor or of the machine, since the
-  files are committed. Instructions changed by hand are kept unless `--force`,
-  and AGENTS.md is written only where the project has no such file yet. The
-  files of `ai/`, LANGUAGE.md, VIEWS.md and the examples are copied into
-  `src/init/assets/` by `cargo xtask zed-grammar`, since crates.io gets only
-  `src/`.
-- **The Zed extension** is in `editors/zed/`: a Rust crate, built to
-  WebAssembly by Zed itself, that starts `ortho lsp` (`src/ortho.rs`), and the
-  language's Tree-sitter queries in `languages/sysml/`. It parses with
-  Nomograph's tree-sitter-sysml (MIT), pinned to a commit in
-  `extension.toml`; `highlights.scm` is written from the VS Code grammar's
-  keyword groups by `cargo xtask zed-grammar`, never by hand, so both editors
-  colour alike. It is its own Cargo workspace, outside ortho's. To try it,
-  run *zed: install dev extension* in Zed and pick `editors/zed`; Zed builds
-  it, and Rust must be installed with rustup. Zed on Windows builds it on
-  Windows, so with the repository in WSL, copy `editors/zed` to a Windows
-  folder and pick that; Zed copies the built extension into WSL. Set
-  `lsp.ortho.binary.path` to `target/debug/ortho` after `cargo build`, so it
-  runs the ortho you build.
-  Zed gives an extension no panel or web view, so the preview is the page
-  `ortho lsp` opens in the browser.
-  The language is named *SysML v2*, as the Spec42 extension names it too, so
-  both run on the same files.
-- **The AI instructions** are what ortho hands to the agents that write
-  models: a Claude Code skill, GitHub Copilot instructions and an `AGENTS.md`.
-  What they say is written once, in LANGUAGE.md, VIEWS.md and `ai/`:
-  `ai/WORKFLOW.md` is the skill's body, how to build a model, check it with
-  ortho and review it; `ai/MISTAKES.md` the mistakes agents make, each with
-  what ortho prints; `ai/AGENTS.md` the short file other agents read. Only
-  how they are put together, and where an editor keeps ortho, belongs to each
-  way in: `editors/vscode/src/instructions.js` for VS Code, and
-  `src/init/instructions.rs` for `ortho init`. A test (`tests/agent_files.rs`) checks that
-  each mistake draws the message MISTAKES.md shows and that its fix loads
-  cleanly, so change the page when a message changes.
-- **The examples** cover three different domains, so a rendering change that
-  only suits one shows up. The web shop has no hardware, so it has no physical
-  or deployment view, and its implementation view shows modules built on a
-  vendor's services. Regenerate their SVGs and look at them in a browser
-  whenever rendering changes. They carry no requirements, since no view would
-  show them.
-- **The views written by hand** in `tests/views/` draw what no example does,
-  such as unnamed functions and a deployment of nested hosts. Their diagrams
-  are committed and checked like the examples', so a change to what they draw
-  shows up in review.
-- **OMG's models** are the example, training and validation models of OMG's
-  release, EPL-2.0 and so fetched, not committed. `tests/omg_models.rs`
-  counts how many load, so the count in it changes only on purpose. It is
-  ignored until asked for with `cargo test -- --ignored`.
-- **The standard library's names** are listed in `src/model/library.rs`,
-  generated by `cargo xtask library-names` from the library `cargo xtask
-  omg-models` fetches, and `validator.rs` tells a library name from a typo by
-  them.
-- **The deck** inlines the committed example diagrams, so render before
-  `cargo xtask deck`; a missing diagram fails the build. The test count is
-  filled in from `cargo test -- --list`, but the table comparing the two
-  examples' sizes is typed by hand.
-- **ELK** is elk-rs, pinned to an exact version in `Cargo.toml`, since a new
-  one may move boxes. After an update, `cargo xtask render-examples` shows
-  what moved. `tests/elk.rs` checks two small graphs against what elkjs, the
-  JavaScript ELK the TypeScript version used, made of them.
+- **A new keyword** goes in `KEYWORDS` in `lexer.rs`, and is then reserved:
+  it can no longer be a name. Run `cargo xtask vscode-grammar` and `cargo
+  xtask zed-grammar` after, so both editors colour it.
+- **The VS Code extension** (`editors/vscode/`) helps people check and review
+  models, which agents will mostly write, so rename, completion and other
+  editing help are left out. Its [README](editors/vscode/README.md) is its
+  Marketplace page, for systems engineers. Press F5 for a second window on
+  the coffee machine with the extension loaded; run this way it carries no
+  ortho, so set **Ortho: Path** to `target/debug/ortho`. Its version is
+  ortho's, which a test checks. Its grammar, `ai/`, `examples/`, LICENSE and
+  icon are copies made by `cargo xtask vscode-grammar`, since `vsce` packs
+  only the extension's folder; its CHANGELOG is written by hand. It is plain
+  JavaScript with no dependencies and no build step: `src/extension.js` holds
+  the commands, the preview and the Problems, and `media/` the preview's
+  page. `npm test` (with `ORTHO_BIN` set, against the real ortho) tests what
+  needs no VS Code, including how `ortho render`'s `Wrote` lines and `file
+  line n: message` problems are read, so keep those stable. The README's
+  screenshot is linked from GitHub at the commit that added it, so a new one
+  needs the URL moved once its commit is pushed.
+- **`ortho lsp`** (`src/lsp/`) is a language server over stdio, its JSON-RPC
+  written by hand on `serde_json`. A folder's `.sysml` files are one model:
+  every change checks it, with the open files as typed, and reports every
+  file. It offers go to definition and nothing else. `tests/lsp.rs` drives it
+  as an editor and a browser would.
+- **The live preview** (`src/lsp/preview.rs`, its page `preview.html`) is a
+  page `ortho lsp` serves on `127.0.0.1`, as Typst's Tinymist does, since Zed
+  gives an extension no panel. The diagrams stay in memory until *Save all*
+  is pressed. The page waits on `state` for each newer render and posts
+  `open` when a box is clicked, which the server passes to the editor as
+  `window/showDocument`. The page opens in the browser when a model file is
+  opened and none is open; the port comes from the project's path, so a page
+  left open finds the server again. It follows the model last opened, edited
+  or saved, and closes with the last model file where the editor says so;
+  Zed says so only when another file opens, so there it stays. Only this
+  machine's browser is served: another host name, or a post from another
+  page, is refused.
+- **`ortho init`** (`src/init/`) writes the AI instructions, and with
+  `--example` an example model, so a project needs no editor to start. It
+  puts the instructions together as the VS Code extension does, from the same
+  files, which `cargo xtask zed-grammar` copies into `src/init/assets/`,
+  since crates.io gets only `src/`. Instructions changed by hand are kept
+  unless `--force`; AGENTS.md is written only where there is none.
+- **The Zed extension** (`editors/zed/`, its own Cargo workspace) is a Rust
+  crate Zed builds to WebAssembly, which starts `ortho lsp` (`src/ortho.rs`),
+  and the Tree-sitter queries in `languages/sysml/`. It parses with
+  Nomograph's tree-sitter-sysml (MIT), pinned in `extension.toml`;
+  `highlights.scm` is written by `cargo xtask zed-grammar` from the VS Code
+  grammar's keyword groups, so both editors colour alike. The language is
+  named *SysML v2*, as Spec42 names it, so both run on the same files. To try
+  it, run *zed: install dev extension* and pick `editors/zed` (Zed on Windows
+  builds on Windows, so copy the folder there from WSL), and set
+  `lsp.ortho.binary.path` to `target/debug/ortho`.
+- **The AI instructions**, a Claude Code skill, GitHub Copilot instructions
+  and an `AGENTS.md`, are written once, in LANGUAGE.md, VIEWS.md and `ai/`:
+  `WORKFLOW.md` how to build, check and review a model, `MISTAKES.md` the
+  mistakes agents make with what ortho prints for each, `AGENTS.md` the short
+  file. Only putting them together belongs to each way in.
+  `tests/agent_files.rs` checks that each mistake draws the message shown and
+  that its fix loads cleanly.
+- **The examples** cover three domains, so a change that suits only one
+  shows. Render them and look at them in a browser whenever rendering
+  changes. `tests/views/` holds views written by hand that draw what no
+  example does; their diagrams are committed and checked too.
+- **OMG's models**, EPL-2.0, are fetched, not committed. `tests/omg_models.rs`
+  counts how many load, now all 252, so the count changes only on purpose.
+  **The standard library's names**, generated from them into
+  `src/model/library.rs`, let `validator.rs` tell a library name from a typo.
+- **The deck** inlines the committed diagrams, so render before `cargo xtask
+  deck`; the table comparing the examples' sizes is typed by hand.
+- **ELK** is pinned to an exact version in `Cargo.toml`, since a new one may
+  move boxes; after an update, `cargo xtask render-examples` shows what moved.
+  `tests/elk.rs` checks two small graphs against what elkjs, the JavaScript
+  ELK, makes of them.
 
 **Repeating the OMG pilot implementation check** from
 [LANGUAGE.md](LANGUAGE.md#how-this-is-checked), without conda or Jupyter:
@@ -430,81 +313,62 @@ deck to GitHub Pages.
   three folders from `jshell` with
   `SysMLInteractive.readAll(folder, true, ".kerml")` for the kernel libraries
   and `".sysml"` for the other two.
-- Give one `SysMLInteractive.process(text)` session each example's six files
-  in dependency order — use case, logical, implementation, physical,
-  deployment, process — and print `getIssues()` after each. Give each block of
-  LANGUAGE.md and each test fixture `process(text, false)`, which leaves it out
-  of the index, so none leans on another's names. Give it a broken model too: a
-  check that cannot fail proves nothing.
+- Give one `SysMLInteractive.process(text)` session each example's files in
+  dependency order (use case, logical, implementation, physical, deployment,
+  process) and print `getIssues()` after each. Give each block of LANGUAGE.md
+  and each test fixture `process(text, false)`, which leaves it out of the
+  index, so none leans on another's names. Give it a broken model too: a check
+  that cannot fail proves nothing.
 
 ## Releasing
 
-`.github/workflows/release.yml` builds a binary for Linux (x86-64 and ARM,
-linked statically), Windows (x86-64) and macOS (Apple silicon and Intel). Each
-is run on the examples where the runner can run it, then packed with the
-README and licence. For a tag, it publishes them as a GitHub release, with
-their SHA-256 sums:
+`.github/workflows/release.yml` builds ortho for Linux (x86-64 and ARM,
+linked statically), Windows (x86-64) and macOS (Apple silicon and Intel),
+runs each on the examples where the runner can, and packs it with the README
+and licence. For a tag `v` plus the version in `Cargo.toml`, it publishes
+them as a GitHub release with their SHA-256 sums. Set the version in
+`Cargo.toml` and `editors/vscode/package.json` by a pull request, then tag
+the merged commit:
 
 ```sh
-# Set the version in Cargo.toml and editors/vscode/package.json, commit, then:
-git tag v0.2.0
-git push origin v0.2.0
+git tag v0.5.0
+git push origin v0.5.0
 ```
 
-Without Git at hand, run the Release workflow on `main` from the Actions
-tab, with *publish* ticked: it tags that commit `v` and the version in
-`Cargo.toml` itself. Either way, the tag has to be `v` and the version in
-`Cargo.toml`, or nothing is published. Each archive is named after its target alone, such as
-`ortho-x86_64-unknown-linux-musl.tar.gz`, so
+Or run the Release workflow on `main` from the Actions tab with *publish*
+ticked, which tags the commit itself. Each archive is named after its target
+alone, such as `ortho-x86_64-unknown-linux-musl.tar.gz`, so
 `releases/latest/download/<archive>` always finds the newest. A pull request
-that changes the build, such as `Cargo.toml` or the workflow, builds every
-binary without publishing.
+that changes the build builds everything without publishing.
 
-The same workflow packs the VS Code extension once per system VS Code
-names (`linux-x64`, `alpine-arm64`, `win32-x64`, `darwin-arm64` and so on),
-each package carrying that system's binary in `bin/`, and tests the Linux
-one against the ortho inside it. The two Mac packages are unpacked on Mac
-runners, Apple silicon and Intel, and tested the same way, after the
-extension's own `makeExecutable` rather than a `chmod`; nothing is published
-unless they pass. The packages are the run's artifacts, not
-part of the GitHub release: the Marketplace and Open VSX give each user the
-package for their system.
+The same workflow packs the VS Code extension once for each system VS Code
+names, each package carrying that system's ortho, and tests the Linux
+package and, on Mac runners, both Mac ones, after the extension's own
+`makeExecutable`. Nothing is published unless they pass. Then, after the
+GitHub release:
 
-After the GitHub release, the workflow publishes the same version on
-[crates.io](https://crates.io/crates/ortho), for `cargo install ortho` and
-`cargo binstall ortho`; binstall fetches the release's archive, which is why
-crates.io comes second. A version on crates.io can be yanked but never
-replaced, so a release that fails there needs a new version. Every run also
-packs the crate as crates.io would get it (only `src/`, the README and the
-licence) and builds it with the Rust that `rust-version` in `Cargo.toml`
-names, so raising that floor is a deliberate change.
+- **crates.io**, second, since `cargo binstall ortho` fetches the release's
+  archive. A version there can be yanked but never replaced. Every run also
+  packs the crate as crates.io would get it and builds it with the Rust that
+  `rust-version` names.
+- **The VS Code Marketplace and Open VSX**, where a version can never be
+  published again; `--skip-duplicate` lets a failed run be run again. Both
+  answer *Published* before a package can be installed, and for 0.3.0 the
+  Marketplace dropped packages uploaded while it checked the first, so each
+  job waits (`.github/scripts/await-extension.sh`) until its store serves
+  every package, and fails after 30 minutes.
 
-crates.io gets a short-lived token from GitHub through *trusted publishing*,
-set up for `ola-coding/ortho` and `release.yml` in the crate's settings on
-crates.io. The workflow still takes a token from the secret
-`CARGO_REGISTRY_TOKEN` if one is set, which only the first publish needed;
-there is none now.
+All three take GitHub's short-lived token by *trusted publishing*, so the
+repository holds no publishing secret: crates.io in the crate's settings, the
+Marketplace in a policy on the publisher `ola-coding`, and Open VSX as a
+trusted publisher on `ola-coding.ortho`. Open VSX registers one only for an
+extension that exists, so a new extension's first version needs a namespace
+token in the secret `OVSX_PAT`, deleted afterwards.
 
-The extension's packages go out after the GitHub release too, from the
-`marketplace` and `open-vsx` jobs. A version on either can never be
-published again, so a fix needs a new version; `--skip-duplicate` lets a
-run that failed part-way be run again. The VS Code Marketplace takes
-GitHub's short-lived token through its own *trusted publishing*: a policy
-for `ola-coding/ortho` and `release.yml` on the publisher `ola-coding`, at
-marketplace.visualstudio.com/manage, with no secret. Open VSX, for Cursor
-and VSCodium, takes it the same way, through a trusted publisher for
-`ola-coding/ortho` and `release.yml` registered on the extension
-`ola-coding.ortho` at open-vsx.org/user-settings/trusted-publishers, which
-only an owner of the namespace can do. Open VSX registers one only for an
-extension that already exists, so a new extension's first version needs a
-namespace token in the secret `OVSX_PAT`, read by a job that passes it, and
-the secret deleted afterwards.
-
-The Zed extension is published by a pull request to
+**The Zed extension** is published by a pull request to
 [zed-industries/extensions](https://github.com/zed-industries/extensions),
-which carries this repository as a Git submodule and names the extension's
-folder, `editors/zed`, and version in its `extensions.toml`; Zed's CI builds
-it from there. The first one adds the submodule and an entry:
+which carries this repository as a Git submodule and names the folder and
+version in its `extensions.toml`:
 
 ```toml
 [ortho]
@@ -514,142 +378,55 @@ version = "0.1.0"
 ```
 
 A new version moves the submodule to the commit that sets it in
-`editors/zed/extension.toml` and `Cargo.toml`, and the `version` with it.
-The extension's version is its own, not ortho's, since it carries no ortho:
-it downloads ortho's latest release, so a release of ortho reaches Zed
-users without a new extension. A change to `ortho lsp` that the extension
-relies on must be released before the extension that relies on it.
-
-Try the extension at the commit submitted, as a dev extension with no
-`ortho` on the PATH, so that it downloads ortho's release as a user's
-would. The branch is made in the maintainer's fork, `ola-coding/extensions`,
-with `extensions.toml` and `.gitmodules` kept sorted, as its
-`pnpm sort-extensions` does. Zed's
+`editors/zed/extension.toml` and `Cargo.toml`. The version is the
+extension's own, since it carries no ortho: it downloads ortho's latest
+release, so a release of ortho reaches Zed users without one. A change to
+`ortho lsp` the extension relies on is released first. Try the extension at
+the commit submitted, with no `ortho` on the PATH, so it downloads ortho as a
+user's would. The branch is made in `ola-coding/extensions`, with
+`extensions.toml` and `.gitmodules` kept sorted. Zed's
 [AI policy](https://github.com/zed-industries/extensions/blob/main/AI_POLICY.md)
-lets no agent contribute: an agent may prepare the branch, but a person
-opens the pull request and writes its description and every reply to the
-maintainers, who close one left unanswered for three weeks. The account
-that opens it must have signed Zed's CLA, as `ola-coding` has.
-
-Both stores answer *Published* before a package can be installed: they
-check it first, for some minutes. For 0.3.0, the Marketplace dropped the
-seven packages uploaded while it checked the first, the one that created
-the extension, though it answered *Published* for each. So each job then
-waits, by `.github/scripts/await-extension.sh`, until its store serves the
-package for every system, and fails after 30 minutes if one never comes:
-run that job again, and `--skip-duplicate` publishes only what is missing.
-
-## The move to Rust
-
-ortho was written in TypeScript, on Langium and elkjs, and needed Node. It was
-ported to Rust in November 2026 for a single binary that needs nothing else,
-one stage at a time, each checked against what the TypeScript produced at that
-stage before the next was started:
-
-- **Parser:** identical trees on OMG's 252 models, our 17 files, 2,589 tricky
-  constructs and 11,298 broken copies.
-- **Linking:** every reference found Langium's target, with the same
-  diagnostics, on the same models and 4,393 small workspaces.
-- **Rendering:** byte-identical SVGs from the recorded layouts, both themes.
-- **Views:** all six, for the examples and for 2,028 views made of every
-  element of OMG's models and ours that a view could expose. Those without ELK
-  were byte-identical; those with it identical but for rounding in the last
-  digits, since elk-rs takes a few sums through a float as ELK's Java does.
-  elk-rs orders two lines into one nested box the other way round in one of
-  OMG's models, the Room Model, and so moves a box.
-
-The committed diagrams were rendered again by the Rust version, which changed
-one number in the last digits. Two things the TypeScript did were fixed after
-the move: `end a [1];` is now an end named `a` with multiplicity 1, where it
-was a syntax error, and an unnamed use case's subject error names the use
-case it takes its name from, or none, where it said `'undefined'`.
+lets no agent contribute: an agent may prepare the branch, but a person, who
+has signed Zed's CLA, opens the pull request and writes its description and
+every reply. A pull request left unanswered for three weeks is closed.
 
 ## Backlog
 
-Done, one line each; the commits and the sections above hold the detail:
+Done:
 
-- [x] **Raise the Node floor** to 24; CI tests 24 and 26.
-- [x] **Align the logical view's stem** with the middle child.
-- [x] **Align with the SysML v2 spec:** LANGUAGE.md, a stricter grammar.
-- [x] **Realization through `perform`**, as *perform actions* compartments.
-- [x] **Dark glass theme** for slides.
-- [x] **APIs on the software modules**, drawn as *ports* compartments.
-- [x] **Update the TypeScript version's dependencies.**
-- [x] **Declare each view with the spec's view definitions.**
-- [x] **Imports that make names visible:** `Pkg::*` and `Pkg::Element`.
-- [x] **Read standard SysML v2:** all 252 of OMG's models load.
-- [x] **Render every view a model declares**, each to an SVG named after it.
-- [x] **Follow SysML v2's graphical notation.**
-- [x] **Text that fits its box on Windows, Linux and Typst.**
-- [x] **Tie the logical view to the use cases:** each function tree refines one.
-- [x] **Warn of a package named after a standard library package.**
-- [x] **Update the models** to the stricter reading of SysML v2.
-- [x] **Update the colouring:** one flat blue tint on a white body.
-- [x] **Move to Rust;** see [The move to Rust](#the-move-to-rust).
-- [x] **Publish the first release,** `v0.1.0`, checked on each system.
-- [x] **Warn of a diagram too big for landscape A4** (`src/render/page.rs`).
-- [x] **Packages on several rows, in declared order.**
-- [x] **Draw the use case view as SysML v2 does,** in rows, no line crossing.
-- [x] **Keep wide diagrams readable on A4;** wrapping tree rows was dropped.
-- [x] **A clear repository page.**
-- [x] **Publish on crates.io** as `ortho`; see [Releasing](#releasing).
-- [x] **A `--watch` option** that renders again on every save.
-- [x] **Warn of a function nothing performs** (`unperformed_functions`).
-- [x] **Warn of a tree that refines no use case** (`unrefined_trees`).
-- [x] **Every function in scope has a solution;** see *Errors and warnings*.
-- [x] **A deployment view adds nothing of its own** (`foreign_allocation_ends`).
-- [x] **Refuse a part typed by behaviour or data.**
-- [x] **Warn of software that runs nowhere** (`unhosted_software`).
-- [x] **Warn of a use case no tree refines** (`unrefined_use_cases`), from the
-  whole model, so a logical view may draw its trees alone.
-- [x] **Suggest the name meant** in a chain (`chain_hint`); not for plain names.
-- [x] **A VS Code extension** in `editors/vscode/`, with ortho inside, on the
-  Marketplace and Open VSX; see *Working on the code* and *Releasing*.
-- [x] **Item flows on the physical view** (§8.2.3.16): an arrowhead and what
-  flows on a connection's line, or a line of its own. A flow's ends and
-  payload resolve; `of` names any definition, as §7.16.1 lets a payload be
-  anything. A later segment after an action, such as a send action's
-  `receiver` in OMG's models, stays unchecked, since it comes from the
-  standard library ortho does not load.
+- [x] **One Rust binary**, released from 0.1.0 to 0.4.0 on GitHub, crates.io,
+  the VS Code Marketplace and Open VSX.
+- [x] **SysML v2 as the spec writes it:** a grammar from the spec, all 252 of
+  OMG's models, the spec's view definitions and graphical notation, imports,
+  and *did you mean* in chains. Metadata in a relationship's body and a body
+  as an expression came from an outside report (#38).
+- [x] **Six views**, each to an SVG named after it, readable on landscape A4,
+  with text that fits on Windows, Linux and Typst, a flat blue tint, and a
+  dark theme for slides.
+- [x] **Checks between views**, as warnings: see *Errors and warnings*.
+- [x] **Compartments** for realization, APIs and allocation.
+- [x] **Item flows on the physical view** (§8.2.3.16). Their ends and payload
+  resolve; `of` names any definition, as §7.16.1 lets a payload be anything.
+  A segment after an action, such as a send action's `receiver` in OMG's
+  models, stays unchecked, since it comes from the standard library.
+- [x] **Ways in:** `--watch`, the VS Code extension, `ortho lsp` with a live
+  preview in the browser, `ortho init`, and the Zed extension, tried on
+  Windows with the project in WSL and on Windows itself.
+- [x] **Security:** `main` protected, Dependabot, and private vulnerability
+  reporting.
 
 Open, in priority order:
 
-- [ ] **A Zed extension,** in `editors/zed/`, on the VS Code extension's
-  principle: it helps check and review models, not type them. Zed gives
-  extensions no panel or web view, only open proposals (zed-industries/zed
-  #21208 and #53403), so the live preview is a page in the browser, which
-  `ortho lsp` serves and Zed opens, as Typst's Tinymist does.
-  - [x] `ortho lsp`: ortho as a language server over stdio, with the problems
-    of the whole model folder as typed and go-to-definition. Neovim, Helix,
-    Emacs and JetBrains' editors can use it too.
-  - [x] The live preview: a page with a tab for each view, opened in the
-    browser when a model file is opened and none is, turned to the model
-    opened or edited, closed with the last model file where the editor says
-    so (Zed does not), and drawn again on every save. With a problem in the
-    model the last diagrams stay, faded; a click on a box opens its line in
-    the editor; and nothing is written beside the model until *Save all* is
-    pressed. Writing the diagrams on every save, for Zed's image viewer to
-    show, took too many steps to see one, and is gone.
-  - [x] Highlighting from Nomograph's tree-sitter-sysml (MIT), coloured as
-    the VS Code grammar colours.
-  - [x] The extension: a Rust crate built to WebAssembly that starts
-    `ortho lsp`, with the ortho on the PATH or else the release archive for
-    the user's system, which it downloads.
-  - [x] Tried in Zed on Windows, with the project in WSL and on Windows
-    itself, the release the extension downloads included.
-  - [ ] Try it on macOS and on a Linux desktop.
-  - [ ] Report to Nomograph that tree-sitter-sysml reads a dependency whose
-    client has a qualified name, `dependency A::b to C;`, only with `from`:
-    the web shop's refinements are an error node each, so CI passes over
-    that file when it parses the examples.
-  - [x] Release ortho 0.4.0, with `ortho lsp`, before the extension.
-  - [ ] Publish it by a pull request to zed-industries/extensions (see
-    [Releasing](#releasing)): #8349, opened on 2026-11-15, waits for review.
-- [ ] **Be found by SysML v2 users:** an entry in each SysML v2 awesome list
-  (jgsystemsconsulting/awesome-sysml-v2, mycr0ft/awesome-sysml,
-  daltskin/SysML-v2-Resources, jgsystemsconsulting/awesome-mbse) and a post
-  in the SysML Forum, made from the maintainer's own account. Tag and
-  describe ortho as SysML v2, never plain SysML, which reads as v1.
+- [ ] **Publish the Zed extension:** zed-industries/extensions#8349, opened on
+  2026-11-15, waits for review. Try it on macOS and on a Linux desktop. When
+  Nomograph fixes `dependency A::b to C;`, which their grammar reads only with
+  `from` (nomograph/tree-sitter-sysml#4, reported on 2026-11-17), move the pin
+  and let CI parse the web shop's `logical.sysml` too.
+- [ ] **Be found by SysML v2 users.** ortho is listed in mycr0ft/awesome-sysml
+  and daltskin/SysML-v2-Resources; jgsystemsconsulting/awesome-sysml-v2#5 and
+  jgsystemsconsulting/awesome-mbse#30 wait for review. Then a post in the
+  SysML Forum, once Zed publishes the extension. Always say SysML v2, never
+  plain SysML, which reads as v1.
 - [ ] **Requirements as a table ortho writes,** and on the parts that satisfy
   them, rather than a seventh diagram. They are standard SysML,
   `requirement <'R1'> brewTime { doc /* ... */ }` and
@@ -661,7 +438,7 @@ Open, in priority order:
     gets a tab for it.
   - [ ] The requirements a part satisfies, in a compartment on its box, like
     *perform actions*.
-  - [ ] Resolve what `satisfy` names, kept as written today, as for flows: an
-    error with *did you mean* for a name that names nothing, and a warning
-    for a requirement nothing satisfies.
+  - [ ] Resolve what `satisfy` names, as for flows: an error with *did you
+    mean* for a name that names nothing, and a warning for a requirement
+    nothing satisfies.
   - [ ] Requirements in the examples.

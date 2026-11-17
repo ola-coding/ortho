@@ -22,14 +22,6 @@ updates:
       zed-extension:
         patterns: ["*"]
 
-  - package-ecosystem: npm
-    directory: /editors/vscode
-    schedule:
-      interval: monthly
-    groups:
-      vscode-extension:
-        patterns: ["*"]
-
   - package-ecosystem: github-actions
     directory: /
     schedule:
