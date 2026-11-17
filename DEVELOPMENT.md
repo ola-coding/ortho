@@ -21,7 +21,9 @@ declares, `ortho lsp` gives an editor the same checks and diagrams
 (`src/init/`). The library in `src/lib.rs` serves the tests and `xtask/`; it
 is not a public API. `src/model/views.rs` says which of the six diagrams a
 view is and names its file, and `src/pipeline.rs` runs that diagram's
-extractor, layout and renderer on what the view exposes.
+extractor, layout and renderer on what the view exposes. A `GridView` of
+requirements is no diagram: it is written as Markdown, with no layout
+(`src/diagrams/requirements.rs`, `src/render/requirements.rs`).
 
 - **The parser is ortho's own:** a lexer, a recursive-descent parser with one
   method per rule, then name resolution and checks. It is written from the OMG
@@ -63,8 +65,8 @@ syntax error, which says where it is and what was expected.
 **Conformance** (`src/parser/validator.rs`). After linking, the validator
 checks what the grammar cannot, all listed in [LANGUAGE.md](LANGUAGE.md): no
 reserved word as a name, chains that start at a usage, a `perform` of
-behaviour rather than structure, a part or actor typed by a part definition,
-and a use case's subject before its actors.
+behaviour rather than structure, a `satisfy` of a requirement, a part or
+actor typed by a part definition, and a use case's subject before its actors.
 
 **Errors and warnings.** The standard says when a model is well-formed, not
 when it is complete: `perform`, `allocate` and `#refinement` are optional,
@@ -88,6 +90,8 @@ The warnings are found once for the whole model (`Gaps`):
 | use cases and trees on one logical view | a tree there that refines none (`unrefined_trees`) |
 | a logical view, and an implementation or physical view | a function in scope that no module or part those views draw performs (`unperformed_functions`) |
 | a deployment view | an `allocate` end that neither view draws (`foreign_allocation_ends`), and software no host runs (`unhosted_software`) |
+| a GridView of requirements, and an implementation or physical view | a requirement it lists that nothing satisfies, itself or through a requirement it is in (`unsatisfied_requirements`) |
+| a GridView of requirements | a requirement it lists without an ID, or with another's (`unidentified_requirements`) |
 | any package | a top-level package named after a standard library package, which other tools may resolve to the library's |
 
 A function is in scope when a logical view draws it and, in a model with use
@@ -427,18 +431,17 @@ Open, in priority order:
   jgsystemsconsulting/awesome-mbse#30 wait for review. Then a post in the
   SysML Forum, once Zed publishes the extension. Always say SysML v2, never
   plain SysML, which reads as v1.
-- [ ] **Requirements as a table ortho writes,** and on the parts that satisfy
-  them, rather than a seventh diagram. They are standard SysML,
-  `requirement <'R1'> brewTime { doc /* ... */ }` and
-  `satisfy brewTime by machine.brewUnit;`, so SysIDE's requirements table
-  edits the same files, and ortho needs no editor of its own.
-  - [ ] A `GridView`, SysML's standard tabular view, rendered as a Markdown
-    file beside the SVGs: each requirement's ID, name and text, and what
-    satisfies it. GitHub, VS Code and Zed all show it; the VS Code preview
-    gets a tab for it.
-  - [ ] The requirements a part satisfies, in a compartment on its box, like
-    *perform actions*.
-  - [ ] Resolve what `satisfy` names, as for flows: an error with *did you
-    mean* for a name that names nothing, and a warning for a requirement
-    nothing satisfies.
-  - [ ] Requirements in the examples.
+- [ ] **Requirements as a specification ortho writes,** rather than a
+  seventh diagram, from standard SysML:
+  `requirement <'REQ-001'> brewTime { doc /* ... */ }`, `@Rationale` and
+  `satisfy brewTime by machine.heater;`.
+  - [x] A `GridView` rendered as Markdown beside the SVGs: a section for each
+    requirement, with its ID, name, text and rationale, then a traceability
+    table of what satisfies each.
+  - [x] Resolve what `satisfy` names, with *did you mean*; warn of a
+    requirement nothing satisfies, and of one without an ID or with another's.
+  - [ ] Requirements in the three examples.
+  - [ ] LANGUAGE.md, VIEWS.md and the AI instructions.
+  - [ ] A tab for the table in the VS Code and browser previews.
+  - [ ] Later: *Verified by* (`verify`), *Derived from* (`#derivation`) and
+    status (`StatusInfo`).

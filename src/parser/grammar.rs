@@ -967,12 +967,12 @@ impl<'a> Parser<'a> {
                 self.identification(n)?;
                 self.typings_and_relations(n)?;
             } else {
-                self.text(n, P::Requirement, Self::feature_chain)?;
+                self.child(n, P::Requirement, Self::connector_end)?;
                 self.relations(n)?;
             }
             self.value_part(n)?;
             if self.eat("by") {
-                self.text(n, P::Satisfier, Self::feature_chain)?;
+                self.child(n, P::Satisfier, Self::connector_end)?;
             }
             return self.body(n);
         }

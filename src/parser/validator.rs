@@ -8,6 +8,7 @@
 use super::ast::{Ast, NodeId, Prop, Type};
 use super::scope::Logged;
 use super::workspace::{Diagnostic, Severity};
+use crate::diagrams::requirements::{chain_target, covering, satisfactions, tabled_requirements, written_chain};
 use crate::diagrams::use_case::drawn_use_cases;
 use crate::model::graph::effective_name;
 use crate::model::library::{LIBRARY, LibraryPackage};
@@ -15,7 +16,7 @@ use crate::model::packages::{collect_packages, exposed_members};
 use crate::model::views::{
     DiagramKind, declared_views, diagram_kind, exposed_elements, is_sub_function, why_undrawable,
 };
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 /// What a model leaves undone across its files, found once for the whole model and
 /// reported by each file where it is. A function and what performs it, or a tree
@@ -29,11 +30,17 @@ pub struct Gaps {
     foreign_hosts: HashSet<NodeId>,
     /// Software that no deployment view allocates to a host.
     unhosted: HashSet<NodeId>,
+    /// Requirements a table lists that nothing satisfies.
+    unsatisfied: HashSet<NodeId>,
+    /// Requirements a table lists without an ID, and those with the ID of one before them.
+    without_id: HashSet<NodeId>,
+    same_id: HashMap<NodeId, NodeId>,
 }
 
 impl Gaps {
     pub fn of(ast: &Ast, roots: &[NodeId]) -> Gaps {
         let (foreign_software, foreign_hosts) = foreign_allocation_ends(ast, roots);
+        let (without_id, same_id) = unidentified_requirements(ast, roots);
         Gaps {
             unperformed: unperformed_functions(ast, roots),
             unrefined: unrefined_trees(ast, roots),
@@ -41,6 +48,9 @@ impl Gaps {
             foreign_software,
             foreign_hosts,
             unhosted: unhosted_software(ast, roots),
+            unsatisfied: unsatisfied_requirements(ast, roots),
+            without_id,
+            same_id,
         }
     }
 }
@@ -76,10 +86,20 @@ pub fn validate(ast: &Ast, root: NodeId, _text: &str, log: &[Logged], gaps: &Gap
         if gaps.unrefined_use_cases.contains(&node) {
             warn_unrefined_use_case(ast, node, &mut diagnostics);
         }
+        if gaps.unsatisfied.contains(&node) {
+            warn_unsatisfied(ast, node, &mut diagnostics);
+        }
+        if gaps.without_id.contains(&node) {
+            warn_without_id(ast, node, &mut diagnostics);
+        }
+        if let Some(first) = gaps.same_id.get(&node) {
+            warn_same_id(ast, node, *first, &mut diagnostics);
+        }
         match ast[node].ty {
             Type::ConnectorEnd => check_end_starts_at_accessible_feature(ast, node, &mut diagnostics),
             Type::PackageDecl => check_package_not_named_after_library(ast, node, &mut diagnostics),
             Type::PerformUsage => check_perform_target(ast, node, &mut diagnostics),
+            Type::SatisfyUsage => check_satisfied_requirement(ast, node, &mut diagnostics),
             Type::UseCaseDef | Type::UseCaseUsage => check_subject_before_actors(ast, node, &mut diagnostics),
             Type::PartUsage | Type::ActorUsage => check_typed_by_part_definition(ast, node, &mut diagnostics),
             _ => {}
@@ -174,6 +194,29 @@ fn check_perform_target(ast: &Ast, perform: NodeId, diagnostics: &mut Vec<Diagno
             severity: Severity::Error,
             offset: offset_of(ast, perform, Prop::Target),
             message: format!("'{}' is not an action or a use case, so it cannot be performed.", written.join(".")),
+        });
+    }
+}
+
+/// `satisfy` names a requirement: a requirement usage, or one of its kinds, a
+/// concern or a viewpoint, or a requirement a `satisfy requirement` declares.
+fn check_satisfied_requirement(ast: &Ast, satisfy: NodeId, diagnostics: &mut Vec<Diagnostic>) {
+    let Some(end) = ast.child(satisfy, Prop::Requirement) else {
+        return;
+    };
+    let Some(found) = chain_target(ast, end) else {
+        return;
+    };
+    let is_requirement = match ast[found].ty {
+        Type::OtherUsage => matches!(ast.text(found, Prop::Kind), Some("requirement" | "concern" | "viewpoint")),
+        Type::SatisfyUsage | Type::DefaultUsage => true,
+        _ => false,
+    };
+    if !is_requirement {
+        diagnostics.push(Diagnostic {
+            severity: Severity::Error,
+            offset: offset_of(ast, satisfy, Prop::Requirement),
+            message: format!("'{}' is not a requirement, so it cannot be satisfied.", written_chain(ast, end)),
         });
     }
 }
@@ -581,6 +624,87 @@ fn warn_unrefined(ast: &Ast, tree: NodeId, diagnostics: &mut Vec<Diagnostic>) {
         message: format!(
             "{named} refines no use case, though a logical view draws it beside use cases. Add a #refinement dependency from it to the use case it details."
         ),
+    });
+}
+
+/// The requirements a table lists that nothing satisfies.
+///
+/// Once a model has a solution view, an implementation or physical one, each
+/// requirement a GridView lists needs a part or module that satisfies it. A model
+/// without one is not warned of: its requirements wait for a solution. Satisfying a
+/// requirement satisfies those nested in it, which are its subrequirements.
+fn unsatisfied_requirements(ast: &Ast, roots: &[NodeId]) -> HashSet<NodeId> {
+    if !has_view(ast, roots, &[DiagramKind::Implementation, DiagramKind::Physical]) {
+        return HashSet::new();
+    }
+    let satisfied = satisfactions(ast, roots);
+    let tabled = all_tabled_requirements(ast, roots);
+    tabled.into_iter().filter(|requirement| covering(ast, *requirement, &satisfied).is_none()).collect()
+}
+
+/// The requirements the tables list, each once, in the order the tables list them.
+fn all_tabled_requirements(ast: &Ast, roots: &[NodeId]) -> Vec<NodeId> {
+    let mut seen = HashSet::new();
+    let views = views_of(ast, roots, DiagramKind::Requirements);
+    let tabled = views.into_iter().flat_map(|view| tabled_requirements(ast, &exposed_elements(ast, view)));
+    tabled.map(|(requirement, _)| requirement).filter(|requirement| seen.insert(*requirement)).collect()
+}
+
+/// The requirements the tables list without an ID, and each with the ID of one
+/// listed before it, with that one. A requirement's ID is its short name, which
+/// identifies it in a specification, so it is one of its own.
+fn unidentified_requirements(ast: &Ast, roots: &[NodeId]) -> (HashSet<NodeId>, HashMap<NodeId, NodeId>) {
+    let mut without_id = HashSet::new();
+    let mut same_id = HashMap::new();
+    let mut ids: HashMap<&str, NodeId> = HashMap::new();
+    for requirement in all_tabled_requirements(ast, roots) {
+        match ast.text(requirement, Prop::ShortName) {
+            None => {
+                without_id.insert(requirement);
+            }
+            Some(id) => {
+                if let Some(first) = ids.get(id) {
+                    same_id.insert(requirement, *first);
+                } else {
+                    ids.insert(id, requirement);
+                }
+            }
+        }
+    }
+    (without_id, same_id)
+}
+
+fn warn_unsatisfied(ast: &Ast, requirement: NodeId, diagnostics: &mut Vec<Diagnostic>) {
+    let named = effective_name(ast, requirement).map_or("this requirement".to_string(), |name| format!("'{name}'"));
+    diagnostics.push(Diagnostic {
+        severity: Severity::Warning,
+        offset: offset_of(ast, requirement, Prop::Name),
+        message: format!(
+            "No part or module of the implementation or physical view satisfies {named}. Satisfy it, or a requirement it is in, by the one that meets it."
+        ),
+    });
+}
+
+fn warn_without_id(ast: &Ast, requirement: NodeId, diagnostics: &mut Vec<Diagnostic>) {
+    let name = effective_name(ast, requirement);
+    let named = name.map_or("This requirement".to_string(), |name| format!("'{name}'"));
+    let example = name.map_or("requirement <'REQ-001'>".to_string(), |name| format!("requirement <'REQ-001'> {name}"));
+    diagnostics.push(Diagnostic {
+        severity: Severity::Warning,
+        offset: offset_of(ast, requirement, Prop::Name),
+        message: format!(
+            "{named} has no ID for the table of requirements to list it by. Give it one as its short name, as in {example}."
+        ),
+    });
+}
+
+fn warn_same_id(ast: &Ast, requirement: NodeId, first: NodeId, diagnostics: &mut Vec<Diagnostic>) {
+    let id = ast.text(requirement, Prop::ShortName).unwrap_or("");
+    let other = effective_name(ast, first).map_or("another requirement".to_string(), |name| format!("'{name}'"));
+    diagnostics.push(Diagnostic {
+        severity: Severity::Warning,
+        offset: offset_of(ast, requirement, Prop::ShortName),
+        message: format!("'{id}' is the ID of {other} too. Give each requirement an ID of its own."),
     });
 }
 

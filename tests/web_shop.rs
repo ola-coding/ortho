@@ -158,7 +158,7 @@ fn process_view_an_order_paid_for_with_the_provider() {
 fn renders_all_four_views_each_to_a_file_named_after_it() {
     let workspace = parse_set(ALL);
     let ast = &workspace.ast;
-    let rendering = render_views(&workspace, &LIGHT).unwrap();
+    let rendering = render_views(&workspace, &LIGHT, "diagrams").unwrap();
     assert!(rendering.skipped.is_empty());
     let files: Vec<(DiagramKind, &str)> =
         rendering.rendered.iter().map(|r| (diagram_kind(ast, r.view), r.file.as_str())).collect();
@@ -173,7 +173,7 @@ fn renders_all_four_views_each_to_a_file_named_after_it() {
     );
     for rendered in &rendering.rendered {
         let heading = view_heading(ast, rendered.view);
-        assert!(rendered.result.svg.contains(heading), "{heading}");
+        assert!(rendered.result.content.contains(heading), "{heading}");
         assert!(rendered.warning.is_none(), "{heading}");
     }
 }

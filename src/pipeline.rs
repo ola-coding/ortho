@@ -1,8 +1,9 @@
-//! A view, from what it exposes to its SVG.
+//! A view, from what it exposes to its SVG, or for a table of requirements its Markdown.
 use crate::diagrams::deployment::extract_deployment_graph;
 use crate::diagrams::implementation::extract_implementation_graph;
 use crate::diagrams::logical::extract_logical_graph;
 use crate::diagrams::physical::extract_physical_graph;
+use crate::diagrams::requirements::{documentation, extract_requirements};
 use crate::diagrams::sequence::extract_sequence_model;
 use crate::diagrams::use_case::extract_use_case_graph;
 use crate::layout::SourceMark;
@@ -16,17 +17,19 @@ use crate::model::views::{
 use crate::parser::ast::{NodeId, Prop};
 use crate::parser::workspace::Workspace;
 use crate::render::page::{page_warning, svg_size};
+use crate::render::requirements::{Specification, render_requirements_markdown, requirements_summary};
 use crate::render::sequence::render_sequence_svg;
 use crate::render::svg::{DiagramTitle, render_svg};
 use crate::render::theme::Theme;
 use std::path::{Component, Path, PathBuf};
 
 pub struct RenderResult {
-    pub svg: String,
+    /// The SVG, or for a table of requirements the Markdown.
+    pub content: String,
     pub summary: String,
 }
 
-/// Renders what a view of `kind` exposing `exposed` shows, or why ELK could not lay it out.
+/// Renders the diagram a view of `kind` exposing `exposed` shows, or why ELK could not lay it out.
 pub fn render_exposed(
     workspace: &Workspace,
     kind: DiagramKind,
@@ -42,6 +45,7 @@ pub fn render_exposed(
     // The use case and logical views are laid out by ortho itself rather than ELK,
     // since their shape is fully determined.
     let (graph, laid_out) = match kind {
+        DiagramKind::Requirements => return Err("A table of requirements is no diagram.".to_string()),
         DiagramKind::UseCase => {
             let graph = extract_use_case_graph(ast, exposed);
             let laid_out = layout_use_cases(&graph);
@@ -58,7 +62,7 @@ pub fn render_exposed(
                 lifeline.source = source_mark(workspace, lifeline.element);
             }
             return Ok(RenderResult {
-                svg: render_sequence_svg(&sequence, title, theme),
+                content: render_sequence_svg(&sequence, title, theme),
                 summary: format!("{} lifeline(s), {} message(s)", sequence.lifelines.len(), sequence.messages.len()),
             });
         }
@@ -77,7 +81,7 @@ pub fn render_exposed(
         node.source = source_mark(workspace, node.element);
     }
     Ok(RenderResult {
-        svg: render_svg(&laid_out, title, theme),
+        content: render_svg(&laid_out, title, theme),
         summary: format!("{} node(s), {} edge(s)", laid_out.nodes.len(), graph.edges.len()),
     })
 }
@@ -89,15 +93,49 @@ fn source_mark(workspace: &Workspace, element: Option<NodeId>) -> Option<SourceM
     Some(SourceMark { file: relative_to_working_folder(file), line })
 }
 
-/// Renders a view as the diagram its kind calls for, of what it exposes.
+/// Renders a view as the diagram its kind calls for, of what it exposes, or as a
+/// table of requirements whose links lead from the folder `out` it is written to.
 pub fn render_view(
     workspace: &Workspace,
     view: NodeId,
     title: &DiagramTitle,
     theme: &Theme,
+    out: &str,
 ) -> Result<RenderResult, String> {
     let ast = &workspace.ast;
-    render_exposed(workspace, diagram_kind(ast, view), &exposed_elements(ast, view), title, theme)
+    match diagram_kind(ast, view) {
+        DiagramKind::Requirements => Ok(render_requirements(workspace, view, out)),
+        kind => render_exposed(workspace, kind, &exposed_elements(ast, view), title, theme),
+    }
+}
+
+/// A GridView of requirements as Markdown, written to the folder `out`, each
+/// requirement and `satisfy` linked to its line in the model.
+fn render_requirements(workspace: &Workspace, view: NodeId, out: &str) -> RenderResult {
+    let ast = &workspace.ast;
+    let roots: Vec<NodeId> = workspace.documents.iter().map(|document| document.root).collect();
+    let rows = extract_requirements(ast, &roots, &exposed_elements(ast, view));
+    let link = |element: NodeId| {
+        let (file, line) = workspace.declared_at(element)?;
+        Some(format!("{}#L{line}", link_path(file, out)))
+    };
+    let file = workspace.declared_at(view).map_or("", |(file, _)| file);
+    let name = file.rsplit(['/', '\\']).next().unwrap_or(file);
+    let specification = Specification {
+        heading: view_heading(ast, view),
+        source: (name, link_path(file, out)),
+        introduction: documentation(ast, view),
+    };
+    RenderResult {
+        content: render_requirements_markdown(&specification, &rows, &link),
+        summary: requirements_summary(&rows),
+    }
+}
+
+/// A file as a Markdown link in the folder `out` leads to it, a space or a bracket
+/// in its name escaped: `../my%20model.sysml`.
+fn link_path(file: &str, out: &str) -> String {
+    relative_path(file, out).replace(' ', "%20").replace('(', "%28").replace(')', "%29")
 }
 
 /// A view rendered to the file named after it.
@@ -124,8 +162,9 @@ pub struct ModelRendering {
 /// Renders every view a model declares, in the order of their kinds, each to a file named after it, headed by its
 /// name and naming the file that declares it, relative to the working folder. A view
 /// ortho does not draw is passed over with the reason; two views that would be written
-/// to the same file are an error.
-pub fn render_views(workspace: &Workspace, theme: &Theme) -> Result<ModelRendering, String> {
+/// to the same file are an error. A table of requirements links to the model from
+/// the folder `out` it is written to.
+pub fn render_views(workspace: &Workspace, theme: &Theme, out: &str) -> Result<ModelRendering, String> {
     let ast = &workspace.ast;
     let mut skipped = Vec::new();
     let mut by_file: Vec<(String, NodeId, &str)> = Vec::new();
@@ -155,9 +194,13 @@ pub fn render_views(workspace: &Workspace, theme: &Theme) -> Result<ModelRenderi
             definition: ast.text(view, Prop::Definition).map(String::from),
             source: relative_to_working_folder(path),
         };
-        let result = render_view(workspace, view, &title, theme)?;
-        let (width, height) = svg_size(&result.svg);
-        let warning = page_warning(view_heading(ast, view), width, height);
+        let result = render_view(workspace, view, &title, theme, out)?;
+        let warning = (diagram_kind(ast, view) != DiagramKind::Requirements)
+            .then(|| {
+                let (width, height) = svg_size(&result.content);
+                page_warning(view_heading(ast, view), width, height)
+            })
+            .flatten();
         rendered.push(RenderedView { view, file, result, warning });
     }
     Ok(ModelRendering { rendered, skipped })
@@ -167,7 +210,13 @@ pub fn render_views(workspace: &Workspace, theme: &Theme) -> Result<ModelRenderi
 /// Node's `path.relative` gives it: `examples/coffee-machine/logical.sysml`, or
 /// `../other/model.sysml` for one outside it.
 pub fn relative_to_working_folder(path: &str) -> String {
-    let (Ok(path), Ok(working)) = (std::path::absolute(path), std::env::current_dir()) else {
+    relative_path(path, ".")
+}
+
+/// A path as seen from the folder `from`, both relative to the working folder unless
+/// absolute, with forward slashes on every system.
+pub fn relative_path(path: &str, from: &str) -> String {
+    let (Ok(path), Ok(working)) = (std::path::absolute(path), std::path::absolute(from)) else {
         return path.replace('\\', "/");
     };
     let (path, working) = (normal(&path), normal(&working));

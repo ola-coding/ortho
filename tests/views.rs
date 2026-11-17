@@ -94,7 +94,7 @@ fn loads_any_view_and_says_why_it_cannot_draw_one_other_than_the_three_it_knows(
     assert_eq!(
         why("package M { action def A; view v : StateTransitionView { expose A; } }"),
         [Some(
-            "ortho draws a GeneralView, an InterconnectionView or a SequenceView, not 'StateTransitionView'.".into()
+            "ortho renders a GeneralView, an InterconnectionView, a SequenceView or a GridView, not 'StateTransitionView'.".into()
         )]
     );
     assert_eq!(
@@ -220,11 +220,12 @@ fn renders_the_examples_as_their_committed_diagrams() {
                     definition: ast.text(view, ortho::parser::ast::Prop::Definition).map(String::from),
                     source,
                 };
-                let result = render_view(&workspace, view, &title, &LIGHT).unwrap();
+                let result =
+                    render_view(&workspace, view, &title, &LIGHT, &folder.join("diagrams").to_string_lossy()).unwrap();
                 let committed = folder.join("diagrams").join(view_file_name(ast, view));
                 // As Git on Windows may check it out.
                 let expected = std::fs::read_to_string(&committed).unwrap().replace("\r\n", "\n");
-                assert!(result.svg == expected, "{} is not what {example} renders to", committed.display());
+                assert!(result.content == expected, "{} is not what {example} renders to", committed.display());
                 rendered += 1;
             }
         }
@@ -260,8 +261,8 @@ fn marks_every_box_with_the_line_that_declares_it() {
             .collect();
         files.sort();
         let workspace = parse_sysml_files(&files).unwrap().workspace;
-        for view in render_views(&workspace, &LIGHT).unwrap().rendered {
-            let boxes = marked_boxes(&view.result.svg);
+        for view in render_views(&workspace, &LIGHT, "diagrams").unwrap().rendered {
+            let boxes = marked_boxes(&view.result.content);
             // The summary counts the boxes first: `12 node(s), …` or `6 lifeline(s), …`.
             let drawn: usize = view.result.summary.split_once(' ').unwrap().0.parse().unwrap();
             assert_eq!(boxes.len(), drawn, "{example}: every box of {} is marked", view.file);
@@ -286,7 +287,7 @@ fn writes_the_views_from_use_case_to_process_whatever_the_files_are_called() {
         ("c.sysml".to_string(), "package U { part def S; use case def Do { subject s : S; } view 'use cases' : GeneralView { expose Do; } }".to_string()),
     ];
     let workspace = ortho::parser::workspace::Workspace::build(sources).unwrap();
-    let rendered = render_views(&workspace, &LIGHT).unwrap().rendered;
+    let rendered = render_views(&workspace, &LIGHT, "diagrams").unwrap().rendered;
     let kinds: Vec<DiagramKind> = rendered.iter().map(|view| diagram_kind(&workspace.ast, view.view)).collect();
     assert_eq!(kinds, [DiagramKind::UseCase, DiagramKind::Logical, DiagramKind::Process]);
 }
@@ -301,13 +302,16 @@ fn renders_every_view_it_can_draw_passes_over_the_rest_and_refuses_two_views_for
             view two : GeneralView { expose A; }
         }",
     );
-    let rendering = render_views(&workspace, &LIGHT).unwrap();
+    let rendering = render_views(&workspace, &LIGHT, "diagrams").unwrap();
     assert_eq!(rendering.rendered.iter().map(|r| r.file.as_str()).collect::<Vec<_>>(), ["one.svg", "two.svg"]);
     let skipped: Vec<(&str, &str)> =
         rendering.skipped.iter().map(|s| (view_heading(&workspace.ast, s.view), s.reason.as_str())).collect();
     assert_eq!(
         skipped,
-        [("states", "ortho draws a GeneralView, an InterconnectionView or a SequenceView, not 'StateTransitionView'.")]
+        [(
+            "states",
+            "ortho renders a GeneralView, an InterconnectionView, a SequenceView or a GridView, not 'StateTransitionView'."
+        )]
     );
     let twice = parse_ok(
         "package Twice {
@@ -316,7 +320,7 @@ fn renders_every_view_it_can_draw_passes_over_the_rest_and_refuses_two_views_for
             view functions : GeneralView { expose A; }
         }",
     );
-    let error = render_views(&twice, &LIGHT).err().unwrap();
+    let error = render_views(&twice, &LIGHT, "diagrams").err().unwrap();
     assert!(error.starts_with("'Functions' and 'functions' would both be written to functions.svg"), "{error}");
 }
 

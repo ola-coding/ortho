@@ -3,12 +3,13 @@ use crate::parser::ast::{Ast, NodeId, Prop, Type};
 use unicode_normalization::UnicodeNormalization;
 use unicode_normalization::char::is_combining_mark;
 
-/// The standard view definitions ortho draws (§9.2.20).
+/// The standard view definitions ortho renders (§9.2.20).
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum StandardView {
     GeneralView,
     InterconnectionView,
     SequenceView,
+    GridView,
 }
 
 impl StandardView {
@@ -17,6 +18,7 @@ impl StandardView {
             StandardView::GeneralView => "GeneralView",
             StandardView::InterconnectionView => "InterconnectionView",
             StandardView::SequenceView => "SequenceView",
+            StandardView::GridView => "GridView",
         }
     }
 
@@ -34,6 +36,7 @@ impl StandardView {
                 ty == Type::ActionDef
                     || (ty == Type::OtherDefinition && ast.text(element, Prop::Kind) == Some("occurrence"))
             }
+            StandardView::GridView => ty == Type::PackageDecl || is_requirement(ast, element),
         }
     }
 
@@ -43,6 +46,7 @@ impl StandardView {
             StandardView::GeneralView => "packages, action definitions, the actions in them, or use cases",
             StandardView::InterconnectionView => "parts",
             StandardView::SequenceView => "an occurrence definition",
+            StandardView::GridView => "packages or requirements",
         }
     }
 }
@@ -55,10 +59,17 @@ pub fn is_sub_function(ast: &Ast, element: NodeId) -> bool {
     ast[element].ty == Type::ActionUsage && ast.text(element, Prop::Type).is_none()
 }
 
-/// Which of ortho's six diagrams a view is, in the order a model's views are
-/// written and shown: from what is asked of the system to how it runs.
+/// Whether `element` is a requirement, `requirement <'REQ-001'> brewTime;`, not its definition.
+pub fn is_requirement(ast: &Ast, element: NodeId) -> bool {
+    ast[element].ty == Type::OtherUsage && ast.text(element, Prop::Kind) == Some("requirement")
+}
+
+/// Which of ortho's views a view is, its table of requirements or one of its six
+/// diagrams, in the order a model's views are written and shown: from what is asked
+/// of the system to how it runs.
 #[derive(Clone, Copy, PartialEq, Eq, Debug, PartialOrd, Ord)]
 pub enum DiagramKind {
+    Requirements,
     UseCase,
     Logical,
     Implementation,
@@ -71,6 +82,7 @@ impl DiagramKind {
     /// Its name as text.
     pub fn name(self) -> &'static str {
         match self {
+            DiagramKind::Requirements => "requirements",
             DiagramKind::UseCase => "use-case",
             DiagramKind::Logical => "logical",
             DiagramKind::Implementation => "implementation",
@@ -92,6 +104,7 @@ fn standard_view_named(definition: &str) -> Option<StandardView> {
         "GeneralView" => Some(StandardView::GeneralView),
         "InterconnectionView" => Some(StandardView::InterconnectionView),
         "SequenceView" => Some(StandardView::SequenceView),
+        "GridView" => Some(StandardView::GridView),
         _ => None,
     }
 }
@@ -106,7 +119,9 @@ pub fn exposed_elements(ast: &Ast, view: NodeId) -> Vec<NodeId> {
 pub fn why_undrawable(ast: &Ast, view: NodeId) -> Option<String> {
     let Some(definition) = standard_view(ast, view) else {
         let written = ast.text(view, Prop::Definition).unwrap_or("");
-        return Some(format!("ortho draws a GeneralView, an InterconnectionView or a SequenceView, not '{written}'."));
+        return Some(format!(
+            "ortho renders a GeneralView, an InterconnectionView, a SequenceView or a GridView, not '{written}'."
+        ));
     };
     let article = if definition == StandardView::InterconnectionView { "An" } else { "A" };
     exposed_elements(ast, view)
@@ -127,7 +142,8 @@ pub fn view_heading(ast: &Ast, view: NodeId) -> &str {
 
 /// The file a view is rendered to: its short name, or else its name, in lower case
 /// with hyphens. `view 'Logical view — Coffee Machine'` is written to
-/// logical-view-coffee-machine.svg, `view <logical> 'Logical view'` to logical.svg.
+/// logical-view-coffee-machine.svg, `view <logical> 'Logical view'` to logical.svg,
+/// and a table of requirements to a Markdown file, requirements.md.
 pub fn view_file_name(ast: &Ast, view: NodeId) -> String {
     let named = ast.text(view, Prop::ShortName).unwrap_or_else(|| view_heading(ast, view));
     let lower: String = named.nfkd().filter(|c| !is_combining_mark(*c)).collect::<String>().to_lowercase();
@@ -140,11 +156,13 @@ pub fn view_file_name(ast: &Ast, view: NodeId) -> String {
         }
     }
     let slug = slug.trim_end_matches('-');
-    format!("{}.svg", if slug.is_empty() { "view" } else { slug })
+    let extension = if diagram_kind(ast, view) == DiagramKind::Requirements { "md" } else { "svg" };
+    format!("{}.{extension}", if slug.is_empty() { "view" } else { slug })
 }
 
-/// Which of ortho's six diagrams a view of `definition` exposing `exposed` is. An
-/// InterconnectionView is the physical view and a SequenceView the process view. A
+/// Which of ortho's views a view of `definition` exposing `exposed` is. A GridView
+/// is the table of requirements, an InterconnectionView the physical view and a
+/// SequenceView the process view. A
 /// GeneralView presents whatever it exposes, so its content decides: a function
 /// tree, with any use cases it refines, use cases, allocations, or else packages of
 /// software.
@@ -152,6 +170,7 @@ pub fn diagram_kind_of(ast: &Ast, definition: Option<StandardView>, exposed: &[N
     match definition {
         Some(StandardView::InterconnectionView) => return DiagramKind::Physical,
         Some(StandardView::SequenceView) => return DiagramKind::Process,
+        Some(StandardView::GridView) => return DiagramKind::Requirements,
         _ => {}
     }
     if exposed.iter().any(|element| ast[*element].ty == Type::ActionDef || is_sub_function(ast, *element)) {
@@ -168,7 +187,7 @@ pub fn diagram_kind_of(ast: &Ast, definition: Option<StandardView>, exposed: &[N
     }
 }
 
-/// Which of ortho's six diagrams a view is.
+/// Which of ortho's views a view is.
 pub fn diagram_kind(ast: &Ast, view: NodeId) -> DiagramKind {
     diagram_kind_of(ast, standard_view(ast, view), &exposed_elements(ast, view))
 }

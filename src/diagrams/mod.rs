@@ -3,5 +3,6 @@ pub mod deployment;
 pub mod implementation;
 pub mod logical;
 pub mod physical;
+pub mod requirements;
 pub mod sequence;
 pub mod use_case;
