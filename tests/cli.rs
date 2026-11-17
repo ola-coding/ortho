@@ -167,8 +167,8 @@ fn says_why_it_draws_nothing() {
     assert_eq!(output.status.code(), Some(1));
     assert_eq!(
         stderr(&output),
-        "Skipped 'states': ortho draws a GeneralView, an InterconnectionView or a SequenceView, not \
-         'StateTransitionView'.\nThe model declares no view ortho can draw.\n"
+        "Skipped 'states': ortho renders a GeneralView, an InterconnectionView, a SequenceView or a GridView, \
+         not 'StateTransitionView'.\nThe model declares no view ortho can draw.\n"
     );
 }
 

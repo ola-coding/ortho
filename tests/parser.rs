@@ -63,8 +63,9 @@ fn keeps_what_no_view_draws_as_written() {
     assert_eq!(ast.text(usage, Prop::Kind), Some("requirement"));
     assert_eq!(ast.texts(usage, Prop::Types).collect::<Vec<_>>(), ["MassLimit"]);
     let satisfy = ast.children(pkg, Prop::Members).find(|m| ast[*m].ty == Type::SatisfyUsage).unwrap();
-    assert_eq!(ast.text(satisfy, Prop::Requirement), Some("massReq"));
-    assert_eq!(ast.text(satisfy, Prop::Satisfier), Some("drone"));
+    let chain = |prop| ast.texts(ast.child(satisfy, prop).unwrap(), Prop::Segments).collect::<Vec<_>>();
+    assert_eq!(chain(Prop::Requirement), ["massReq"]);
+    assert_eq!(chain(Prop::Satisfier), ["drone"]);
 }
 
 #[test]

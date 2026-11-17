@@ -13,7 +13,8 @@
 //! resolving another, so what is found depends on the order; this keeps the order
 //! of the TypeScript version, which was built on Langium.
 use super::ast::{Ast, NodeId, Prop, RefId, Type};
-use crate::model::graph::effective_name;
+use crate::model::graph::{effective_name, qualified_name};
+use crate::model::views::is_requirement;
 use std::collections::{HashMap, HashSet};
 
 /// What a lookup that ran into a reference still being resolved gives up with.
@@ -199,7 +200,7 @@ impl<'a> Linker<'a> {
         let segments = self.ast.references_of(container, Prop::Segments);
         let index = index.or_else(|| segments.iter().position(|segment| *segment == reference)).unwrap_or(0);
         if index == 0 {
-            return String::new();
+            return self.requirement_hint(container, text);
         }
         let Ok(Some(previous)) = self.target_of(segments[index - 1]) else {
             return String::new();
@@ -226,6 +227,33 @@ impl<'a> Linker<'a> {
             listed.push_str(&format!(" and {} more", names.len() - SHOWN));
         }
         format!(" '{owner}' has {listed}.")
+    }
+
+    /// For the requirement a `satisfy` names, the requirements of the model named
+    /// closest to it, each by the path that names it from anywhere:
+    /// `Did you mean 'Requirements::brewTime.heatUp'?`.
+    fn requirement_hint(&self, end: NodeId, text: &str) -> String {
+        let satisfy = self.ast[end].parent.filter(|owner| self.ast[*owner].ty == Type::SatisfyUsage);
+        if satisfy.is_none_or(|satisfy| self.ast.child(satisfy, Prop::Requirement) != Some(end)) {
+            return String::new();
+        }
+        let mut paths: HashMap<&str, Vec<String>> = HashMap::new();
+        for node in self.roots.iter().flat_map(|root| self.ast.with_all_contents(*root)) {
+            if let Some(name) = effective_name(self.ast, node).filter(|_| is_requirement(self.ast, node)) {
+                paths.entry(name).or_default().push(requirement_path(self.ast, node));
+            }
+        }
+        let mut names: Vec<&str> = paths.keys().copied().collect();
+        names.sort();
+        let last = text.rsplit("::").next().unwrap_or(text);
+        let closest = closest_names(last, &names);
+        let quoted: Vec<String> = closest
+            .iter()
+            .flat_map(|name| &paths[name])
+            .filter(|path| path.as_str() != text)
+            .map(|path| format!("'{path}'"))
+            .collect();
+        if quoted.is_empty() { String::new() } else { format!(" Did you mean {}?", quoted.join(" or ")) }
     }
 
     fn prop_of(&self, reference: RefId) -> Prop {
@@ -655,6 +683,23 @@ impl<'a> Linker<'a> {
             }
             elements
         })
+    }
+}
+
+/// The path that names a requirement from anywhere: its package's qualified name,
+/// then the requirements it is nested in, with dots: `Requirements::brewTime.heatUp`.
+fn requirement_path(ast: &Ast, requirement: NodeId) -> String {
+    let mut top = requirement;
+    let mut chain = vec![effective_name(ast, requirement).unwrap_or("")];
+    while let Some(parent) = ast[top].parent.filter(|parent| is_requirement(ast, *parent)) {
+        chain.push(effective_name(ast, parent).unwrap_or(""));
+        top = parent;
+    }
+    chain.reverse();
+    let dotted = chain.join(".");
+    match ast[top].parent.map(|owner| qualified_name(ast, owner)).filter(|owner| !owner.is_empty()) {
+        Some(owner) => format!("{owner}::{dotted}"),
+        None => dotted,
     }
 }
 

@@ -7,7 +7,7 @@
 mod preview;
 mod protocol;
 
-use crate::model::views::{declared_views, view_file_name, view_heading};
+use crate::model::views::{DiagramKind, declared_views, diagram_kind, view_file_name, view_heading};
 use crate::parser::ast::{NodeId, Prop, Value as Field};
 use crate::parser::workspace::{Severity, Workspace};
 use crate::pipeline::{relative_to_working_folder, render_views};
@@ -383,7 +383,7 @@ impl Server {
         if let Some(workspace) = model.workspace.as_ref().filter(|_| shown.errors.is_empty()) {
             let ast = &workspace.ast;
             let mut found: Vec<(NodeId, String)> = Vec::new();
-            match render_views(workspace, self.theme) {
+            match render_views(workspace, self.theme, &folder.to_string_lossy()) {
                 Ok(rendering) => {
                     for skipped in &rendering.skipped {
                         let heading = view_heading(ast, skipped.view);
@@ -398,8 +398,12 @@ impl Server {
                         if let Some(warning) = rendered.warning {
                             found.push((rendered.view, warning));
                         }
+                        // The preview shows diagrams; a table of requirements is Markdown.
+                        if diagram_kind(ast, rendered.view) == DiagramKind::Requirements {
+                            continue;
+                        }
                         let heading = view_heading(ast, rendered.view).to_string();
-                        shown.views.push([rendered.file, heading, rendered.result.summary, rendered.result.svg]);
+                        shown.views.push([rendered.file, heading, rendered.result.summary, rendered.result.content]);
                     }
                 }
                 Err(message) => shown.errors.push(Note { place: None, message }),

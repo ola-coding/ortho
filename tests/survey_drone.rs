@@ -310,7 +310,7 @@ fn process_view_a_survey_mission_uploaded_over_the_mavlink_mission_protocol() {
 fn renders_all_six_views_each_to_a_file_named_after_it() {
     let workspace = parse_set(ALL);
     let ast = &workspace.ast;
-    let rendering = render_views(&workspace, &LIGHT).unwrap();
+    let rendering = render_views(&workspace, &LIGHT, "diagrams").unwrap();
     assert!(rendering.skipped.is_empty());
     let files: Vec<(DiagramKind, &str)> =
         rendering.rendered.iter().map(|r| (diagram_kind(ast, r.view), r.file.as_str())).collect();
@@ -327,10 +327,10 @@ fn renders_all_six_views_each_to_a_file_named_after_it() {
     );
     for rendered in &rendering.rendered {
         let heading = view_heading(ast, rendered.view);
-        assert!(rendered.result.svg.starts_with("<svg"), "{heading}");
-        assert!(rendered.result.svg.contains(heading), "{heading}");
+        assert!(rendered.result.content.starts_with("<svg"), "{heading}");
+        assert!(rendered.result.content.contains(heading), "{heading}");
     }
     // Each diagram names the file that declares its view.
     let physical = rendering.rendered.iter().find(|r| diagram_kind(ast, r.view) == DiagramKind::Physical).unwrap();
-    assert!(physical.result.svg.contains("examples/survey-drone/physical.sysml"));
+    assert!(physical.result.content.contains("examples/survey-drone/physical.sysml"));
 }

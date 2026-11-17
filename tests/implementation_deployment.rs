@@ -238,7 +238,7 @@ const CLOUD: &str = "
 #[test]
 fn renders_an_implementation_view_with_no_use_case_or_logical_view_every_link_between_views_being_optional() {
     let workspace = parse_ok(CLOUD);
-    let rendering = render_views(&workspace, &LIGHT).unwrap();
+    let rendering = render_views(&workspace, &LIGHT, "diagrams").unwrap();
     assert!(rendering.skipped.is_empty());
     let rendered: Vec<(DiagramKind, &str)> =
         rendering.rendered.iter().map(|r| (diagram_kind(&workspace.ast, r.view), r.file.as_str())).collect();

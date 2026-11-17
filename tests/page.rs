@@ -47,7 +47,7 @@ fn warns_of_a_view_too_wide_to_read_and_only_of_that_one() {
             view 'Narrow functions' : GeneralView {{ expose Narrow; }}
         }}"
     ));
-    let rendering = render_views(&workspace, &LIGHT).unwrap();
+    let rendering = render_views(&workspace, &LIGHT, "diagrams").unwrap();
     let warnings: Vec<&str> = rendering.rendered.iter().filter_map(|r| r.warning.as_deref()).collect();
     assert_eq!(warnings.len(), 1, "{warnings:?}");
     assert!(warnings[0].starts_with("'Broad functions' is too wide"), "{}", warnings[0]);

@@ -1,4 +1,5 @@
-//! `ortho render`: every view a model declares, one SVG each, once or on every save;
+//! `ortho render`: every view a model declares, one SVG each, or Markdown for a table
+//! of requirements, once or on every save;
 //! `ortho lsp`, the same checks for an editor; and `ortho init`, what a project starts with.
 use clap::{Parser, Subcommand};
 use ortho::model::views::view_heading;
@@ -18,12 +19,12 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Command {
-    /// Render every view the model declares, one SVG each
+    /// Render every view the model declares, one SVG each, or Markdown for a table of requirements
     Render {
         /// One or more .sysml files or folders, read as one model
         #[arg(required = true, value_name = "MODELS")]
         models: Vec<String>,
-        /// The folder to write the SVGs to, each named after its view
+        /// The folder to write the files to, each named after its view
         #[arg(short, long, value_name = "FOLDER")]
         out: String,
         /// Paint the diagrams with a theme
@@ -139,7 +140,7 @@ fn render(models: &[String], out: &str, theme: &Theme) -> Result<(), String> {
         eprintln!("Warning: {warning}");
     }
     let workspace = &parsed.workspace;
-    let rendering = render_views(workspace, theme)?;
+    let rendering = render_views(workspace, theme, out)?;
     for skipped in &rendering.skipped {
         eprintln!("Skipped '{}': {}", view_heading(&workspace.ast, skipped.view), skipped.reason);
     }
@@ -155,7 +156,7 @@ fn render(models: &[String], out: &str, theme: &Theme) -> Result<(), String> {
     std::fs::create_dir_all(out).map_err(|error| format!("{out}: {error}"))?;
     for rendered in &rendering.rendered {
         let path = Path::new(out).join(&rendered.file);
-        std::fs::write(&path, &rendered.result.svg).map_err(|error| format!("{}: {error}", path.display()))?;
+        std::fs::write(&path, &rendered.result.content).map_err(|error| format!("{}: {error}", path.display()))?;
         println!("Wrote {} ({})", path.display(), rendered.result.summary);
         if let Some(warning) = &rendered.warning {
             eprintln!("Warning: {warning}");
