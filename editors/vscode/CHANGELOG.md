@@ -2,10 +2,11 @@
 
 The extension has the version of the ortho it carries.
 
-## Unreleased
+## 0.4.1 (2026-11-18)
 
-- **Reads two more forms of SysML v2:** metadata in a dependency's body, and
-  a body as a guard, `if { ... }.result`.
+It carries ortho 0.4.1, which reads two more forms of SysML v2 that 0.4.0
+refused ([#38](https://github.com/ola-coding/ortho/issues/38)): metadata in a
+dependency's body, and a body as a guard, `if { ... }.result`.
 
 ## 0.4.0 (2026-11-14)
 
