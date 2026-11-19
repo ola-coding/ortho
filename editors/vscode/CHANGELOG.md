@@ -8,8 +8,12 @@ The extension has the version of the ortho it carries.
   power, drawn as an arrowhead on the connection's line with the name of what
   flows beside it, or as a line of its own where no connection joins the
   ports. The coffee machine and the survey drone now show their flows.
-- **Reads two more forms of SysML v2:** metadata in a dependency's body, and
-  a body as a guard, `if { ... }.result`.
+
+## 0.4.1 (2026-11-19)
+
+It carries ortho 0.4.1, which reads two more forms of SysML v2 that 0.4.0
+refused ([#38](https://github.com/ola-coding/ortho/issues/38)): metadata in a
+dependency's body, and a body as a guard, `if { ... }.result`.
 
 ## 0.4.0 (2026-11-14)
 
