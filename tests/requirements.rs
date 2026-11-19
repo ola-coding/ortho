@@ -39,7 +39,11 @@ const REQUIREMENTS: &str = "package CoffeeMachineRequirements {
 const PHYSICAL: &str = "package Physical {
     private import StandardViewDefinitions::*;
     part def Display { satisfy CoffeeMachineRequirements::beverageChoice; }
-    part def CoffeeMachine { part heater; part pump; part display : Display; }
+    part def CoffeeMachine {
+        part heater;
+        part pump;
+        part display : Display;
+    }
     part machine : CoffeeMachine;
     satisfy CoffeeMachineRequirements::brewTime by machine.heater;
     satisfy CoffeeMachineRequirements::brewTime by machine.pump;
@@ -72,43 +76,47 @@ fn writes_a_grid_view_of_requirements_as_a_markdown_specification() {
 
 What the coffee machine shall do.
 
-5 requirements, 4 satisfied. Not satisfied: [REQ-004](#req-004-dryruncutoff).
+5 requirements, 4 satisfied. Not satisfied: [REQ-004](#dryruncutoff).
 
-## [REQ-001](../requirements.sysml#L5) brewTime
+## brewTime
 
-The machine shall deliver an espresso within 30 s of the user's choice.
+| ID | Statement | Rationale |
+|:---|:---|:---|
+| REQ-001 | The machine shall deliver an espresso within 30 s of the user's choice.<br><br>Timed from the press of a button. | Users compare the wait with a café's. |
 
-Timed from the press of a button.
+### heatUp
 
-**Rationale:** Users compare the wait with a café's.
+| ID | Statement |
+|:---|:---|
+| REQ-002 | The water shall reach 92 °C within 25 s from cold. |
 
-### [REQ-002](../requirements.sysml#L11) heatUp
+### extraction
 
-The water shall reach 92 °C within 25 s from cold.
+| ID | Statement |
+|:---|:---|
+| REQ-003 | The water shall reach the brew unit at 9 bar. |
 
-### [REQ-003](../requirements.sysml#L14) extraction
+## dryRunCutoff
 
-The water shall reach the brew unit at 9 bar.
+| ID | Statement | Rationale |
+|:---|:---|:---|
+| REQ-004 | The heater shall switch off within 2 s when the tank runs dry. | A heater running dry can crack. |
 
-## [REQ-004](../requirements.sysml#L18) dryRunCutoff
+## beverageChoice
 
-The heater shall switch off within 2 s when the tank runs dry.
-
-**Rationale:** A heater running dry can crack.
-
-## [REQ-005](../requirements.sysml#L22) beverageChoice
-
-The user shall choose a beverage on a touch display.
+| ID | Statement |
+|:---|:---|
+| REQ-005 | The user shall choose a beverage on a touch display. |
 
 ## Traceability
 
 | ID | Requirement | Satisfied by |
 |:---|:---|:---|
-| [REQ-001](#req-001-brewtime) | brewTime | [machine.heater](../physical.sysml#L6), [machine.pump](../physical.sysml#L7) |
-| [REQ-002](#req-002-heatup) | &emsp;heatUp | [machine.heater](../physical.sysml#L8) |
-| [REQ-003](#req-003-extraction) | &emsp;extraction | through [REQ-001](#req-001-brewtime) |
-| [REQ-004](#req-004-dryruncutoff) | dryRunCutoff | — |
-| [REQ-005](#req-005-beveragechoice) | beverageChoice | [Display](../physical.sysml#L3) |
+| [REQ-001](#brewtime) | brewTime | [machine.heater](../physical.sysml#L5), [machine.pump](../physical.sysml#L6) |
+| [REQ-002](#heatup) | &emsp;heatUp | [machine.heater](../physical.sysml#L5) |
+| [REQ-003](#extraction) | &emsp;extraction | through [REQ-001](#brewtime) |
+| [REQ-004](#dryruncutoff) | dryRunCutoff | — |
+| [REQ-005](#beveragechoice) | beverageChoice | [Display](../physical.sysml#L3) |
 ";
     assert_eq!(table.result.content, expected);
     // Written first, before the diagrams: what is asked of the system comes first.
@@ -206,10 +214,12 @@ fn escapes_what_markdown_would_read_as_markup() {
         }",
     )]);
     let content = &render_views(&workspace, &LIGHT, ".").unwrap().rendered[0].result.content;
+    assert!(content.contains("from [my model.sysml](my%20model.sysml)."), "{content}");
     assert!(
-        content
-            .contains("## [R\\_1](my%20model.sysml#L2) pipe\\|and\\*star\n\n1\\. Use \\<b\\>no\\</b\\> \\| markup.\n"),
+        content.contains(
+            "## pipe\\|and\\*star\n\n| ID | Statement |\n|:---|:---|\n| R\\_1 | 1. Use \\<b\\>no\\</b\\> \\| markup. |\n"
+        ),
         "{content}"
     );
-    assert!(content.contains("| [R\\_1](#r_1-pipeandstar) | pipe\\|and\\*star | — |"), "{content}");
+    assert!(content.contains("| [R\\_1](#pipeandstar) | pipe\\|and\\*star | — |"), "{content}");
 }

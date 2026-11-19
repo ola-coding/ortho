@@ -18,7 +18,7 @@ pub struct Row {
     pub text: Vec<String>,
     /// The text of each `Rationale` metadata it holds.
     pub rationale: Vec<String>,
-    /// Each `satisfy` that names it, with what satisfies it, as written.
+    /// What satisfies it, as each `satisfy` that names it writes it, and the element that is.
     pub satisfied_by: Vec<(NodeId, String)>,
     /// The requirement it is nested in that is satisfied, when nothing satisfies it itself:
     /// satisfying a requirement satisfies the requirements nested in it.
@@ -80,9 +80,9 @@ pub fn extract_requirements(ast: &Ast, roots: &[NodeId], exposed: &[NodeId]) -> 
         .collect()
 }
 
-/// What each requirement of the model is satisfied by: every `satisfy` that names it,
-/// with the satisfying feature as its `by` names it, or else the element the
-/// `satisfy` is in.
+/// What each requirement of the model is satisfied by, for every `satisfy` that
+/// names it: the feature its `by` names, or else the element the `satisfy` is in,
+/// with its name as written there.
 pub fn satisfactions(ast: &Ast, roots: &[NodeId]) -> HashMap<NodeId, Vec<(NodeId, String)>> {
     let mut satisfied: HashMap<NodeId, Vec<(NodeId, String)>> = HashMap::new();
     for satisfy in roots.iter().flat_map(|root| ast.with_all_contents(*root)) {
@@ -93,10 +93,13 @@ pub fn satisfactions(ast: &Ast, roots: &[NodeId]) -> HashMap<NodeId, Vec<(NodeId
             continue;
         };
         let by = match ast.child(satisfy, Prop::Satisfier) {
-            Some(end) => written_chain(ast, end),
-            None => ast[satisfy].parent.and_then(|owner| effective_name(ast, owner)).unwrap_or("").to_string(),
+            Some(end) => (chain_target(ast, end), written_chain(ast, end)),
+            None => {
+                let owner = ast[satisfy].parent;
+                (owner, owner.and_then(|owner| effective_name(ast, owner)).unwrap_or("").to_string())
+            }
         };
-        satisfied.entry(requirement).or_default().push((satisfy, by));
+        satisfied.entry(requirement).or_default().push((by.0.unwrap_or(satisfy), by.1));
     }
     satisfied
 }
