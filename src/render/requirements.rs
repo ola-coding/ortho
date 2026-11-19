@@ -1,7 +1,7 @@
 //! A table of requirements as Markdown, laid out as a requirements specification
-//! is: a section for each requirement, with its text and rationale, nested ones
-//! under the one they are in, then a table of what satisfies each, its traceability.
-//! GitHub renders it, and lists its headings as an outline.
+//! is: a section for each requirement, nested ones under the one they are in, with
+//! its ID, statement and rationale in a box of its own, then a table of what satisfies
+//! each, its traceability. GitHub renders it, and lists its headings as an outline.
 use crate::diagrams::requirements::Row;
 use crate::parser::ast::NodeId;
 use std::collections::HashMap;
@@ -17,7 +17,7 @@ pub struct Specification<'a> {
 }
 
 /// The Markdown of a table of requirements. `link` gives where an element is
-/// declared, as the Markdown file links to it: `../requirements.sysml#L8`.
+/// declared, as the Markdown file links to it: `../physical.sysml#L159`.
 pub fn render_requirements_markdown(
     specification: &Specification,
     rows: &[Row],
@@ -52,21 +52,8 @@ pub fn render_requirements_markdown(
 
     for (row, heading) in rows.iter().zip(&headings) {
         let level = "#".repeat((row.depth + 2).min(6));
-        let linked = match (&row.id, link(row.element)) {
-            (Some(id), Some(target)) => format!("[{}]({target})", escape(id)),
-            (Some(id), None) => escape(id),
-            (None, _) => String::new(),
-        };
-        let name = row.name.as_deref().map(escape).unwrap_or_default();
-        let title = [linked, name].into_iter().filter(|part| !part.is_empty()).collect::<Vec<_>>().join(" ");
-        let title = if title.is_empty() { escape(heading) } else { title };
-        out.push_str(&format!("{level} {title}\n\n"));
-        for paragraph in &row.text {
-            out.push_str(&format!("{}\n\n", paragraph_text(paragraph)));
-        }
-        for rationale in &row.rationale {
-            out.push_str(&format!("**Rationale:** {}\n\n", escape(rationale)));
-        }
+        out.push_str(&format!("{level} {}\n\n", escape(heading)));
+        out.push_str(&requirement_box(row));
     }
 
     if !rows.is_empty() {
@@ -78,7 +65,7 @@ pub fn render_requirements_markdown(
             let name = row.name.as_deref().map(escape).unwrap_or_default();
             let name = if row.id.is_none() { format!("[{name}](#{anchor})") } else { name };
             let satisfied_by = if !row.satisfied_by.is_empty() {
-                let by = row.satisfied_by.iter().map(|(satisfy, by)| match link(*satisfy) {
+                let by = row.satisfied_by.iter().map(|(satisfier, by)| match link(*satisfier) {
                     Some(target) => format!("[{}]({target})", escape(by)),
                     None => escape(by),
                 });
@@ -94,6 +81,27 @@ pub fn render_requirements_markdown(
     out.truncate(out.trim_end().len());
     out.push('\n');
     out
+}
+
+/// A requirement's box: a table with its ID and statement, its `text`, and its
+/// rationale when it has one, under their headings. A cell holds no paragraphs, so
+/// they are broken by lines.
+fn requirement_box(row: &Row) -> String {
+    let cell = |paragraphs: &[String]| {
+        let text = paragraphs.iter().map(|paragraph| escape(paragraph)).collect::<Vec<_>>().join("<br><br>");
+        if text.is_empty() { "—".to_string() } else { text }
+    };
+    let id = row.id.as_deref().map_or("—".to_string(), escape);
+    let mut columns = vec![("ID", id), ("Statement", cell(&row.text))];
+    if !row.rationale.is_empty() {
+        columns.push(("Rationale", cell(&row.rationale)));
+    }
+    let line = |cells: Vec<&str>| format!("| {} |\n", cells.join(" | "));
+    let mut table = line(columns.iter().map(|(heading, _)| *heading).collect());
+    table.push_str(&format!("|{}\n", ":---|".repeat(columns.len())));
+    table.push_str(&line(columns.iter().map(|(_, value)| value.as_str()).collect()));
+    table.push('\n');
+    table
 }
 
 /// What the console says of a table of requirements: `8 requirement(s), 7 satisfied`.
@@ -115,11 +123,10 @@ fn summary_sentence(count: usize, unsatisfied: &[String]) -> String {
     }
 }
 
-/// A requirement's heading as GitHub reads it to make its anchor: its ID and its name.
+/// A requirement's heading, as GitHub also reads it to make its anchor: its name,
+/// or its ID when it has none, since its box shows its ID.
 fn plain_heading(row: &Row) -> String {
-    let parts = [row.id.as_deref(), row.name.as_deref()];
-    let heading = parts.into_iter().flatten().collect::<Vec<_>>().join(" ");
-    if heading.is_empty() { "requirement".to_string() } else { heading }
+    row.name.as_deref().or(row.id.as_deref()).unwrap_or("requirement").to_string()
 }
 
 /// The anchors GitHub gives a file's headings, in order: each in lower case, with

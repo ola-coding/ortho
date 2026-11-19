@@ -110,7 +110,7 @@ pub fn render_view(
 }
 
 /// A GridView of requirements as Markdown, written to the folder `out`, each
-/// requirement and `satisfy` linked to its line in the model.
+/// element that satisfies a requirement linked to its line in the model.
 fn render_requirements(workspace: &Workspace, view: NodeId, out: &str) -> RenderResult {
     let ast = &workspace.ast;
     let roots: Vec<NodeId> = workspace.documents.iter().map(|document| document.root).collect();
