@@ -252,7 +252,8 @@ fn draws_a_flow_with_no_connection_as_a_line_of_its_own() {
 #[test]
 fn places_each_flow_name_beside_its_arrowhead_clear_of_everything_else_in_the_same_layout() {
     // The coffee machine's flows run along its pipes and its mains cable.
-    let workspace = common::example("coffee-machine", &["physical.sysml", "logical.sysml", "use-case.sysml"]);
+    let workspace =
+        common::example("coffee-machine", &["physical.sysml", "logical.sysml", "use-case.sysml", "requirements.sysml"]);
     let graph = graph_of(&workspace);
     let laid_out = laid_out(&graph);
     let mut without = graph.clone();

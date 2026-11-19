@@ -200,7 +200,7 @@ fn lists_leaves_beneath_their_parent_and_spreads_any_other_family_in_a_row() {
 fn renders_the_examples_as_their_committed_diagrams() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR"));
     // And the views written by hand, for what no example draws.
-    for (example, count) in [("examples/coffee-machine", 6), ("examples/survey-drone", 6), ("tests/views", 8)] {
+    for (example, count) in [("examples/coffee-machine", 7), ("examples/survey-drone", 7), ("tests/views", 8)] {
         let folder = root.join(example);
         let mut files: Vec<String> = std::fs::read_dir(&folder)
             .unwrap()
@@ -261,7 +261,9 @@ fn marks_every_box_with_the_line_that_declares_it() {
             .collect();
         files.sort();
         let workspace = parse_sysml_files(&files).unwrap().workspace;
-        for view in render_views(&workspace, &LIGHT, "diagrams").unwrap().rendered {
+        // A table of requirements has no boxes.
+        let diagrams = render_views(&workspace, &LIGHT, "diagrams").unwrap().rendered;
+        for view in diagrams.into_iter().filter(|view| view.file.ends_with(".svg")) {
             let boxes = marked_boxes(&view.result.content);
             // The summary counts the boxes first: `12 node(s), …` or `6 lifeline(s), …`.
             let drawn: usize = view.result.summary.split_once(' ').unwrap().0.parse().unwrap();

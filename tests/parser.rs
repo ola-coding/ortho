@@ -232,7 +232,7 @@ fn reads_the_examples_and_fixtures() {
             }
         }
     }
-    assert_eq!(read, 17);
+    assert_eq!(read, 19);
 }
 
 #[test]

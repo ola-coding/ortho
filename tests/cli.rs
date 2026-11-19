@@ -54,7 +54,7 @@ fn says_its_version() {
 #[test]
 fn renders_the_examples_as_their_committed_diagrams() {
     // The web shop has no hardware, so no physical or deployment view.
-    for (example, views) in [("coffee-machine", 6), ("survey-drone", 6), ("web-shop", 4)] {
+    for (example, views) in [("coffee-machine", 7), ("survey-drone", 7), ("web-shop", 5)] {
         let out = scratch(example);
         let output = ortho(&["render", &format!("examples/{example}"), "-o", path(&out)]);
         assert!(output.status.success(), "{}", stderr(&output));
@@ -65,8 +65,12 @@ fn renders_the_examples_as_their_committed_diagrams() {
         assert_eq!(written, files_in(&committed));
         for file in &written {
             // As Git on Windows may check it out.
-            let expected = std::fs::read_to_string(committed.join(file)).unwrap().replace("\r\n", "\n");
-            let actual = std::fs::read_to_string(out.join(file)).unwrap();
+            let mut expected = std::fs::read_to_string(committed.join(file)).unwrap().replace("\r\n", "\n");
+            let mut actual = std::fs::read_to_string(out.join(file)).unwrap();
+            // A table of requirements links to the model from where it is written.
+            if file.ends_with(".md") {
+                (expected, actual) = (links_by_name(&expected), links_by_name(&actual));
+            }
             assert!(actual == expected, "{example}: {file} is not as committed");
         }
         // One line for each file, saying what it holds.
@@ -76,6 +80,23 @@ fn renders_the_examples_as_their_committed_diagrams() {
         assert!(said.iter().any(|line| line.starts_with(&format!("Wrote {} (", logical.display()))), "{said:?}");
         assert!(said.iter().any(|line| line.ends_with("message(s))")), "{said:?}");
     }
+}
+
+/// Markdown with each link into the model reduced to the file's name, which is the
+/// same wherever it is written from: `](../requirements.sysml#L5)` to
+/// `](requirements.sysml#L5)`.
+fn links_by_name(markdown: &str) -> String {
+    let mut out = String::new();
+    let mut rest = markdown;
+    while let Some(at) = rest.find("](") {
+        let (before, after) = rest.split_at(at + 2);
+        out.push_str(before);
+        let end = after.find(')').unwrap_or(after.len());
+        out.push_str(after[..end].rsplit('/').next().unwrap_or_default());
+        rest = &after[end..];
+    }
+    out.push_str(rest);
+    out
 }
 
 #[test]
@@ -90,7 +111,7 @@ fn reads_a_file_named_twice_or_inside_a_folder_named_too_once() {
         path(&out),
     ]);
     assert!(output.status.success(), "{}", stderr(&output));
-    assert_eq!(files_in(&out).len(), 6);
+    assert_eq!(files_in(&out).len(), 7);
 }
 
 #[test]

@@ -3,9 +3,11 @@ package Hardware {
     doc /* Topology only: what feeds and wires to what. No geometry, no frame, no
          * placement on it. */
 
-    // A part performs the functions it does itself. The computers perform theirs
-    // through the software deployed on them.
+    // A part performs the functions it does itself, and satisfies the
+    // requirements it meets. The computers do both through the software
+    // deployed on them, and satisfy on their own what their hardware meets.
     private import Functions::*;
+    private import SystemRequirements::*;
     private import ScalarValues::*;
     private import ISQ::*;
     private import SI::*;
@@ -58,6 +60,7 @@ package Hardware {
     part def LiPoBattery {
         doc /* Feeds every consumer that needs a supply rail of its own. */
         perform survey.operateVehicle.supplyPower;
+        satisfy endurance;
 
         attribute cells : Integer = 6;
         attribute energy : EnergyValue = 222 ['W⋅h'];
@@ -76,6 +79,8 @@ package Hardware {
 
     part def GpuComputer {
         doc /* Jetson-style computer with a 100 TOPS GPU, for everything above flying. */
+        satisfy safeFlight.obstacleAvoidance.onboardDetection;
+
         port powerIn : ~PowerPort;
         port cameraIn : ~VideoPort;
         port autopilot : DataPort;
@@ -93,6 +98,7 @@ package Hardware {
         doc /* Receiver and antenna in one puck, as on most ArduPilot builds. It
              * takes its power over the same connector as its data. */
         perform survey.guideNavigateAndControl.navigate;
+        satisfy automaticSurvey.trackAccuracy;
 
         port dataOut : GpsPort;
     }
@@ -101,6 +107,7 @@ package Hardware {
     part def IpRadio {
         doc /* An IP radio: the same unit is fitted at both ends of the link. */
         perform survey.communicate;
+        satisfy linkRange;
 
         port ethernet : DataPort;
         port rf : RfPort;
@@ -114,6 +121,9 @@ package Hardware {
 
     // --- assemblies --------------------------------------------------------
     part def SurveyDrone {
+        // What only the drone as a whole meets.
+        satisfy safeFlight;
+
         part motors : PropulsionUnit [4];
         part esc : FourInOneEsc;
         part battery : LiPoBattery;

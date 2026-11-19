@@ -15,7 +15,8 @@ mod common;
 use common::{all_nodes, exposed_by_view, lines_of, names, sorted_names};
 
 /// One file per view. No hardware, so no physical or deployment file.
-const ALL: &[&str] = &["use-case.sysml", "logical.sysml", "implementation.sysml", "process.sysml"];
+const ALL: &[&str] =
+    &["use-case.sysml", "logical.sysml", "implementation.sysml", "process.sysml", "requirements.sysml"];
 
 fn parse_set(files: &[&str]) -> Workspace {
     common::example("web-shop", files)
@@ -27,12 +28,12 @@ fn logical() -> DiagramGraph {
 }
 
 fn implementation() -> DiagramGraph {
-    let workspace = parse_set(&["implementation.sysml", "logical.sysml", "use-case.sysml"]);
+    let workspace = parse_set(&["implementation.sysml", "logical.sysml", "use-case.sysml", "requirements.sysml"]);
     extract_implementation_graph(&workspace.ast, &exposed_by_view(&workspace))
 }
 
 #[test]
-fn parses_and_links_all_four_files_as_one_workspace_with_no_warning() {
+fn parses_and_links_all_five_files_as_one_workspace_with_no_warning() {
     let workspace = parse_set(ALL);
     let packages: Vec<_> =
         workspace.packages().into_iter().map(|p| workspace.ast.text(p, Prop::Name).unwrap()).collect();
@@ -47,11 +48,13 @@ fn parses_and_links_all_four_files_as_one_workspace_with_no_warning() {
             "Catalogue",
             "Ordering",
             "Fulfilment",
-            "PlaceOrderScenario"
+            "PlaceOrderScenario",
+            "SystemRequirements"
         ]
     );
     // With no deployment view, nothing has to run on a host; every function is
-    // performed by software, and every use case is refined.
+    // performed by software, every use case is refined, and every requirement
+    // satisfied.
     assert_eq!(workspace.reported(Severity::Warning), Vec::<String>::new());
 }
 
@@ -136,7 +139,8 @@ fn implementation_view_four_parts_of_the_shop_all_built_on_aws() {
 
 #[test]
 fn process_view_an_order_paid_for_with_the_provider() {
-    let workspace = parse_set(&["process.sysml", "implementation.sysml", "logical.sysml", "use-case.sysml"]);
+    let workspace =
+        parse_set(&["process.sysml", "implementation.sysml", "logical.sysml", "use-case.sysml", "requirements.sysml"]);
     let sequence = extract_sequence_model(&workspace.ast, &exposed_by_view(&workspace));
     let lifelines: Vec<&str> = sequence.lifelines.iter().map(|l| l.label.as_str()).collect();
     assert_eq!(
@@ -155,7 +159,7 @@ fn process_view_an_order_paid_for_with_the_provider() {
 }
 
 #[test]
-fn renders_all_four_views_each_to_a_file_named_after_it() {
+fn renders_all_five_views_each_to_a_file_named_after_it() {
     let workspace = parse_set(ALL);
     let ast = &workspace.ast;
     let rendering = render_views(&workspace, &LIGHT, "diagrams").unwrap();
@@ -165,6 +169,7 @@ fn renders_all_four_views_each_to_a_file_named_after_it() {
     assert_eq!(
         files,
         [
+            (DiagramKind::Requirements, "requirements-web-shop.md"),
             (DiagramKind::UseCase, "use-case-view-web-shop.svg"),
             (DiagramKind::Logical, "logical-view-web-shop.svg"),
             (DiagramKind::Implementation, "implementation-view-web-shop.svg"),

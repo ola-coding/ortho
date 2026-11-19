@@ -336,12 +336,14 @@ fn post(port: u16, path: &str, body: Value) -> Value {
     serde_json::from_str(&body).unwrap()
 }
 
-/// What `ortho render` run at the project's root, where the server runs, writes.
+/// The diagrams `ortho render` run at the project's root, where the server runs,
+/// writes: the SVGs the preview shows, not the Markdown of a table of requirements.
 fn rendered(folder: &Path) -> Vec<(String, String)> {
     let done =
         Command::new(env!("CARGO_BIN_EXE_ortho")).args(["render", ".", "-o", "expected"]).current_dir(folder).output();
     assert!(done.unwrap().status.success());
     let files = std::fs::read_dir(folder.join("expected")).unwrap().map(|entry| entry.unwrap());
+    let files = files.filter(|file| file.path().extension().is_some_and(|extension| extension == "svg"));
     files.map(|file| (file.file_name().into_string().unwrap(), std::fs::read_to_string(file.path()).unwrap())).collect()
 }
 

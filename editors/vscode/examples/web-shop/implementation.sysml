@@ -10,9 +10,21 @@
 package Aws {
     doc /* The vendor's services the modules are built on. ortho knows the names
          * in OMG's library, but no vendor's, so they are declared here. */
-    part def S3;
-    part def Lambda;
-    part def DynamoDB;
+    private import SystemRequirements::*;
+
+    // What the shop stands on meets what no module of it can: staying open,
+    // and growing with a peak.
+    part def S3 {
+        satisfy availability;
+    }
+    part def Lambda {
+        satisfy availability;
+        satisfy peakLoad;
+    }
+    part def DynamoDB {
+        satisfy availability;
+        satisfy peakLoad;
+    }
 }
 
 package Apis {
@@ -75,12 +87,15 @@ package Apis {
 package Storefront {
     doc /* What the customer's browser runs. */
     private import Functions::*;
+    private import SystemRequirements::*;
     private import Aws::*;
 
     part def StorefrontApp :> S3 {
         doc /* Keeps the cart in the browser until the customer orders. */
         perform sale.takeOrders.keepCart;
         perform sale.informCustomers.showOrderStatus;
+        satisfy guestCart;
+        satisfy orderStatus;
 
         port catalogue : ~Apis::CatalogueApi;
         port orders : ~Apis::OrderApi;
@@ -90,25 +105,32 @@ package Storefront {
 package Catalogue {
     doc /* The products, and finding them. */
     private import Functions::*;
+    private import SystemRequirements::*;
     private import Aws::*;
 
     part def CatalogueFunction :> Lambda {
         perform sale.presentCatalogue;
+        satisfy productSearch;
 
         port catalogue : Apis::CatalogueApi;
     }
 
-    part def ProductTable :> DynamoDB;
+    part def ProductTable :> DynamoDB {
+        satisfy catalogueSize;
+    }
 }
 
 package Ordering {
     doc /* Taking an order and its payment. Says what happened, and leaves the
          * rest to whoever subscribes. */
     private import Functions::*;
+    private import SystemRequirements::*;
     private import Aws::*;
 
     part def OrderFunction :> Lambda {
         perform sale.takeOrders.recordOrder;
+        satisfy paidOrders;
+        satisfy paidOrders.quickConfirmation;
 
         port orders : Apis::OrderApi;
         port payment : ~Apis::PaymentApi;
@@ -119,6 +141,7 @@ package Ordering {
         doc /* Hands the card to the payment provider; card numbers never reach
              * the shop's own tables. */
         perform sale.takeOrders.takePayment;
+        satisfy paidOrders.noCardData;
 
         port payment : Apis::PaymentApi;
         port provider : ~Apis::ProviderApi;
@@ -130,10 +153,12 @@ package Ordering {
 package Fulfilment {
     doc /* Getting the goods to the customer, and saying so. */
     private import Functions::*;
+    private import SystemRequirements::*;
     private import Aws::*;
 
     part def FulfilmentFunction :> Lambda {
         perform sale.fulfilOrders;
+        satisfy orderFulfilment;
 
         port orders : ~Apis::OrderEvents;
         port shipments : Apis::ShipmentEvents;
@@ -142,6 +167,7 @@ package Fulfilment {
     part def NotifyFunction :> Lambda {
         doc /* Mails the customer through Amazon SES. */
         perform sale.informCustomers.notifyCustomer;
+        satisfy orderEmails;
 
         port orders : ~Apis::OrderEvents;
         port shipments : ~Apis::ShipmentEvents;

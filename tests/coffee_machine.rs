@@ -17,11 +17,18 @@ mod common;
 use common::{all_nodes, exposed_by_view, lines_of, names, sorted_names};
 
 /// One file per view.
-const ALL: &[&str] =
-    &["use-case.sysml", "logical.sysml", "implementation.sysml", "physical.sysml", "deployment.sysml", "process.sysml"];
+const ALL: &[&str] = &[
+    "use-case.sysml",
+    "logical.sysml",
+    "implementation.sysml",
+    "physical.sysml",
+    "deployment.sysml",
+    "process.sysml",
+    "requirements.sysml",
+];
 
 /// The view whose file declares everything it draws, and names no other.
-const SELF_CONTAINED: &[&str] = &["use-case.sysml"];
+const SELF_CONTAINED: &[&str] = &["use-case.sysml", "requirements.sysml"];
 
 fn parse_set(files: &[&str]) -> Workspace {
     common::example("coffee-machine", files)
@@ -34,17 +41,17 @@ fn logical() -> (Workspace, DiagramGraph) {
 }
 
 fn implementation() -> DiagramGraph {
-    let workspace = parse_set(&["implementation.sysml", "logical.sysml", "use-case.sysml"]);
+    let workspace = parse_set(&["implementation.sysml", "logical.sysml", "use-case.sysml", "requirements.sysml"]);
     extract_implementation_graph(&workspace.ast, &exposed_by_view(&workspace))
 }
 
 fn physical() -> DiagramGraph {
-    let workspace = parse_set(&["physical.sysml", "logical.sysml", "use-case.sysml"]);
+    let workspace = parse_set(&["physical.sysml", "logical.sysml", "use-case.sysml", "requirements.sysml"]);
     extract_physical_graph(&workspace.ast, &exposed_by_view(&workspace))
 }
 
 #[test]
-fn parses_and_links_all_six_files_as_one_workspace() {
+fn parses_and_links_all_seven_files_as_one_workspace() {
     let workspace = parse_set(ALL);
     let packages: Vec<_> =
         workspace.packages().into_iter().map(|p| workspace.ast.text(p, Prop::Name).unwrap()).collect();
@@ -58,7 +65,8 @@ fn parses_and_links_all_six_files_as_one_workspace() {
             "Control",
             "Hardware",
             "Deployment",
-            "MakeCappuccinoScenario"
+            "MakeCappuccinoScenario",
+            "SystemRequirements"
         ]
     );
 }
@@ -220,8 +228,14 @@ fn realization_every_function_is_performed_by_something_and_every_part_but_the_b
 
 #[test]
 fn deployment_view_five_programs_on_two_hosts_inside_the_machine() {
-    let workspace =
-        parse_set(&["deployment.sysml", "implementation.sysml", "physical.sysml", "logical.sysml", "use-case.sysml"]);
+    let workspace = parse_set(&[
+        "deployment.sysml",
+        "implementation.sysml",
+        "physical.sysml",
+        "logical.sysml",
+        "use-case.sysml",
+        "requirements.sysml",
+    ]);
     let graph = extract_deployment_graph(&workspace.ast, &exposed_by_view(&workspace), &workspace.packages());
     assert!(graph.edges.is_empty());
     // Both hosts are fitted in the machine, so they share its frame.
@@ -238,7 +252,8 @@ fn deployment_view_five_programs_on_two_hosts_inside_the_machine() {
 
 #[test]
 fn process_view_one_press_produces_a_cappuccino() {
-    let workspace = parse_set(&["process.sysml", "implementation.sysml", "logical.sysml", "use-case.sysml"]);
+    let workspace =
+        parse_set(&["process.sysml", "implementation.sysml", "logical.sysml", "use-case.sysml", "requirements.sysml"]);
     let sequence = extract_sequence_model(&workspace.ast, &exposed_by_view(&workspace));
     let lifelines: Vec<&str> = sequence.lifelines.iter().map(|l| l.label.as_str()).collect();
     assert_eq!(
@@ -257,7 +272,7 @@ fn process_view_one_press_produces_a_cappuccino() {
 }
 
 #[test]
-fn renders_all_six_views_each_to_a_file_named_after_it() {
+fn renders_all_seven_views_each_to_a_file_named_after_it() {
     let workspace = parse_set(ALL);
     let ast = &workspace.ast;
     let rendering = render_views(&workspace, &LIGHT, "diagrams").unwrap();
@@ -267,6 +282,7 @@ fn renders_all_six_views_each_to_a_file_named_after_it() {
     assert_eq!(
         files,
         [
+            (DiagramKind::Requirements, "requirements-coffee-machine.md"),
             (DiagramKind::UseCase, "use-case-view-coffee-machine.svg"),
             (DiagramKind::Logical, "logical-view-coffee-machine.svg"),
             (DiagramKind::Implementation, "implementation-view-coffee-machine.svg"),
@@ -277,7 +293,9 @@ fn renders_all_six_views_each_to_a_file_named_after_it() {
     );
     for rendered in &rendering.rendered {
         let heading = view_heading(ast, rendered.view);
-        assert!(rendered.result.content.starts_with("<svg"), "{heading}");
+        // The table of requirements is Markdown, under the view's name; the rest are SVG.
+        let starts = if rendered.file.ends_with(".md") { "# " } else { "<svg" };
+        assert!(rendered.result.content.starts_with(starts), "{heading}");
         assert!(rendered.result.content.contains(heading), "{heading}");
     }
     // Each diagram names the file that declares its view.

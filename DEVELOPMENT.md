@@ -176,17 +176,18 @@ from another view**, except:
 
 ```text
 logical                   →  use case
-implementation            →  logical
-physical                  →  logical, use case
+implementation            →  logical, requirements
+physical                  →  logical, use case, requirements
 deployment                →  implementation, physical
 process                   →  implementation, use case
 ```
 
 Every dependency points back towards what users need: a function tree names
-the use case it refines, a component names its functions, the product
-specializes the use cases' subject, and a scenario's people are their actors,
-never the other way round. A view draws only what it exposes, so the files it
-refers to supply names, not boxes.
+the use case it refines, a component names its functions and the
+requirements it satisfies, the product specializes the use cases' subject, and
+a scenario's people are their actors, never the other way round. The
+requirements, like the use cases, name nothing. A view draws only what it
+exposes, so the files it refers to supply names, not boxes.
 
 These rules are the examples' only: [any link can be left out](VIEWS.md), and
 the web shop, which has no hardware, has no physical or deployment view. The
@@ -440,7 +441,7 @@ Open, in priority order:
     table of what satisfies each.
   - [x] Resolve what `satisfy` names, with *did you mean*; warn of a
     requirement nothing satisfies, and of one without an ID or with another's.
-  - [ ] Requirements in the three examples.
+  - [x] Requirements in the three examples.
   - [ ] LANGUAGE.md, VIEWS.md and the AI instructions.
   - [ ] A tab for the table in the VS Code and browser previews.
   - [ ] Later: *Verified by* (`verify`), *Derived from* (`#derivation`) and
