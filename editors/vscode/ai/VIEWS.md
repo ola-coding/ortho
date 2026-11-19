@@ -12,7 +12,8 @@ Physical.
 Start from what users need (Use case), sort it into functions (Logical),
 realize them in software (Implementation) and hardware (Physical), place the
 one on the other (Deployment), and show how the software talks at run time
-(Process).
+(Process). Beside the use cases, the requirements say what the system shall
+do, and how well; the software and hardware say which of them they satisfy.
 
 ```mermaid
 flowchart TD
@@ -22,6 +23,7 @@ flowchart TD
     PHY["Physical view - Structure of physical product"]
     DEP["Deployment view - Which hardware runs which software"]
     PROC["Process view - How software modules interact at runtime"]
+    REQ["Requirements - What the system shall do, and how well"]
 
     UC --> LOG
     LOG --> IMP
@@ -29,6 +31,8 @@ flowchart TD
     IMP --> PROC
     IMP --> DEP
     PHY --> DEP
+    REQ --> IMP
+    REQ --> PHY
 ```
 
 Every arrow is optional. A view needs another only where its model names
@@ -127,6 +131,27 @@ Drawn as a sequence diagram: a lifeline per participant, a person or a
 module, each headed by a «part» box. Messages are arrows from lifeline to
 lifeline, in order from top to bottom, labelled as declared: `name of
 Payload`.
+
+## Requirements
+
+What the system shall do, and how well, each requirement stated once, with
+an ID. The use cases say what people ask for; the requirements add what a
+reviewer can check: within 60 s, at least 1.5 L, 99.9 % of every month.
+
+Like a use case, a requirement is stated of the system as a black box and
+names no part or program: the machine shall hold at least 1.5 L of water, not
+the tank. The part or module that meets it says so, as it names its
+functions, so the requirement outlives the design that first met it. Each
+says one thing, with a figure that can be checked, and a rationale where why
+is not plain. One that breaks into several holds them nested, and whatever
+satisfies it satisfies them.
+
+Not a diagram but a specification, laid out as formal ones are: a heading for
+each requirement, with its ID, statement and rationale in a box of their own,
+so each can be cited and checked alone. A nested requirement stands one
+heading level deeper. A traceability table follows, giving each requirement
+what satisfies it, linked to the line that declares it, or the requirement it
+is satisfied through.
 
 ## References
 

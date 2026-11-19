@@ -1,7 +1,8 @@
 # The SysML v2 that ortho reads
 
-ortho reads the whole SysML v2 textual notation and draws six views from it.
-This page says, view by view, what each view draws from a model. Section
+ortho reads the whole SysML v2 textual notation, draws six views from it and
+writes its requirements as a specification. This page says, view by view, what
+each view draws from a model. Section
 numbers (§) point into **OMG SysML v2.0, Part 1, formal/2026-03-02**,
 <https://www.omg.org/spec/SysML/2.0/>, which is the authority.
 
@@ -144,10 +145,12 @@ package Functions {
 | physical | `InterconnectionView` | the product's `part` usage |
 | deployment | `GeneralView` | the package of allocations |
 | process | `SequenceView` | the scenario's `occurrence def` |
+| requirements | `GridView` | the package of requirements |
 
 A view draws only what it exposes, and a `GeneralView` draws whatever that is.
-ortho skips any other view a model declares, and says why; with nothing left to
-draw, it fails.
+A `GridView` is not drawn but written, as a table of
+[requirements](#requirements). ortho skips any other view a model declares, and
+says why; with nothing left to draw, it fails.
 
 ### Keeping a view on one page
 
@@ -624,37 +627,92 @@ package Operations {
 }
 ```
 
-## Parsed, not drawn
+## Requirements
 
-Every other definition and usage, from items and requirements to states,
-calculations and metadata, parses, but no view draws it, and what it names is
-kept as written rather than checked.
-
-**Requirements** (§7.21). A non-functional requirement often proposes a
-solution on the implementation or physical view, so a model carrying
-requirements has to keep loading. `satisfy` names a requirement and the part
-that satisfies it.
+What the system shall do, each requirement stated once, with an ID (§7.21). A
+`GridView` that exposes them (§9.2.20) is not drawn: ortho writes it as a
+specification in Markdown, named after the view as a diagram is, with `.md`:
+a heading and a box for each requirement, then a table of what satisfies each.
 
 ```sysml
-package DroneRequirements {
-    private import ScalarValues::*;
+package SystemRequirements {
+    private import ModelingMetadata::*;
+    private import StandardViewDefinitions::*;
 
-    part def Drone;
+    requirement <'REQ-001'> espressoTime {
+        doc /* The machine shall deliver an espresso within 60 s of the user's
+             * choice, starting from standby. */
+        @Rationale { text = "A minute is as long as its users will wait."; }
 
-    requirement def Endurance {
-        subject drone : Drone;
-        attribute minutes : Real = 40;
+        requirement <'REQ-002'> heatUp {
+            doc /* The machine shall heat its brewing water to 92 °C within 30 s. */
+        }
     }
 
-    requirement endurance : Endurance;
+    requirement <'REQ-003'> waterCapacity {
+        doc /* The machine shall hold at least 1.5 L of water. */
+    }
 
-    part drone : Drone;
-    satisfy endurance by drone;
+    view 'Requirements — Coffee Machine' : GridView {
+        doc /* What the coffee machine shall do. */
+        expose SystemRequirements;
+    }
+}
+
+package Hardware {
+    private import SystemRequirements::*;
+
+    part def Thermoblock {
+        satisfy espressoTime.heatUp;
+    }
+    part def WaterTank {
+        satisfy waterCapacity;
+    }
+    part def CoffeeMachine {
+        part thermoblock : Thermoblock;
+        part tank : WaterTank;
+        satisfy espressoTime;
+    }
 }
 ```
 
-**Values and expressions** (KerML §8.2.5.8): `capacity_mAh : Real = 10000`
-above, a quantity with its unit, `mass = 1500 [kg]`, a calculation, or a
+| You write | The table shows |
+|---|---|
+| `view 'Name' : GridView { doc /* ... */ expose Pkg; }` | a document headed `Name`, its introduction the `doc`, listing the requirements in `Pkg` in the order declared. The view may expose a requirement itself instead. |
+| `requirement <'REQ-001'> name { ... }` | a heading, `name`, over a box with the ID, `REQ-001`, the statement and the rationale |
+| `doc /* ... */` in the requirement | its statement, which SysML v2 calls its `text`. A second `doc`, or an empty line in one, starts a paragraph. |
+| `@Rationale { text = "..."; }` in the requirement, from the standard library's `ModelingMetadata` | its rationale, in a column of its own where there is one |
+| a `requirement` nested in another | a subrequirement, under a heading one level deeper |
+| `satisfy name;` in a part def, or `satisfy name by part;` | the part def, or the `part`, under *Satisfied by*, linked to the line that declares it |
+| `requirement def Name { ... }`, a requirement's `subject`, attributes and constraints | nothing. They load. |
+
+**IDs.** A requirement's ID is its short name, `<'REQ-001'>`, which SysML v2
+calls its `reqId`. Number them straight through, nested ones included, and
+never use one again: a document that cites `REQ-007` has to find the same
+requirement next year. ortho warns of a requirement a table lists that has no
+ID, or the ID of another, and renders anyway.
+
+**Satisfying a requirement.** A part or module says which requirements it
+meets with `satisfy`, in its own body, beside the functions it `perform`s.
+`satisfy x;` there means its owner satisfies `x`; `satisfy x by y;` names the
+one that does. Satisfying a requirement satisfies those nested in it, which the
+table shows as satisfied *through* it. A `satisfy` of anything but a
+requirement is an error.
+
+Once a model declares a `GridView` of requirements and an implementation or
+physical view, ortho warns of each requirement a table lists that nothing
+satisfies, itself or through a requirement it is in, and renders anyway. A
+model with no implementation or physical view gets no warning, since nothing
+could satisfy it yet.
+
+## Parsed, not drawn
+
+Every other definition and usage, from items to states, calculations and
+metadata, parses, but no view draws it, and what it names is kept as written
+rather than checked.
+
+**Values and expressions** (KerML §8.2.5.8): a value, `capacity : Real = 1.9`,
+a quantity with its unit, `mass = 1500 [kg]`, a calculation, or a
 constraint's condition. No view evaluates them.
 
 ## The standard library

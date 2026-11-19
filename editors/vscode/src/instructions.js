@@ -15,7 +15,7 @@ const SKILL_FOLDER = `.claude/skills/${SKILL}`;
 const DESCRIPTION =
   'Write, change and review SysML v2 models, .sysml files, that ortho draws as architecture views, and check them with ortho. ' +
   'Use whenever you create, edit or review a .sysml file, or are asked to model a system in SysML v2: ' +
-  'its use cases, functions, software, hardware or deployment.';
+  'its use cases, requirements, functions, software, hardware or deployment.';
 
 /** The reference files the skill carries beside it, by name. */
 const REFERENCES = ['LANGUAGE.md', 'VIEWS.md', 'MISTAKES.md'];

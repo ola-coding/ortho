@@ -7,9 +7,10 @@
 
 **Architecture diagrams from SysML v2 text.** Write your model in the SysML v2
 textual notation, commit it next to your code, and `ortho` draws six
-architectural views of it as SVG, in SysML v2's own graphical notation. Just
-as a technical drawing shows one object through several standard views, so
-the diagrams show one model.
+architectural views of it as SVG, in SysML v2's own graphical notation, and
+writes its requirements as a specification in Markdown. Just as a technical
+drawing shows one object through several standard views, so the diagrams show
+one model.
 
 <p align="center">
   <img src="examples/coffee-machine/diagrams/physical-view-coffee-machine.svg"
@@ -72,6 +73,30 @@ views. Click a diagram to see it full size.
 
 A model needs only the views it wants. [VIEWS.md](VIEWS.md) says what each
 view is for, and [LANGUAGE.md](LANGUAGE.md) what to write for it.
+
+## Requirements
+
+A `GridView` of requirements is written rather than drawn: a specification in
+Markdown, which GitHub shows as it is. Each requirement gets a heading and a
+box with its ID, statement and rationale; a traceability table at the end
+links each to the parts and modules that satisfy it. This requirement of the
+[coffee machine](examples/coffee-machine/diagrams/requirements-coffee-machine.md)
+
+```sysml
+requirement <'REQ-008'> waterCapacity {
+    doc /* The machine shall hold at least 1.5 L of water. */
+    @Rationale { text = "About a day's coffee for a household of four, so the tank needs filling once a day at most."; }
+}
+```
+
+with `satisfy waterCapacity;` in the water tank's part def, is written as
+
+| ID | Statement | Rationale |
+|:---|:---|:---|
+| REQ-008 | The machine shall hold at least 1.5 L of water. | About a day's coffee for a household of four, so the tank needs filling once a day at most. |
+
+and listed in the traceability table as satisfied by `WaterTank`, linked to
+the line that declares it.
 
 ## Install
 
@@ -147,7 +172,8 @@ ortho lsp
 - **`render`** reads the `.sysml` files and folders given as one model and
   writes an SVG for each view, named after it: `view 'Logical view'` writes
   `logical-view.svg`, and `view <logical> 'Logical view'` writes
-  `logical.svg`. `--watch` renders again on every save. A view too big to
+  `logical.svg`. A `GridView` of requirements is written as `.md` instead.
+  `--watch` renders again on every save. A view too big to
   read on its page is still drawn, with a warning;
   [split it](LANGUAGE.md#keeping-a-view-on-one-page).
 - **`init`** writes AI instructions into the folder: a skill for Claude Code,
@@ -159,8 +185,8 @@ ortho lsp
 
 ## In CI
 
-Commit the models and their SVGs. Rendering is deterministic, so CI can
-render again and fail if anything changed. In GitHub Actions:
+Commit the models and what ortho writes from them. Rendering is
+deterministic, so CI can render again and fail if anything changed. In GitHub Actions:
 
 ```yaml
 - name: Diagrams are up to date
@@ -175,23 +201,26 @@ To stay on one version, use `releases/download/v0.4.1/` in place of
 
 ## Examples
 
-Three complete models, each with its views in its `diagrams/` folder:
+Three complete models, each with its views and requirements in its
+`diagrams/` folder:
 
 - [coffee-machine](examples/coffee-machine/): a bean-to-cup coffee machine,
   the best place to start reading.
 - [survey-drone](examples/survey-drone/): a quadcopter that surveys an area
   from the air, with a tablet ground station.
 - [web-shop](examples/web-shop/): an online shop on AWS, software only, so
-  four views.
+  four diagrams.
 
 The [pitch deck](https://ola-coding.github.io/ortho/) shows every view of
 the first two beside the model source.
 
 ## Limits
 
-- **Six views, not every SysML v2 diagram.** Requirements, states,
-  calculations and constraints load, but no view draws them yet
+- **Six views, not every SysML v2 diagram.** States, calculations and
+  constraints load, but no view draws them yet
   ([LANGUAGE.md](LANGUAGE.md#parsed-not-drawn)).
+- **Requirements as a table, not yet a trace.** The table says what satisfies
+  each requirement, not yet what verifies it or what it derives from.
 - **No standard library.** ortho knows the library's names, so a model may
   use them, but does not load it.
 

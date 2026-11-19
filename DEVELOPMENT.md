@@ -319,8 +319,8 @@ reported privately, as `SECURITY.md` says.
   `SysMLInteractive.readAll(folder, true, ".kerml")` for the kernel libraries
   and `".sysml"` for the other two.
 - Give one `SysMLInteractive.process(text)` session each example's files in
-  dependency order (use case, logical, implementation, physical, deployment,
-  process) and print `getIssues()` after each. Give each block of LANGUAGE.md
+  dependency order (use case, logical, requirements, implementation, physical,
+  deployment, process) and print `getIssues()` after each. Give each block of LANGUAGE.md
   and each test fixture `process(text, false)`, which leaves it out of the
   index, so none leans on another's names. Give it a broken model too: a check
   that cannot fail proves nothing.
@@ -442,7 +442,7 @@ Open, in priority order:
   - [x] Resolve what `satisfy` names, with *did you mean*; warn of a
     requirement nothing satisfies, and of one without an ID or with another's.
   - [x] Requirements in the three examples.
-  - [ ] LANGUAGE.md, VIEWS.md and the AI instructions.
+  - [x] README, LANGUAGE.md, VIEWS.md and the AI instructions.
   - [ ] A tab for the table in the VS Code and browser previews.
   - [ ] Later: *Verified by* (`verify`), *Derived from* (`#derivation`) and
     status (`StatusInfo`).
