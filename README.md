@@ -170,7 +170,7 @@ render again and fail if anything changed. In GitHub Actions:
     test -z "$(git status --porcelain diagrams)" || { git status diagrams; exit 1; }
 ```
 
-To stay on one version, use `releases/download/v0.4.0/` in place of
+To stay on one version, use `releases/download/v0.4.1/` in place of
 `releases/latest/download/`.
 
 ## Examples
