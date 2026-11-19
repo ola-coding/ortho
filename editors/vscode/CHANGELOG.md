@@ -2,7 +2,7 @@
 
 The extension has the version of the ortho it carries.
 
-## 0.4.1 (2026-11-18)
+## 0.4.1 (2026-11-19)
 
 It carries ortho 0.4.1, which reads two more forms of SysML v2 that 0.4.0
 refused ([#38](https://github.com/ola-coding/ortho/issues/38)): metadata in a
