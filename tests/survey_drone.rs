@@ -17,11 +17,18 @@ mod common;
 use common::{all_nodes, compartment, exposed_by_view, lines_of, names, sorted_names};
 
 /// One file per view.
-const ALL: &[&str] =
-    &["use-case.sysml", "logical.sysml", "implementation.sysml", "physical.sysml", "deployment.sysml", "process.sysml"];
+const ALL: &[&str] = &[
+    "use-case.sysml",
+    "logical.sysml",
+    "implementation.sysml",
+    "physical.sysml",
+    "deployment.sysml",
+    "process.sysml",
+    "requirements.sysml",
+];
 
 /// The view whose file declares everything it draws, and names no other.
-const SELF_CONTAINED: &[&str] = &["use-case.sysml"];
+const SELF_CONTAINED: &[&str] = &["use-case.sysml", "requirements.sysml"];
 
 fn parse_set(files: &[&str]) -> Workspace {
     common::example("survey-drone", files)
@@ -34,17 +41,17 @@ fn logical() -> (Workspace, DiagramGraph) {
 }
 
 fn implementation() -> DiagramGraph {
-    let workspace = parse_set(&["implementation.sysml", "logical.sysml", "use-case.sysml"]);
+    let workspace = parse_set(&["implementation.sysml", "logical.sysml", "use-case.sysml", "requirements.sysml"]);
     extract_implementation_graph(&workspace.ast, &exposed_by_view(&workspace))
 }
 
 fn physical() -> DiagramGraph {
-    let workspace = parse_set(&["physical.sysml", "logical.sysml", "use-case.sysml"]);
+    let workspace = parse_set(&["physical.sysml", "logical.sysml", "use-case.sysml", "requirements.sysml"]);
     extract_physical_graph(&workspace.ast, &exposed_by_view(&workspace))
 }
 
 #[test]
-fn parses_and_links_all_six_files_as_one_workspace() {
+fn parses_and_links_all_seven_files_as_one_workspace() {
     let workspace = parse_set(ALL);
     let packages: Vec<_> =
         workspace.packages().into_iter().map(|p| workspace.ast.text(p, Prop::Name).unwrap()).collect();
@@ -61,7 +68,8 @@ fn parses_and_links_all_six_files_as_one_workspace() {
             "FlightPlatform",
             "Hardware",
             "Deployment",
-            "SurveyMissionScenario"
+            "SurveyMissionScenario",
+            "SystemRequirements"
         ]
     );
 }
@@ -237,8 +245,14 @@ fn physical_view_a_part_inherits_what_its_definition_performs() {
 
 #[test]
 fn deployment_view_every_module_hosted_on_three_computers_in_two_devices() {
-    let workspace =
-        parse_set(&["deployment.sysml", "implementation.sysml", "physical.sysml", "logical.sysml", "use-case.sysml"]);
+    let workspace = parse_set(&[
+        "deployment.sysml",
+        "implementation.sysml",
+        "physical.sysml",
+        "logical.sysml",
+        "use-case.sysml",
+        "requirements.sysml",
+    ]);
     let graph = extract_deployment_graph(&workspace.ast, &exposed_by_view(&workspace), &workspace.packages());
     assert!(graph.edges.is_empty());
 
@@ -282,7 +296,8 @@ fn deployment_view_every_module_hosted_on_three_computers_in_two_devices() {
 
 #[test]
 fn process_view_a_survey_mission_uploaded_over_the_mavlink_mission_protocol() {
-    let workspace = parse_set(&["process.sysml", "implementation.sysml", "logical.sysml", "use-case.sysml"]);
+    let workspace =
+        parse_set(&["process.sysml", "implementation.sysml", "logical.sysml", "use-case.sysml", "requirements.sysml"]);
     let sequence = extract_sequence_model(&workspace.ast, &exposed_by_view(&workspace));
     assert_eq!(sequence.lifelines.len(), 6);
     // The operator starts it: the actor of the use cases.
@@ -307,7 +322,7 @@ fn process_view_a_survey_mission_uploaded_over_the_mavlink_mission_protocol() {
 }
 
 #[test]
-fn renders_all_six_views_each_to_a_file_named_after_it() {
+fn renders_all_seven_views_each_to_a_file_named_after_it() {
     let workspace = parse_set(ALL);
     let ast = &workspace.ast;
     let rendering = render_views(&workspace, &LIGHT, "diagrams").unwrap();
@@ -317,6 +332,7 @@ fn renders_all_six_views_each_to_a_file_named_after_it() {
     assert_eq!(
         files,
         [
+            (DiagramKind::Requirements, "requirements-survey-drone.md"),
             (DiagramKind::UseCase, "use-case-view-survey-drone.svg"),
             (DiagramKind::Logical, "logical-view-survey-drone.svg"),
             (DiagramKind::Implementation, "implementation-view-survey-drone.svg"),
@@ -327,7 +343,9 @@ fn renders_all_six_views_each_to_a_file_named_after_it() {
     );
     for rendered in &rendering.rendered {
         let heading = view_heading(ast, rendered.view);
-        assert!(rendered.result.content.starts_with("<svg"), "{heading}");
+        // The table of requirements is Markdown, under the view's name; the rest are SVG.
+        let starts = if rendered.file.ends_with(".md") { "# " } else { "<svg" };
+        assert!(rendered.result.content.starts_with(starts), "{heading}");
         assert!(rendered.result.content.contains(heading), "{heading}");
     }
     // Each diagram names the file that declares its view.

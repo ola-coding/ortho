@@ -49,6 +49,7 @@ pub const EXAMPLES: [Example; 3] = [
             "logical.sysml",
             "physical.sysml",
             "process.sysml",
+            "requirements.sysml",
             "use-case.sysml"
         ]
     ),
@@ -61,10 +62,15 @@ pub const EXAMPLES: [Example; 3] = [
             "logical.sysml",
             "physical.sysml",
             "process.sysml",
+            "requirements.sysml",
             "use-case.sysml"
         ]
     ),
-    example!("web-shop", "Web shop", ["implementation.sysml", "logical.sysml", "process.sysml", "use-case.sysml"]),
+    example!(
+        "web-shop",
+        "Web shop",
+        ["implementation.sysml", "logical.sysml", "process.sysml", "requirements.sysml", "use-case.sysml"]
+    ),
 ];
 
 /// The file opened first in a copied example: the use case view, where a model starts.

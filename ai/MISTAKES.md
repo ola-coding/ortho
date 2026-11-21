@@ -473,6 +473,185 @@ package Hardware {
 }
 ```
 
+## Requirements
+
+### A requirement that names what meets it
+
+A requirement is stated of the system as a black box, as a use case is
+([VIEWS.md](../VIEWS.md#requirements)). Naming the part or program that meets
+it puts the design into the requirement, which is then wrong once the design
+changes. The part says what it meets, with `satisfy`.
+
+```sysml wrong
+package SystemRequirements {
+    requirement <'REQ-1'> 'Water capacity' {
+        doc /* The water tank shall hold at least 1.5 L. */
+    }
+}
+```
+
+ortho prints nothing.
+
+```sysml
+package SystemRequirements {
+    requirement <'REQ-1'> 'Water capacity' {
+        doc /* The machine shall hold at least 1.5 L of water. */
+    }
+}
+```
+
+### A requirement named like code
+
+A requirement's name is its title in the document, so write it in plain
+words, in single quotes, starting with a capital.
+
+```sysml wrong
+package SystemRequirements {
+    requirement <'REQ-1'> waterCapacity {
+        doc /* The machine shall hold at least 1.5 L of water. */
+    }
+}
+```
+
+ortho prints nothing.
+
+```sysml
+package SystemRequirements {
+    requirement <'REQ-1'> 'Water capacity' {
+        doc /* The machine shall hold at least 1.5 L of water. */
+    }
+}
+```
+
+### A requirement with must or should
+
+A requirement says *shall*, as every EARS pattern does
+([VIEWS.md](../VIEWS.md#requirements)). With *should* or *may* it is a wish,
+and with *must* or *will* each reader decides whether it binds.
+
+```sysml wrong
+package SystemRequirements {
+    requirement <'REQ-1'> 'Water capacity' {
+        doc /* The machine must hold at least 1.5 L of water. */
+    }
+}
+```
+
+ortho prints nothing.
+
+```sysml
+package SystemRequirements {
+    requirement <'REQ-1'> 'Water capacity' {
+        doc /* The machine shall hold at least 1.5 L of water. */
+    }
+}
+```
+
+### A condition at the end
+
+EARS puts what a requirement depends on first, with a keyword of its own:
+*When* for an event, *While* for a state, *Where* for an optional feature, and
+*If … then* for something unwanted. At the end of the sentence, a condition is
+easily missed, or read as belonging to only part of it.
+
+```sysml wrong
+package SystemRequirements {
+    requirement <'REQ-1'> 'Dry-run cut-off' {
+        doc /* The machine shall switch the heater off within 2 s when no water
+             * flows through it. */
+    }
+}
+```
+
+ortho prints nothing.
+
+```sysml
+package SystemRequirements {
+    requirement <'REQ-1'> 'Dry-run cut-off' {
+        doc /* If no water flows through the heater, then the machine shall
+             * switch the heater off within 2 s. */
+    }
+}
+```
+
+### An ID in the statement
+
+A requirement's ID is its short name, in angle brackets, which SysML v2 calls
+its `reqId` (§7.21). Written into its statement, or its name, it is only
+text, and the table has no ID to list the requirement by.
+
+```sysml wrong
+package SystemRequirements {
+    private import StandardViewDefinitions::*;
+
+    requirement 'Water capacity' {
+        doc /* REQ-1: The machine shall hold at least 1.5 L of water. */
+    }
+
+    view 'Requirements' : GridView {
+        expose SystemRequirements;
+    }
+}
+```
+
+ortho prints: `'Water capacity' has no ID for the table of requirements to list it by. Give it one as its short name, as in requirement <'REQ-1'> 'Water capacity'.`
+
+```sysml
+package SystemRequirements {
+    private import StandardViewDefinitions::*;
+
+    requirement <'REQ-1'> 'Water capacity' {
+        doc /* The machine shall hold at least 1.5 L of water. */
+    }
+
+    view 'Requirements' : GridView {
+        expose SystemRequirements;
+    }
+}
+```
+
+### A function satisfied instead of performed
+
+A part names the functions it realizes with `perform`, and the requirements
+it meets with `satisfy`. A function is what the system does; a requirement
+what it shall do, and how well.
+
+```sysml wrong
+package Functions {
+    action def MakeBeverage {
+        action heatWater;
+    }
+    action beverage : MakeBeverage;
+}
+
+package Hardware {
+    private import Functions::*;
+
+    part def Thermoblock {
+        satisfy beverage.heatWater;
+    }
+}
+```
+
+ortho prints: `'beverage.heatWater' is not a requirement, so it cannot be satisfied.`
+
+```sysml
+package Functions {
+    action def MakeBeverage {
+        action heatWater;
+    }
+    action beverage : MakeBeverage;
+}
+
+package Hardware {
+    private import Functions::*;
+
+    part def Thermoblock {
+        perform beverage.heatWater;
+    }
+}
+```
+
 ## Views
 
 ### One package around all the software

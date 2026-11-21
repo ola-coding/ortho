@@ -59,7 +59,7 @@ pub fn is_sub_function(ast: &Ast, element: NodeId) -> bool {
     ast[element].ty == Type::ActionUsage && ast.text(element, Prop::Type).is_none()
 }
 
-/// Whether `element` is a requirement, `requirement <'REQ-001'> brewTime;`, not its definition.
+/// Whether `element` is a requirement, `requirement <'REQ-1'> 'Brew time';`, not its definition.
 pub fn is_requirement(ast: &Ast, element: NodeId) -> bool {
     ast[element].ty == Type::OtherUsage && ast.text(element, Prop::Kind) == Some("requirement")
 }

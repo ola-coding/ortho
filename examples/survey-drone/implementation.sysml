@@ -114,12 +114,15 @@ package Apis {
 package Ground {
     doc /* The operator's app, on the tablet. */
     private import Functions::*;
+    private import SystemRequirements::*;
     private import Middleware;
 
     part def SurveyPlanner {
         doc /* Plans the survey with the operator and shows its progress. */
         perform survey.interactWithOperator.planMission;
         perform survey.interactWithOperator.presentProgress;
+        satisfy 'Survey planning';
+        satisfy 'Progress display';
 
         port request : Apis::SurveyTopic;
         port route : ~Apis::RouteTopic;
@@ -132,11 +135,13 @@ package Ground {
 package Onboard {
     doc /* One Docker container per module, on the GPU computer. */
     private import Functions::*;
+    private import SystemRequirements::*;
     private import Middleware;
 
     // Plans against what perception knows of the surroundings.
     part def RoutePlanner {
         perform survey.guideNavigateAndControl.planRoute;
+        satisfy 'Survey planning'.'Leg coverage';
 
         port request : ~Apis::SurveyTopic;
         port route : Apis::RouteTopic;
@@ -146,6 +151,7 @@ package Onboard {
 
     part def ObstacleAvoidance {
         perform survey.guideNavigateAndControl.avoidObstacles;
+        satisfy 'Safe flight'.'Obstacle avoidance';
 
         port world : ~Apis::WorldTopic;
     }
@@ -153,6 +159,7 @@ package Onboard {
     part def VideoStreamer {
         doc /* Captures, encodes and streams the camera's video, on GStreamer. */
         perform survey.communicate.streamVideo;
+        satisfy 'Live video';
 
         port video : Apis::VideoTopic;
     }
@@ -160,6 +167,7 @@ package Onboard {
     part def WorldModel {
         doc /* Fuses video and flight state into a map of the obstacles around. */
         perform survey.perceive.maintainWorldModel;
+        satisfy 'Safe flight'.'Obstacle avoidance';
 
         port video : ~Apis::VideoTopic;
         port world : Apis::WorldTopic;
@@ -168,6 +176,7 @@ package Onboard {
     part def Diagnostics {
         doc /* Monitors every module's health and records the flight. */
         perform survey.superviseSystem;
+        satisfy 'Flight record';
 
         port health : Apis::HealthTopic;
         port video : ~Apis::VideoTopic;
@@ -177,6 +186,8 @@ package Onboard {
 package Middleware {
     doc /* What the onboard containers and the operator's app talk through. */
     private import Functions::*;
+    private import SystemRequirements::*;
+
     part def ZenohRouter {
         doc /* Carries every message between the containers, and to the tablet. */
         port transport : Apis::TransportApi;
@@ -185,6 +196,7 @@ package Middleware {
     part def MavlinkBridge {
         doc /* Turns the flight firmware's MAVLink into Zenoh topics, and back. */
         perform survey.communicate.exchangeTelemetry;
+        satisfy 'Progress display';
 
         port mission : ~Apis::MissionTopic;
         port progress : Apis::ProgressTopic;
@@ -193,6 +205,8 @@ package Middleware {
 
     part def WireGuardTunnel {
         doc /* Encrypts everything that crosses the radio link. */
+        satisfy 'Link encryption';
+
         port transport : ~Apis::TransportApi;
     }
 }
@@ -201,11 +215,15 @@ package Flight {
     doc /* ArduPilot-style firmware for the control computer. Each comment
          * names the ArduPilot libraries the module stands for. */
     private import Functions::*;
+    private import SystemRequirements::*;
     private import FlightPlatform;
 
     // AP_Mission, AC_WPNav
     part def MissionExecutor {
         perform survey.guideNavigateAndControl.guide;
+        satisfy 'Automatic survey';
+        satisfy 'Safe flight'.'Lost link';
+        satisfy 'Safe flight'.'Low battery';
 
         port mission : Apis::MissionApi;
         port target : Apis::TargetApi;
@@ -215,6 +233,7 @@ package Flight {
     // AP_AHRS, AP_NavEKF3
     part def StateEstimator {
         perform survey.guideNavigateAndControl.navigate;
+        satisfy 'Automatic survey'.'Track accuracy';
 
         port vehicleState : Apis::StateApi;
         port sensors : ~Apis::SensorApi;
@@ -223,6 +242,7 @@ package Flight {
     // AC_AttitudeControl, AC_PosControl, AP_Motors
     part def FlightControl {
         perform survey.guideNavigateAndControl.control;
+        satisfy 'Automatic survey'.'Track accuracy';
 
         port target : ~Apis::TargetApi;
         port vehicleState : ~Apis::StateApi;

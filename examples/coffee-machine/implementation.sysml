@@ -49,10 +49,12 @@ package Application {
     doc /* Decides what beverage to make. Depends on the control layer, never
          * the other way round. */
     private import Functions::*;
+    private import SystemRequirements::*;
     private import Control;
 
     part def UiApp {
         perform beverage.controlMachine.selectBeverage;
+        satisfy 'Choice of beverage';
 
         port recipe : ~Apis::RecipeApi;
     }
@@ -61,6 +63,7 @@ package Application {
         doc /* Offers one API and drives three: the whole of the machine's
              * control is this module calling those. */
         perform beverage.controlMachine.sequenceRecipe;
+        satisfy 'Freshly ground coffee';
 
         port recipe : Apis::RecipeApi;
         port temperature : ~Apis::TemperatureApi;
@@ -72,9 +75,12 @@ package Application {
 package Control {
     doc /* Drives one device each. */
     private import Functions::*;
+    private import SystemRequirements::*;
 
     part def TemperatureController {
         perform beverage.controlMachine.regulateTemperature;
+        satisfy 'Espresso time'.'Brew temperature';
+        satisfy 'Safety'.'Dry-run cut-off';
 
         port temperature : Apis::TemperatureApi;
     }
@@ -83,6 +89,8 @@ package Control {
         doc /* Doses, tamps and extracts, and keeps the brew group shut while it
              * is under pressure. */
         perform beverage.prepareCoffee.extractShot;
+        satisfy 'Dose range';
+        satisfy 'Safety'.'Brew group interlock';
 
         port brew : Apis::BrewApi;
     }

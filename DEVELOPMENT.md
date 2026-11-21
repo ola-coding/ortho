@@ -176,17 +176,18 @@ from another view**, except:
 
 ```text
 logical                   →  use case
-implementation            →  logical
-physical                  →  logical, use case
+implementation            →  logical, requirements
+physical                  →  logical, use case, requirements
 deployment                →  implementation, physical
 process                   →  implementation, use case
 ```
 
 Every dependency points back towards what users need: a function tree names
-the use case it refines, a component names its functions, the product
-specializes the use cases' subject, and a scenario's people are their actors,
-never the other way round. A view draws only what it exposes, so the files it
-refers to supply names, not boxes.
+the use case it refines, a component names its functions and the
+requirements it satisfies, the product specializes the use cases' subject, and
+a scenario's people are their actors, never the other way round. The
+requirements, like the use cases, name nothing. A view draws only what it
+exposes, so the files it refers to supply names, not boxes.
 
 These rules are the examples' only: [any link can be left out](VIEWS.md), and
 the web shop, which has no hardware, has no physical or deployment view. The
@@ -318,8 +319,8 @@ reported privately, as `SECURITY.md` says.
   `SysMLInteractive.readAll(folder, true, ".kerml")` for the kernel libraries
   and `".sysml"` for the other two.
 - Give one `SysMLInteractive.process(text)` session each example's files in
-  dependency order (use case, logical, implementation, physical, deployment,
-  process) and print `getIssues()` after each. Give each block of LANGUAGE.md
+  dependency order (use case, logical, requirements, implementation, physical,
+  deployment, process) and print `getIssues()` after each. Give each block of LANGUAGE.md
   and each test fixture `process(text, false)`, which leaves it out of the
   index, so none leans on another's names. Give it a broken model too: a check
   that cannot fail proves nothing.
@@ -424,8 +425,9 @@ Open, in priority order:
 - [ ] **Publish the Zed extension:** zed-industries/extensions#8349, opened on
   2026-11-15, waits for review. Try it on macOS and on a Linux desktop. When
   Nomograph fixes `dependency A::b to C;`, which their grammar reads only with
-  `from` (nomograph/tree-sitter-sysml#4, reported on 2026-11-17), move the pin
-  and let CI parse the web shop's `logical.sysml` too.
+  `from` (nomograph/tree-sitter-sysml#4, reported on 2026-11-17), and a
+  feature chain after `satisfy`, `satisfy a.b;`, which it does not read at all
+  (not yet reported), move the pin and drop CI's allowance for both.
 - [ ] **Be found by SysML v2 users.** ortho is listed in mycr0ft/awesome-sysml
   and daltskin/SysML-v2-Resources; jgsystemsconsulting/awesome-sysml-v2#5 and
   jgsystemsconsulting/awesome-mbse#30 wait for review. Then a post in the
@@ -433,15 +435,28 @@ Open, in priority order:
   plain SysML, which reads as v1.
 - [ ] **Requirements as a specification ortho writes,** rather than a
   seventh diagram, from standard SysML:
-  `requirement <'REQ-001'> brewTime { doc /* ... */ }`, `@Rationale` and
-  `satisfy brewTime by machine.heater;`.
+  `requirement <'REQ-1'> 'Brew time' { doc /* ... */ }`, `@Rationale` and
+  `satisfy 'Brew time' by machine.heater;`.
   - [x] A `GridView` rendered as Markdown beside the SVGs: a section for each
     requirement, with its ID, name, text and rationale, then a traceability
     table of what satisfies each.
   - [x] Resolve what `satisfy` names, with *did you mean*; warn of a
     requirement nothing satisfies, and of one without an ID or with another's.
-  - [ ] Requirements in the three examples.
-  - [ ] LANGUAGE.md, VIEWS.md and the AI instructions.
-  - [ ] A tab for the table in the VS Code and browser previews.
-  - [ ] Later: *Verified by* (`verify`), *Derived from* (`#derivation`) and
-    status (`StatusInfo`).
+  - [x] Requirements in the three examples, numbered after OMG's examples,
+    titled in plain words and worded after EARS:
+    `<'REQ-1.2'> 'Brew temperature'`.
+  - [x] README, LANGUAGE.md, VIEWS.md and the AI instructions.
+  - [ ] A tab for the table in the VS Code and browser previews, as the
+    document shows on GitHub, in the editor's colours. Clicking a requirement
+    opens its line; the VS Code preview renders as you type, as Zed's does,
+    faded while the model does not load. *Save all* writes the `.md` too.
+  - [ ] Status and *Verified by*, after a mock-up of the table:
+    `@StatusInfo { status = StatusKind::tbr; }` as a Status column in the box,
+    and `verify` in a verification case, with its `@VerificationMethod`, as a
+    *Verified by* column in the traceability table. Resolve what `verify`
+    names, with *did you mean*; warn of a requirement nothing verifies once
+    the model has a verification case. A `verification.sysml` in each
+    example. An assumed figure is marked TBR, not explained in the rationale.
+  - [ ] Resolve the ends of a `#derivation connection`, with *did you mean*.
+  - [ ] Later: *Derived from*, for a model with requirements on more than one
+    level; sections, from packages nested in the one the table exposes.

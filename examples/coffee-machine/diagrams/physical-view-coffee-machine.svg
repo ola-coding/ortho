@@ -20,7 +20,7 @@
         fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
   <text x="1115.56" y="823" text-anchor="end" font-size="9" fill="#1a1a1a">examples/coffee-machine/physical.sysml</text>
   
-    <g data-file="examples/coffee-machine/physical.sysml" data-line="204"><rect x="36" y="60" width="1059.56" height="733" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/physical.sysml" data-line="221"><rect x="36" y="60" width="1059.56" height="733" rx="10" ry="10"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M36.5,92 L36.5,70 A9.5,9.5 0 0 1 46,60.5 L1085.56,60.5 A9.5,9.5 0 0 1 1095.06,70 L1095.06,92 Z" fill="#ccdce5" />
       <text x="565.78" y="73" text-anchor="middle"
@@ -29,7 +29,7 @@
           font-size="12" font-weight="600" fill="#1a1a1a">machine : CoffeeMachine</text>
       <line x1="36" y1="92" x2="1095.56" y2="92"
           stroke="#40657e" stroke-width="1" /></g>
-    <g data-file="examples/coffee-machine/physical.sysml" data-line="157"><rect x="526.452" y="334" width="145.44400000000002" height="68" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/physical.sysml" data-line="174"><rect x="526.452" y="334" width="145.44400000000002" height="68" rx="10" ry="10"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M526.952,366 L526.952,344 A9.5,9.5 0 0 1 536.452,334.5 L661.896,334.5 A9.5,9.5 0 0 1 671.396,344 L671.396,366 Z" fill="#ccdce5" />
       <text x="599.174" y="347" text-anchor="middle"
@@ -44,7 +44,7 @@
           font-size="11" fill="#1a1a1a">storeWater</text>
       <rect x="594.174" y="397" width="10" height="10" rx="2" ry="2"
           fill="white" stroke="#40657e" stroke-width="1.25" /></g>
-    <g data-file="examples/coffee-machine/physical.sysml" data-line="158"><rect x="370.86133333333333" y="456" width="158.944" height="68" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/physical.sysml" data-line="175"><rect x="370.86133333333333" y="456" width="158.944" height="68" rx="10" ry="10"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M371.36133333333333,488 L371.36133333333333,466 A9.5,9.5 0 0 1 380.86133333333333,456.5 L519.8053333333334,456.5 A9.5,9.5 0 0 1 529.3053333333334,466 L529.3053333333334,488 Z" fill="#ccdce5" />
       <text x="450.3333333333333" y="469" text-anchor="middle"
@@ -63,7 +63,7 @@
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="417.176" y="451" width="10" height="10" rx="2" ry="2"
           fill="white" stroke="#40657e" stroke-width="1.25" /></g>
-    <g data-file="examples/coffee-machine/physical.sysml" data-line="159"><rect x="394.23466666666667" y="578" width="173.296" height="68" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/physical.sysml" data-line="176"><rect x="394.23466666666667" y="578" width="173.296" height="68" rx="10" ry="10"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M394.73466666666667,610 L394.73466666666667,588 A9.5,9.5 0 0 1 404.23466666666667,578.5 L557.5306666666667,578.5 A9.5,9.5 0 0 1 567.0306666666667,588 L567.0306666666667,610 Z" fill="#ccdce5" />
       <text x="480.88266666666664" y="591" text-anchor="middle"
@@ -84,7 +84,7 @@
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="506.432" y="573" width="10" height="10" rx="2" ry="2"
           fill="white" stroke="#40657e" stroke-width="1.25" /></g>
-    <g data-file="examples/coffee-machine/physical.sysml" data-line="160"><rect x="135.276" y="334" width="172.624" height="68" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/physical.sysml" data-line="177"><rect x="135.276" y="334" width="172.624" height="68" rx="10" ry="10"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M135.776,366 L135.776,344 A9.5,9.5 0 0 1 145.276,334.5 L297.9,334.5 A9.5,9.5 0 0 1 307.4,344 L307.4,366 Z" fill="#ccdce5" />
       <text x="221.58800000000002" y="347" text-anchor="middle"
@@ -99,7 +99,7 @@
           font-size="11" fill="#1a1a1a">storeBeans</text>
       <rect x="216.58800000000002" y="397" width="10" height="10" rx="2" ry="2"
           fill="white" stroke="#40657e" stroke-width="1.25" /></g>
-    <g data-file="examples/coffee-machine/physical.sysml" data-line="161"><rect x="175.90933333333334" y="456" width="142.036" height="68" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/physical.sysml" data-line="178"><rect x="175.90933333333334" y="456" width="142.036" height="68" rx="10" ry="10"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M176.40933333333334,488 L176.40933333333334,466 A9.5,9.5 0 0 1 185.90933333333334,456.5 L307.94533333333334,456.5 A9.5,9.5 0 0 1 317.44533333333334,466 L317.44533333333334,488 Z" fill="#ccdce5" />
       <text x="246.92733333333334" y="469" text-anchor="middle"
@@ -118,7 +118,7 @@
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="267.26666666666665" y="451" width="10" height="10" rx="2" ry="2"
           fill="white" stroke="#40657e" stroke-width="1.25" /></g>
-    <g data-file="examples/coffee-machine/physical.sysml" data-line="162"><rect x="185.88733333333334" y="700" width="201.141" height="68" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/physical.sysml" data-line="179"><rect x="185.88733333333334" y="700" width="201.141" height="68" rx="10" ry="10"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M186.38733333333334,732 L186.38733333333334,710 A9.5,9.5 0 0 1 195.88733333333334,700.5 L377.0283333333333,700.5 A9.5,9.5 0 0 1 386.5283333333333,710 L386.5283333333333,732 Z" fill="#ccdce5" />
       <text x="286.4578333333333" y="713" text-anchor="middle"
@@ -139,7 +139,7 @@
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="195.88733333333334" y="695" width="10" height="10" rx="2" ry="2"
           fill="white" stroke="#40657e" stroke-width="1.25" /></g>
-    <g data-file="examples/coffee-machine/physical.sysml" data-line="163"><rect x="607.5306666666667" y="578" width="164.932" height="68" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/physical.sysml" data-line="180"><rect x="607.5306666666667" y="578" width="164.932" height="68" rx="10" ry="10"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M608.0306666666667,610 L608.0306666666667,588 A9.5,9.5 0 0 1 617.5306666666667,578.5 L762.4626666666667,578.5 A9.5,9.5 0 0 1 771.9626666666667,588 L771.9626666666667,610 Z" fill="#ccdce5" />
       <text x="689.9966666666667" y="591" text-anchor="middle"
@@ -156,7 +156,7 @@
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="684.9966666666667" y="641" width="10" height="10" rx="2" ry="2"
           fill="white" stroke="#40657e" stroke-width="1.25" /></g>
-    <g data-file="examples/coffee-machine/physical.sysml" data-line="164"><rect x="615.6006666666667" y="700" width="185.778" height="68" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/physical.sysml" data-line="181"><rect x="615.6006666666667" y="700" width="185.778" height="68" rx="10" ry="10"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M616.1006666666667,732 L616.1006666666667,710 A9.5,9.5 0 0 1 625.6006666666667,700.5 L791.3786666666667,700.5 A9.5,9.5 0 0 1 800.8786666666667,710 L800.8786666666667,732 Z" fill="#ccdce5" />
       <text x="708.4896666666667" y="713" text-anchor="middle"
@@ -177,7 +177,7 @@
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="735.3386666666668" y="695" width="10" height="10" rx="2" ry="2"
           fill="white" stroke="#40657e" stroke-width="1.25" /></g>
-    <g data-file="examples/coffee-machine/physical.sysml" data-line="165"><rect x="109.27600000000001" y="227" width="211.599" height="40" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/physical.sysml" data-line="182"><rect x="109.27600000000001" y="227" width="211.599" height="40" rx="10" ry="10"
           fill="#ccdce5" stroke="#40657e" stroke-width="1.25" />
       <text x="215.0755" y="244" text-anchor="middle"
           font-size="9" font-style="italic" fill="#40657e">&#171;part&#187;</text>
@@ -193,7 +193,7 @@
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <rect x="300.875" y="262" width="10" height="10" rx="2" ry="2"
           fill="white" stroke="#40657e" stroke-width="1.25" /></g>
-    <g data-file="examples/coffee-machine/physical.sysml" data-line="166"><rect x="786.172" y="456" width="180.112" height="68" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/physical.sysml" data-line="183"><rect x="786.172" y="456" width="180.112" height="68" rx="10" ry="10"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M786.672,488 L786.672,466 A9.5,9.5 0 0 1 796.172,456.5 L956.284,456.5 A9.5,9.5 0 0 1 965.784,466 L965.784,488 Z" fill="#ccdce5" />
       <text x="876.2280000000001" y="469" text-anchor="middle"
@@ -208,7 +208,7 @@
           font-size="11" fill="#1a1a1a">selectBeverage</text>
       <rect x="871.2280000000001" y="451" width="10" height="10" rx="2" ry="2"
           fill="white" stroke="#40657e" stroke-width="1.25" /></g>
-    <g data-file="examples/coffee-machine/physical.sysml" data-line="167"><rect x="139.28750000000002" y="105" width="151.576" height="68" rx="10" ry="10"
+    <g data-file="examples/coffee-machine/physical.sysml" data-line="184"><rect x="139.28750000000002" y="105" width="151.576" height="68" rx="10" ry="10"
           fill="white" stroke="#40657e" stroke-width="1.25" />
       <path d="M139.78750000000002,137 L139.78750000000002,115 A9.5,9.5 0 0 1 149.28750000000002,105.5 L280.86350000000004,105.5 A9.5,9.5 0 0 1 290.36350000000004,115 L290.36350000000004,137 Z" fill="#ccdce5" />
       <text x="215.07550000000003" y="118" text-anchor="middle"

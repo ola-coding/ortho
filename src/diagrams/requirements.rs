@@ -9,7 +9,7 @@ use std::collections::{HashMap, HashSet};
 /// A requirement as its table lists it.
 pub struct Row {
     pub element: NodeId,
-    /// Its short name, `<'REQ-001'>`, which is its `reqId`.
+    /// Its short name, `<'REQ-1.2'>`, which is its `reqId`.
     pub id: Option<String>,
     pub name: Option<String>,
     /// How many requirements of the table it is nested in.

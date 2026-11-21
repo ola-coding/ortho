@@ -12,7 +12,8 @@ Physical.
 Start from what users need (Use case), sort it into functions (Logical),
 realize them in software (Implementation) and hardware (Physical), place the
 one on the other (Deployment), and show how the software talks at run time
-(Process).
+(Process). Beside the use cases, the requirements say what the system shall
+do, and how well; the software and hardware say which of them they satisfy.
 
 ```mermaid
 flowchart TD
@@ -22,6 +23,7 @@ flowchart TD
     PHY["Physical view - Structure of physical product"]
     DEP["Deployment view - Which hardware runs which software"]
     PROC["Process view - How software modules interact at runtime"]
+    REQ["Requirements - What the system shall do, and how well"]
 
     UC --> LOG
     LOG --> IMP
@@ -29,6 +31,8 @@ flowchart TD
     IMP --> PROC
     IMP --> DEP
     PHY --> DEP
+    REQ --> IMP
+    REQ --> PHY
 ```
 
 Every arrow is optional. A view needs another only where its model names
@@ -128,6 +132,46 @@ module, each headed by a «part» box. Messages are arrows from lifeline to
 lifeline, in order from top to bottom, labelled as declared: `name of
 Payload`.
 
+## Requirements
+
+What the system shall do, and how well, each requirement stated once. The use
+cases say what people ask for; the requirements add what a reviewer can check:
+within 60 s, at least 1.5 L, 99.9 % of every month.
+
+Like a use case, a requirement is stated of the system as a black box and
+names no part or program: the machine shall hold at least 1.5 L of water, not
+the tank. The part or module that meets it says so, as it names its
+functions, so the requirement outlives the design that first met it.
+
+What a requirement is comes from SysML v2 (§7.21): its ID is its short name,
+its statement the text of its `doc`, and the requirements nested in it are
+its subrequirements, satisfied by whatever satisfies it. The ID says where the
+requirement sits, as in OMG's own examples: REQ-1.2 is the second in REQ-1.
+The name is its title, in plain words: *Heat-up time*.
+
+Each statement takes one of the five patterns of EARS, the Easy Approach to
+Requirements Syntax, so each says *shall*, and what it depends on comes first:
+
+| Pattern | Template | For instance |
+|---|---|---|
+| Ubiquitous | The *system* shall *response*. | The machine shall hold at least 1.5 L of water. |
+| Event-driven | When *trigger*, the *system* shall *response*. | When an order is placed, the shop shall reserve its stock. |
+| State-driven | While *state*, the *system* shall *response*. | While the brew group is under pressure, the machine shall keep it shut. |
+| Optional feature | Where *feature is included*, the *system* shall *response*. | Where the machine has a milk system, the machine shall froth milk drawn straight from the user's carton. |
+| Unwanted behaviour | If *trigger*, then the *system* shall *response*. | If the radio link has been lost for 5 s, then the drone shall return to its launch point and land. |
+| Complex, the others combined | While *state*, when *trigger*, the *system* shall *response*. | While the machine is in standby, when the user chooses an espresso, the machine shall deliver it within 60 s. |
+
+*Should*, *may*, *will* and *must* have no place in a requirement. Each
+states one requirement, positively, with a figure a test can check: at least
+1.5 L, 9 bar plus or minus 1 bar. A rationale says why, where that is not
+plain.
+
+Not a diagram but a specification: a heading for each requirement, with its
+ID, statement and rationale in a box of their own, so each can be cited and
+checked alone. A nested requirement stands one heading level deeper. A
+traceability table follows, giving each requirement what satisfies it, linked
+to the line that declares it, or the requirement it is satisfied through.
+
 ## References
 
 - Philippe Kruchten, "Architectural Blueprints — The 4+1 View Model of
@@ -136,3 +180,8 @@ Payload`.
   the specification the grammar is written against.
 - [SysML v2 Release](https://github.com/Systems-Modeling/SysML-v2-Release) —
   the language specification, textual notation and pilot implementation.
+- Alistair Mavin, Philip Wilkinson, Adrian Harwood and Mark Novak, "Easy
+  Approach to Requirements Syntax (EARS)", *17th IEEE International
+  Requirements Engineering Conference*, pp. 317–322, 2009,
+  [doi:10.1109/RE.2009.9](https://doi.org/10.1109/RE.2009.9) — how each
+  requirement is worded.
