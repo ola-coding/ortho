@@ -336,15 +336,22 @@ fn post(port: u16, path: &str, body: Value) -> Value {
     serde_json::from_str(&body).unwrap()
 }
 
-/// The diagrams `ortho render` run at the project's root, where the server runs,
-/// writes: the SVGs the preview shows, not the Markdown of a table of requirements.
+/// The views `ortho render` run at the project's root, where the server runs, writes
+/// into a folder beside the model, as the page's save writes them into `diagrams`:
+/// the SVGs, and the Markdown of the table of requirements, whose links lead from
+/// such a folder to the model.
 fn rendered(folder: &Path) -> Vec<(String, String)> {
     let done =
         Command::new(env!("CARGO_BIN_EXE_ortho")).args(["render", ".", "-o", "expected"]).current_dir(folder).output();
     assert!(done.unwrap().status.success());
     let files = std::fs::read_dir(folder.join("expected")).unwrap().map(|entry| entry.unwrap());
-    let files = files.filter(|file| file.path().extension().is_some_and(|extension| extension == "svg"));
     files.map(|file| (file.file_name().into_string().unwrap(), std::fs::read_to_string(file.path()).unwrap())).collect()
+}
+
+/// What a view of the page holds: its SVG, or its Markdown.
+fn content(view: &Value) -> &str {
+    let svg = view["svg"].as_str().unwrap();
+    if svg.is_empty() { view["markdown"].as_str().unwrap() } else { svg }
 }
 
 #[test]
@@ -360,12 +367,15 @@ fn opens_a_preview_that_shows_the_diagrams_ortho_render_writes_and_follows_each_
     assert_eq!(state["errors"], json!([]));
     let expected = rendered(&folder);
     let views = state["views"].as_array().unwrap();
-    assert_eq!((views.len(), expected.len()), (6, 6));
-    for (file, svg) in &expected {
+    assert_eq!((views.len(), expected.len()), (7, 7));
+    for (file, written) in &expected {
         let view = views.iter().find(|view| view["file"] == file.as_str()).unwrap();
-        assert_eq!(view["svg"], svg.as_str(), "{file}");
+        assert_eq!(content(view), written.as_str(), "{file}");
     }
+    // The diagrams first, from what is asked of the system to how it runs, then the table.
     assert_eq!(views[0]["heading"], "Use case view — Coffee Machine");
+    assert_eq!(views[6]["heading"], "Requirements — Coffee Machine");
+    assert_eq!(views[6]["svg"], "");
     // Nothing is written beside the model until the page is asked to.
     assert!(!folder.join("diagrams").exists());
 
@@ -405,9 +415,55 @@ fn a_box_of_the_preview_opens_its_line_in_the_editor_and_save_writes_the_diagram
 
     let saved = post(port, "/save", json!({}));
     assert_eq!(saved["ok"], true, "{saved}");
-    for (file, svg) in rendered(&folder) {
-        assert_eq!(std::fs::read_to_string(folder.join("diagrams").join(&file)).unwrap(), svg, "{file}");
+    assert_eq!(saved["message"], "Wrote 7 views to diagrams/");
+    for (file, written) in rendered(&folder) {
+        assert_eq!(std::fs::read_to_string(folder.join("diagrams").join(&file)).unwrap(), written, "{file}");
     }
+}
+
+#[test]
+fn the_preview_draws_the_model_again_as_it_is_typed_and_its_table_opens_lines() {
+    let folder = example("coffee-machine", "typed");
+    let requirements = folder.join("requirements.sysml");
+    let mut live = Live::start(&folder);
+    let port = live.preview(&requirements);
+    let state = model_shown(port, "coffee-machine");
+    let table = |state: &Value| {
+        let views = state["views"].as_array().map(Vec::as_slice).unwrap_or_default();
+        let markdown = views.iter().find_map(|view| view["markdown"].as_str().filter(|text| !text.is_empty()));
+        markdown.unwrap_or("").to_string()
+    };
+    assert!(table(&state).contains("at least 1.5 L of water"));
+
+    // Typed, not saved: once typing pauses, the page shows it.
+    let text = std::fs::read_to_string(&requirements).unwrap();
+    live.send(&change(&requirements, &text.replace("at least 1.5 L of water", "at least 1.8 L of water")));
+    let typed = shows(port, |state| table(state).contains("at least 1.8 L of water"));
+    // Its links lead from the folder the page saves to, as `ortho render -o diagrams` writes them.
+    assert!(table(&typed).contains("[WaterTank](../physical.sysml#L"), "{}", table(&typed));
+
+    // Each requirement opens the line that declares it.
+    let at = &typed["requirements"]["byId"]["REQ-5"];
+    assert_eq!(at["file"], "requirements.sysml");
+    let line = at["line"].as_u64().unwrap() as usize;
+    assert!(text.lines().nth(line - 1).unwrap().contains("<'REQ-5'>"));
+    assert_eq!(typed["requirements"]["byId"].as_object().unwrap().len(), 15);
+
+    // A link in the table opens the line it names; nothing outside the model.
+    let water_tank = std::fs::read_to_string(folder.join("physical.sysml")).unwrap();
+    let declared = water_tank.lines().position(|line| line.contains("part def WaterTank")).unwrap() + 1;
+    let link = format!("../physical.sysml#L{declared}");
+    assert_eq!(post(port, "/open", json!({ "link": link })), json!({ "ok": true }));
+    let shown = live.shown();
+    assert_eq!(shown["uri"], uri(&folder.join("physical.sysml")));
+    assert_eq!(shown["selection"]["start"], json!({ "line": declared - 1, "character": 0 }));
+    std::fs::write(folder.parent().unwrap().join("other.sysml"), "").unwrap();
+    assert_eq!(post(port, "/open", json!({ "link": "../../other.sysml#L1" })), json!({ "ok": false }));
+
+    // The page reads the table with the VS Code preview's reader.
+    let (status, reader) = http(port, "GET", "/markdown.js", &format!("Host: 127.0.0.1:{port}\r\n"), "");
+    assert_eq!(status, 200);
+    assert!(reader.contains("orthoMarkdown"));
 }
 
 #[test]
@@ -445,7 +501,7 @@ fn a_code_action_on_a_view_shows_it_in_the_preview() {
     let port = address.rsplit(':').next().unwrap().parse().unwrap();
     let state = get(port, "/state?session=&after=0");
     assert_eq!(state["select"]["file"], view);
-    assert_eq!(state["views"].as_array().unwrap().len(), 6);
+    assert_eq!(state["views"].as_array().unwrap().len(), 7);
 }
 
 /// Two models in folders of their own, side by side in one project, as a test's own.

@@ -64,18 +64,18 @@ pub fn is_requirement(ast: &Ast, element: NodeId) -> bool {
     ast[element].ty == Type::OtherUsage && ast.text(element, Prop::Kind) == Some("requirement")
 }
 
-/// Which of ortho's views a view is, its table of requirements or one of its six
-/// diagrams, in the order a model's views are written and shown: from what is asked
-/// of the system to how it runs.
+/// Which of ortho's views a view is, one of its six diagrams or its table of
+/// requirements, in the order a model's views are written and shown: the diagrams from
+/// what is asked of the system to how it runs, then the table.
 #[derive(Clone, Copy, PartialEq, Eq, Debug, PartialOrd, Ord)]
 pub enum DiagramKind {
-    Requirements,
     UseCase,
     Logical,
     Implementation,
     Physical,
     Deployment,
     Process,
+    Requirements,
 }
 
 impl DiagramKind {

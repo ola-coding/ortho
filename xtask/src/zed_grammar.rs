@@ -3,7 +3,8 @@
 //! alike, and copies the licence into the extension, which Zed's extension registry
 //! requires. It also copies what the AI instructions are written from, LANGUAGE.md,
 //! VIEWS.md and the files of `ai/`, and the examples into `src/init/assets/`, which
-//! `ortho init` carries: crates.io gets only `src/`. CI runs it and fails if any committed file differs.
+//! `ortho init` carries, and the VS Code preview's reader of a table of requirements
+//! into `src/lsp/`, for the browser preview: crates.io gets only `src/`. CI runs it and fails if any committed file differs.
 //!
 //! Zed parses with Nomograph's Tree-sitter grammar, whose keywords are its anonymous
 //! nodes. A query naming a node the grammar lacks fails as a whole, so the words that
@@ -13,7 +14,11 @@ use crate::{Result, write};
 use ortho::parser::KEYWORDS;
 
 const OUT: &str = "editors/zed/languages/sysml/highlights.scm";
-const COPIES: [(&str, &str); 1] = [("LICENSE", "editors/zed/LICENSE")];
+const COPIES: [(&str, &str); 2] = [
+    ("LICENSE", "editors/zed/LICENSE"),
+    // The browser preview reads a table of requirements as the VS Code preview does.
+    ("editors/vscode/media/markdown.js", "src/lsp/markdown.js"),
+];
 const AI_OUT: &str = "src/init/assets/ai";
 const EXAMPLES_OUT: &str = "src/init/assets/examples";
 

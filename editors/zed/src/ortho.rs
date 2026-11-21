@@ -88,6 +88,13 @@ impl Ortho {
     }
 }
 
+/// The arguments ortho is started with: `lsp`, unless `lsp.ortho.binary.arguments`
+/// names others. Zed gives an empty list where the setting names a path and no
+/// arguments, which would start ortho with no command at all.
+fn arguments(given: Option<Vec<String>>) -> Vec<String> {
+    given.filter(|arguments| !arguments.is_empty()).unwrap_or_else(|| vec!["lsp".into()])
+}
+
 impl zed::Extension for Ortho {
     fn new() -> Self {
         Ortho { downloaded: None }
@@ -95,7 +102,7 @@ impl zed::Extension for Ortho {
 
     fn language_server_command(&mut self, server: &LanguageServerId, worktree: &zed::Worktree) -> Result<zed::Command> {
         let binary = LspSettings::for_worktree(server.as_ref(), worktree).ok().and_then(|settings| settings.binary);
-        let args = binary.as_ref().and_then(|binary| binary.arguments.clone()).unwrap_or_else(|| vec!["lsp".into()]);
+        let args = arguments(binary.as_ref().and_then(|binary| binary.arguments.clone()));
         let command = match binary.and_then(|binary| binary.path) {
             Some(path) => path,
             None => match worktree.which("ortho") {
@@ -117,3 +124,16 @@ impl zed::Extension for Ortho {
 }
 
 zed::register_extension!(Ortho);
+
+#[cfg(test)]
+mod tests {
+    use super::arguments;
+
+    #[test]
+    fn starts_ortho_as_a_language_server_unless_told_otherwise() {
+        assert_eq!(arguments(None), ["lsp"]);
+        // A path set and no arguments: Zed gives an empty list.
+        assert_eq!(arguments(Some(vec![])), ["lsp"]);
+        assert_eq!(arguments(Some(vec!["lsp".into(), "--verbose".into()])), ["lsp", "--verbose"]);
+    }
+}

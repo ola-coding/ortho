@@ -100,6 +100,28 @@ main svg [data-line] { cursor: pointer; }
 main svg [data-line]:hover { filter: brightness(0.93); }
 .summary { margin: 8px 0 0; text-align: center; color: var(--dim); }
 .empty { color: var(--dim); }
+/* A table of requirements, set as GitHub sets the Markdown ortho writes. */
+.doc { max-width: 900px; margin: 0 auto; font-size: 14px; line-height: 1.5; overflow-wrap: break-word; }
+main.stale .doc { opacity: 0.45; }
+.doc h1, .doc h2 { padding-bottom: 0.3em; border-bottom: 1px solid var(--line); font-weight: 600; }
+.doc h1 { margin: 0.2em 0 0.4em; font-size: 2em; }
+.doc h2 { margin: 1.2em 0 0.5em; font-size: 1.5em; }
+.doc h3, .doc h4, .doc h5, .doc h6 { margin: 1em 0 0.5em; font-weight: 600; }
+.doc h3 { font-size: 1.25em; }
+/* A heading moved to stays clear of the sticky header. */
+.doc [data-anchor] { scroll-margin-top: 60px; }
+.doc p { margin: 0 0 0.8em; }
+.doc sub { font-size: 0.85em; vertical-align: baseline; color: var(--dim); }
+.doc table { margin: 0 0 1em; border-collapse: collapse; }
+.doc th, .doc td { padding: 5px 12px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+/* An ID such as REQ-1.2 is never broken at its hyphen. */
+.doc td:first-child { white-space: nowrap; }
+.doc th { font-weight: 600; background: var(--bar); }
+.doc a { color: var(--accent); text-decoration: none; cursor: pointer; }
+.doc a:hover { text-decoration: underline; }
+/* A requirement opens the line that declares it. */
+.doc .requirement.opens { margin: 0 -8px; padding: 1px 8px; border-radius: 4px; cursor: pointer; }
+.doc .requirement.opens:hover { background: var(--note); }
 </style>
 </head>
 <body>
@@ -112,11 +134,12 @@ main svg [data-line]:hover { filter: brightness(0.93); }
   </span>
 </header>
 <section id="messages"></section>
-<main id="diagram"><p class="empty">Open a .sysml file in your editor: its views are drawn here, and again on every save.</p></main>
+<main id="diagram"><p class="empty">Open a .sysml file in your editor: its views are drawn here, and again as you type.</p></main>
+<script src="markdown.js"></script>
 <script>
-// The preview's page: a tab for each view ortho drew, the chosen view's diagram, and
-// what ortho reported. It asks `ortho lsp`, which serves it, for each render, and
-// waits there until there is a newer one.
+// The preview's page: a tab for each view ortho drew, the chosen view's diagram or
+// table of requirements, and what ortho reported. It asks `ortho lsp`, which serves
+// it, for each render, and waits there until there is a newer one.
 (function () {
   const tabs = document.getElementById('tabs');
   const status = document.getElementById('status');
@@ -141,6 +164,8 @@ main svg [data-line]:hover { filter: brightness(0.93); }
 
   let views = [];
   let folder;
+  /** Where each requirement is declared, by its ID, or by its name for one without. */
+  let requirements = { byId: {}, byName: {} };
 
   function element(tag, attributes = {}, text = '') {
     const node = document.createElement(tag);
@@ -153,9 +178,9 @@ main svg [data-line]:hover { filter: brightness(0.93); }
     return fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
   }
 
-  /** A diagram's title from its file name: logical-view-survey-drone.svg is "Logical view survey drone". */
+  /** A view's title from its file name: logical-view-survey-drone.svg is "Logical view survey drone". */
   function viewTitle(file) {
-    const words = file.replace(/\.svg$/i, '').replace(/[-_]+/g, ' ').trim();
+    const words = file.replace(/\.(svg|md)$/i, '').replace(/[-_]+/g, ' ').trim();
     return words ? words[0].toUpperCase() + words.slice(1) : 'View';
   }
 
@@ -195,8 +220,13 @@ main svg [data-line]:hover { filter: brightness(0.93); }
       button.setAttribute('aria-selected', String(button.dataset.file === view?.file));
     }
     diagram.replaceChildren();
-    diagram.classList.toggle('actual-size', Boolean(state.actualSize));
+    diagram.classList.toggle('actual-size', Boolean(state.actualSize) && !view?.markdown);
+    showSaveOne(view);
     if (!view) return;
+    if (view.markdown) {
+      diagram.append(tableOfRequirements(view));
+      return;
+    }
     const parsed = new DOMParser().parseFromString(view.svg, 'image/svg+xml').documentElement;
     if (parsed.nodeName !== 'svg') {
       diagram.append(element('p', { class: 'empty' }, `${view.heading} could not be read.`));
@@ -226,6 +256,114 @@ main svg [data-line]:hover { filter: brightness(0.93); }
     diagram.append(svg, element('p', { class: 'summary' }, view.summary));
   }
 
+  /**
+   * A table of requirements as GitHub shows its Markdown: a box under each
+   * requirement's heading, which opens the line that declares it, and links that open
+   * the model's lines or move to a requirement in the table.
+   */
+  function tableOfRequirements(view) {
+    const reader = window.orthoMarkdown;
+    const blocks = reader.parse(view.markdown);
+    const page = element('article', { class: 'doc', 'aria-label': view.heading });
+    for (let i = 0; i < blocks.length; i++) {
+      const block = blocks[i];
+      const next = blocks[i + 1];
+      if (block.type === 'heading' && next?.type === 'table' && reader.plainText(next.head[1] ?? []) === 'Statement') {
+        page.append(requirementBox(reader, block, next));
+        i++;
+      } else {
+        page.append(blockNode(block));
+      }
+    }
+    return page;
+  }
+
+  /** A requirement's heading and box, which open the line that declares it. */
+  function requirementBox(reader, heading, table) {
+    const box = element('section', { class: 'requirement' });
+    box.append(blockNode(heading), blockNode(table));
+    const id = reader.plainText(table.rows[0]?.[0] ?? []);
+    const at = requirements.byId[id] ?? requirements.byName[reader.plainText(heading.children)];
+    if (!at) return box;
+    box.classList.add('opens');
+    box.title = `Open ${at.file.split('/').pop()} line ${at.line}`;
+    box.addEventListener('click', (event) => {
+      // Text selected to copy it, or a link, is not a click on the box.
+      if (String(window.getSelection() ?? '') || event.target.closest('a')) return;
+      post('open', { file: at.file, line: at.line });
+    });
+    return box;
+  }
+
+  function blockNode(block) {
+    if (block.type === 'heading') {
+      const node = element(`h${block.level}`, { 'data-anchor': block.id });
+      node.append(...inlineNodes(block.children));
+      return node;
+    }
+    if (block.type === 'paragraph') {
+      const node = element('p');
+      node.append(...inlineNodes(block.children));
+      return node;
+    }
+    const table = element('table');
+    const thead = element('thead');
+    const head = element('tr');
+    for (const cell of block.head) {
+      const th = element('th');
+      th.append(...inlineNodes(cell));
+      head.append(th);
+    }
+    thead.append(head);
+    const body = element('tbody');
+    for (const row of block.rows) {
+      const tr = element('tr');
+      for (const cell of row) {
+        const td = element('td');
+        td.append(...inlineNodes(cell));
+        tr.append(td);
+      }
+      body.append(tr);
+    }
+    table.append(thead, body);
+    return table;
+  }
+
+  function inlineNodes(children) {
+    return children.map((child) => {
+      if (child.type === 'text') return document.createTextNode(child.text);
+      if (child.type === 'br') return element('br');
+      if (child.type === 'sub') {
+        const sub = element('sub');
+        sub.append(...inlineNodes(child.children));
+        return sub;
+      }
+      const link = element('a', { href: '#' });
+      link.append(...inlineNodes(child.children));
+      const href = String(child.href);
+      if (href.startsWith('#')) {
+        link.title = `Go to ${link.textContent}`;
+        link.addEventListener('click', (event) => {
+          event.preventDefault();
+          const target = diagram.querySelector(`[data-anchor="${CSS.escape(href.slice(1))}"]`);
+          if (!target) return;
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          const box = target.closest('.requirement') ?? target;
+          box.animate([{ background: 'var(--note)' }, { background: 'transparent' }], 1200);
+        });
+      } else {
+        const place = /^([^#]*)(?:#L(\d+))?$/.exec(href);
+        const file = decodeURIComponent(place?.[1] ?? href).split('/').pop();
+        link.title = place?.[2] ? `Open ${file} line ${place[2]}` : `Open ${file}`;
+        link.addEventListener('click', (event) => {
+          event.preventDefault();
+          post('open', { link: href });
+        });
+      }
+      return link;
+    });
+  }
+
   function showTabs() {
     const titles = tabTitles(views.map((view) => view.file));
     tabs.replaceChildren(
@@ -242,22 +380,32 @@ main svg [data-line]:hover { filter: brightness(0.93); }
     );
   }
 
-  /** The save buttons: hidden with no diagrams, disabled while the model does not load. */
+  /** The save buttons: hidden with no views, disabled while the model does not load. */
   function showActions(how, saveTo) {
     actions.hidden = how === 'none';
     saveOne.disabled = saveAll.disabled = how === 'stale';
     saveAll.textContent = `Save all to ${saveTo}/`;
     saveAll.title =
       how === 'stale'
-        ? 'The model does not load now: fix its problems to save its diagrams'
-        : `Write every view as SVG into the ${saveTo} folder beside the model, as ortho render does`;
+        ? 'The model does not load now: fix its problems to save its views'
+        : `Write every view into the ${saveTo} folder beside the model, as ortho render does`;
+  }
+
+  /** The first save button downloads the view shown: a diagram as SVG, or the table of requirements as Markdown. */
+  function showSaveOne(view) {
+    const markdown = Boolean(view?.markdown);
+    saveOne.textContent = markdown ? 'Save Markdown' : 'Save SVG';
+    saveOne.title = markdown
+      ? 'Download the table shown as a Markdown file, its links written for the folder Save all writes to'
+      : 'Download the view shown as an SVG file';
   }
 
   saveOne.addEventListener('click', () => {
     const view = selected();
     if (!view) return;
     const link = element('a', { download: view.file });
-    link.href = URL.createObjectURL(new Blob([view.svg], { type: 'image/svg+xml' }));
+    const [text, type] = view.markdown ? [view.markdown, 'text/markdown'] : [view.svg, 'image/svg+xml'];
+    link.href = URL.createObjectURL(new Blob([text], { type }));
     link.click();
     URL.revokeObjectURL(link.href);
   });
@@ -305,6 +453,7 @@ main svg [data-line]:hover { filter: brightness(0.93); }
     }
     if (data.views.length > 0) {
       views = data.views;
+      requirements = data.requirements ?? { byId: {}, byName: {} };
       showTabs();
       showSelected();
       diagram.classList.remove('stale');

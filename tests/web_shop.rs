@@ -169,11 +169,11 @@ fn renders_all_five_views_each_to_a_file_named_after_it() {
     assert_eq!(
         files,
         [
-            (DiagramKind::Requirements, "requirements-web-shop.md"),
             (DiagramKind::UseCase, "use-case-view-web-shop.svg"),
             (DiagramKind::Logical, "logical-view-web-shop.svg"),
             (DiagramKind::Implementation, "implementation-view-web-shop.svg"),
             (DiagramKind::Process, "process-view-web-shop.svg"),
+            (DiagramKind::Requirements, "requirements-web-shop.md"),
         ]
     );
     for rendered in &rendering.rendered {

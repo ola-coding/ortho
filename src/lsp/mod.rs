@@ -2,12 +2,15 @@
 //! speaks the Language Server Protocol. The `.sysml` files in a folder are one model,
 //! as for `ortho render`: the server reports the problems of every file in the folder
 //! of each file the editor opens, as it is typed, goes to what a name names, and shows
-//! the model's diagrams in a page in the browser, drawn again on every save. It
-//! completes and renames nothing: it helps check and review a model.
+//! the model's diagrams and table of requirements in a page in the browser, drawn
+//! again as it is typed. It completes and renames nothing: it helps check and review a
+//! model.
 mod preview;
 mod protocol;
 
-use crate::model::views::{DiagramKind, declared_views, diagram_kind, view_file_name, view_heading};
+use crate::diagrams::requirements::tabled_requirements;
+use crate::model::graph::effective_name;
+use crate::model::views::{DiagramKind, declared_views, diagram_kind, exposed_elements, view_file_name, view_heading};
 use crate::parser::ast::{NodeId, Prop, Value as Field};
 use crate::parser::workspace::{Severity, Workspace};
 use crate::pipeline::{relative_to_working_folder, render_views};
@@ -19,17 +22,75 @@ use std::collections::HashMap;
 use std::io::{self, BufRead, Write};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
+use std::sync::mpsc::{RecvTimeoutError, channel};
 use std::sync::{Arc, Mutex};
+use std::time::{Duration, Instant};
+
+/// Where each requirement a table lists is declared, as a file named from the working
+/// folder and a line, by its ID or, without one, by its name, for its box in the page
+/// to open: `{ "byId": { "REQ-1": { "file": "requirements.sysml", "line": 15 } }, "byName": {} }`.
+fn requirement_lines(workspace: &Workspace, view: NodeId, lines: &mut Value) {
+    let ast = &workspace.ast;
+    for (requirement, _) in tabled_requirements(ast, &exposed_elements(ast, view)) {
+        let root = ast.root_of(requirement);
+        let Some(document) = workspace.documents.iter().find(|document| document.root == root) else { continue };
+        let offset = (ast[requirement].offset as usize).min(document.text.len());
+        let at = json!({
+            "file": relative_to_working_folder(&document.path),
+            "line": crate::parser::position(&document.text, offset).0,
+        });
+        let (map, key) = match ast.text(requirement, Prop::ShortName) {
+            Some(id) => ("byId", id),
+            None => match effective_name(ast, requirement) {
+                Some(name) => ("byName", name),
+                None => continue,
+            },
+        };
+        if lines[map].get(key).is_none() {
+            lines[map][key] = at;
+        }
+    }
+}
 
 /// The command a code action runs to show a view in the preview.
 const SHOW_IN_PREVIEW: &str = "ortho.showInPreview";
 
+/// How long typing pauses before the model shown is drawn again.
+const TYPING_PAUSE: Duration = Duration::from_millis(500);
+
 /// Serves one editor until it says `exit` or closes the stream. Says whether it was
 /// told to shut down first, as a clean exit requires.
-pub fn serve(input: impl BufRead, output: impl Write + Send + 'static) -> io::Result<bool> {
-    let mut input = input;
+pub fn serve(input: impl BufRead + Send + 'static, output: impl Write + Send + 'static) -> io::Result<bool> {
+    // The editor's messages are read on a thread of their own, so the model shown can
+    // be drawn once typing pauses, while no message comes.
+    let (sender, messages) = channel();
+    std::thread::spawn(move || {
+        let mut input = input;
+        loop {
+            let message = read_message(&mut input);
+            let more = matches!(message, Ok(Some(_)));
+            if sender.send(message).is_err() || !more {
+                break;
+            }
+        }
+    });
     let mut server = Server::new(Editor::new(output));
-    while let Some(message) = read_message(&mut input)? {
+    loop {
+        let message = match server.typing.as_ref().map(|(_, due)| *due) {
+            Some(due) => match messages.recv_timeout(due.saturating_duration_since(Instant::now())) {
+                Ok(message) => message,
+                Err(RecvTimeoutError::Timeout) => {
+                    server.draw_typed()?;
+                    continue;
+                }
+                Err(RecvTimeoutError::Disconnected) => break,
+            },
+            None => match messages.recv() {
+                Ok(message) => message,
+                Err(_) => break,
+            },
+        };
+        let Some(message) = message? else { break };
         if message.get("method").and_then(Value::as_str) == Some("exit") {
             break;
         }
@@ -115,6 +176,12 @@ struct Server {
     /// the end, for the page to turn to when the model it shows is closed.
     recent: Vec<PathBuf>,
     theme: &'static Theme,
+    /// The folder, in the model's, that the page's save writes the views to, which the
+    /// table of requirements' links lead from.
+    diagrams: String,
+    /// A file of the model shown that was typed in, and when to draw the model again
+    /// unless typing goes on.
+    typing: Option<(PathBuf, Instant)>,
     shut_down: bool,
 }
 
@@ -130,6 +197,8 @@ impl Server {
             shown: None,
             recent: Vec::new(),
             theme: &LIGHT,
+            diagrams: "diagrams".to_string(),
+            typing: None,
             shut_down: false,
         }
     }
@@ -171,9 +240,13 @@ impl Server {
                     self.open.insert(path.clone(), text.to_string());
                     self.worked_on(&path);
                     // A model other than the one the page shows is drawn there once
-                    // edited, as when it is opened.
+                    // edited, as when it is opened; the one it shows, once typing
+                    // pauses.
                     let elsewhere = path.parent() != self.shown.as_deref();
                     self.check(&path, elsewhere)?;
+                    if !elsewhere && self.preview.is_some() {
+                        self.typing = Some((path, Instant::now() + TYPING_PAUSE));
+                    }
                 }
                 None
             }
@@ -226,9 +299,10 @@ impl Server {
         let shows = params["capabilities"]["window"]["showDocument"]["support"].as_bool().unwrap_or(false);
         self.editor.shows_documents.store(shows, Ordering::Relaxed);
         let save_to = options["diagrams"].as_str().map(str::trim).filter(|folder| !folder.is_empty());
+        self.diagrams = save_to.unwrap_or("diagrams").to_string();
         let root = std::env::current_dir().unwrap_or_default();
         // Without the page, as when the machine lends it no port, the rest still serves.
-        self.preview = Preview::start(&root, save_to.unwrap_or("diagrams"), self.editor.clone()).ok();
+        self.preview = Preview::start(&root, &self.diagrams, self.editor.clone()).ok();
         let commands = if self.preview.is_some() { vec![SHOW_IN_PREVIEW] } else { vec![] };
         json!({
             "capabilities": {
@@ -300,9 +374,21 @@ impl Server {
             .collect()
     }
 
+    /// Draws the model typed in, now that typing has paused.
+    fn draw_typed(&mut self) -> io::Result<()> {
+        match self.typing.take() {
+            Some((file, _)) => self.check(&file, true),
+            None => Ok(()),
+        }
+    }
+
     /// Checks the model a file is part of and reports the problems of each of its
-    /// files; when it is opened or saved, draws it in the preview too.
+    /// files; when it is opened or saved, or typing in it pauses, draws it in the
+    /// preview too.
     fn check(&mut self, file: &Path, draw: bool) -> io::Result<()> {
+        if draw {
+            self.typing = None;
+        }
         let Some(folder) = file.parent().map(Path::to_path_buf) else {
             return Ok(());
         };
@@ -366,6 +452,8 @@ impl Server {
     /// of is kept to be reported on the view it is about, too.
     fn draw(&mut self, folder: &Path, errors: Vec<Found>, warnings: Vec<Found>) {
         self.shown = Some(folder.to_path_buf());
+        // A table of requirements links to the model from where the page saves it.
+        let out = folder.join(&self.diagrams);
         let (Some(preview), Some(model)) = (&self.preview, self.models.get_mut(folder)) else { return };
         let note = |(path, text, problem): &Found| {
             let line = crate::parser::position(text, problem.offset.min(text.len())).0;
@@ -377,13 +465,14 @@ impl Server {
         let mut shown = Shown {
             folder: folder.to_path_buf(),
             views: Vec::new(),
+            requirements: json!({ "byId": {}, "byName": {} }),
             errors: errors.iter().map(note).collect(),
             notes: warnings.iter().map(note).collect(),
         };
         if let Some(workspace) = model.workspace.as_ref().filter(|_| shown.errors.is_empty()) {
             let ast = &workspace.ast;
             let mut found: Vec<(NodeId, String)> = Vec::new();
-            match render_views(workspace, self.theme, &folder.to_string_lossy()) {
+            match render_views(workspace, self.theme, &out.to_string_lossy()) {
                 Ok(rendering) => {
                     for skipped in &rendering.skipped {
                         let heading = view_heading(ast, skipped.view);
@@ -398,9 +487,8 @@ impl Server {
                         if let Some(warning) = rendered.warning {
                             found.push((rendered.view, warning));
                         }
-                        // The preview shows diagrams; a table of requirements is Markdown.
                         if diagram_kind(ast, rendered.view) == DiagramKind::Requirements {
-                            continue;
+                            requirement_lines(workspace, rendered.view, &mut shown.requirements);
                         }
                         let heading = view_heading(ast, rendered.view).to_string();
                         shown.views.push([rendered.file, heading, rendered.result.summary, rendered.result.content]);

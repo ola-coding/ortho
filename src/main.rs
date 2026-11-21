@@ -76,7 +76,7 @@ fn main() -> ExitCode {
             };
         }
         Command::Lsp { .. } => {
-            let stdin = std::io::stdin().lock();
+            let stdin = std::io::BufReader::new(std::io::stdin());
             return match ortho::lsp::serve(stdin, std::io::stdout()) {
                 Ok(true) => ExitCode::SUCCESS,
                 Ok(false) => ExitCode::FAILURE,

@@ -1,8 +1,9 @@
 //! The live preview of `ortho lsp`: a page in the browser, served on this machine
-//! only, that shows the diagrams of the model being edited and draws them again on
-//! every save. An editor that has no panel for a language server to draw in, such as
-//! Zed, opens the page instead. The page waits on `state` for each newer render, and
-//! posts back to open a line in the editor or to save the diagrams.
+//! only, that shows the diagrams and the table of requirements of the model being
+//! edited, and draws them again as it is typed. An editor that has no panel for a
+//! language server to draw in, such as Zed, opens the page instead. The page waits on
+//! `state` for each newer render, and posts back to open a line in the editor or to
+//! save the views.
 use super::Editor;
 use super::protocol::path_to_uri;
 use crate::pipeline::relative_to_working_folder;
@@ -14,6 +15,8 @@ use std::sync::{Arc, Condvar, Mutex};
 use std::time::{Duration, Instant};
 
 const PAGE: &str = include_str!("preview.html");
+/// The page's reader of a table of requirements, a copy of the VS Code extension's.
+const MARKDOWN: &str = include_str!("markdown.js");
 
 /// How long a page's request for a newer render is held before it is answered with
 /// the same one, to ask again.
@@ -26,9 +29,11 @@ const CHECK: Duration = Duration::from_millis(250);
 pub struct Shown {
     /// The model's folder.
     pub folder: PathBuf,
-    /// The diagrams, each as its file name, heading, summary and SVG; none while the
-    /// model does not load.
+    /// The views, each as its file name, heading, summary and SVG, or Markdown for a
+    /// table of requirements; none while the model does not load.
     pub views: Vec<[String; 4]>,
+    /// Where each requirement a table lists is declared, for its box to open.
+    pub requirements: Value,
     pub errors: Vec<Note>,
     pub notes: Vec<Note>,
 }
@@ -205,6 +210,7 @@ fn answer(stream: TcpStream, shared: &Shared) -> io::Result<()> {
     let (status, kind, content) = match (method.as_str(), path) {
         _ if !ours => ("403 Forbidden", "text/plain", "Not the preview's address.".to_string()),
         ("GET", "/") => ("200 OK", "text/html; charset=utf-8", PAGE.to_string()),
+        ("GET", "/markdown.js") => ("200 OK", "text/javascript; charset=utf-8", MARKDOWN.to_string()),
         ("GET", "/state") => match state(shared, query, &stream) {
             Some(state) => ("200 OK", json, state.to_string()),
             // The page has gone, and nothing is there to answer.
@@ -269,10 +275,16 @@ fn state(shared: &Shared, query: &str, page: &TcpStream) -> Option<Value> {
         answer["views"] = shown
             .views
             .iter()
-            .map(|[file, heading, summary, svg]| {
-                json!({ "file": file, "heading": heading, "summary": summary, "svg": svg })
+            .map(|[file, heading, summary, content]| {
+                let markdown = file.ends_with(".md");
+                json!({
+                    "file": file, "heading": heading, "summary": summary,
+                    "svg": if markdown { "" } else { content.as_str() },
+                    "markdown": if markdown { content.as_str() } else { "" },
+                })
             })
             .collect();
+        answer["requirements"] = shown.requirements.clone();
         answer["errors"] = shown.errors.iter().map(Note::json).collect();
         answer["notes"] = shown.notes.iter().map(Note::json).collect();
     }
@@ -293,12 +305,28 @@ fn hung_up(page: &TcpStream) -> bool {
 }
 
 /// Opens a line of a file of the model shown in the editor. A box of a diagram names
-/// its file from the working folder; nothing but the shown model's files is opened.
+/// its file from the working folder; a link in the table of requirements,
+/// `../physical.sysml#L55`, from the folder the page saves the views to. Nothing but
+/// the shown model's files is opened.
 fn open(shared: &Shared, asked: &Value) -> bool {
-    let (Some(file), Some(line)) = (asked["file"].as_str(), asked["line"].as_u64()) else { return false };
-    let Ok(file) = std::path::absolute(file) else { return false };
-    let folder = shared.state.lock().unwrap().shown.as_ref().map(|shown| shown.folder.clone());
-    let (Some(folder), Some(parent)) = (folder, file.parent()) else { return false };
+    let (folder, save_to) = {
+        let state = shared.state.lock().unwrap();
+        (state.shown.as_ref().map(|shown| shown.folder.clone()), state.save_to.clone())
+    };
+    let Some(folder) = folder else { return false };
+    let (file, line) = match asked["link"].as_str() {
+        Some(link) => {
+            let (target, line) = link.split_once("#L").unwrap_or((link, "1"));
+            (lexical(&folder.join(&save_to).join(percent_decoded(target))), line.parse().unwrap_or(1))
+        }
+        None => {
+            let (Some(file), Some(line)) = (asked["file"].as_str(), asked["line"].as_u64()) else { return false };
+            let Ok(file) = std::path::absolute(file) else { return false };
+            (file, line)
+        }
+    };
+    let file = file.canonicalize().unwrap_or(file);
+    let Some(parent) = file.parent() else { return false };
     let same = |a: &Path, b: &Path| a == b || a.canonicalize().is_ok_and(|a| b.canonicalize().is_ok_and(|b| a == b));
     if file.extension().is_none_or(|ext| ext != "sysml") || !same(parent, &folder) || !file.is_file() {
         return false;
@@ -308,11 +336,48 @@ fn open(shared: &Shared, asked: &Value) -> bool {
     shared.editor.request("window/showDocument", params).is_ok()
 }
 
-/// Writes the diagrams shown into the model's folder for them, as `ortho render` does.
+/// A path with each `..` taking the part before it away, as written: the folder the
+/// page saves to need not be there yet.
+fn lexical(path: &Path) -> PathBuf {
+    let mut parts = PathBuf::new();
+    for part in path.components() {
+        match part {
+            std::path::Component::ParentDir => {
+                parts.pop();
+            }
+            std::path::Component::CurDir => {}
+            other => parts.push(other),
+        }
+    }
+    parts
+}
+
+/// A path as a link writes it, with `%20` for a space and so on, as written.
+fn percent_decoded(link: &str) -> String {
+    let bytes = link.as_bytes();
+    let mut decoded = Vec::with_capacity(bytes.len());
+    let mut i = 0;
+    while i < bytes.len() {
+        let hex = |at: usize| bytes.get(at).and_then(|byte| (*byte as char).to_digit(16));
+        match (bytes[i], hex(i + 1), hex(i + 2)) {
+            (b'%', Some(high), Some(low)) => {
+                decoded.push((high * 16 + low) as u8);
+                i += 3;
+            }
+            (byte, _, _) => {
+                decoded.push(byte);
+                i += 1;
+            }
+        }
+    }
+    String::from_utf8_lossy(&decoded).into_owned()
+}
+
+/// Writes the views shown into the model's folder for them, as `ortho render` does.
 fn save(shared: &Shared) -> Value {
     let state = shared.state.lock().unwrap();
     let Some(shown) = state.shown.as_ref().filter(|shown| !shown.views.is_empty()) else {
-        return json!({ "ok": false, "message": "The model does not load now: fix its problems to save its diagrams." });
+        return json!({ "ok": false, "message": "The model does not load now: fix its problems to save its views." });
     };
     let out = shown.folder.join(&state.save_to);
     let written = std::fs::create_dir_all(&out).and_then(|()| {
@@ -324,9 +389,9 @@ fn save(shared: &Shared) -> Value {
     match written {
         Ok(()) => {
             let count = shown.views.len();
-            let diagrams = if count == 1 { "diagram" } else { "diagrams" };
+            let views = if count == 1 { "view" } else { "views" };
             let folder = relative_to_working_folder(&out.to_string_lossy());
-            json!({ "ok": true, "message": format!("Wrote {count} {diagrams} to {folder}/") })
+            json!({ "ok": true, "message": format!("Wrote {count} {views} to {folder}/") })
         }
         Err(error) => json!({ "ok": false, "message": format!("{}: {error}", out.display()) }),
     }
