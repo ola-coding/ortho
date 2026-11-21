@@ -325,7 +325,8 @@ fn open(shared: &Shared, asked: &Value) -> bool {
             (file, line)
         }
     };
-    let file = file.canonicalize().unwrap_or(file);
+    // Resolved as written: a canonical path is `\\?\D:\…` on Windows, which no editor opens.
+    let file = lexical(&file);
     let Some(parent) = file.parent() else { return false };
     let same = |a: &Path, b: &Path| a == b || a.canonicalize().is_ok_and(|a| b.canonicalize().is_ok_and(|b| a == b));
     if file.extension().is_none_or(|ext| ext != "sysml") || !same(parent, &folder) || !file.is_file() {
