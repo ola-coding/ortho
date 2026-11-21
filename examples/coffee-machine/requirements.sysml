@@ -8,70 +8,71 @@ package SystemRequirements {
 
     // A requirement's ID is its short name, and its statement its `doc`. The
     // requirements nested in one are its subrequirements: satisfying it
-    // satisfies them too.
+    // satisfies them too. An ID says where its requirement sits: REQ-1.2 is
+    // the second in REQ-1.
 
     // --- making a beverage -------------------------------------------------
-    requirement <'REQ-001'> espressoTime {
+    requirement <'REQ-1'> 'Espresso time' {
         doc /* The machine shall deliver an espresso within 60 s of the user's
              * choice, starting from standby. */
         @Rationale { text = "A home machine is used in the rush before work; a minute is as long as its users will wait."; }
 
-        requirement <'REQ-002'> heatUp {
+        requirement <'REQ-1.1'> 'Heat-up time' {
             doc /* The machine shall heat its brewing water from 20 °C to 92 °C within 30 s. */
         }
-        requirement <'REQ-003'> brewTemperature {
+        requirement <'REQ-1.2'> 'Brew temperature' {
             doc /* The machine shall hold the brewing water within 2 °C of 92 °C
                  * throughout an extraction. */
             @Rationale { text = "Below about 90 °C an espresso tastes sour, and above 96 °C bitter."; }
         }
-        requirement <'REQ-004'> brewPressure {
+        requirement <'REQ-1.3'> 'Brew pressure' {
             doc /* The machine shall extract at 9 bar, plus or minus 1 bar, at the coffee bed. */
             @Rationale { text = "Espresso is extracted at about 9 bar: much less leaves it thin, much more makes it bitter."; }
         }
     }
 
-    requirement <'REQ-005'> freshGround {
+    requirement <'REQ-2'> 'Freshly ground coffee' {
         doc /* The machine shall grind whole beans for each shot, just before it is brewed. */
         @Rationale { text = "Ground coffee loses most of its aroma within a quarter of an hour."; }
     }
 
-    requirement <'REQ-006'> doseRange {
+    requirement <'REQ-3'> 'Dose range' {
         doc /* The machine shall dose between 7 g and 16 g of ground coffee for a
              * shot, as the recipe sets. */
     }
 
-    requirement <'REQ-007'> milkFromCarton {
+    requirement <'REQ-4'> 'Milk from the carton' {
         doc /* The machine shall froth milk drawn straight from the user's own carton,
              * without a milk container of its own. */
         @Rationale { text = "A milk container has to be emptied, cleaned and kept cold every day; a tube in the carton needs only a rinse."; }
     }
 
     // --- filling and choosing ----------------------------------------------
-    requirement <'REQ-008'> waterCapacity {
+    requirement <'REQ-5'> 'Water capacity' {
         doc /* The machine shall hold at least 1.5 L of water. */
         @Rationale { text = "About a day's coffee for a household of four, so the tank needs filling once a day at most."; }
     }
 
-    requirement <'REQ-009'> beanCapacity {
+    requirement <'REQ-6'> 'Bean capacity' {
         doc /* The machine shall hold at least 250 g of coffee beans. */
         @Rationale { text = "The smallest common bag of beans then empties into it in one go."; }
     }
 
-    requirement <'REQ-010'> beverageChoice {
+    requirement <'REQ-7'> 'Choice of beverage' {
         doc /* The machine shall let the user choose an espresso or a cappuccino on a
              * touch display at least 100 mm across. */
     }
 
     // --- safety ------------------------------------------------------------
-    requirement <'REQ-011'> safety {
+    requirement <'REQ-8'> 'Safety' {
         doc /* The machine shall protect its user, and itself, from hot water,
              * steam and overheating. */
 
-        requirement <'REQ-012'> brewGroupInterlock {
+        requirement <'REQ-8.1'> 'Brew group interlock' {
             doc /* The machine shall keep the brew group shut while it is under pressure. */
             @Rationale { text = "Opened under pressure, it would spray scalding water and grounds."; }
         }
-        requirement <'REQ-013'> dryRunCutoff {
+        requirement <'REQ-8.2'> 'Dry-run cut-off' {
             doc /* The machine shall switch the heater off within 2 s when no water
                  * flows through it. */
             @Rationale { text = "Heated dry, a thermoblock overheats within seconds and can damage the machine."; }
@@ -79,13 +80,13 @@ package SystemRequirements {
     }
 
     // --- in the kitchen ----------------------------------------------------
-    requirement <'REQ-014'> mainsPower {
+    requirement <'REQ-9'> 'Mains power' {
         doc /* The machine shall run from a 230 V, 50 Hz household socket, drawing
              * at most 1.5 kW. */
         @Rationale { text = "With a 2 kW kettle beside it, both stay within a 16 A kitchen circuit."; }
     }
 
-    requirement <'REQ-015'> counterWidth {
+    requirement <'REQ-10'> 'Machine width' {
         doc /* The machine shall be no wider than 300 mm. */
         @Rationale { text = "It then fits the space of the narrowest standard kitchen cabinet."; }
     }

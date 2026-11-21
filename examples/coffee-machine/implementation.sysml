@@ -54,7 +54,7 @@ package Application {
 
     part def UiApp {
         perform beverage.controlMachine.selectBeverage;
-        satisfy beverageChoice;
+        satisfy 'Choice of beverage';
 
         port recipe : ~Apis::RecipeApi;
     }
@@ -63,7 +63,7 @@ package Application {
         doc /* Offers one API and drives three: the whole of the machine's
              * control is this module calling those. */
         perform beverage.controlMachine.sequenceRecipe;
-        satisfy freshGround;
+        satisfy 'Freshly ground coffee';
 
         port recipe : Apis::RecipeApi;
         port temperature : ~Apis::TemperatureApi;
@@ -79,8 +79,8 @@ package Control {
 
     part def TemperatureController {
         perform beverage.controlMachine.regulateTemperature;
-        satisfy espressoTime.brewTemperature;
-        satisfy safety.dryRunCutoff;
+        satisfy 'Espresso time'.'Brew temperature';
+        satisfy 'Safety'.'Dry-run cut-off';
 
         port temperature : Apis::TemperatureApi;
     }
@@ -89,8 +89,8 @@ package Control {
         doc /* Doses, tamps and extracts, and keeps the brew group shut while it
              * is under pressure. */
         perform beverage.prepareCoffee.extractShot;
-        satisfy doseRange;
-        satisfy safety.brewGroupInterlock;
+        satisfy 'Dose range';
+        satisfy 'Safety'.'Brew group interlock';
 
         port brew : Apis::BrewApi;
     }

@@ -153,7 +153,7 @@ fn warns_of_a_requirement_without_an_id_or_with_the_id_of_another() {
     assert_eq!(
         reported(&workspace, Severity::Warning),
         [
-            "'b' has no ID for the table of requirements to list it by. Give it one as its short name, as in requirement <'REQ-001'> b.",
+            "'b' has no ID for the table of requirements to list it by. Give it one as its short name, as in requirement <'REQ-1'> 'b'.",
             "'REQ-001' is the ID of 'a' too. Give each requirement an ID of its own.",
         ]
     );

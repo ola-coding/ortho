@@ -60,7 +60,7 @@ package Hardware {
     part def LiPoBattery {
         doc /* Feeds every consumer that needs a supply rail of its own. */
         perform survey.operateVehicle.supplyPower;
-        satisfy endurance;
+        satisfy 'Endurance';
 
         attribute cells : Integer = 6;
         attribute energy : EnergyValue = 222 ['W⋅h'];
@@ -79,7 +79,7 @@ package Hardware {
 
     part def GpuComputer {
         doc /* Jetson-style computer with a 100 TOPS GPU, for everything above flying. */
-        satisfy safeFlight.obstacleAvoidance.onboardDetection;
+        satisfy 'Safe flight'.'Obstacle avoidance'.'Onboard detection';
 
         port powerIn : ~PowerPort;
         port cameraIn : ~VideoPort;
@@ -98,7 +98,7 @@ package Hardware {
         doc /* Receiver and antenna in one puck, as on most ArduPilot builds. It
              * takes its power over the same connector as its data. */
         perform survey.guideNavigateAndControl.navigate;
-        satisfy automaticSurvey.trackAccuracy;
+        satisfy 'Automatic survey'.'Track accuracy';
 
         port dataOut : GpsPort;
     }
@@ -107,7 +107,7 @@ package Hardware {
     part def IpRadio {
         doc /* An IP radio: the same unit is fitted at both ends of the link. */
         perform survey.communicate;
-        satisfy linkRange;
+        satisfy 'Link range';
 
         port ethernet : DataPort;
         port rf : RfPort;
@@ -122,7 +122,7 @@ package Hardware {
     // --- assemblies --------------------------------------------------------
     part def SurveyDrone {
         // What only the drone as a whole meets.
-        satisfy safeFlight;
+        satisfy 'Safe flight';
 
         part motors : PropulsionUnit [4];
         part esc : FourInOneEsc;

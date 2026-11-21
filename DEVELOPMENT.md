@@ -434,14 +434,15 @@ Open, in priority order:
   plain SysML, which reads as v1.
 - [ ] **Requirements as a specification ortho writes,** rather than a
   seventh diagram, from standard SysML:
-  `requirement <'REQ-001'> brewTime { doc /* ... */ }`, `@Rationale` and
-  `satisfy brewTime by machine.heater;`.
+  `requirement <'REQ-1'> 'Brew time' { doc /* ... */ }`, `@Rationale` and
+  `satisfy 'Brew time' by machine.heater;`.
   - [x] A `GridView` rendered as Markdown beside the SVGs: a section for each
     requirement, with its ID, name, text and rationale, then a traceability
     table of what satisfies each.
   - [x] Resolve what `satisfy` names, with *did you mean*; warn of a
     requirement nothing satisfies, and of one without an ID or with another's.
-  - [x] Requirements in the three examples.
+  - [x] Requirements in the three examples, numbered and titled after OMG's
+    examples and MIL-STD-961E: `<'REQ-1.2'> 'Brew temperature'`.
   - [x] README, LANGUAGE.md, VIEWS.md and the AI instructions.
   - [ ] A tab for the table in the VS Code and browser previews.
   - [ ] Later: *Verified by* (`verify`), *Derived from* (`#derivation`) and

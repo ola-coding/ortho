@@ -134,24 +134,44 @@ Payload`.
 
 ## Requirements
 
-What the system shall do, and how well, each requirement stated once, with
-an ID. The use cases say what people ask for; the requirements add what a
-reviewer can check: within 60 s, at least 1.5 L, 99.9 % of every month.
+What the system shall do, and how well, each requirement stated once. The use
+cases say what people ask for; the requirements add what a reviewer can check:
+within 60 s, at least 1.5 L, 99.9 % of every month.
 
 Like a use case, a requirement is stated of the system as a black box and
 names no part or program: the machine shall hold at least 1.5 L of water, not
 the tank. The part or module that meets it says so, as it names its
-functions, so the requirement outlives the design that first met it. Each
-says one thing, with a figure that can be checked, and a rationale where why
-is not plain. One that breaks into several holds them nested, and whatever
-satisfies it satisfies them.
+functions, so the requirement outlives the design that first met it.
 
-Not a diagram but a specification, laid out as formal ones are: a heading for
-each requirement, with its ID, statement and rationale in a box of their own,
-so each can be cited and checked alone. A nested requirement stands one
-heading level deeper. A traceability table follows, giving each requirement
-what satisfies it, linked to the line that declares it, or the requirement it
-is satisfied through.
+What a requirement is comes from SysML v2 (§7.21): its ID is its short name,
+its statement the text of its `doc`, and the requirements nested in it are
+its subrequirements, satisfied by whatever satisfies it. How one is numbered,
+titled and worded follows MIL-STD-961E, the US defence standard for the
+format of specifications:
+
+- **Shall.** A statement says what is binding with *shall*. *Should* and *may*
+  say what is not, and *must* is not used (§4.6).
+- **One requirement each,** stated so that it can be verified (§5.8), with a
+  figure as a limit or with a tolerance: at least 1.5 L, 9 bar plus or minus
+  1 bar (§4.7).
+- **Numbered** with periods between the levels, so the number says where a
+  requirement sits: REQ-1.2 is the second in REQ-1 (§4.9), as in OMG's own
+  examples. Three sublevels at most, where that can be helped.
+- **Titled** in plain words, starting with a capital: *Heat-up time* (§4.10).
+  The title is the requirement's name.
+
+The table is the *Requirements* section of such a specification on its own;
+the scope, the documents it cites, how each requirement is verified and the
+notes belong to the document it goes into. Where MIL-STD-961E numbers within
+that section, 3.2.1, an ID stands on its own, REQ-2.1, so it can be cited
+from anywhere. The standard asks for no rationale; the table shows one where
+the model gives it.
+
+Not a diagram but a specification: a heading for each requirement, with its
+ID, statement and rationale in a box of their own, so each can be cited and
+checked alone. A nested requirement stands one heading level deeper. A
+traceability table follows, giving each requirement what satisfies it, linked
+to the line that declares it, or the requirement it is satisfied through.
 
 ## References
 
@@ -161,3 +181,6 @@ is satisfied through.
   the specification the grammar is written against.
 - [SysML v2 Release](https://github.com/Systems-Modeling/SysML-v2-Release) —
   the language specification, textual notation and pilot implementation.
+- MIL-STD-961E with Change 3, *Defense and Program-Unique Specifications
+  Format and Content*, US Department of Defense, 27 October 2015 — how the
+  requirements are numbered, titled and worded.

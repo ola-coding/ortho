@@ -121,8 +121,8 @@ package Ground {
         doc /* Plans the survey with the operator and shows its progress. */
         perform survey.interactWithOperator.planMission;
         perform survey.interactWithOperator.presentProgress;
-        satisfy surveyPlanning;
-        satisfy progressDisplay;
+        satisfy 'Survey planning';
+        satisfy 'Progress display';
 
         port request : Apis::SurveyTopic;
         port route : ~Apis::RouteTopic;
@@ -141,7 +141,7 @@ package Onboard {
     // Plans against what perception knows of the surroundings.
     part def RoutePlanner {
         perform survey.guideNavigateAndControl.planRoute;
-        satisfy surveyPlanning.legCoverage;
+        satisfy 'Survey planning'.'Leg coverage';
 
         port request : ~Apis::SurveyTopic;
         port route : Apis::RouteTopic;
@@ -151,7 +151,7 @@ package Onboard {
 
     part def ObstacleAvoidance {
         perform survey.guideNavigateAndControl.avoidObstacles;
-        satisfy safeFlight.obstacleAvoidance;
+        satisfy 'Safe flight'.'Obstacle avoidance';
 
         port world : ~Apis::WorldTopic;
     }
@@ -159,7 +159,7 @@ package Onboard {
     part def VideoStreamer {
         doc /* Captures, encodes and streams the camera's video, on GStreamer. */
         perform survey.communicate.streamVideo;
-        satisfy liveVideo;
+        satisfy 'Live video';
 
         port video : Apis::VideoTopic;
     }
@@ -167,7 +167,7 @@ package Onboard {
     part def WorldModel {
         doc /* Fuses video and flight state into a map of the obstacles around. */
         perform survey.perceive.maintainWorldModel;
-        satisfy safeFlight.obstacleAvoidance;
+        satisfy 'Safe flight'.'Obstacle avoidance';
 
         port video : ~Apis::VideoTopic;
         port world : Apis::WorldTopic;
@@ -176,7 +176,7 @@ package Onboard {
     part def Diagnostics {
         doc /* Monitors every module's health and records the flight. */
         perform survey.superviseSystem;
-        satisfy flightRecord;
+        satisfy 'Flight record';
 
         port health : Apis::HealthTopic;
         port video : ~Apis::VideoTopic;
@@ -196,7 +196,7 @@ package Middleware {
     part def MavlinkBridge {
         doc /* Turns the flight firmware's MAVLink into Zenoh topics, and back. */
         perform survey.communicate.exchangeTelemetry;
-        satisfy progressDisplay;
+        satisfy 'Progress display';
 
         port mission : ~Apis::MissionTopic;
         port progress : Apis::ProgressTopic;
@@ -205,7 +205,7 @@ package Middleware {
 
     part def WireGuardTunnel {
         doc /* Encrypts everything that crosses the radio link. */
-        satisfy linkEncryption;
+        satisfy 'Link encryption';
 
         port transport : ~Apis::TransportApi;
     }
@@ -221,9 +221,9 @@ package Flight {
     // AP_Mission, AC_WPNav
     part def MissionExecutor {
         perform survey.guideNavigateAndControl.guide;
-        satisfy automaticSurvey;
-        satisfy safeFlight.lostLink;
-        satisfy safeFlight.lowBattery;
+        satisfy 'Automatic survey';
+        satisfy 'Safe flight'.'Lost link';
+        satisfy 'Safe flight'.'Low battery';
 
         port mission : Apis::MissionApi;
         port target : Apis::TargetApi;
@@ -233,7 +233,7 @@ package Flight {
     // AP_AHRS, AP_NavEKF3
     part def StateEstimator {
         perform survey.guideNavigateAndControl.navigate;
-        satisfy automaticSurvey.trackAccuracy;
+        satisfy 'Automatic survey'.'Track accuracy';
 
         port vehicleState : Apis::StateApi;
         port sensors : ~Apis::SensorApi;
@@ -242,7 +242,7 @@ package Flight {
     // AC_AttitudeControl, AC_PosControl, AP_Motors
     part def FlightControl {
         perform survey.guideNavigateAndControl.control;
-        satisfy automaticSurvey.trackAccuracy;
+        satisfy 'Automatic survey'.'Track accuracy';
 
         port target : ~Apis::TargetApi;
         port vehicleState : ~Apis::StateApi;

@@ -15,15 +15,15 @@ package Aws {
     // What the shop stands on meets what no module of it can: staying open,
     // and growing with a peak.
     part def S3 {
-        satisfy availability;
+        satisfy 'Availability';
     }
     part def Lambda {
-        satisfy availability;
-        satisfy peakLoad;
+        satisfy 'Availability';
+        satisfy 'Peak load';
     }
     part def DynamoDB {
-        satisfy availability;
-        satisfy peakLoad;
+        satisfy 'Availability';
+        satisfy 'Peak load';
     }
 }
 
@@ -94,8 +94,8 @@ package Storefront {
         doc /* Keeps the cart in the browser until the customer orders. */
         perform sale.takeOrders.keepCart;
         perform sale.informCustomers.showOrderStatus;
-        satisfy guestCart;
-        satisfy orderStatus;
+        satisfy 'Guest cart';
+        satisfy 'Order status';
 
         port catalogue : ~Apis::CatalogueApi;
         port orders : ~Apis::OrderApi;
@@ -110,13 +110,13 @@ package Catalogue {
 
     part def CatalogueFunction :> Lambda {
         perform sale.presentCatalogue;
-        satisfy productSearch;
+        satisfy 'Product search';
 
         port catalogue : Apis::CatalogueApi;
     }
 
     part def ProductTable :> DynamoDB {
-        satisfy catalogueSize;
+        satisfy 'Catalogue size';
     }
 }
 
@@ -129,8 +129,8 @@ package Ordering {
 
     part def OrderFunction :> Lambda {
         perform sale.takeOrders.recordOrder;
-        satisfy paidOrders;
-        satisfy paidOrders.quickConfirmation;
+        satisfy 'Paid orders';
+        satisfy 'Paid orders'.'Confirmation time';
 
         port orders : Apis::OrderApi;
         port payment : ~Apis::PaymentApi;
@@ -141,7 +141,7 @@ package Ordering {
         doc /* Hands the card to the payment provider; card numbers never reach
              * the shop's own tables. */
         perform sale.takeOrders.takePayment;
-        satisfy paidOrders.noCardData;
+        satisfy 'Paid orders'.'No stored card data';
 
         port payment : Apis::PaymentApi;
         port provider : ~Apis::ProviderApi;
@@ -158,7 +158,7 @@ package Fulfilment {
 
     part def FulfilmentFunction :> Lambda {
         perform sale.fulfilOrders;
-        satisfy orderFulfilment;
+        satisfy 'Order fulfilment';
 
         port orders : ~Apis::OrderEvents;
         port shipments : Apis::ShipmentEvents;
@@ -167,7 +167,7 @@ package Fulfilment {
     part def NotifyFunction :> Lambda {
         doc /* Mails the customer through Amazon SES. */
         perform sale.informCustomers.notifyCustomer;
-        satisfy orderEmails;
+        satisfy 'Order emails';
 
         port orders : ~Apis::OrderEvents;
         port shipments : ~Apis::ShipmentEvents;

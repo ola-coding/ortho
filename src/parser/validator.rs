@@ -688,7 +688,7 @@ fn warn_unsatisfied(ast: &Ast, requirement: NodeId, diagnostics: &mut Vec<Diagno
 fn warn_without_id(ast: &Ast, requirement: NodeId, diagnostics: &mut Vec<Diagnostic>) {
     let name = effective_name(ast, requirement);
     let named = name.map_or("This requirement".to_string(), |name| format!("'{name}'"));
-    let example = name.map_or("requirement <'REQ-001'>".to_string(), |name| format!("requirement <'REQ-001'> {name}"));
+    let example = name.map_or("requirement <'REQ-1'>".to_string(), |name| format!("requirement <'REQ-1'> '{name}'"));
     diagnostics.push(Diagnostic {
         severity: Severity::Warning,
         offset: offset_of(ast, requirement, Prop::Name),

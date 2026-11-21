@@ -83,20 +83,25 @@ links each to the parts and modules that satisfy it. This requirement of the
 [coffee machine](examples/coffee-machine/diagrams/requirements-coffee-machine.md)
 
 ```sysml
-requirement <'REQ-008'> waterCapacity {
+requirement <'REQ-5'> 'Water capacity' {
     doc /* The machine shall hold at least 1.5 L of water. */
     @Rationale { text = "About a day's coffee for a household of four, so the tank needs filling once a day at most."; }
 }
 ```
 
-with `satisfy waterCapacity;` in the water tank's part def, is written as
+with `satisfy 'Water capacity';` in the water tank's part def, is written as
 
 | ID | Statement | Rationale |
 |:---|:---|:---|
-| REQ-008 | The machine shall hold at least 1.5 L of water. | About a day's coffee for a household of four, so the tank needs filling once a day at most. |
+| REQ-5 | The machine shall hold at least 1.5 L of water. | About a day's coffee for a household of four, so the tank needs filling once a day at most. |
 
 and listed in the traceability table as satisfied by `WaterTank`, linked to
 the line that declares it.
+
+What a requirement is comes from SysML v2. How it is numbered, titled and
+worded follows MIL-STD-961E, the US defence standard for specifications: a
+number that says where it sits, REQ-1.2 inside REQ-1, a title in plain words,
+and one *shall* each ([VIEWS.md](VIEWS.md#requirements)).
 
 ## Install
 

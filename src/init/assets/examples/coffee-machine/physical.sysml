@@ -54,7 +54,7 @@ package Hardware {
     // --- water path --------------------------------------------------------
     part def WaterTank {
         perform beverage.prepareWater.storeWater;
-        satisfy waterCapacity;
+        satisfy 'Water capacity';
 
         attribute capacity : VolumeValue = 1.9 [L];
         port waterOut : WaterPort;
@@ -62,7 +62,7 @@ package Hardware {
 
     part def WaterPump {
         perform beverage.prepareWater.pumpWater;
-        satisfy espressoTime.brewPressure;
+        satisfy 'Espresso time'.'Brew pressure';
 
         attribute maxPressure : PressureValue = 1.5E6 [Pa];
         port waterIn : ~WaterPort;
@@ -72,7 +72,7 @@ package Hardware {
 
     part def Thermoblock {
         perform beverage.prepareWater.heatWater;
-        satisfy espressoTime.heatUp;
+        satisfy 'Espresso time'.'Heat-up time';
 
         attribute targetTemperature : CelsiusTemperatureValue = 92 ['°C'];
         port waterIn : ~WaterPort;
@@ -84,7 +84,7 @@ package Hardware {
     // --- coffee path -------------------------------------------------------
     part def BeanHopper {
         perform beverage.prepareCoffee.storeBeans;
-        satisfy beanCapacity;
+        satisfy 'Bean capacity';
 
         attribute capacity : MassValue = 280 [g];
         port beansOut : BeansPort;
@@ -92,7 +92,7 @@ package Hardware {
 
     part def Grinder {
         perform beverage.prepareCoffee.grindBeans;
-        satisfy freshGround;
+        satisfy 'Freshly ground coffee';
 
         attribute burrs : BurrKind = BurrKind::conicalCeramic;
         port beansIn : ~BeansPort;
@@ -103,7 +103,7 @@ package Hardware {
     part def BrewUnit {
         doc /* The coffee leaves the machine here. */
         perform beverage.prepareCoffee.extractShot;
-        satisfy doseRange;
+        satisfy 'Dose range';
 
         attribute maxDose : MassValue = 16 [g];
         port waterIn : ~HotWaterPort;
@@ -118,7 +118,7 @@ package Hardware {
              * the machine, so the pickup end connects to nothing here: it is where
              * the product meets whatever the kitchen provides. */
         perform beverage.prepareMilk.drawMilk;
-        satisfy milkFromCarton;
+        satisfy 'Milk from the carton';
 
         port pickup : ~MilkPort;
         port milkOut : MilkPort;
@@ -128,7 +128,7 @@ package Hardware {
         doc /* Steam through the wand pulls milk up the tube; nothing pumps it.
              * The milk leaves the machine here. */
         perform beverage.prepareMilk.frothMilk;
-        satisfy milkFromCarton;
+        satisfy 'Milk from the carton';
 
         port steamIn : ~SteamPort;
         port milkIn : ~MilkPort;
@@ -148,7 +148,7 @@ package Hardware {
 
     part def TouchDisplay {
         perform beverage.controlMachine.selectBeverage;
-        satisfy beverageChoice;
+        satisfy 'Choice of beverage';
 
         attribute diagonal : LengthValue = 109 [mm];
         port ctrlIn : ~ControlPort;
@@ -156,7 +156,7 @@ package Hardware {
 
     part def MainsSupply {
         perform beverage.supplyPower;
-        satisfy mainsPower;
+        satisfy 'Mains power';
 
         port powerOut : PowerPort;
     }
@@ -165,9 +165,9 @@ package Hardware {
     // The machine as built: the subject of every use case, opened up.
     part def CoffeeMachine :> SystemUseCases::CoffeeMachine {
         // What only the machine as a whole meets.
-        satisfy espressoTime;
-        satisfy safety;
-        satisfy counterWidth;
+        satisfy 'Espresso time';
+        satisfy 'Safety';
+        satisfy 'Machine width';
 
         attribute width : LengthValue = 280 [mm];
 

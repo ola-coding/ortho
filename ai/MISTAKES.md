@@ -484,7 +484,7 @@ changes. The part says what it meets, with `satisfy`.
 
 ```sysml wrong
 package SystemRequirements {
-    requirement <'REQ-001'> waterCapacity {
+    requirement <'REQ-1'> 'Water capacity' {
         doc /* The water tank shall hold at least 1.5 L. */
     }
 }
@@ -494,7 +494,55 @@ ortho prints nothing.
 
 ```sysml
 package SystemRequirements {
-    requirement <'REQ-001'> waterCapacity {
+    requirement <'REQ-1'> 'Water capacity' {
+        doc /* The machine shall hold at least 1.5 L of water. */
+    }
+}
+```
+
+### A requirement named like code
+
+A requirement's name is its title in the document, so write it in plain
+words, in single quotes, starting with a capital, as a specification titles
+its paragraphs (MIL-STD-961E §4.10).
+
+```sysml wrong
+package SystemRequirements {
+    requirement <'REQ-1'> waterCapacity {
+        doc /* The machine shall hold at least 1.5 L of water. */
+    }
+}
+```
+
+ortho prints nothing.
+
+```sysml
+package SystemRequirements {
+    requirement <'REQ-1'> 'Water capacity' {
+        doc /* The machine shall hold at least 1.5 L of water. */
+    }
+}
+```
+
+### A requirement with must or should
+
+*Shall* says what is binding. *Should* and *may* say what is not, and *must*
+is not used (MIL-STD-961E §4.6): a statement with *should* is a wish, not a
+requirement.
+
+```sysml wrong
+package SystemRequirements {
+    requirement <'REQ-1'> 'Water capacity' {
+        doc /* The machine must hold at least 1.5 L of water. */
+    }
+}
+```
+
+ortho prints nothing.
+
+```sysml
+package SystemRequirements {
+    requirement <'REQ-1'> 'Water capacity' {
         doc /* The machine shall hold at least 1.5 L of water. */
     }
 }
@@ -510,8 +558,8 @@ text, and the table has no ID to list the requirement by.
 package SystemRequirements {
     private import StandardViewDefinitions::*;
 
-    requirement waterCapacity {
-        doc /* REQ-001: The machine shall hold at least 1.5 L of water. */
+    requirement 'Water capacity' {
+        doc /* REQ-1: The machine shall hold at least 1.5 L of water. */
     }
 
     view 'Requirements' : GridView {
@@ -520,13 +568,13 @@ package SystemRequirements {
 }
 ```
 
-ortho prints: `'waterCapacity' has no ID for the table of requirements to list it by. Give it one as its short name, as in requirement <'REQ-001'> waterCapacity.`
+ortho prints: `'Water capacity' has no ID for the table of requirements to list it by. Give it one as its short name, as in requirement <'REQ-1'> 'Water capacity'.`
 
 ```sysml
 package SystemRequirements {
     private import StandardViewDefinitions::*;
 
-    requirement <'REQ-001'> waterCapacity {
+    requirement <'REQ-1'> 'Water capacity' {
         doc /* The machine shall hold at least 1.5 L of water. */
     }
 
