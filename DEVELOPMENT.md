@@ -411,7 +411,7 @@ every reply. A pull request left unanswered for three weeks is closed.
 
 Done:
 
-- [x] **One Rust binary**, released from 0.1.0 to 0.4.1 on GitHub, crates.io,
+- [x] **One Rust binary**, released from 0.1.0 to 0.5.0 on GitHub, crates.io,
   the VS Code Marketplace and Open VSX.
 - [x] **SysML v2 as the spec writes it:** a grammar from the spec, all 252 of
   OMG's models, the spec's view definitions and graphical notation, imports,
