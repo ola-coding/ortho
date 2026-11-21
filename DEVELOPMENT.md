@@ -216,7 +216,7 @@ cargo xtask omg-models              # fetch OMG's models, which needs Git
 cargo test -- --ignored             # count how many of OMG's models load
 cargo xtask library-names           # list the standard library's names
 cargo xtask vscode-grammar          # the extension's grammar, LANGUAGE.md and example copies
-cargo xtask zed-grammar             # the Zed highlighting, and the copies the extension and ortho init carry
+cargo xtask zed-grammar             # the Zed highlighting, and the copies the extension, ortho init and the preview carry
 ```
 
 **Changes reach `main` only by pull request.** The rule set *Protect main*,
@@ -263,10 +263,16 @@ reported privately, as `SECURITY.md` says.
   as an editor and a browser would.
 - **The live preview** (`src/lsp/preview.rs`, its page `preview.html`) is a
   page `ortho lsp` serves on `127.0.0.1`, as Typst's Tinymist does, since Zed
-  gives an extension no panel. The diagrams stay in memory until *Save all*
-  is pressed. The page waits on `state` for each newer render and posts
-  `open` when a box is clicked, which the server passes to the editor as
-  `window/showDocument`. The page opens in the browser when a model file is
+  gives an extension no panel. The views stay in memory until *Save all*
+  is pressed; the table of requirements is written as for the folder that
+  writes to, so its links work there. The model shown is drawn again once
+  typing pauses for half a second: the editor's messages are read on a thread
+  of their own, so the server can wait for the pause. The page waits on
+  `state` for each newer render and posts `open` when a box, a requirement or
+  a link in the table is clicked, which the server passes to the editor as
+  `window/showDocument`. It reads the table with a copy of the VS Code
+  extension's `media/markdown.js`, which `cargo xtask zed-grammar` keeps in
+  `src/lsp/`. The page opens in the browser when a model file is
   opened and none is open; the port comes from the project's path, so a page
   left open finds the server again. It follows the model last opened, edited
   or saved, and closes with the last model file where the editor says so;
@@ -457,8 +463,8 @@ Open, in priority order:
     GitHub, in the editor's colours. Clicking a requirement opens its line;
     the preview renders as you type, faded while the model does not load.
     *Save all* writes the `.md` too.
-  - [ ] The same tab in the browser preview of `ortho lsp`, which Zed opens,
-    and *Save all* there writing the `.md`.
+  - [x] The same tab in the browser preview of `ortho lsp`, which Zed opens,
+    drawn as you type too, and *Save all* there writing the `.md`.
   - [ ] Status and *Verified by*, after a mock-up of the table:
     `@StatusInfo { status = StatusKind::tbr; }` as a Status column in the box,
     and `verify` in a verification case, with its `@VerificationMethod`, as a
@@ -469,3 +475,10 @@ Open, in priority order:
   - [ ] Resolve the ends of a `#derivation connection`, with *did you mean*.
   - [ ] Later: *Derived from*, for a model with requirements on more than one
     level; sections, from packages nested in the one the table exposes.
+- [ ] **Paths through a link.** ortho names a model file relative to the folder
+  it runs in, which the system gives by its real path (`relative_path`). A
+  model reached through a link, as macOS's temporary folder `/var/folders/…`
+  is to `/private/var/folders/…`, is then named `../../var/folders/…` in the
+  diagrams' `data-file` and in the table's links. Compare the two as one
+  folder. The VS Code preview copies the model under its folder's real path,
+  so it is not affected.

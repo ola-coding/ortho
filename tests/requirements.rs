@@ -65,7 +65,7 @@ fn reported(workspace: &Workspace, severity: Severity) -> Vec<String> {
 fn writes_a_grid_view_of_requirements_as_a_markdown_specification() {
     let workspace = build(&[("spec/requirements.sysml", REQUIREMENTS), ("spec/physical.sysml", PHYSICAL)]);
     let rendering = render_views(&workspace, &LIGHT, "spec/diagrams").unwrap();
-    let table = &rendering.rendered[0];
+    let table = &rendering.rendered[1];
     assert_eq!(diagram_kind(&workspace.ast, table.view), DiagramKind::Requirements);
     assert_eq!(table.file, "requirements-coffee-machine.md");
     assert_eq!(table.result.summary, "5 requirement(s), 4 satisfied");
@@ -119,8 +119,8 @@ What the coffee machine shall do.
 | [REQ-005](#beveragechoice) | beverageChoice | [Display](../physical.sysml#L3) |
 ";
     assert_eq!(table.result.content, expected);
-    // Written first, before the diagrams: what is asked of the system comes first.
-    assert_eq!(rendering.rendered[1].file, "physical.svg");
+    // Written last, after the diagrams.
+    assert_eq!(rendering.rendered[0].file, "physical.svg");
 }
 
 #[test]

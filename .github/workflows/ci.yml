@@ -102,6 +102,7 @@ jobs:
           workspaces: editors/zed
       - run: cargo fmt --check
       - run: cargo clippy --locked --target wasm32-wasip2 -- -D warnings
+      - run: cargo test --locked
       - run: cargo build --locked --release --target wasm32-wasip2
       - name: Fetch the grammar the extension pins
         run: |

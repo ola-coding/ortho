@@ -282,13 +282,13 @@ fn renders_all_seven_views_each_to_a_file_named_after_it() {
     assert_eq!(
         files,
         [
-            (DiagramKind::Requirements, "requirements-coffee-machine.md"),
             (DiagramKind::UseCase, "use-case-view-coffee-machine.svg"),
             (DiagramKind::Logical, "logical-view-coffee-machine.svg"),
             (DiagramKind::Implementation, "implementation-view-coffee-machine.svg"),
             (DiagramKind::Physical, "physical-view-coffee-machine.svg"),
             (DiagramKind::Deployment, "deployment-view-coffee-machine.svg"),
             (DiagramKind::Process, "process-view-coffee-machine.svg"),
+            (DiagramKind::Requirements, "requirements-coffee-machine.md"),
         ]
     );
     for rendered in &rendering.rendered {

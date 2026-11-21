@@ -332,13 +332,13 @@ fn renders_all_seven_views_each_to_a_file_named_after_it() {
     assert_eq!(
         files,
         [
-            (DiagramKind::Requirements, "requirements-survey-drone.md"),
             (DiagramKind::UseCase, "use-case-view-survey-drone.svg"),
             (DiagramKind::Logical, "logical-view-survey-drone.svg"),
             (DiagramKind::Implementation, "implementation-view-survey-drone.svg"),
             (DiagramKind::Physical, "physical-view-survey-drone.svg"),
             (DiagramKind::Deployment, "deployment-view-survey-drone.svg"),
             (DiagramKind::Process, "process-view-survey-drone.svg"),
+            (DiagramKind::Requirements, "requirements-survey-drone.md"),
         ]
     );
     for rendered in &rendering.rendered {

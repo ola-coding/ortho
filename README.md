@@ -187,7 +187,7 @@ ortho lsp
   `--example` also copies an example model.
 - **`lsp`** is a language server for Zed, Neovim, Helix, Emacs or any editor
   that speaks LSP: problems as you type, go to definition, and a live preview
-  of the diagrams in your browser.
+  of the diagrams and the requirements in your browser, drawn as you type.
 
 ## In CI
 

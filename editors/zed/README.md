@@ -3,8 +3,9 @@
 **Check a SysML v2 model as you write it, and see its architecture.** Ortho
 draws six architectural views of a SysML v2 model, in SysML v2's own
 graphical notation: use case, logical, implementation, physical, deployment
-and process. This extension brings ortho's checks into Zed, and shows the
-diagrams in your browser, drawn again every time you save.
+and process, and writes its requirements as a specification. This extension
+brings ortho's checks into Zed, and shows the diagrams and the requirements in
+your browser, drawn again as you type.
 
 It is made for models that AI agents write and people review.
 
@@ -16,12 +17,14 @@ It is made for models that AI agents write and people review.
   outline (Ctrl-Shift-O, or Cmd-Shift-O on a Mac). The highlighting is from
   Nomograph's [tree-sitter-sysml](https://gitlab.com/nomograph/tree-sitter-sysml), MIT.
 - **A live preview.** Open a `.sysml` file and the model's diagrams open in
-  your browser, a tab for each view. Open or edit a file of another model and
-  the page turns to it. Close the page, and the next model file you open
-  opens it again. While the model has a problem the last diagrams stay,
-  faded, with the problem above them.
-- **From a box to its line, and back.** Click a box on the page and Zed opens
-  the line that declares it. On a view's declaration, the code action *Show
+  your browser, a tab for each view, drawn again as you type. The
+  requirements are a tab of their own, a table as GitHub shows it. Open or
+  edit a file of another model and the page turns to it. Close the page, and
+  the next model file you open opens it again. While the model has a problem
+  the last views stay, faded, with the problem above them.
+- **From a box to its line, and back.** Click a box on the page, or a
+  requirement or a part that satisfies it, and Zed opens the line that
+  declares it. On a view's declaration, the code action *Show
   in the preview* (Ctrl-., or Cmd-. on a Mac) turns the page to that view.
 - **Problems as you type,** in every file of the model, not only the one
   open: a name that does not resolve, a syntax error, or two views that
@@ -30,9 +33,10 @@ It is made for models that AI agents write and people review.
 - **Go to definition** (F12) from any name, in whichever file declares it,
   each segment of a chain such as `beverage.prepareCoffee.grindBeans`
   included.
-- **Nothing written until you ask.** *Save all* on the page writes the SVGs
-  into a `diagrams/` folder beside the model, exactly as `ortho render` does,
-  and *Save SVG* downloads the one shown.
+- **Nothing written until you ask.** *Save all* on the page writes the views,
+  the SVGs and the table of requirements, into a `diagrams/` folder beside the
+  model, exactly as `ortho render` does, and *Save SVG* or *Save Markdown*
+  downloads the one shown.
 
 ## Starting a project
 
@@ -57,7 +61,8 @@ says what to write for each.
 
 ## Settings
 
-The extension runs `ortho lsp`, from ortho 0.4.0 on: the `ortho` on your
+The extension runs `ortho lsp`, from ortho 0.4.0 on, and shows the
+requirements from 0.5.0: the `ortho` on your
 PATH, or else the release for your system, which it downloads from GitHub
 once and keeps up to date. Under `lsp.ortho` in Zed's settings:
 
