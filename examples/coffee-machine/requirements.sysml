@@ -13,26 +13,28 @@ package SystemRequirements {
 
     // --- making a beverage -------------------------------------------------
     requirement <'REQ-1'> 'Espresso time' {
-        doc /* The machine shall deliver an espresso within 60 s of the user's
-             * choice, starting from standby. */
+        doc /* While the machine is in standby, when the user chooses an espresso,
+             * the machine shall deliver it within 60 s. */
         @Rationale { text = "A home machine is used in the rush before work; a minute is as long as its users will wait."; }
 
         requirement <'REQ-1.1'> 'Heat-up time' {
             doc /* The machine shall heat its brewing water from 20 °C to 92 °C within 30 s. */
         }
         requirement <'REQ-1.2'> 'Brew temperature' {
-            doc /* The machine shall hold the brewing water within 2 °C of 92 °C
-                 * throughout an extraction. */
+            doc /* While it extracts a shot, the machine shall hold the brewing
+                 * water within 2 °C of 92 °C. */
             @Rationale { text = "Below about 90 °C an espresso tastes sour, and above 96 °C bitter."; }
         }
         requirement <'REQ-1.3'> 'Brew pressure' {
-            doc /* The machine shall extract at 9 bar, plus or minus 1 bar, at the coffee bed. */
+            doc /* While it extracts a shot, the machine shall hold the pressure at
+                 * the coffee bed at 9 bar, plus or minus 1 bar. */
             @Rationale { text = "Espresso is extracted at about 9 bar: much less leaves it thin, much more makes it bitter."; }
         }
     }
 
     requirement <'REQ-2'> 'Freshly ground coffee' {
-        doc /* The machine shall grind whole beans for each shot, just before it is brewed. */
+        doc /* When it brews a shot, the machine shall first grind whole beans for
+             * it. */
         @Rationale { text = "Ground coffee loses most of its aroma within a quarter of an hour."; }
     }
 
@@ -42,8 +44,8 @@ package SystemRequirements {
     }
 
     requirement <'REQ-4'> 'Milk from the carton' {
-        doc /* The machine shall froth milk drawn straight from the user's own carton,
-             * without a milk container of its own. */
+        doc /* The machine shall froth milk drawn straight from the user's own
+             * carton. */
         @Rationale { text = "A milk container has to be emptied, cleaned and kept cold every day; a tube in the carton needs only a rinse."; }
     }
 
@@ -69,12 +71,13 @@ package SystemRequirements {
              * steam and overheating. */
 
         requirement <'REQ-8.1'> 'Brew group interlock' {
-            doc /* The machine shall keep the brew group shut while it is under pressure. */
+            doc /* While the brew group is under pressure, the machine shall keep it
+                 * shut. */
             @Rationale { text = "Opened under pressure, it would spray scalding water and grounds."; }
         }
         requirement <'REQ-8.2'> 'Dry-run cut-off' {
-            doc /* The machine shall switch the heater off within 2 s when no water
-                 * flows through it. */
+            doc /* If no water flows through the heater, then the machine shall
+                 * switch the heater off within 2 s. */
             @Rationale { text = "Heated dry, a thermoblock overheats within seconds and can damage the machine."; }
         }
     }
@@ -87,7 +90,7 @@ package SystemRequirements {
     }
 
     requirement <'REQ-10'> 'Machine width' {
-        doc /* The machine shall be no wider than 300 mm. */
+        doc /* The machine shall be at most 300 mm wide. */
         @Rationale { text = "It then fits the space of the narrowest standard kitchen cabinet."; }
     }
 

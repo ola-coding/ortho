@@ -8,9 +8,9 @@ What the survey drone system shall do for an operator surveying an area from the
 
 ## Survey planning
 
-| ID | Statement | Rationale |
-|:---|:---|:---|
-| REQ-1 | The system shall let the operator plan a survey by marking its area on a map, and shall fly no route the operator has not approved. | The operator stays responsible for where the drone flies. |
+| ID | Statement |
+|:---|:---|
+| REQ-1 | The system shall let the operator plan a survey by marking its area on a map. |
 
 ### Leg coverage
 
@@ -22,25 +22,25 @@ What the survey drone system shall do for an operator surveying an area from the
 
 | ID | Statement |
 |:---|:---|
-| REQ-2 | The system shall show the operator the drone's position, and how much of the survey it has flown, at least once a second. |
+| REQ-2 | While the drone flies a survey, the system shall show the operator its position, and how much of the survey it has flown, at least once a second. |
 
 ## Live video
 
 | ID | Statement | Rationale |
 |:---|:---|:---|
-| REQ-3 | The system shall show the operator the camera's video at most 500 ms after it is captured. | The operator judges what the drone sees from the video; an older picture misleads. |
+| REQ-3 | While the drone flies, the system shall show the operator the camera's video at most 500 ms after it is captured. | The operator judges what the drone sees from the video; an older picture misleads. |
 
 ## Automatic survey
 
-| ID | Statement |
-|:---|:---|
-| REQ-4 | The drone shall fly an approved survey from take-off to landing with no one at the controls. |
+| ID | Statement | Rationale |
+|:---|:---|:---|
+| REQ-4 | When the operator approves a survey, the drone shall fly it from take-off to landing on its own. | The operator stays responsible for where the drone flies. |
 
 ### Track accuracy
 
 | ID | Statement | Rationale |
 |:---|:---|:---|
-| REQ-4.1 | The drone shall keep within 2 m of its planned track, in winds up to 10 m/s. | Legs that drift apart leave gaps in the overlap the map needs. |
+| REQ-4.1 | While it flies a survey in winds up to 10 m/s, the drone shall keep within 2 m of its planned track. | Legs that drift apart leave gaps in the overlap the map needs. |
 
 ## Endurance
 
@@ -52,37 +52,37 @@ What the survey drone system shall do for an operator surveying an area from the
 
 | ID | Statement |
 |:---|:---|
-| REQ-6 | The drone shall end its flight safely when an obstacle blocks its route, its radio link is lost or its battery runs low. |
+| REQ-6 | If an obstacle blocks its route, its radio link is lost or its battery runs low, then the drone shall end its flight safely. |
 
 ### Obstacle avoidance
 
 | ID | Statement | Rationale |
 |:---|:---|:---|
-| REQ-6.1 | The drone shall detect an obstacle in its path at least 15 m ahead, and stop before it. | Power lines, cranes and trees are not on the operator's map. |
+| REQ-6.1 | If an obstacle is in its path, then the drone shall detect it at least 15 m ahead and stop before it. | Power lines, cranes and trees are not on the operator's map. |
 
 #### Onboard detection
 
 | ID | Statement | Rationale |
 |:---|:---|:---|
-| REQ-6.1.1 | The drone shall detect obstacles with its own computers, using neither the radio link nor the ground station. | Detection on the ground would come too late, and stop when the link does. |
+| REQ-6.1.1 | The drone shall detect obstacles with its own computers alone. | Detection on the ground would come too late, and stop when the link does. |
 
 ### Lost link
 
 | ID | Statement |
 |:---|:---|
-| REQ-6.2 | The drone shall return to its launch point and land when the radio link has been lost for 5 s. |
+| REQ-6.2 | If the radio link has been lost for 5 s, then the drone shall return to its launch point and land. |
 
 ### Low battery
 
 | ID | Statement |
 |:---|:---|
-| REQ-6.3 | The drone shall return to its launch point once its battery holds only the charge to get there, with 20 % in reserve. |
+| REQ-6.3 | If its battery holds only the charge to reach its launch point, with 20 % in reserve, then the drone shall return there. |
 
 ## Link range
 
 | ID | Statement | Rationale |
 |:---|:---|:---|
-| REQ-7 | The radio link shall carry the video and the telemetry up to 2 km from the ground station, in line of sight. | The operator can then stand at one edge of a site and reach its far side. |
+| REQ-7 | The system shall carry the video and the telemetry between the drone and the ground station up to 2 km apart, in line of sight. | The operator can then stand at one edge of a site and reach its far side. |
 
 ## Link encryption
 
@@ -94,7 +94,7 @@ What the survey drone system shall do for an operator surveying an area from the
 
 | ID | Statement | Rationale |
 |:---|:---|:---|
-| REQ-9 | The drone shall record every flight's telemetry and health reports, to be read after landing. | An incident has to be traceable to its cause. |
+| REQ-9 | While it flies, the drone shall record its telemetry and health reports, to be read after landing. | An incident has to be traceable to its cause. |
 
 ## Traceability
 

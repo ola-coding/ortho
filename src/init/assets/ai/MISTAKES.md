@@ -505,8 +505,7 @@ package SystemRequirements {
 ### A requirement named like code
 
 A requirement's name is its title in the document, so write it in plain
-words, in single quotes, starting with a capital, as a specification titles
-its paragraphs (MIL-STD-961E §4.10).
+words, in single quotes, starting with a capital.
 
 ```sysml wrong
 package SystemRequirements {
@@ -528,9 +527,9 @@ package SystemRequirements {
 
 ### A requirement with must or should
 
-*Shall* says what is binding. *Should* and *may* say what is not, and *must*
-is not used (MIL-STD-961E §4.6): a statement with *should* is a wish, not a
-requirement.
+A requirement says *shall*, as every EARS pattern does
+([VIEWS.md](VIEWS.md#requirements)). With *should* or *may* it is a wish,
+and with *must* or *will* each reader decides whether it binds.
 
 ```sysml wrong
 package SystemRequirements {
@@ -546,6 +545,33 @@ ortho prints nothing.
 package SystemRequirements {
     requirement <'REQ-1'> 'Water capacity' {
         doc /* The machine shall hold at least 1.5 L of water. */
+    }
+}
+```
+
+### A condition at the end
+
+EARS puts what a requirement depends on first, with a keyword of its own:
+*When* for an event, *While* for a state, *Where* for an optional feature, and
+*If … then* for something unwanted. At the end of the sentence, a condition is
+easily missed, or read as belonging to only part of it.
+
+```sysml wrong
+package SystemRequirements {
+    requirement <'REQ-1'> 'Dry-run cut-off' {
+        doc /* The machine shall switch the heater off within 2 s when no water
+             * flows through it. */
+    }
+}
+```
+
+ortho prints nothing.
+
+```sysml
+package SystemRequirements {
+    requirement <'REQ-1'> 'Dry-run cut-off' {
+        doc /* If no water flows through the heater, then the machine shall
+             * switch the heater off within 2 s. */
     }
 }
 ```

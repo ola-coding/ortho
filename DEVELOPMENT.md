@@ -441,8 +441,9 @@ Open, in priority order:
     table of what satisfies each.
   - [x] Resolve what `satisfy` names, with *did you mean*; warn of a
     requirement nothing satisfies, and of one without an ID or with another's.
-  - [x] Requirements in the three examples, numbered and titled after OMG's
-    examples and MIL-STD-961E: `<'REQ-1.2'> 'Brew temperature'`.
+  - [x] Requirements in the three examples, numbered after OMG's examples,
+    titled in plain words and worded after EARS:
+    `<'REQ-1.2'> 'Brew temperature'`.
   - [x] README, LANGUAGE.md, VIEWS.md and the AI instructions.
   - [ ] A tab for the table in the VS Code and browser previews.
   - [ ] Later: *Verified by* (`verify`), *Derived from* (`#derivation`) and

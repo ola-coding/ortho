@@ -640,8 +640,8 @@ package SystemRequirements {
     private import StandardViewDefinitions::*;
 
     requirement <'REQ-1'> 'Espresso time' {
-        doc /* The machine shall deliver an espresso within 60 s of the user's
-             * choice, starting from standby. */
+        doc /* While the machine is in standby, when the user chooses an espresso,
+             * the machine shall deliver it within 60 s. */
         @Rationale { text = "A minute is as long as its users will wait."; }
 
         requirement <'REQ-1.1'> 'Heat-up time' {
@@ -693,9 +693,8 @@ plain words and single quotes, `'Heat-up time'`, and a `satisfy` names it so:
 `satisfy 'Espresso time'.'Heat-up time';`. Add a requirement at the end of its
 level, and never give its ID to another: a document that cites `REQ-1.2` has
 to find the same requirement next year. ortho warns of a requirement a table
-lists that has no ID, or the ID of another, and renders anyway. How to number,
-title and word requirements, after MIL-STD-961E, is in
-[VIEWS.md](VIEWS.md#requirements).
+lists that has no ID, or the ID of another, and renders anyway. How to word a
+requirement, after the patterns of EARS, is in [VIEWS.md](VIEWS.md#requirements).
 
 **Satisfying a requirement.** A part or module says which requirements it
 meets with `satisfy`, in its own body, beside the functions it `perform`s.

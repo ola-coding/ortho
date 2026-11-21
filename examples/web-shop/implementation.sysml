@@ -141,7 +141,7 @@ package Ordering {
         doc /* Hands the card to the payment provider; card numbers never reach
              * the shop's own tables. */
         perform sale.takeOrders.takePayment;
-        satisfy 'Paid orders'.'No stored card data';
+        satisfy 'Paid orders'.'Card details';
 
         port payment : Apis::PaymentApi;
         port provider : ~Apis::ProviderApi;

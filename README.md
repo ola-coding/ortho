@@ -98,10 +98,11 @@ with `satisfy 'Water capacity';` in the water tank's part def, is written as
 and listed in the traceability table as satisfied by `WaterTank`, linked to
 the line that declares it.
 
-What a requirement is comes from SysML v2. How it is numbered, titled and
-worded follows MIL-STD-961E, the US defence standard for specifications: a
-number that says where it sits, REQ-1.2 inside REQ-1, a title in plain words,
-and one *shall* each ([VIEWS.md](VIEWS.md#requirements)).
+What a requirement is, and how it is numbered, follows SysML v2 and OMG's own
+examples: REQ-1.2 is the second in REQ-1. Each statement takes one of the
+patterns of EARS, the Easy Approach to Requirements Syntax, always with
+*shall*: when an order is placed, the shop shall reserve its stock
+([VIEWS.md](VIEWS.md#requirements)).
 
 ## Install
 

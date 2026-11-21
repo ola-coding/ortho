@@ -13,8 +13,8 @@ package SystemRequirements {
 
     // --- finding a product -------------------------------------------------
     requirement <'REQ-1'> 'Product search' {
-        doc /* The shop shall find products by any word of their name or
-             * description, and show the first results within 1 s. */
+        doc /* When a customer searches for a word, the shop shall show the products
+             * with that word in their name or description, the first within 1 s. */
         @Rationale { text = "Shoppers who wait for results leave for another shop."; }
     }
 
@@ -25,23 +25,24 @@ package SystemRequirements {
 
     // --- ordering and paying -----------------------------------------------
     requirement <'REQ-3'> 'Guest cart' {
-        doc /* The shop shall keep a customer's cart, with no account or sign-in,
-             * until the customer orders. */
+        doc /* The shop shall keep a customer's cart until the customer orders,
+             * signed in or not. */
         @Rationale { text = "Asked to register before they buy, many shoppers do not."; }
     }
 
     requirement <'REQ-4'> 'Paid orders' {
-        doc /* The shop shall record an order only once its payment is authorised. */
+        doc /* When a customer checks out, the shop shall record the order once its
+             * payment is authorised. */
         @Rationale { text = "No stock is then reserved, and nothing shipped, for an order no one paid for."; }
 
-        requirement <'REQ-4.1'> 'No stored card data' {
-            doc /* The shop shall pass card details straight to the payment provider,
-                 * and store none of them. */
+        requirement <'REQ-4.1'> 'Card details' {
+            doc /* When a customer pays, the shop shall pass the card details
+                 * straight to the payment provider. */
             @Rationale { text = "A shop that never stores card data falls under far fewer PCI DSS requirements."; }
         }
         requirement <'REQ-4.2'> 'Confirmation time' {
-            doc /* The shop shall confirm a paid order to the customer within 5 s of
-                 * checkout. */
+            doc /* When a customer checks out, the shop shall confirm the paid order
+                 * within 5 s. */
         }
     }
 
@@ -51,8 +52,7 @@ package SystemRequirements {
              * carrier. */
 
         requirement <'REQ-5.1'> 'Stock reservation' {
-            doc /* The shop shall reserve an order's stock as soon as the order is
-                 * placed. */
+            doc /* When an order is placed, the shop shall reserve its stock. */
             @Rationale { text = "The last item of a product is then never sold twice."; }
         }
         requirement <'REQ-5.2'> 'Pick list' {
@@ -60,8 +60,8 @@ package SystemRequirements {
                  * oldest first. */
         }
         requirement <'REQ-5.3'> 'Shipment booking' {
-            doc /* The shop shall book a collection with the carrier for every packed
-                 * order. */
+            doc /* When an order is packed, the shop shall book its collection with
+                 * the carrier. */
         }
     }
 
@@ -70,8 +70,8 @@ package SystemRequirements {
     }
 
     requirement <'REQ-7'> 'Order emails' {
-        doc /* The shop shall email the customer when an order is placed, and again
-             * when it ships. */
+        doc /* When an order is placed or ships, the shop shall email the customer.
+             * */
         @Rationale { text = "Customers who know where their order is do not write to ask."; }
     }
 
@@ -82,8 +82,8 @@ package SystemRequirements {
     }
 
     requirement <'REQ-9'> 'Peak load' {
-        doc /* The shop shall take ten times its usual number of orders at a peak,
-             * with no one changing how it is set up. */
+        doc /* While orders arrive at up to ten times their usual rate, the shop
+             * shall take them all, as it is set up. */
         @Rationale { text = "A sale, or a mention in the press, brings peaks no one schedules."; }
     }
 

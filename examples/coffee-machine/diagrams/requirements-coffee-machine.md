@@ -10,7 +10,7 @@ What the coffee machine shall do for a household making espresso and cappuccino 
 
 | ID | Statement | Rationale |
 |:---|:---|:---|
-| REQ-1 | The machine shall deliver an espresso within 60 s of the user's choice, starting from standby. | A home machine is used in the rush before work; a minute is as long as its users will wait. |
+| REQ-1 | While the machine is in standby, when the user chooses an espresso, the machine shall deliver it within 60 s. | A home machine is used in the rush before work; a minute is as long as its users will wait. |
 
 ### Heat-up time
 
@@ -22,19 +22,19 @@ What the coffee machine shall do for a household making espresso and cappuccino 
 
 | ID | Statement | Rationale |
 |:---|:---|:---|
-| REQ-1.2 | The machine shall hold the brewing water within 2 °C of 92 °C throughout an extraction. | Below about 90 °C an espresso tastes sour, and above 96 °C bitter. |
+| REQ-1.2 | While it extracts a shot, the machine shall hold the brewing water within 2 °C of 92 °C. | Below about 90 °C an espresso tastes sour, and above 96 °C bitter. |
 
 ### Brew pressure
 
 | ID | Statement | Rationale |
 |:---|:---|:---|
-| REQ-1.3 | The machine shall extract at 9 bar, plus or minus 1 bar, at the coffee bed. | Espresso is extracted at about 9 bar: much less leaves it thin, much more makes it bitter. |
+| REQ-1.3 | While it extracts a shot, the machine shall hold the pressure at the coffee bed at 9 bar, plus or minus 1 bar. | Espresso is extracted at about 9 bar: much less leaves it thin, much more makes it bitter. |
 
 ## Freshly ground coffee
 
 | ID | Statement | Rationale |
 |:---|:---|:---|
-| REQ-2 | The machine shall grind whole beans for each shot, just before it is brewed. | Ground coffee loses most of its aroma within a quarter of an hour. |
+| REQ-2 | When it brews a shot, the machine shall first grind whole beans for it. | Ground coffee loses most of its aroma within a quarter of an hour. |
 
 ## Dose range
 
@@ -46,7 +46,7 @@ What the coffee machine shall do for a household making espresso and cappuccino 
 
 | ID | Statement | Rationale |
 |:---|:---|:---|
-| REQ-4 | The machine shall froth milk drawn straight from the user's own carton, without a milk container of its own. | A milk container has to be emptied, cleaned and kept cold every day; a tube in the carton needs only a rinse. |
+| REQ-4 | The machine shall froth milk drawn straight from the user's own carton. | A milk container has to be emptied, cleaned and kept cold every day; a tube in the carton needs only a rinse. |
 
 ## Water capacity
 
@@ -76,13 +76,13 @@ What the coffee machine shall do for a household making espresso and cappuccino 
 
 | ID | Statement | Rationale |
 |:---|:---|:---|
-| REQ-8.1 | The machine shall keep the brew group shut while it is under pressure. | Opened under pressure, it would spray scalding water and grounds. |
+| REQ-8.1 | While the brew group is under pressure, the machine shall keep it shut. | Opened under pressure, it would spray scalding water and grounds. |
 
 ### Dry-run cut-off
 
 | ID | Statement | Rationale |
 |:---|:---|:---|
-| REQ-8.2 | The machine shall switch the heater off within 2 s when no water flows through it. | Heated dry, a thermoblock overheats within seconds and can damage the machine. |
+| REQ-8.2 | If no water flows through the heater, then the machine shall switch the heater off within 2 s. | Heated dry, a thermoblock overheats within seconds and can damage the machine. |
 
 ## Mains power
 
@@ -94,7 +94,7 @@ What the coffee machine shall do for a household making espresso and cappuccino 
 
 | ID | Statement | Rationale |
 |:---|:---|:---|
-| REQ-10 | The machine shall be no wider than 300 mm. | It then fits the space of the narrowest standard kitchen cabinet. |
+| REQ-10 | The machine shall be at most 300 mm wide. | It then fits the space of the narrowest standard kitchen cabinet. |
 
 ## Traceability
 

@@ -11,7 +11,7 @@ The `.sysml` files in a folder are one SysML v2 model. ortho reads them together
 A model answers its questions in this order, one view each:
 
 1. **Use case view:** what people ask the system for, and who asks.
-2. **Requirements:** what the system shall do, and how well, listed by a `GridView`. Each has an ID that says where it sits, `<'REQ-1.2'>` inside `<'REQ-1'>`, a title in plain words, `'Heat-up time'`, and one statement with *shall*, its figure a limit or with a tolerance, as VIEWS.md describes after MIL-STD-961E. Like a use case, a requirement names no part or program.
+2. **Requirements:** what the system shall do, and how well, listed by a `GridView`. Each has an ID that says where it sits, `<'REQ-1.2'>` inside `<'REQ-1'>`, a title in plain words, `'Heat-up time'`, and one statement in one of the EARS patterns that VIEWS.md shows, always with *shall*: *The machine shall …*, *When …*, *While …*, *Where …*, or *If … then …*. Like a use case, a requirement names no part or program.
 3. **Logical view:** what the system does, as trees of functions, each refining the use case it details. A function names what is done, never the part or program that does it.
 4. **Implementation view** and **physical view:** the software modules and the hardware parts, each naming the functions it realizes with `perform` and the requirements it meets with `satisfy`.
 5. **Deployment view:** which computer runs which software.
@@ -66,5 +66,5 @@ When you rename an element, update every reference to it in every file of the fo
 When asked to review a model rather than change it:
 
 1. Render it, and report every error and warning with its file and line.
-2. Look for what ortho cannot see: each mistake in MISTAKES.md for which ortho prints nothing; functions named after the parts or programs that perform them; use cases that say how rather than what; requirements that name the part meeting them, say two things at once, use *must* or *should* for *shall*, or have no figure to check; elements a reader needs explained that have no `doc`; views each about more than one thing.
+2. Look for what ortho cannot see: each mistake in MISTAKES.md for which ortho prints nothing; functions named after the parts or programs that perform them; use cases that say how rather than what; requirements that name the part meeting them, say two things at once, follow no EARS pattern or use *must* or *should* for *shall*, or have no figure to check; elements a reader needs explained that have no `doc`; views each about more than one thing.
 3. Report what you found, each with its file and line and the fix you suggest. Change the model only when asked.

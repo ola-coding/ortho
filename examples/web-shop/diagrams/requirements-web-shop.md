@@ -10,7 +10,7 @@ What the web shop shall do for its customers and its staff.
 
 | ID | Statement | Rationale |
 |:---|:---|:---|
-| REQ-1 | The shop shall find products by any word of their name or description, and show the first results within 1 s. | Shoppers who wait for results leave for another shop. |
+| REQ-1 | When a customer searches for a word, the shop shall show the products with that word in their name or description, the first within 1 s. | Shoppers who wait for results leave for another shop. |
 
 ## Catalogue size
 
@@ -22,25 +22,25 @@ What the web shop shall do for its customers and its staff.
 
 | ID | Statement | Rationale |
 |:---|:---|:---|
-| REQ-3 | The shop shall keep a customer's cart, with no account or sign-in, until the customer orders. | Asked to register before they buy, many shoppers do not. |
+| REQ-3 | The shop shall keep a customer's cart until the customer orders, signed in or not. | Asked to register before they buy, many shoppers do not. |
 
 ## Paid orders
 
 | ID | Statement | Rationale |
 |:---|:---|:---|
-| REQ-4 | The shop shall record an order only once its payment is authorised. | No stock is then reserved, and nothing shipped, for an order no one paid for. |
+| REQ-4 | When a customer checks out, the shop shall record the order once its payment is authorised. | No stock is then reserved, and nothing shipped, for an order no one paid for. |
 
-### No stored card data
+### Card details
 
 | ID | Statement | Rationale |
 |:---|:---|:---|
-| REQ-4.1 | The shop shall pass card details straight to the payment provider, and store none of them. | A shop that never stores card data falls under far fewer PCI DSS requirements. |
+| REQ-4.1 | When a customer pays, the shop shall pass the card details straight to the payment provider. | A shop that never stores card data falls under far fewer PCI DSS requirements. |
 
 ### Confirmation time
 
 | ID | Statement |
 |:---|:---|
-| REQ-4.2 | The shop shall confirm a paid order to the customer within 5 s of checkout. |
+| REQ-4.2 | When a customer checks out, the shop shall confirm the paid order within 5 s. |
 
 ## Order fulfilment
 
@@ -52,7 +52,7 @@ What the web shop shall do for its customers and its staff.
 
 | ID | Statement | Rationale |
 |:---|:---|:---|
-| REQ-5.1 | The shop shall reserve an order's stock as soon as the order is placed. | The last item of a product is then never sold twice. |
+| REQ-5.1 | When an order is placed, the shop shall reserve its stock. | The last item of a product is then never sold twice. |
 
 ### Pick list
 
@@ -64,7 +64,7 @@ What the web shop shall do for its customers and its staff.
 
 | ID | Statement |
 |:---|:---|
-| REQ-5.3 | The shop shall book a collection with the carrier for every packed order. |
+| REQ-5.3 | When an order is packed, the shop shall book its collection with the carrier. |
 
 ## Order status
 
@@ -76,7 +76,7 @@ What the web shop shall do for its customers and its staff.
 
 | ID | Statement | Rationale |
 |:---|:---|:---|
-| REQ-7 | The shop shall email the customer when an order is placed, and again when it ships. | Customers who know where their order is do not write to ask. |
+| REQ-7 | When an order is placed or ships, the shop shall email the customer. | Customers who know where their order is do not write to ask. |
 
 ## Availability
 
@@ -88,7 +88,7 @@ What the web shop shall do for its customers and its staff.
 
 | ID | Statement | Rationale |
 |:---|:---|:---|
-| REQ-9 | The shop shall take ten times its usual number of orders at a peak, with no one changing how it is set up. | A sale, or a mention in the press, brings peaks no one schedules. |
+| REQ-9 | While orders arrive at up to ten times their usual rate, the shop shall take them all, as it is set up. | A sale, or a mention in the press, brings peaks no one schedules. |
 
 ## Traceability
 
@@ -98,7 +98,7 @@ What the web shop shall do for its customers and its staff.
 | [REQ-2](#catalogue-size) | Catalogue size | [ProductTable](../implementation.sysml#L118) |
 | [REQ-3](#guest-cart) | Guest cart | [StorefrontApp](../implementation.sysml#L93) |
 | [REQ-4](#paid-orders) | Paid orders | [OrderFunction](../implementation.sysml#L130) |
-| [REQ-4.1](#no-stored-card-data) | &emsp;No stored card data | [PaymentFunction](../implementation.sysml#L140) |
+| [REQ-4.1](#card-details) | &emsp;Card details | [PaymentFunction](../implementation.sysml#L140) |
 | [REQ-4.2](#confirmation-time) | &emsp;Confirmation time | [OrderFunction](../implementation.sysml#L130) |
 | [REQ-5](#order-fulfilment) | Order fulfilment | [FulfilmentFunction](../implementation.sysml#L159) |
 | [REQ-5.1](#stock-reservation) | &emsp;Stock reservation | through [REQ-5](#order-fulfilment) |

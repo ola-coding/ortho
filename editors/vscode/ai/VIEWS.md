@@ -145,27 +145,26 @@ functions, so the requirement outlives the design that first met it.
 
 What a requirement is comes from SysML v2 (§7.21): its ID is its short name,
 its statement the text of its `doc`, and the requirements nested in it are
-its subrequirements, satisfied by whatever satisfies it. How one is numbered,
-titled and worded follows MIL-STD-961E, the US defence standard for the
-format of specifications:
+its subrequirements, satisfied by whatever satisfies it. The ID says where the
+requirement sits, as in OMG's own examples: REQ-1.2 is the second in REQ-1.
+The name is its title, in plain words: *Heat-up time*.
 
-- **Shall.** A statement says what is binding with *shall*. *Should* and *may*
-  say what is not, and *must* is not used (§4.6).
-- **One requirement each,** stated so that it can be verified (§5.8), with a
-  figure as a limit or with a tolerance: at least 1.5 L, 9 bar plus or minus
-  1 bar (§4.7).
-- **Numbered** with periods between the levels, so the number says where a
-  requirement sits: REQ-1.2 is the second in REQ-1 (§4.9), as in OMG's own
-  examples. Three sublevels at most, where that can be helped.
-- **Titled** in plain words, starting with a capital: *Heat-up time* (§4.10).
-  The title is the requirement's name.
+Each statement takes one of the five patterns of EARS, the Easy Approach to
+Requirements Syntax, so each says *shall*, and what it depends on comes first:
 
-The table is the *Requirements* section of such a specification on its own;
-the scope, the documents it cites, how each requirement is verified and the
-notes belong to the document it goes into. Where MIL-STD-961E numbers within
-that section, 3.2.1, an ID stands on its own, REQ-2.1, so it can be cited
-from anywhere. The standard asks for no rationale; the table shows one where
-the model gives it.
+| Pattern | Template | For instance |
+|---|---|---|
+| Ubiquitous | The *system* shall *response*. | The machine shall hold at least 1.5 L of water. |
+| Event-driven | When *trigger*, the *system* shall *response*. | When an order is placed, the shop shall reserve its stock. |
+| State-driven | While *state*, the *system* shall *response*. | While the brew group is under pressure, the machine shall keep it shut. |
+| Optional feature | Where *feature is included*, the *system* shall *response*. | Where the machine has a milk system, the machine shall froth milk drawn straight from the user's carton. |
+| Unwanted behaviour | If *trigger*, then the *system* shall *response*. | If the radio link has been lost for 5 s, then the drone shall return to its launch point and land. |
+| Complex, the others combined | While *state*, when *trigger*, the *system* shall *response*. | While the machine is in standby, when the user chooses an espresso, the machine shall deliver it within 60 s. |
+
+*Should*, *may*, *will* and *must* have no place in a requirement. Each
+states one requirement, positively, with a figure a test can check: at least
+1.5 L, 9 bar plus or minus 1 bar. A rationale says why, where that is not
+plain.
 
 Not a diagram but a specification: a heading for each requirement, with its
 ID, statement and rationale in a box of their own, so each can be cited and
@@ -181,6 +180,8 @@ to the line that declares it, or the requirement it is satisfied through.
   the specification the grammar is written against.
 - [SysML v2 Release](https://github.com/Systems-Modeling/SysML-v2-Release) —
   the language specification, textual notation and pilot implementation.
-- MIL-STD-961E with Change 3, *Defense and Program-Unique Specifications
-  Format and Content*, US Department of Defense, 27 October 2015 — how the
-  requirements are numbered, titled and worded.
+- Alistair Mavin, Philip Wilkinson, Adrian Harwood and Mark Novak, "Easy
+  Approach to Requirements Syntax (EARS)", *17th IEEE International
+  Requirements Engineering Conference*, pp. 317–322, 2009,
+  [doi:10.1109/RE.2009.9](https://doi.org/10.1109/RE.2009.9) — how each
+  requirement is worded.

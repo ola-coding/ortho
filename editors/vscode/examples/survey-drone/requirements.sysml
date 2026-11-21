@@ -15,8 +15,7 @@ package SystemRequirements {
     // --- planning and following a survey -----------------------------------
     requirement <'REQ-1'> 'Survey planning' {
         doc /* The system shall let the operator plan a survey by marking its area
-             * on a map, and shall fly no route the operator has not approved. */
-        @Rationale { text = "The operator stays responsible for where the drone flies."; }
+             * on a map. */
 
         requirement <'REQ-1.1'> 'Leg coverage' {
             doc /* The system shall cover a marked area with survey legs whose camera
@@ -26,24 +25,26 @@ package SystemRequirements {
     }
 
     requirement <'REQ-2'> 'Progress display' {
-        doc /* The system shall show the operator the drone's position, and how much
-             * of the survey it has flown, at least once a second. */
+        doc /* While the drone flies a survey, the system shall show the operator
+             * its position, and how much of the survey it has flown, at least once
+             * a second. */
     }
 
     requirement <'REQ-3'> 'Live video' {
-        doc /* The system shall show the operator the camera's video at most 500 ms
-             * after it is captured. */
+        doc /* While the drone flies, the system shall show the operator the
+             * camera's video at most 500 ms after it is captured. */
         @Rationale { text = "The operator judges what the drone sees from the video; an older picture misleads."; }
     }
 
     // --- flying it ---------------------------------------------------------
     requirement <'REQ-4'> 'Automatic survey' {
-        doc /* The drone shall fly an approved survey from take-off to landing with
-             * no one at the controls. */
+        doc /* When the operator approves a survey, the drone shall fly it from
+             * take-off to landing on its own. */
+        @Rationale { text = "The operator stays responsible for where the drone flies."; }
 
         requirement <'REQ-4.1'> 'Track accuracy' {
-            doc /* The drone shall keep within 2 m of its planned track, in winds up
-                 * to 10 m/s. */
+            doc /* While it flies a survey in winds up to 10 m/s, the drone shall
+                 * keep within 2 m of its planned track. */
             @Rationale { text = "Legs that drift apart leave gaps in the overlap the map needs."; }
         }
     }
@@ -56,34 +57,34 @@ package SystemRequirements {
 
     // --- when something goes wrong -----------------------------------------
     requirement <'REQ-6'> 'Safe flight' {
-        doc /* The drone shall end its flight safely when an obstacle blocks its
-             * route, its radio link is lost or its battery runs low. */
+        doc /* If an obstacle blocks its route, its radio link is lost or its
+             * battery runs low, then the drone shall end its flight safely. */
 
         requirement <'REQ-6.1'> 'Obstacle avoidance' {
-            doc /* The drone shall detect an obstacle in its path at least 15 m ahead,
-                 * and stop before it. */
+            doc /* If an obstacle is in its path, then the drone shall detect it at
+                 * least 15 m ahead and stop before it. */
             @Rationale { text = "Power lines, cranes and trees are not on the operator's map."; }
 
             requirement <'REQ-6.1.1'> 'Onboard detection' {
-                doc /* The drone shall detect obstacles with its own computers, using
-                     * neither the radio link nor the ground station. */
+                doc /* The drone shall detect obstacles with its own computers
+                     * alone. */
                 @Rationale { text = "Detection on the ground would come too late, and stop when the link does."; }
             }
         }
         requirement <'REQ-6.2'> 'Lost link' {
-            doc /* The drone shall return to its launch point and land when the radio
-                 * link has been lost for 5 s. */
+            doc /* If the radio link has been lost for 5 s, then the drone shall
+                 * return to its launch point and land. */
         }
         requirement <'REQ-6.3'> 'Low battery' {
-            doc /* The drone shall return to its launch point once its battery holds
-                 * only the charge to get there, with 20 % in reserve. */
+            doc /* If its battery holds only the charge to reach its launch point,
+                 * with 20 % in reserve, then the drone shall return there. */
         }
     }
 
     // --- the link and the record -------------------------------------------
     requirement <'REQ-7'> 'Link range' {
-        doc /* The radio link shall carry the video and the telemetry up to 2 km from
-             * the ground station, in line of sight. */
+        doc /* The system shall carry the video and the telemetry between the drone
+             * and the ground station up to 2 km apart, in line of sight. */
         @Rationale { text = "The operator can then stand at one edge of a site and reach its far side."; }
     }
 
@@ -94,8 +95,8 @@ package SystemRequirements {
     }
 
     requirement <'REQ-9'> 'Flight record' {
-        doc /* The drone shall record every flight's telemetry and health reports,
-             * to be read after landing. */
+        doc /* While it flies, the drone shall record its telemetry and health
+             * reports, to be read after landing. */
         @Rationale { text = "An incident has to be traceable to its cause."; }
     }
 
