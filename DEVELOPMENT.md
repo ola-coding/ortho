@@ -425,8 +425,9 @@ Open, in priority order:
 - [ ] **Publish the Zed extension:** zed-industries/extensions#8349, opened on
   2026-11-15, waits for review. Try it on macOS and on a Linux desktop. When
   Nomograph fixes `dependency A::b to C;`, which their grammar reads only with
-  `from` (nomograph/tree-sitter-sysml#4, reported on 2026-11-17), move the pin
-  and let CI parse the web shop's `logical.sysml` too.
+  `from` (nomograph/tree-sitter-sysml#4, reported on 2026-11-17), and a
+  feature chain after `satisfy`, `satisfy a.b;`, which it does not read at all
+  (not yet reported), move the pin and drop CI's allowance for both.
 - [ ] **Be found by SysML v2 users.** ortho is listed in mycr0ft/awesome-sysml
   and daltskin/SysML-v2-Resources; jgsystemsconsulting/awesome-sysml-v2#5 and
   jgsystemsconsulting/awesome-mbse#30 wait for review. Then a post in the

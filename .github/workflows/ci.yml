@@ -113,14 +113,26 @@ jobs:
       - name: The examples parse, and every query compiles against the grammar
         run: |
           cd "$RUNNER_TEMP/grammar"
-          # The grammar reads `dependency A::b to C;` only with `from` before a client
-          # that has a qualified name, so the web shop's four refinements of that
-          # form are an ERROR node each, coloured a little off in Zed. Every other
-          # file must parse whole.
-          known="$GITHUB_WORKSPACE/examples/web-shop/logical.sysml"
+          # The grammar reads two forms of SysML v2 wrongly, each an ERROR node coloured
+          # a little off in Zed: `dependency A::b to C;`, which it reads only with `from`
+          # before a client that has a qualified name (nomograph/tree-sitter-sysml#4),
+          # and a feature chain after `satisfy`, as in `satisfy a.b;`. An error on any
+          # other line fails.
+          known='^[[:space:]]*(#refinement dependency [^ ]+::|satisfy [^;]*\.)'
+          failed=0
           for file in "$GITHUB_WORKSPACE"/examples/*/*.sysml; do
-            [ "$file" = "$known" ] || npx --yes tree-sitter-cli@0.25.10 parse --quiet "$file"
+            tree="$(npx --yes tree-sitter-cli@0.25.10 parse "$file" || true)"
+            [ -n "$tree" ] || { echo "The grammar gave no tree for $file"; exit 1; }
+            rows="$(printf '%s\n' "$tree" | grep -Eo '\((ERROR|MISSING[^[]*) \[[0-9]+' | grep -Eo '[0-9]+$' | sort -nu)"
+            for row in $rows; do
+              line="$(sed -n "$((row + 1))p" "$file")"
+              if ! printf '%s\n' "$line" | grep -Eq "$known"; then
+                echo "$file line $((row + 1)) does not parse: $line"
+                failed=1
+              fi
+            done
           done
+          [ "$failed" = 0 ]
           for query in "$GITHUB_WORKSPACE"/editors/zed/languages/sysml/*.scm; do
             npx --yes tree-sitter-cli@0.25.10 query --quiet "$query" "$GITHUB_WORKSPACE"/examples/coffee-machine/logical.sysml
           done
