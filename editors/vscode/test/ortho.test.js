@@ -166,7 +166,7 @@ test('copies a model with what its editors hold, where ortho will name it alike'
   fs.writeFileSync(path.join(folder, 'diagrams', 'c.sysml'), 'package C;\n');
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ortho-copy-'));
   const mirror = mirrorModel(folder, cwd, root, new Map([[path.join(folder, 'a.sysml'), 'package Typed;\n']]));
-  assert.equal(mirror, path.join(root, 'models', 'machine'));
+  assert.equal(mirror, path.join(fs.realpathSync(root), 'models', 'machine'));
   // As ortho reads a folder: its own .sysml files, not those of folders inside it.
   assert.deepEqual(fs.readdirSync(mirror).sort(), ['a.sysml', 'b.sysml']);
   assert.equal(fs.readFileSync(path.join(mirror, 'a.sysml'), 'utf8'), 'package Typed;\n');

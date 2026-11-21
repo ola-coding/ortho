@@ -199,7 +199,9 @@ function keepOnly(base, keep) {
  * Copies a model's .sysml files, as ortho reads them from its folder, into `root`, at
  * the place the folder has under `cwd`, with the text of each file open in an editor
  * as it stands there, saved or not. Run in `root`, ortho then names each file as it
- * would the file itself from `cwd`, and the model renders as typed.
+ * would the file itself from `cwd`, and the model renders as typed. The copy is made
+ * under `root`'s real path, as the folder ortho runs in is known to it, since a link
+ * on the way, as macOS's temporary folder has, would otherwise part the two.
  * @param {string} folder the model's folder
  * @param {string} cwd the folder ortho would run in, which holds `folder`
  * @param {string} root
@@ -207,7 +209,8 @@ function keepOnly(base, keep) {
  * @returns {string} the copy of the model's folder
  */
 function mirrorModel(folder, cwd, root, typed) {
-  const mirror = path.join(root, path.relative(cwd, folder));
+  fs.mkdirSync(root, { recursive: true });
+  const mirror = path.join(fs.realpathSync(root), path.relative(cwd, folder));
   fs.mkdirSync(mirror, { recursive: true });
   for (const name of fs.readdirSync(folder)) {
     const file = path.join(folder, name);
