@@ -445,6 +445,17 @@ Open, in priority order:
     titled in plain words and worded after EARS:
     `<'REQ-1.2'> 'Brew temperature'`.
   - [x] README, LANGUAGE.md, VIEWS.md and the AI instructions.
-  - [ ] A tab for the table in the VS Code and browser previews.
-  - [ ] Later: *Verified by* (`verify`), *Derived from* (`#derivation`) and
-    status (`StatusInfo`).
+  - [ ] A tab for the table in the VS Code and browser previews, as the
+    document shows on GitHub, in the editor's colours. Clicking a requirement
+    opens its line; the VS Code preview renders as you type, as Zed's does,
+    faded while the model does not load. *Save all* writes the `.md` too.
+  - [ ] Status and *Verified by*, after a mock-up of the table:
+    `@StatusInfo { status = StatusKind::tbr; }` as a Status column in the box,
+    and `verify` in a verification case, with its `@VerificationMethod`, as a
+    *Verified by* column in the traceability table. Resolve what `verify`
+    names, with *did you mean*; warn of a requirement nothing verifies once
+    the model has a verification case. A `verification.sysml` in each
+    example. An assumed figure is marked TBR, not explained in the rationale.
+  - [ ] Resolve the ends of a `#derivation connection`, with *did you mean*.
+  - [ ] Later: *Derived from*, for a model with requirements on more than one
+    level; sections, from packages nested in the one the table exposes.
