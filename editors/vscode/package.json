@@ -79,13 +79,13 @@
       },
       {
         "command": "ortho.saveDiagram",
-        "title": "Save Diagram as SVG...",
+        "title": "Save View...",
         "category": "Ortho",
         "icon": "$(save)"
       },
       {
         "command": "ortho.saveDiagrams",
-        "title": "Save All Diagrams as SVG...",
+        "title": "Save All Views...",
         "category": "Ortho",
         "icon": "$(save-all)"
       },

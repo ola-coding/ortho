@@ -120,3 +120,88 @@ main svg [data-line]:hover {
 .empty {
   color: var(--vscode-descriptionForeground);
 }
+/* A table of requirements, set as VS Code's own Markdown preview sets a document. */
+main .doc {
+  max-width: 900px;
+  margin: 0 auto;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: break-word;
+}
+main.stale .doc {
+  opacity: 0.45;
+}
+.doc h1,
+.doc h2 {
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.35));
+}
+.doc h1 {
+  margin: 0.2em 0 0.4em;
+  font-size: 2em;
+  font-weight: 600;
+}
+.doc h2 {
+  margin: 1.2em 0 0.5em;
+  font-size: 1.5em;
+  font-weight: 600;
+}
+.doc h3,
+.doc h4,
+.doc h5,
+.doc h6 {
+  margin: 1em 0 0.5em;
+  font-weight: 600;
+}
+.doc h3 {
+  font-size: 1.25em;
+}
+/* A heading moved to stays clear of the sticky header. */
+.doc [data-anchor] {
+  scroll-margin-top: 60px;
+}
+.doc p {
+  margin: 0 0 0.8em;
+}
+.doc sub {
+  font-size: 0.85em;
+  vertical-align: baseline;
+  color: var(--vscode-descriptionForeground);
+}
+.doc table {
+  margin: 0 0 1em;
+  border-collapse: collapse;
+}
+.doc th,
+.doc td {
+  padding: 5px 12px;
+  border: 1px solid var(--vscode-editorGroup-border, rgba(128, 128, 128, 0.35));
+  text-align: left;
+  vertical-align: top;
+}
+/* An ID such as REQ-1.2 is never broken at its hyphen. */
+.doc td:first-child {
+  white-space: nowrap;
+}
+.doc th {
+  font-weight: 600;
+  background: var(--vscode-textBlockQuote-background, rgba(128, 128, 128, 0.08));
+}
+.doc a {
+  color: var(--vscode-textLink-foreground);
+  text-decoration: none;
+}
+.doc a:hover {
+  color: var(--vscode-textLink-activeForeground);
+  text-decoration: underline;
+}
+/* A requirement opens the line that declares it. */
+.doc .requirement.opens {
+  margin: 0 -8px;
+  padding: 1px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.doc .requirement.opens:hover {
+  background: var(--vscode-list-hoverBackground);
+}

@@ -17,8 +17,8 @@ const path = require('node:path');
 
 /** `<file>.sysml line <n>: <message>`, as ortho reports a problem in a model file. */
 const AT_LINE = /^(.+?\.sysml) line (\d+): (.*)$/;
-/** `Wrote <file>.svg (<summary>)`, one line per diagram. */
-const WROTE = /^Wrote (.+?\.svg) \((.*)\)$/;
+/** `Wrote <file>.svg (<summary>)`, one line per diagram, or `.md` for a table of requirements. */
+const WROTE = /^Wrote (.+?\.(?:svg|md)) \((.*)\)$/;
 
 /**
  * What ortho printed: the diagrams it wrote, the problems it found at a line of a model
@@ -55,12 +55,13 @@ function readReport(stdout, stderr) {
 }
 
 /**
- * A diagram's title from its file name: `logical-view-survey-drone.svg` is
- * "Logical view survey drone".
+ * A view's title from its file name: `logical-view-survey-drone.svg` is
+ * "Logical view survey drone", and `requirements-survey-drone.md` "Requirements
+ * survey drone".
  * @param {string} file
  */
 function viewTitle(file) {
-  const words = path.basename(file).replace(/\.svg$/i, '').replace(/[-_]+/g, ' ').trim();
+  const words = path.basename(file).replace(/\.(svg|md)$/i, '').replace(/[-_]+/g, ' ').trim();
   return words ? words[0].toUpperCase() + words.slice(1) : 'View';
 }
 
@@ -194,7 +195,103 @@ function keepOnly(base, keep) {
   }
 }
 
+/**
+ * Copies a model's .sysml files, as ortho reads them from its folder, into `root`, at
+ * the place the folder has under `cwd`, with the text of each file open in an editor
+ * as it stands there, saved or not. Run in `root`, ortho then names each file as it
+ * would the file itself from `cwd`, and the model renders as typed. The copy is made
+ * under `root`'s real path, as the folder ortho runs in is known to it, since a link
+ * on the way, as macOS's temporary folder has, would otherwise part the two.
+ * @param {string} folder the model's folder
+ * @param {string} cwd the folder ortho would run in, which holds `folder`
+ * @param {string} root
+ * @param {Map<string, string>} typed the text of each file open in an editor, by its path
+ * @returns {string} the copy of the model's folder
+ */
+function mirrorModel(folder, cwd, root, typed) {
+  fs.mkdirSync(root, { recursive: true });
+  const mirror = path.join(fs.realpathSync(root), path.relative(cwd, folder));
+  fs.mkdirSync(mirror, { recursive: true });
+  for (const name of fs.readdirSync(folder)) {
+    const file = path.join(folder, name);
+    if (!name.endsWith('.sysml') || !fs.statSync(file).isFile()) continue;
+    const text = typed.get(file);
+    if (text === undefined) fs.copyFileSync(file, path.join(mirror, name));
+    else fs.writeFileSync(path.join(mirror, name), text);
+  }
+  return mirror;
+}
+
+/**
+ * A model's text with its comments blanked, line ends kept, so that nothing written
+ * in a comment is taken for a declaration.
+ * @param {string} text
+ */
+function withoutComments(text) {
+  return text.replace(/\/\*[\s\S]*?\*\/|\/\/[^\n]*/g, (comment) => comment.replace(/[^\n]/g, ' '));
+}
+
+/**
+ * Where each requirement is declared, by its ID, its short name, and by its name for
+ * one without an ID, so that a requirement's box in the table can open its line.
+ * @param {{ file: string, text: string }[]} sources each model file, named as the preview opens it
+ * @returns {{ byId: Record<string, { file: string, line: number }>, byName: Record<string, { file: string, line: number }> }}
+ */
+function requirementLines(sources) {
+  /** @type {Record<string, { file: string, line: number }>} */
+  const byId = {};
+  /** @type {Record<string, { file: string, line: number }>} */
+  const byName = {};
+  const name = String.raw`('(?:[^'\\]|\\.)*'|[A-Za-z_][A-Za-z0-9_]*)`;
+  const declaration = new RegExp(String.raw`\brequirement\s+(?:<\s*${name}\s*>\s*)?${name}?`, 'g');
+  const plain = (/** @type {string} */ written) => written.replace(/^'(.*)'$/s, '$1').replace(/\\(.)/g, '$1');
+  for (const { file, text } of sources) {
+    const code = withoutComments(text);
+    for (const match of code.matchAll(declaration)) {
+      // `requirement def` declares a definition, which no table lists.
+      if (match[2] === 'def') continue;
+      const at = { file, line: code.slice(0, match.index).split('\n').length };
+      if (match[1] !== undefined) byId[plain(match[1])] ??= at;
+      else if (match[2] !== undefined) byName[plain(match[2])] ??= at;
+    }
+  }
+  return { byId, byName };
+}
+
+/**
+ * A path as ortho writes it in a link: forward slashes, and spaces and parentheses
+ * escaped, so that Markdown reads the link whole.
+ * @param {string} relative
+ */
+function linkPath(relative) {
+  return relative.split(path.sep).join('/').replace(/ /g, '%20').replace(/\(/g, '%28').replace(/\)/g, '%29');
+}
+
+/**
+ * A table of requirements written into `from`, with its links into the model made to
+ * work from `to`, as ortho would have written them there. Links within the table, to
+ * an anchor, stay. `real` gives the file a link names, for a table written from a copy
+ * of the model.
+ * @param {string} markdown
+ * @param {string} from
+ * @param {string} to
+ * @param {(file: string) => string} [real]
+ */
+function relinkMarkdown(markdown, from, to, real = (file) => file) {
+  return markdown.replace(/(?<!\\)\]\(([^)\s]+)\)/g, (whole, target) => {
+    if (target.startsWith('#') || /^[a-z][a-z0-9+.-]*:/i.test(target)) return whole;
+    const hash = target.indexOf('#');
+    const file = hash < 0 ? target : target.slice(0, hash);
+    const fragment = hash < 0 ? '' : target.slice(hash);
+    const named = real(path.resolve(from, decodeURIComponent(file)));
+    return `](${linkPath(path.relative(to, named))}${fragment})`;
+  });
+}
+
 module.exports = {
+  mirrorModel,
+  requirementLines,
+  relinkMarkdown,
   readReport,
   viewTitle,
   tabTitles,
