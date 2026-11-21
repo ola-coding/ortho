@@ -427,7 +427,8 @@ Open, in priority order:
   Nomograph fixes `dependency A::b to C;`, which their grammar reads only with
   `from` (nomograph/tree-sitter-sysml#4, reported on 2026-11-17), and a
   feature chain after `satisfy`, `satisfy a.b;`, which it does not read at all
-  (not yet reported), move the pin and drop CI's allowance for both.
+  (nomograph/tree-sitter-sysml#5, reported on 2026-11-21), move the pin and
+  drop CI's allowance for both.
 - [ ] **Be found by SysML v2 users.** ortho is listed in mycr0ft/awesome-sysml
   and daltskin/SysML-v2-Resources; jgsystemsconsulting/awesome-sysml-v2#5 and
   jgsystemsconsulting/awesome-mbse#30 wait for review. Then a post in the

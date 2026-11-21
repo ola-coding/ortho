@@ -116,8 +116,8 @@ jobs:
           # The grammar reads two forms of SysML v2 wrongly, each an ERROR node coloured
           # a little off in Zed: `dependency A::b to C;`, which it reads only with `from`
           # before a client that has a qualified name (nomograph/tree-sitter-sysml#4),
-          # and a feature chain after `satisfy`, as in `satisfy a.b;`. An error on any
-          # other line fails.
+          # and a feature chain after `satisfy`, as in `satisfy a.b;` (#5). An error on
+          # any other line fails.
           known='^[[:space:]]*(#refinement dependency [^ ]+::|satisfy [^;]*\.)'
           failed=0
           for file in "$GITHUB_WORKSPACE"/examples/*/*.sysml; do
