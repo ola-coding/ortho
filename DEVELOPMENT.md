@@ -245,7 +245,13 @@ reported privately, as `SECURITY.md` says.
   only the extension's folder; its CHANGELOG is written by hand. It is plain
   JavaScript with no dependencies and no build step: `src/extension.js` holds
   the commands, the preview and the Problems, and `media/` the preview's
-  page. `npm test` (with `ORTHO_BIN` set, against the real ortho) tests what
+  page, which reads the table of requirements with `media/markdown.js`. The
+  preview renders as the model is typed: ortho runs on a copy of the model's
+  files, with what the editors hold, laid out as in the workspace, so it names
+  each file as it would the file itself, and writes the table into
+  `diagrams` beside them, as `ortho render -o diagrams` would. A requirement's
+  box finds the line that declares it by its ID. `npm test` (with `ORTHO_BIN`
+  set, against the real ortho) tests what
   needs no VS Code, including how `ortho render`'s `Wrote` lines and `file
   line n: message` problems are read, so keep those stable. The README's
   screenshot is linked from GitHub at the commit that added it, so a new one
@@ -447,10 +453,12 @@ Open, in priority order:
     titled in plain words and worded after EARS:
     `<'REQ-1.2'> 'Brew temperature'`.
   - [x] README, LANGUAGE.md, VIEWS.md and the AI instructions.
-  - [ ] A tab for the table in the VS Code and browser previews, as the
-    document shows on GitHub, in the editor's colours. Clicking a requirement
-    opens its line; the VS Code preview renders as you type, as Zed's does,
-    faded while the model does not load. *Save all* writes the `.md` too.
+  - [x] A tab for the table in the VS Code preview, as the document shows on
+    GitHub, in the editor's colours. Clicking a requirement opens its line;
+    the preview renders as you type, faded while the model does not load.
+    *Save all* writes the `.md` too.
+  - [ ] The same tab in the browser preview of `ortho lsp`, which Zed opens,
+    and *Save all* there writing the `.md`.
   - [ ] Status and *Verified by*, after a mock-up of the table:
     `@StatusInfo { status = StatusKind::tbr; }` as a Status column in the box,
     and `verify` in a verification case, with its `@VerificationMethod`, as a

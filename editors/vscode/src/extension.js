@@ -1,6 +1,7 @@
 // @ts-check
 // The live preview: a panel beside a SysML v2 model showing every view ortho draws from
-// it, rendered again on every save, with ortho's problems in the Problems panel.
+// it, and its table of requirements, rendered again as the model is typed, with ortho's
+// problems in the Problems panel.
 'use strict';
 
 const vscode = require('vscode');
@@ -17,6 +18,9 @@ const {
   orthoFolder,
   makeExecutable,
   markedSource,
+  mirrorModel,
+  requirementLines,
+  relinkMarkdown,
 } = require('./ortho');
 const fs = require('node:fs');
 const { instructionFiles } = require('./instructions');
@@ -27,6 +31,8 @@ const INSTALL_URL = 'https://github.com/ola-coding/ortho#install';
 const OPEN_ON_START = 'ortho.openOnStart';
 /** Where each model's diagrams were last saved, by the model's folder. */
 const SAVE_FOLDERS = 'ortho.saveFolders';
+/** How long typing pauses before the model is rendered again, in milliseconds. */
+const TYPING_PAUSE = 500;
 
 /** @param {vscode.ExtensionContext} context */
 function activate(context) {
@@ -241,8 +247,8 @@ async function exists(uri) {
   }
 }
 
-/** A diagram ortho wrote, as text, to show inline where a click on a box can be heard. */
-function readSvg(/** @type {string} */ file) {
+/** A view ortho wrote, as text: a diagram to show inline, where a click on a box can be heard, or a table of requirements. */
+function readText(/** @type {string} */ file) {
   try {
     return fs.readFileSync(file, 'utf8');
   } catch {
@@ -280,16 +286,29 @@ class Preview {
     /** @type {vscode.Uri[]} the files that have problems now, to clear on the next render */
     this.reported = [];
     /**
-     * The diagrams on screen, to save: the model's folder, the render they are from,
-     * their files, and whether the model still renders them as they are.
-     * @type {{ folder: string, out: string, files: string[], current: boolean } | undefined}
+     * The views on screen, to save: the model's folder, the render they are from, the
+     * copy of the model it rendered, their files, and whether the model still renders
+     * them as they are.
+     * @type {{ folder: string, out: string, mirror: string, files: string[], current: boolean } | undefined}
      */
     this.diagrams = undefined;
+    /** @type {NodeJS.Timeout | undefined} the render waiting for typing to pause */
+    this.typing = undefined;
     /** @type {string | undefined} the file of the view on screen */
     this.showing = undefined;
     /** @type {vscode.Disposable[]} */
     this.disposables = [
       vscode.workspace.onDidSaveTextDocument((document) => {
+        if (this.panel && this.isModelFile(document.uri)) this.render();
+      }),
+      // The model is rendered as typed, once typing pauses, from what the editors hold.
+      vscode.workspace.onDidChangeTextDocument((event) => {
+        if (!this.panel || !this.isModelFile(event.document.uri) || event.contentChanges.length === 0) return;
+        clearTimeout(this.typing);
+        this.typing = setTimeout(() => this.render(), TYPING_PAUSE);
+      }),
+      // A file closed without saving is the model as saved again.
+      vscode.workspace.onDidCloseTextDocument((document) => {
         if (this.panel && this.isModelFile(document.uri)) this.render();
       }),
       vscode.window.onDidChangeActiveTextEditor((editor) => {
@@ -355,6 +374,7 @@ class Preview {
       if (message?.type === 'save') this.saveShown();
       if (message?.type === 'saveAll') this.saveAll();
       if (message?.type === 'open') this.openSource(message.file, message.line);
+      if (message?.type === 'openLink') this.openLink(message.href);
       if (message?.type === 'install') vscode.env.openExternal(vscode.Uri.parse(INSTALL_URL));
       if (message?.type === 'settings') vscode.commands.executeCommand('workbench.action.openSettings', 'ortho.path');
     });
@@ -393,6 +413,20 @@ class Preview {
     editor.revealRange(text.range, vscode.TextEditorRevealType.InCenterIfOutsideViewport);
   }
 
+  /**
+   * Opens what a link in the table of requirements names, `../physical.sysml#L55`: the
+   * table is written into `diagrams` in a copy of the model's folder, so its links lead
+   * to the model's files from there.
+   * @param {unknown} href
+   */
+  openLink(href) {
+    if (!this.folder || typeof href !== 'string') return;
+    const match = /^([^#]+)(?:#L(\d+))?$/.exec(href);
+    if (!match) return;
+    const file = path.resolve(this.folder, 'diagrams', decodeURIComponent(match[1]));
+    this.openSource(file, match[2] ?? '1');
+  }
+
   outRoot() {
     return vscode.Uri.joinPath(this.context.globalStorageUri, 'diagrams');
   }
@@ -403,7 +437,7 @@ class Preview {
     return vscode.Uri.joinPath(this.outRoot(), key).fsPath;
   }
 
-  /** Renders the model shown, once more after the current render if a save came in. */
+  /** Renders the model shown, once more after the current render if a change came in. */
   async render() {
     if (!this.panel || !this.folder) return;
     if (this.rendering) {
@@ -414,7 +448,23 @@ class Preview {
     try {
       do {
         this.again = false;
-        await this.renderOnce(this.folder);
+        const folder = this.folder;
+        try {
+          await this.renderOnce(folder);
+        } catch (error) {
+          // The page says why, rather than waiting on a render that never comes.
+          const message = error instanceof Error ? error.message : String(error);
+          this.post({
+            type: 'rendered',
+            model: path.basename(folder),
+            folder,
+            views: [],
+            requirements: { byId: {}, byName: {} },
+            failed: true,
+            errors: [`The preview could not render the model: ${message}`],
+            notes: [],
+          });
+        }
       } while (this.again && this.panel && this.folder);
     } finally {
       this.rendering = false;
@@ -423,21 +473,57 @@ class Preview {
 
   /** @param {string} folder */
   async renderOnce(folder) {
+    clearTimeout(this.typing);
     const ortho = orthoOf(this.context);
     const theme = vscode.workspace.getConfiguration('ortho').get('theme', 'light');
-    // Each render gets a folder of its own, so the diagrams of the last render that
+    // Each render gets a folder of its own, so the views of the last render that
     // worked stay on screen while the model does not load.
     const base = this.outFolder(folder);
     const stamp = `${Date.now()}`;
-    const out = path.join(base, stamp);
     this.post({ type: 'busy' });
     // Each diagram names its model file relative to where ortho runs: from the
-    // workspace folder, as `examples/survey-drone/logical.sysml`.
+    // workspace folder, as `examples/survey-drone/logical.sysml`. ortho renders a copy
+    // of the model's files, with what the editors hold, laid out under `root` as they
+    // are under `cwd`, so it names them alike; its table of requirements is written
+    // into `diagrams` beside them, as `ortho render -o diagrams` would write it.
     const cwd = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(folder))?.uri.fsPath ?? folder;
-    const run = await runOrtho(ortho, folder, out, theme, cwd);
+    const root = path.join(base, stamp, 'model');
+    /** @type {Map<string, string>} */
+    const typed = new Map();
+    for (const document of vscode.workspace.textDocuments) {
+      const uri = document.uri;
+      if (uri.scheme === 'file' && uri.fsPath.endsWith('.sysml') && modelOf(uri) === folder) {
+        typed.set(uri.fsPath, document.getText());
+      }
+    }
+    let mirror;
+    try {
+      mirror = mirrorModel(folder, cwd, root, typed);
+    } catch {
+      // A folder gone, or not readable: nothing to render.
+      return;
+    }
+    const out = path.join(mirror, 'diagrams');
+    const run = await runOrtho(ortho, mirror, out, theme, root);
     // The boxes name their files from where ortho ran.
     if (folder === this.folder) this.cwd = cwd;
     const report = readReport(run.stdout, run.stderr);
+    // What ortho says of a file of the copy, it says of the model's own.
+    const real = (/** @type {string} */ file) => {
+      const resolved = path.resolve(root, file);
+      const inside = path.relative(mirror, resolved);
+      return inside.startsWith('..') || path.isAbsolute(inside) ? resolved : path.join(folder, inside);
+    };
+    for (const problem of report.problems) problem.file = real(problem.file);
+    // Where each requirement is declared, for its box in the table to open, read from
+    // the copy before a render that wrote nothing is removed.
+    const sources = fs
+      .readdirSync(mirror)
+      .filter((name) => name.endsWith('.sysml'))
+      .map((name) => ({
+        file: path.relative(cwd, path.join(folder, name)).split(path.sep).join('/'),
+        text: readText(path.join(mirror, name)),
+      }));
     if (report.written.length > 0) this.shown.set(base, stamp);
     keepOnly(base, this.shown.get(base) ?? '');
     if (!this.panel || folder !== this.folder) return;
@@ -448,20 +534,25 @@ class Preview {
     this.setProblems(folder, report.problems);
     const files = report.written.map((written) => path.basename(written.file));
     if (files.length > 0) {
-      this.diagrams = { folder, out, files, current: true };
+      this.diagrams = { folder, out, mirror, files, current: true };
     } else if (this.diagrams) {
-      // The last diagrams stay on screen, faded, but no longer match the model.
+      // The last views stay on screen, faded, but no longer match the model.
       this.diagrams.current = false;
     }
     this.updateContext();
     const titles = tabTitles(report.written.map((written) => written.file));
-    const views = report.written.map((written, index) => ({
-      file: files[index],
-      title: titles[index],
-      heading: viewTitle(written.file),
-      summary: written.summary,
-      svg: readSvg(path.join(out, path.basename(written.file))),
-    }));
+    const views = report.written.map((written, index) => {
+      const text = readText(path.join(out, files[index]));
+      const markdown = files[index].endsWith('.md');
+      return {
+        file: files[index],
+        title: titles[index],
+        heading: viewTitle(written.file),
+        summary: written.summary,
+        svg: markdown ? '' : text,
+        markdown: markdown ? text : '',
+      };
+    });
     const failed = run.code !== 0;
     const errors = report.problems.filter((problem) => problem.severity === 'error');
     this.post({
@@ -469,6 +560,7 @@ class Preview {
       model: path.basename(folder),
       folder,
       views,
+      requirements: requirementLines(sources),
       failed,
       errors: errors.map((problem) => `${path.basename(problem.file)} line ${problem.line}: ${problem.message}`),
       notes: report.notes,
@@ -482,27 +574,36 @@ class Preview {
   }
 
   /**
-   * The diagrams on screen, with each file's bytes, read now so that a render while a
+   * The views on screen, with each file's bytes, read now so that a render while a
    * dialog is open cannot change what is saved. None while the model does not load,
-   * since the diagrams shown then are from before the last change.
-   * @returns {Promise<{ folder: string, files: { name: string, bytes: Uint8Array }[] } | undefined>}
+   * since the views shown then are from before the last change. A table of
+   * requirements is given as a function of the folder it is saved to, since its links
+   * lead from there to the model.
+   * @returns {Promise<{ folder: string, files: { name: string, bytes: (to: string) => Uint8Array }[] } | undefined>}
    */
   async diagramsToSave() {
     const diagrams = this.diagrams;
     if (!diagrams) {
-      vscode.window.showInformationMessage('There are no diagrams to save yet.');
+      vscode.window.showInformationMessage('There are no views to save yet.');
       return undefined;
     }
     if (!diagrams.current) {
       vscode.window.showWarningMessage(
-        'The model does not load now, so the diagrams shown no longer match it. Fix its problems, then save.',
+        'The model does not load now, so the views shown no longer match it. Fix its problems, then save.',
       );
       return undefined;
     }
     const files = [];
     for (const name of diagrams.files) {
       const bytes = await vscode.workspace.fs.readFile(vscode.Uri.file(path.join(diagrams.out, name)));
-      files.push({ name, bytes });
+      if (!name.endsWith('.md')) {
+        files.push({ name, bytes: () => bytes });
+        continue;
+      }
+      const markdown = new TextDecoder().decode(bytes);
+      const real = (/** @type {string} */ file) => path.join(diagrams.folder, path.relative(diagrams.mirror, file));
+      const relinked = (/** @type {string} */ to) => relinkMarkdown(markdown, diagrams.out, to, real);
+      files.push({ name, bytes: (/** @type {string} */ to) => new TextEncoder().encode(relinked(to)) });
     }
     return { folder: diagrams.folder, files };
   }
@@ -521,25 +622,27 @@ class Preview {
     await this.context.workspaceState.update(SAVE_FOLDERS, { ...folders, [model]: folder });
   }
 
-  /** Saves the view on screen as an SVG file the user names. */
+  /** Saves the view on screen, a diagram as SVG or the table of requirements as Markdown, as a file the user names. */
   async saveShown() {
     const diagrams = await this.diagramsToSave();
     if (!diagrams) return;
     const file = diagrams.files.find((candidate) => candidate.name === this.showing) ?? diagrams.files[0];
+    const markdown = file.name.endsWith('.md');
     const target = await vscode.window.showSaveDialog({
       defaultUri: vscode.Uri.file(path.join(this.saveFolder(diagrams.folder), file.name)),
-      filters: { SVG: ['svg'] },
+      filters: markdown ? { Markdown: ['md'] } : { SVG: ['svg'] },
       title: `Save ${viewTitle(file.name)}`,
     });
     if (!target) return;
-    await vscode.workspace.fs.writeFile(target, file.bytes);
+    await vscode.workspace.fs.writeFile(target, file.bytes(path.dirname(target.fsPath)));
     await this.rememberSaveFolder(diagrams.folder, path.dirname(target.fsPath));
     vscode.window.showInformationMessage(`Saved ${vscode.workspace.asRelativePath(target)}.`);
   }
 
   /**
-   * Saves every view as SVG into a folder the user picks, each file named as
-   * `ortho render` names it, so saving again replaces them as rendering again would.
+   * Saves every view into a folder the user picks, each file named, and written, as
+   * `ortho render` writes it there, so saving again replaces them as rendering again
+   * would.
    */
   async saveAll() {
     const diagrams = await this.diagramsToSave();
@@ -549,18 +652,18 @@ class Preview {
       canSelectFolders: true,
       canSelectMany: false,
       openLabel: 'Save Here',
-      title: `Where should the diagrams of ${path.basename(diagrams.folder)} go?`,
+      title: `Where should the views of ${path.basename(diagrams.folder)} go?`,
       defaultUri: vscode.Uri.file(this.saveFolder(diagrams.folder)),
     });
     if (!picked?.[0]) return;
     const target = picked[0];
     for (const file of diagrams.files) {
-      await vscode.workspace.fs.writeFile(vscode.Uri.joinPath(target, file.name), file.bytes);
+      await vscode.workspace.fs.writeFile(vscode.Uri.joinPath(target, file.name), file.bytes(target.fsPath));
     }
     await this.rememberSaveFolder(diagrams.folder, target.fsPath);
     const count = diagrams.files.length;
     vscode.window.showInformationMessage(
-      `Saved ${count} diagram${count === 1 ? '' : 's'} to ${vscode.workspace.asRelativePath(target)}.`,
+      `Saved ${count} view${count === 1 ? '' : 's'} to ${vscode.workspace.asRelativePath(target)}.`,
     );
   }
 
@@ -624,17 +727,19 @@ class Preview {
   <span id="status" role="status"></span>
   <span id="actions" hidden>
     <button type="button" id="save-one" title="Save the view shown as an SVG file">Save SVG…</button>
-    <button type="button" id="save-all" title="Save every view as SVG, into a folder">Save all…</button>
+    <button type="button" id="save-all" title="Save every view into a folder">Save all…</button>
   </span>
 </header>
 <section id="messages"></section>
 <main id="diagram"></main>
+<script nonce="${nonce}" src="${media('markdown.js')}"></script>
 <script nonce="${nonce}" src="${media('preview.js')}"></script>
 </body>
 </html>`;
   }
 
   dispose() {
+    clearTimeout(this.typing);
     this.panel?.dispose();
     for (const disposable of this.disposables) disposable.dispose();
   }

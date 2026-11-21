@@ -4,6 +4,14 @@ The extension has the version of the ortho it carries.
 
 ## Unreleased
 
+- **Requirements:** a `GridView` of requirements is written as a
+  specification in Markdown, `requirements-<model>.md`, and the preview shows
+  it in a tab of its own, as GitHub shows it. Click a requirement, or a part
+  that satisfies it, to open its line. *Save Markdown…* saves it, and *Save
+  all…* saves it with the diagrams. The three examples now have requirements.
+- **Drawn as you type:** the preview and the Problems panel follow the model as
+  it is typed, without saving. While it does not load, the last views stay,
+  faded.
 - **Flows on the physical view:** what passes between ports, such as water or
   power, drawn as an arrowhead on the connection's line with the name of what
   flows beside it, or as a line of its own where no connection joins the
