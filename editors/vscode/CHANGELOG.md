@@ -2,13 +2,15 @@
 
 The extension has the version of the ortho it carries.
 
-## Unreleased
+## 0.5.0 (2026-11-22)
 
 - **Requirements:** a `GridView` of requirements is written as a
   specification in Markdown, `requirements-<model>.md`, and the preview shows
-  it in a tab of its own, as GitHub shows it. Click a requirement, or a part
-  that satisfies it, to open its line. *Save Markdown…* saves it, and *Save
-  all…* saves it with the diagrams. The three examples now have requirements.
+  it in a tab of its own, after the diagrams, as GitHub shows it. Click a
+  requirement, or a part that satisfies it, to open its line. *Save
+  Markdown…* saves it, and *Save all…* saves it with the diagrams, its links
+  pointing at the model from where it is saved. The three examples now have
+  requirements.
 - **Drawn as you type:** the preview and the Problems panel follow the model as
   it is typed, without saving. While it does not load, the last views stay,
   faded.
@@ -16,6 +18,14 @@ The extension has the version of the ortho it carries.
   power, drawn as an arrowhead on the connection's line with the name of what
   flows beside it, or as a line of its own where no connection joins the
   ports. The coffee machine and the survey drone now show their flows.
+- **Save View… and Save All Views…** replace *Save Diagram as SVG…* and *Save
+  All Diagrams as SVG…*, since a view may be a table.
+- **Fixed:** a render that fails shows why in the preview, rather than
+  *Rendering…* that never ends.
+
+It carries ortho 0.5.0, which since 0.4.1 also checks requirements: it warns
+of one nothing satisfies, one without an ID and two with the same ID, and a
+`satisfy` that names no requirement is an error, with *did you mean*.
 
 ## 0.4.1 (2026-11-19)
 
