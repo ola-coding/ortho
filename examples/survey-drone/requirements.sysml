@@ -28,6 +28,7 @@ package SystemRequirements {
         doc /* While the drone flies a survey, the system shall show the operator
              * its position, and how much of the survey it has flown, at least once
              * a second. */
+        @StatusInfo { status = StatusKind::tbr; }
     }
 
     requirement <'REQ-3'> 'Live video' {
@@ -74,6 +75,7 @@ package SystemRequirements {
         requirement <'REQ-6.2'> 'Lost link' {
             doc /* If the radio link has been lost for 5 s, then the drone shall
                  * return to its launch point and land. */
+            @StatusInfo { status = StatusKind::tbr; }
         }
         requirement <'REQ-6.3'> 'Low battery' {
             doc /* If its battery holds only the charge to reach its launch point,

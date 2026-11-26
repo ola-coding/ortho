@@ -1,4 +1,4 @@
-//! The table of requirements: a GridView as Markdown, and what `satisfy` is checked for.
+//! The table of requirements: a GridView as Markdown, and what `satisfy` and `verify` are checked for.
 use ortho::diagrams::requirements::comment_paragraphs;
 use ortho::model::views::{DiagramKind, diagram_kind};
 use ortho::parser::workspace::{Severity, Workspace};
@@ -80,33 +80,33 @@ What the coffee machine shall do.
 
 ## brewTime
 
-| ID | Statement | Rationale |
-|:---|:---|:---|
-| REQ-001 | The machine shall deliver an espresso within 30 s of the user's choice.<br><br>Timed from the press of a button. | Users compare the wait with a café's. |
+| ID | Statement | Rationale | Status |
+|:---|:---|:---|:---|
+| REQ-001 | The machine shall deliver an espresso within 30 s of the user's choice.<br><br>Timed from the press of a button. | Users compare the wait with a café's. | — |
 
 ### heatUp
 
-| ID | Statement |
-|:---|:---|
-| REQ-002 | The water shall reach 92 °C within 25 s from cold. |
+| ID | Statement | Status |
+|:---|:---|:---|
+| REQ-002 | The water shall reach 92 °C within 25 s from cold. | — |
 
 ### extraction
 
-| ID | Statement |
-|:---|:---|
-| REQ-003 | The water shall reach the brew unit at 9 bar. |
+| ID | Statement | Status |
+|:---|:---|:---|
+| REQ-003 | The water shall reach the brew unit at 9 bar. | — |
 
 ## dryRunCutoff
 
-| ID | Statement | Rationale |
-|:---|:---|:---|
-| REQ-004 | The heater shall switch off within 2 s when the tank runs dry. | A heater running dry can crack. |
+| ID | Statement | Rationale | Status |
+|:---|:---|:---|:---|
+| REQ-004 | The heater shall switch off within 2 s when the tank runs dry. | A heater running dry can crack. | — |
 
 ## beverageChoice
 
-| ID | Statement |
-|:---|:---|
-| REQ-005 | The user shall choose a beverage on a touch display. |
+| ID | Statement | Status |
+|:---|:---|:---|
+| REQ-005 | The user shall choose a beverage on a touch display. | — |
 
 ## Traceability
 
@@ -217,9 +217,135 @@ fn escapes_what_markdown_would_read_as_markup() {
     assert!(content.contains("from [my model.sysml](my%20model.sysml)."), "{content}");
     assert!(
         content.contains(
-            "## pipe\\|and\\*star\n\n| ID | Statement |\n|:---|:---|\n| R\\_1 | 1. Use \\<b\\>no\\</b\\> \\| markup. |\n"
+            "## pipe\\|and\\*star\n\n| ID | Statement | Status |\n|:---|:---|:---|\n| R\\_1 | 1. Use \\<b\\>no\\</b\\> \\| markup. | — |\n"
         ),
         "{content}"
     );
     assert!(content.contains("| [R\\_1](#pipeandstar) | pipe\\|and\\*star | — |"), "{content}");
+}
+
+const VERIFICATION: &str = "package Verification {
+    private import VerificationCases::*;
+    private import CoffeeMachineRequirements::*;
+
+    verification def 'Brew test' {
+        @VerificationMethod { kind = VerificationMethodKind::test; }
+        objective {
+            verify brewTime;
+            verify brewTime.heatUp;
+        }
+    }
+    verification def 'Display check' {
+        @VerificationMethod { kind = (VerificationMethodKind::inspect, demo); }
+        objective { verify beverageChoice; }
+    }
+    verification def 'Cut-off test' {
+        objective { verify dryRunCutoff; }
+    }
+}";
+
+#[test]
+fn shows_each_requirements_status_last_in_its_box_and_lists_the_open_ones() {
+    let requirements = REQUIREMENTS
+        .replace(
+            "doc /* The water shall reach 92 °C within 25 s from cold. */",
+            "doc /* The water shall reach 92 °C within 25 s from cold. */ @StatusInfo { status = StatusKind::tbr; }",
+        )
+        .replace(
+            "@Rationale { text = \"A heater running dry can crack.\"; }",
+            "@Rationale { text = \"A heater running dry can crack.\"; } metadata ModelingMetadata::StatusInfo { status = StatusKind::done; }",
+        )
+        .replace(
+            "doc /* The user shall choose a beverage on a touch display. */",
+            "doc /* The user shall choose a beverage on a touch display. */ @StatusInfo { status = StatusKind::tbd; }",
+        );
+    let workspace = build(&[("spec/requirements.sysml", &requirements), ("spec/physical.sysml", PHYSICAL)]);
+    let content = &render_views(&workspace, &LIGHT, "spec/diagrams").unwrap().rendered[1].result.content;
+    assert!(
+        content.contains(
+            "5 requirements, 4 satisfied. Not satisfied: [REQ-004](#dryruncutoff). To be determined: [REQ-005](#beveragechoice). To be resolved: [REQ-002](#heatup).\n"
+        ),
+        "{content}"
+    );
+    assert!(content.contains("| REQ-002 | The water shall reach 92 °C within 25 s from cold. | TBR |\n"), "{content}");
+    assert!(content.contains("| A heater running dry can crack. | Done |\n"), "{content}");
+    // Without a verification case, the traceability table says nothing of verification.
+    assert!(content.contains("| ID | Requirement | Satisfied by |\n|:---|:---|:---|\n"), "{content}");
+}
+
+#[test]
+fn says_what_verifies_each_requirement_once_the_model_has_a_verification_case() {
+    let workspace = build(&[
+        ("spec/requirements.sysml", REQUIREMENTS),
+        ("spec/physical.sysml", PHYSICAL),
+        ("spec/verification.sysml", VERIFICATION),
+    ]);
+    assert_eq!(reported(&workspace, Severity::Error), Vec::<String>::new());
+    let rendering = render_views(&workspace, &LIGHT, "spec/diagrams").unwrap();
+    let table = &rendering.rendered[1].result;
+    assert_eq!(table.summary, "5 requirement(s), 4 satisfied, 4 verified");
+    let content = &table.content;
+    assert!(
+        content.contains(
+            "5 requirements, 4 satisfied, 4 verified. Not satisfied: [REQ-004](#dryruncutoff). Not verified: [REQ-003](#extraction).\n"
+        ),
+        "{content}"
+    );
+    let traceability = "| ID | Requirement | Satisfied by | Verified by |
+|:---|:---|:---|:---|
+| [REQ-001](#brewtime) | brewTime | [machine.heater](../physical.sysml#L5), [machine.pump](../physical.sysml#L6) | [Brew test](../verification.sysml#L5) (Test) |
+| [REQ-002](#heatup) | &emsp;heatUp | [machine.heater](../physical.sysml#L5) | [Brew test](../verification.sysml#L5) (Test) |
+| [REQ-003](#extraction) | &emsp;extraction | through [REQ-001](#brewtime) | — |
+| [REQ-004](#dryruncutoff) | dryRunCutoff | — | [Cut-off test](../verification.sysml#L16) |
+| [REQ-005](#beveragechoice) | beverageChoice | [Display](../physical.sysml#L3) | [Display check](../verification.sysml#L12) (Inspection, Demonstration) |
+";
+    assert!(content.ends_with(traceability), "{content}");
+}
+
+#[test]
+fn warns_of_a_requirement_nothing_verifies_once_the_model_has_a_verification_case() {
+    let workspace = build(&[
+        ("spec/requirements.sysml", REQUIREMENTS),
+        ("spec/physical.sysml", PHYSICAL),
+        ("spec/verification.sysml", VERIFICATION),
+    ]);
+    // Verifying brewTime does not verify extraction, nested in it.
+    let warnings = reported(&workspace, Severity::Warning);
+    assert!(
+        warnings.contains(
+            &"No verification case verifies 'extraction'. Name it with `verify` in the objective of the case that shows it is met.".to_string()
+        ),
+        "{warnings:?}"
+    );
+    assert_eq!(warnings.iter().filter(|warning| warning.contains("verif")).count(), 1, "{warnings:?}");
+    // Without one, verification is not planned yet.
+    let unplanned = build(&[("spec/requirements.sysml", REQUIREMENTS), ("spec/physical.sysml", PHYSICAL)]);
+    assert!(!reported(&unplanned, Severity::Warning).iter().any(|warning| warning.contains("verif")));
+}
+
+#[test]
+fn says_what_a_verify_meant_when_it_names_nothing_or_no_requirement() {
+    let workspace = build(&[
+        ("spec/requirements.sysml", REQUIREMENTS),
+        (
+            "spec/verification.sysml",
+            "package Verification {
+                part machine;
+                verification def 'Brew test' {
+                    objective {
+                        verify CoffeeMachineRequirements::brewTym;
+                        verify machine;
+                        verify requirement declared;
+                    }
+                }
+            }",
+        ),
+    ]);
+    assert_eq!(
+        reported(&workspace, Severity::Error),
+        [
+            "Could not resolve reference to Feature named 'CoffeeMachineRequirements::brewTym'. Did you mean 'CoffeeMachineRequirements::brewTime'?",
+            "'machine' is not a requirement, so it cannot be verified.",
+        ]
+    );
 }

@@ -19,6 +19,7 @@ package SystemRequirements {
 
         requirement <'REQ-1.1'> 'Heat-up time' {
             doc /* The machine shall heat its brewing water from 20 °C to 92 °C within 30 s. */
+            @StatusInfo { status = StatusKind::tbr; }
         }
         requirement <'REQ-1.2'> 'Brew temperature' {
             doc /* While it extracts a shot, the machine shall hold the brewing
@@ -63,6 +64,7 @@ package SystemRequirements {
     requirement <'REQ-7'> 'Choice of beverage' {
         doc /* The machine shall let the user choose an espresso or a cappuccino on a
              * touch display at least 100 mm across. */
+        @StatusInfo { status = StatusKind::tbr; }
     }
 
     // --- safety ------------------------------------------------------------

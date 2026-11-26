@@ -164,11 +164,18 @@ states one requirement, positively, with a figure a test can check: at least
 1.5 L, 9 bar plus or minus 1 bar. A rationale says why, where that is not
 plain.
 
+A figure no one has settled yet is still written, and marked: TBD, to be
+determined, TBR, to be resolved, or TBC, to be confirmed. The mark, not the
+rationale, says the figure is open, and the table lists every open one at its
+top, so none is forgotten.
+
 Not a diagram but a specification: a heading for each requirement, with its
-ID, statement and rationale in a box of their own, so each can be cited and
-checked alone. A nested requirement stands one heading level deeper. A
+ID, statement, rationale and status in a box of their own, so each can be cited
+and checked alone. A nested requirement stands one heading level deeper. A
 traceability table follows, giving each requirement what satisfies it, linked
-to the line that declares it, or the requirement it is satisfied through.
+to the line that declares it, or the requirement it is satisfied through, and
+the verification cases that show it is met, each with its method: inspection,
+analysis, demonstration or test.
 
 ## References
 

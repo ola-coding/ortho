@@ -8,7 +8,10 @@
 use super::ast::{Ast, NodeId, Prop, Type};
 use super::scope::Logged;
 use super::workspace::{Diagnostic, Severity};
-use crate::diagrams::requirements::{chain_target, covering, satisfactions, tabled_requirements, written_chain};
+use crate::diagrams::requirements::{
+    chain_target, covering, has_verification_case, is_verify, satisfactions, tabled_requirements, verifications,
+    written_chain,
+};
 use crate::diagrams::use_case::drawn_use_cases;
 use crate::model::graph::effective_name;
 use crate::model::library::{LIBRARY, LibraryPackage};
@@ -32,6 +35,8 @@ pub struct Gaps {
     unhosted: HashSet<NodeId>,
     /// Requirements a table lists that nothing satisfies.
     unsatisfied: HashSet<NodeId>,
+    /// Requirements a table lists that no verification case verifies.
+    unverified: HashSet<NodeId>,
     /// Requirements a table lists without an ID, and those with the ID of one before them.
     without_id: HashSet<NodeId>,
     same_id: HashMap<NodeId, NodeId>,
@@ -49,6 +54,7 @@ impl Gaps {
             foreign_hosts,
             unhosted: unhosted_software(ast, roots),
             unsatisfied: unsatisfied_requirements(ast, roots),
+            unverified: unverified_requirements(ast, roots),
             without_id,
             same_id,
         }
@@ -89,6 +95,9 @@ pub fn validate(ast: &Ast, root: NodeId, _text: &str, log: &[Logged], gaps: &Gap
         if gaps.unsatisfied.contains(&node) {
             warn_unsatisfied(ast, node, &mut diagnostics);
         }
+        if gaps.unverified.contains(&node) {
+            warn_unverified(ast, node, &mut diagnostics);
+        }
         if gaps.without_id.contains(&node) {
             warn_without_id(ast, node, &mut diagnostics);
         }
@@ -100,6 +109,7 @@ pub fn validate(ast: &Ast, root: NodeId, _text: &str, log: &[Logged], gaps: &Gap
             Type::PackageDecl => check_package_not_named_after_library(ast, node, &mut diagnostics),
             Type::PerformUsage => check_perform_target(ast, node, &mut diagnostics),
             Type::SatisfyUsage => check_satisfied_requirement(ast, node, &mut diagnostics),
+            Type::OtherUsage if is_verify(ast, node) => check_verified_requirement(ast, node, &mut diagnostics),
             Type::UseCaseDef | Type::UseCaseUsage => check_subject_before_actors(ast, node, &mut diagnostics),
             Type::PartUsage | Type::ActorUsage => check_typed_by_part_definition(ast, node, &mut diagnostics),
             _ => {}
@@ -201,22 +211,34 @@ fn check_perform_target(ast: &Ast, perform: NodeId, diagnostics: &mut Vec<Diagno
 /// `satisfy` names a requirement: a requirement usage, or one of its kinds, a
 /// concern or a viewpoint, or a requirement a `satisfy requirement` declares.
 fn check_satisfied_requirement(ast: &Ast, satisfy: NodeId, diagnostics: &mut Vec<Diagnostic>) {
-    let Some(end) = ast.child(satisfy, Prop::Requirement) else {
+    check_names_requirement(ast, satisfy, "satisfied", diagnostics);
+}
+
+/// A `verify` names a requirement too: the standard's `verify r;` is a requirement
+/// verification, whose `r` subsets a requirement.
+fn check_verified_requirement(ast: &Ast, verify: NodeId, diagnostics: &mut Vec<Diagnostic>) {
+    check_names_requirement(ast, verify, "verified", diagnostics);
+}
+
+fn check_names_requirement(ast: &Ast, usage: NodeId, done: &str, diagnostics: &mut Vec<Diagnostic>) {
+    let Some(end) = ast.child(usage, Prop::Requirement) else {
         return;
     };
     let Some(found) = chain_target(ast, end) else {
         return;
     };
     let is_requirement = match ast[found].ty {
-        Type::OtherUsage => matches!(ast.text(found, Prop::Kind), Some("requirement" | "concern" | "viewpoint")),
+        Type::OtherUsage => {
+            matches!(ast.text(found, Prop::Kind), Some("requirement" | "concern" | "viewpoint" | "verify"))
+        }
         Type::SatisfyUsage | Type::DefaultUsage => true,
         _ => false,
     };
     if !is_requirement {
         diagnostics.push(Diagnostic {
             severity: Severity::Error,
-            offset: offset_of(ast, satisfy, Prop::Requirement),
-            message: format!("'{}' is not a requirement, so it cannot be satisfied.", written_chain(ast, end)),
+            offset: offset_of(ast, usage, Prop::Requirement),
+            message: format!("'{}' is not a requirement, so it cannot be {done}.", written_chain(ast, end)),
         });
     }
 }
@@ -642,6 +664,21 @@ fn unsatisfied_requirements(ast: &Ast, roots: &[NodeId]) -> HashSet<NodeId> {
     tabled.into_iter().filter(|requirement| covering(ast, *requirement, &satisfied).is_none()).collect()
 }
 
+/// The requirements a table lists that no verification case verifies.
+///
+/// Once a model has a verification case, each requirement a GridView lists needs one
+/// whose objective names it with `verify`. A model without one is not warned of: its
+/// verification is not planned yet. Unlike satisfying, verifying a requirement does
+/// not verify those nested in it, as each states a figure of its own to show.
+fn unverified_requirements(ast: &Ast, roots: &[NodeId]) -> HashSet<NodeId> {
+    if !has_verification_case(ast, roots) {
+        return HashSet::new();
+    }
+    let verified = verifications(ast, roots);
+    let tabled = all_tabled_requirements(ast, roots);
+    tabled.into_iter().filter(|requirement| !verified.contains_key(requirement)).collect()
+}
+
 /// The requirements the tables list, each once, in the order the tables list them.
 fn all_tabled_requirements(ast: &Ast, roots: &[NodeId]) -> Vec<NodeId> {
     let mut seen = HashSet::new();
@@ -681,6 +718,17 @@ fn warn_unsatisfied(ast: &Ast, requirement: NodeId, diagnostics: &mut Vec<Diagno
         offset: offset_of(ast, requirement, Prop::Name),
         message: format!(
             "No part or module of the implementation or physical view satisfies {named}. Satisfy it, or a requirement it is in, by the one that meets it."
+        ),
+    });
+}
+
+fn warn_unverified(ast: &Ast, requirement: NodeId, diagnostics: &mut Vec<Diagnostic>) {
+    let named = effective_name(ast, requirement).map_or("this requirement".to_string(), |name| format!("'{name}'"));
+    diagnostics.push(Diagnostic {
+        severity: Severity::Warning,
+        offset: offset_of(ast, requirement, Prop::Name),
+        message: format!(
+            "No verification case verifies {named}. Name it with `verify` in the objective of the case that shows it is met."
         ),
     });
 }

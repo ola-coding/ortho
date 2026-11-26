@@ -21,6 +21,7 @@ package SystemRequirements {
     requirement <'REQ-2'> 'Catalogue size' {
         doc /* The shop shall hold at least 10 000 products, each with a name, a
              * description, a price and a picture. */
+        @StatusInfo { status = StatusKind::tbr; }
     }
 
     // --- ordering and paying -----------------------------------------------
@@ -43,6 +44,7 @@ package SystemRequirements {
         requirement <'REQ-4.2'> 'Confirmation time' {
             doc /* When a customer checks out, the shop shall confirm the paid order
                  * within 5 s. */
+            @StatusInfo { status = StatusKind::tbr; }
         }
     }
 

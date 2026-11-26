@@ -650,7 +650,7 @@ impl<'a> Parser<'a> {
             "exhibit" => self.other_usage(n, "state"),
             "render" => self.other_usage(n, "rendering"),
             "frame" => self.other_usage(n, "concern"),
-            "verify" => self.other_usage(n, "requirement"),
+            "verify" => self.verification(n),
             "require" | "assume" => {
                 self.keyword(n, P::Kind);
                 self.prefix_metadata(n)?;
@@ -983,6 +983,21 @@ impl<'a> Parser<'a> {
         self.eat("not");
         self.eat("constraint");
         self.other_usage_rest(n)
+    }
+
+    /// `verify r;` names the requirement it verifies, `r` or a chain to it, as
+    /// `satisfy` does; `verify requirement r : R;` declares one.
+    fn verification(&mut self, n: NodeId) -> R<()> {
+        self.keyword(n, P::Kind);
+        self.ast[n].ty = T::OtherUsage;
+        if self.eat("requirement") {
+            self.identification(n)?;
+        } else {
+            self.child(n, P::Requirement, Self::connector_end)?;
+        }
+        self.typings_and_relations(n)?;
+        self.value_part(n)?;
+        self.body(n)
     }
 
     fn binding_usage(&mut self, n: NodeId) -> R<()> {
