@@ -22,9 +22,10 @@ Every view is optional, so start where the user's question is. Once two views ex
 - every function at the bottom of a tree is performed by a module or a part;
 - every use case of the use case view is refined by a function tree, or a branch of one, even when the logical view draws the trees alone; an included use case needs its own refinement;
 - every program is allocated to a computer;
-- every requirement in a table is satisfied by a module or a part, itself or through a requirement it is nested in.
+- every requirement in a table is satisfied by a module or a part, itself or through a requirement it is nested in;
+- once the model has a verification case, every requirement in a table is verified by one, each nested requirement by its own `verify`.
 
-Three complete models to follow are in https://github.com/ola-coding/ortho/tree/main/examples: a coffee machine and a survey drone, products with hardware and all six views, and a web shop on AWS, software only, with no physical or deployment view. Each has its requirements in `requirements.sysml`.
+Three complete models to follow are in https://github.com/ola-coding/ortho/tree/main/examples: a coffee machine and a survey drone, products with hardware and all six views, and a web shop on AWS, software only, with no physical or deployment view. Each has its requirements in `requirements.sysml`, and the verification cases that verify them in `verification.sysml`.
 
 ## Check your work with ortho
 
@@ -57,7 +58,7 @@ When you rename an element, update every reference to it in every file of the fo
 
 ## Say what you know and what you assumed
 
-- **Invent no figures.** When the user gave no value for an attribute, leave the value out, or give an assumed one and say so in the element's `doc`, such as `doc /* Mass assumed: no figure given. */`. A requirement's figure the user did not give is assumed too: say so in its rationale, `@Rationale { text = "Assumed: no figure given."; }`, which the table shows. Tell the user which values you assumed.
+- **Invent no figures.** When the user gave no value for an attribute, leave the value out, or give an assumed one and say so in the element's `doc`, such as `doc /* Mass assumed: no figure given. */`. A requirement's figure the user did not give is assumed too: mark it to be resolved, `@StatusInfo { status = StatusKind::tbr; }`, which the table shows as TBR and lists at its top, and keep the rationale for why the figure is what it is. Tell the user which values you assumed.
 - **Claim only checks you ran.** Say the model renders with no errors or warnings only after ortho has said so.
 - **Say what ortho does not draw.** Asked for something no view draws, such as states or calculations, write it as *Parsed, not drawn* in LANGUAGE.md describes, and tell the user that no diagram shows it. Never bend it into the shape of a view that draws.
 

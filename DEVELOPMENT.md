@@ -465,13 +465,14 @@ Open, in priority order:
     *Save all* writes the `.md` too.
   - [x] The same tab in the browser preview of `ortho lsp`, which Zed opens,
     drawn as you type too, and *Save all* there writing the `.md`.
-  - [ ] Status and *Verified by*, after a mock-up of the table:
-    `@StatusInfo { status = StatusKind::tbr; }` as a Status column in the box,
-    and `verify` in a verification case, with its `@VerificationMethod`, as a
-    *Verified by* column in the traceability table. Resolve what `verify`
-    names, with *did you mean*; warn of a requirement nothing verifies once
-    the model has a verification case. A `verification.sysml` in each
-    example. An assumed figure is marked TBR, not explained in the rationale.
+  - [x] Status and *Verified by*: `@StatusInfo { status = StatusKind::tbr; }`
+    as the last column of every box, — where none is set, and the open ones
+    listed at the top; `verify` in a verification case, with its
+    `@VerificationMethod`, as a *Verified by* column in the traceability table
+    once the model has a verification case. `verify r;` names `r`, as the
+    spec's grammar has it, with *did you mean*; a requirement nothing verifies
+    is warned of, each nested one needing its own `verify`. A
+    `verification.sysml` in each example, and assumed figures marked TBR.
   - [ ] Resolve the ends of a `#derivation connection`, with *did you mean*.
   - [ ] Later: *Derived from*, for a model with requirements on more than one
     level; sections, from packages nested in the one the table exposes.

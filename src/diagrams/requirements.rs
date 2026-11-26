@@ -23,6 +23,20 @@ pub struct Row {
     /// The requirement it is nested in that is satisfied, when nothing satisfies it itself:
     /// satisfying a requirement satisfies the requirements nested in it.
     pub covered_by: Option<NodeId>,
+    /// Its `StatusInfo`'s status as written, `tbr`, when it has one.
+    pub status: Option<String>,
+    /// The verification cases whose objective verifies it, each with its name and
+    /// the `VerificationMethod` kinds it holds, `test`. Verifying a requirement does not
+    /// verify the requirements nested in it: each has its own figure to show.
+    pub verified_by: Vec<Verification>,
+}
+
+/// A verification case that verifies a requirement.
+#[derive(Clone)]
+pub struct Verification {
+    pub case: NodeId,
+    pub name: String,
+    pub methods: Vec<String>,
 }
 
 impl Row {
@@ -61,6 +75,7 @@ pub fn tabled_requirements(ast: &Ast, exposed: &[NodeId]) -> Vec<(NodeId, usize)
 /// The rows of a GridView exposing `exposed`, in a model whose files' roots are `roots`.
 pub fn extract_requirements(ast: &Ast, roots: &[NodeId], exposed: &[NodeId]) -> Vec<Row> {
     let satisfied = satisfactions(ast, roots);
+    let verified = verifications(ast, roots);
     tabled_requirements(ast, exposed)
         .into_iter()
         .map(|(element, depth)| {
@@ -75,6 +90,8 @@ pub fn extract_requirements(ast: &Ast, roots: &[NodeId], exposed: &[NodeId]) -> 
                 rationale: rationale(ast, element),
                 satisfied_by,
                 covered_by,
+                status: status(ast, element),
+                verified_by: verified.get(&element).cloned().unwrap_or_default(),
             }
         })
         .collect()
@@ -102,6 +119,96 @@ pub fn satisfactions(ast: &Ast, roots: &[NodeId]) -> HashMap<NodeId, Vec<(NodeId
         satisfied.entry(requirement).or_default().push((by.0.unwrap_or(satisfy), by.1));
     }
     satisfied
+}
+
+/// Whether `node` is a `verify` of a requirement: `verify r;`, or `verify requirement r : R;`.
+pub fn is_verify(ast: &Ast, node: NodeId) -> bool {
+    ast[node].ty == Type::OtherUsage && ast.text(node, Prop::Kind) == Some("verify")
+}
+
+/// Whether `node` is a verification case: `verification def`, or `verification`.
+pub fn is_verification_case(ast: &Ast, node: NodeId) -> bool {
+    matches!(ast[node].ty, Type::OtherDefinition | Type::OtherUsage)
+        && ast.text(node, Prop::Kind) == Some("verification")
+}
+
+/// Whether the model has a verification case.
+pub fn has_verification_case(ast: &Ast, roots: &[NodeId]) -> bool {
+    roots.iter().flat_map(|root| ast.with_all_contents(*root)).any(|node| is_verification_case(ast, node))
+}
+
+/// The verification cases that verify each requirement of the model, each once:
+/// a case's objective names a requirement with `verify`, as the standard library's
+/// VerificationCases defines it.
+pub fn verifications(ast: &Ast, roots: &[NodeId]) -> HashMap<NodeId, Vec<Verification>> {
+    let mut verified: HashMap<NodeId, Vec<Verification>> = HashMap::new();
+    for verify in roots.iter().flat_map(|root| ast.with_all_contents(*root)) {
+        if !is_verify(ast, verify) {
+            continue;
+        }
+        let Some(requirement) = ast.child(verify, Prop::Requirement).and_then(|end| chain_target(ast, end)) else {
+            continue;
+        };
+        let Some(case) = std::iter::successors(ast[verify].parent, |node| ast[*node].parent)
+            .find(|node| is_verification_case(ast, *node))
+        else {
+            continue;
+        };
+        let cases = verified.entry(requirement).or_default();
+        if cases.iter().all(|known| known.case != case) {
+            let name = effective_name(ast, case).unwrap_or("").to_string();
+            cases.push(Verification { case, name, methods: verification_methods(ast, case) });
+        }
+    }
+    verified
+}
+
+/// The kinds of each `VerificationMethod` a case holds, as written and without the
+/// enumeration's name: `@VerificationMethod { kind = (VerificationMethodKind::test, analyze); }`
+/// is `test` and `analyze`.
+fn verification_methods(ast: &Ast, case: NodeId) -> Vec<String> {
+    let mut kinds = Vec::new();
+    for value in metadata_values(ast, case, "VerificationMethod", "kind") {
+        let items: Vec<NodeId> = if ast[value].ty == Type::SequenceExpression {
+            ast.children(value, Prop::Items).collect()
+        } else {
+            vec![value]
+        };
+        kinds.extend(items.into_iter().filter_map(|item| enumeration_value(ast, item)));
+    }
+    kinds
+}
+
+/// A requirement's status, `@StatusInfo { status = StatusKind::tbr; }`, as written
+/// without the enumeration's name: `tbr`.
+fn status(ast: &Ast, element: NodeId) -> Option<String> {
+    metadata_values(ast, element, "StatusInfo", "status").into_iter().find_map(|value| enumeration_value(ast, value))
+}
+
+/// The value an expression names, without what qualifies it: `StatusKind::tbr` is `tbr`.
+fn enumeration_value(ast: &Ast, value: NodeId) -> Option<String> {
+    if ast[value].ty != Type::FeatureReferenceExpression {
+        return None;
+    }
+    ast.text(value, Prop::Name).and_then(|name| name.rsplit("::").next()).map(String::from)
+}
+
+/// The values given to `feature` in each metadata of the definition `definition`
+/// that an element holds, `@Rationale { text = "..."; }`. A definition is matched by
+/// its last name, since the library is not loaded.
+fn metadata_values(ast: &Ast, element: NodeId, definition: &str, feature: &str) -> Vec<NodeId> {
+    let held = ast.children(element, Prop::Members).chain(ast.children(element, Prop::Annotations));
+    let metadata = held.filter(|node| {
+        ast[*node].ty == Type::MetadataUsage
+            && ast.text(*node, Prop::Type).is_some_and(|ty| ty.rsplit("::").next() == Some(definition))
+    });
+    let values = metadata.filter_map(|metadata| {
+        let given = ast.children(metadata, Prop::Members).find(|member| {
+            ast.text(*member, Prop::Name) == Some(feature) || ast.texts(*member, Prop::Redefines).any(|r| r == feature)
+        })?;
+        ast.child(given, Prop::Value)
+    });
+    values.collect()
 }
 
 /// The requirement nearest above `requirement`, it included, that `satisfied` has.
@@ -160,17 +267,7 @@ pub fn comment_paragraphs(body: &str) -> Vec<String> {
 /// as the standard library's ModelingMetadata defines it. Matched by its last name,
 /// since the library is not loaded.
 fn rationale(ast: &Ast, element: NodeId) -> Vec<String> {
-    let held = ast.children(element, Prop::Members).chain(ast.children(element, Prop::Annotations));
-    let rationales = held.filter(|node| {
-        ast[*node].ty == Type::MetadataUsage
-            && ast.text(*node, Prop::Type).is_some_and(|ty| ty.rsplit("::").next() == Some("Rationale"))
-    });
-    let texts = rationales.filter_map(|metadata| {
-        let text = ast.children(metadata, Prop::Members).find(|feature| {
-            ast.text(*feature, Prop::Name) == Some("text") || ast.texts(*feature, Prop::Redefines).any(|r| r == "text")
-        })?;
-        let value = ast.child(text, Prop::Value).filter(|value| ast[*value].ty == Type::LiteralExpression)?;
-        ast.text(value, Prop::Value).map(String::from)
-    });
-    texts.collect()
+    let values = metadata_values(ast, element, "Rationale", "text").into_iter();
+    let literals = values.filter(|value| ast[*value].ty == Type::LiteralExpression);
+    literals.filter_map(|value| ast.text(value, Prop::Value).map(String::from)).collect()
 }

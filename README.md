@@ -78,8 +78,9 @@ view is for, and [LANGUAGE.md](LANGUAGE.md) what to write for it.
 
 A `GridView` of requirements is written rather than drawn: a specification in
 Markdown, which GitHub shows as it is. Each requirement gets a heading and a
-box with its ID, statement and rationale; a traceability table at the end
-links each to the parts and modules that satisfy it. This requirement of the
+box with its ID, statement, rationale and status; a traceability table at the
+end links each to the parts and modules that satisfy it, and to the
+verification cases that verify it. This requirement of the
 [coffee machine](examples/coffee-machine/diagrams/requirements-coffee-machine.md)
 
 ```sysml
@@ -91,12 +92,14 @@ requirement <'REQ-5'> 'Water capacity' {
 
 with `satisfy 'Water capacity';` in the water tank's part def, is written as
 
-| ID | Statement | Rationale |
-|:---|:---|:---|
-| REQ-5 | The machine shall hold at least 1.5 L of water. | About a day's coffee for a household of four, so the tank needs filling once a day at most. |
+| ID | Statement | Rationale | Status |
+|:---|:---|:---|:---|
+| REQ-5 | The machine shall hold at least 1.5 L of water. | About a day's coffee for a household of four, so the tank needs filling once a day at most. | — |
 
-and listed in the traceability table as satisfied by `WaterTank`, linked to
-the line that declares it.
+and listed in the traceability table as satisfied by `WaterTank`, and verified
+by the *Capacity inspection*, each linked to the line that declares it. A
+figure that is still assumed is marked `@StatusInfo { status = StatusKind::tbr; }`,
+shown as TBR in its box and listed at the top as to be resolved.
 
 What a requirement is, and how it is numbered, follows SysML v2 and OMG's own
 examples: REQ-1.2 is the second in REQ-1. Each statement takes one of the
@@ -225,8 +228,8 @@ the first two beside the model source.
 - **Six views, not every SysML v2 diagram.** States, calculations and
   constraints load, but no view draws them yet
   ([LANGUAGE.md](LANGUAGE.md#parsed-not-drawn)).
-- **Requirements as a table, not yet a trace.** The table says what satisfies
-  each requirement, not yet what verifies it or what it derives from.
+- **Requirements on one level.** The table says what satisfies and what
+  verifies each requirement, not yet what it derives from.
 - **No standard library.** ortho knows the library's names, so a model may
   use them, but does not load it.
 

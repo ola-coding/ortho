@@ -50,7 +50,8 @@ pub const EXAMPLES: [Example; 3] = [
             "physical.sysml",
             "process.sysml",
             "requirements.sysml",
-            "use-case.sysml"
+            "use-case.sysml",
+            "verification.sysml"
         ]
     ),
     example!(
@@ -63,13 +64,21 @@ pub const EXAMPLES: [Example; 3] = [
             "physical.sysml",
             "process.sysml",
             "requirements.sysml",
-            "use-case.sysml"
+            "use-case.sysml",
+            "verification.sysml"
         ]
     ),
     example!(
         "web-shop",
         "Web shop",
-        ["implementation.sysml", "logical.sysml", "process.sysml", "requirements.sysml", "use-case.sysml"]
+        [
+            "implementation.sysml",
+            "logical.sysml",
+            "process.sysml",
+            "requirements.sysml",
+            "use-case.sysml",
+            "verification.sysml"
+        ]
     ),
 ];
 

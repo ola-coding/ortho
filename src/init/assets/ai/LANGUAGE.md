@@ -634,7 +634,8 @@ package Operations {
 What the system shall do, each requirement stated once, with an ID (§7.21). A
 `GridView` that exposes them (§9.2.20) is not drawn: ortho writes it as a
 specification in Markdown, named after the view as a diagram is, with `.md`:
-a heading and a box for each requirement, then a table of what satisfies each.
+a heading and a box for each requirement, then a table of what satisfies each,
+and what verifies each once the model has a verification case.
 
 ```sysml
 package SystemRequirements {
@@ -648,6 +649,7 @@ package SystemRequirements {
 
         requirement <'REQ-1.1'> 'Heat-up time' {
             doc /* The machine shall heat its brewing water to 92 °C within 30 s. */
+            @StatusInfo { status = StatusKind::tbr; }
         }
     }
 
@@ -676,16 +678,38 @@ package Hardware {
         satisfy 'Espresso time';
     }
 }
+
+package SystemVerification {
+    private import VerificationCases::*;
+    private import SystemRequirements::*;
+
+    verification def 'Espresso timing test' {
+        @VerificationMethod { kind = VerificationMethodKind::test; }
+        subject machine : Hardware::CoffeeMachine;
+        objective {
+            verify 'Espresso time';
+            verify 'Espresso time'.'Heat-up time';
+        }
+    }
+    verification def 'Capacity inspection' {
+        @VerificationMethod { kind = VerificationMethodKind::inspect; }
+        subject machine : Hardware::CoffeeMachine;
+        objective { verify 'Water capacity'; }
+    }
+}
 ```
 
 | You write | The table shows |
 |---|---|
 | `view 'Name' : GridView { doc /* ... */ expose Pkg; }` | a document headed `Name`, its introduction the `doc`, listing the requirements in `Pkg` in the order declared. The view may expose a requirement itself instead. |
-| `requirement <'REQ-1'> 'Name' { ... }` | a heading, *Name*, over a box with the ID, `REQ-1`, the statement and the rationale |
+| `requirement <'REQ-1'> 'Name' { ... }` | a heading, *Name*, over a box with the ID, `REQ-1`, the statement, the rationale and the status |
 | `doc /* ... */` in the requirement | its statement, which SysML v2 calls its `text`. A second `doc`, or an empty line in one, starts a paragraph. |
 | `@Rationale { text = "..."; }` in the requirement, from the standard library's `ModelingMetadata` | its rationale, in a column of its own where there is one |
+| `@StatusInfo { status = StatusKind::tbr; }` in the requirement, from `ModelingMetadata` | its status in the box's last column, always there: TBD, TBR or TBC in capitals, Open, Done or Closed as words, and — where none is set. A requirement still TBD, TBR or TBC is listed at the top of the table. |
 | a `requirement` nested in another | a subrequirement, under a heading one level deeper |
 | `satisfy name;` in a part def, or `satisfy name by part;` | the part def, or the `part`, under *Satisfied by*, linked to the line that declares it |
+| `verify name;` in the `objective` of a `verification def`, from the standard library's `VerificationCases` | the verification case under *Verified by*, linked to its line, a column the table has once the model has a verification case |
+| `@VerificationMethod { kind = VerificationMethodKind::test; }` in the verification case | its method, in brackets after it: Inspection, Analysis, Demonstration or Test. `kind = (VerificationMethodKind::analyze, VerificationMethodKind::test)` gives two. |
 | `requirement def Name { ... }`, a requirement's `subject`, attributes and constraints | nothing. They load. |
 
 **IDs and names.** A requirement's ID is its short name, which SysML v2 calls
@@ -710,6 +734,24 @@ physical view, ortho warns of each requirement a table lists that nothing
 satisfies, itself or through a requirement it is in, and renders anyway. A
 model with no implementation or physical view gets no warning, since nothing
 could satisfy it yet.
+
+**Status.** A figure that is still assumed, or waits on someone, gets a status
+from the standard library's `StatusInfo`: `tbd`, to be determined, `tbr`, to be
+resolved, or `tbc`, to be confirmed; `open`, `done` and `closed` are the
+others. A requirement without one has no status recorded, which is not the
+same as open.
+
+**Verifying a requirement.** A verification case, `verification def`, says how
+requirements are shown to be met: its `subject` is what is checked, its
+`objective` names each requirement it verifies with `verify`, and its
+`@VerificationMethod` says how. One case may verify several requirements.
+Keep the cases in a package and file of their own, `verification.sysml`, as
+OMG's examples do. Unlike satisfying, verifying a requirement does not verify
+those nested in it: each states a figure of its own to show, so each needs its
+own `verify`. A `verify` of anything but a requirement is an error, and one
+that names nothing gets *did you mean*. Once a model has a verification case,
+ortho warns of each requirement a table lists that none verifies; a model
+without one gets no warning, since its verification is not planned yet.
 
 ## Parsed, not drawn
 
