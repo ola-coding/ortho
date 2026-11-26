@@ -161,6 +161,7 @@ pub enum Prop {
     Recursive,
     Redefines,
     Reference,
+    Referenced,
     References,
     Requirement,
     Result,

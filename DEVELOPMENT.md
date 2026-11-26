@@ -464,7 +464,11 @@ Open, in priority order:
     spec's grammar has it, with *did you mean*; a requirement nothing verifies
     is warned of, each nested one needing its own `verify`. A
     `verification.sysml` in each example, and assumed figures marked TBR.
-  - [ ] Resolve the ends of a `#derivation connection`, with *did you mean*.
+  - [x] Resolve the ends of a `#derivation connection`, with *did you mean*,
+    and check it as the library's DerivationConnections defines it: each end a
+    requirement, one `#original`, one or more `#derive`, and the original not
+    derived in it. An end's `::>` is kept as a reference too, checked only in
+    a derivation.
   - [ ] Later: *Derived from*, for a model with requirements on more than one
     level; sections, from packages nested in the one the table exposes.
 - [ ] **Paths through a link.** ortho names a model file relative to the folder

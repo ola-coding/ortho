@@ -349,3 +349,75 @@ fn says_what_a_verify_meant_when_it_names_nothing_or_no_requirement() {
         ]
     );
 }
+
+#[test]
+fn resolves_the_ends_of_a_derivation_and_checks_it_as_the_library_defines_it() {
+    let workspace = build(&[
+        ("spec/requirements.sysml", REQUIREMENTS),
+        (
+            "spec/derivation.sysml",
+            "package Derivations {
+                private import RequirementDerivation::*;
+                private import CoffeeMachineRequirements::*;
+                part machine;
+                #derivation connection {
+                    end #original ::> brewTime;
+                    end #derive ::> brewTime.heatUp;
+                    end #derive ::> brewTime.extraction;
+                }
+                #derivation connection {
+                    end #original ::> brewTym;
+                    end #derive ::> brewTime.heatUpp;
+                    end #derive ::> machine;
+                }
+                #derivation connection {
+                    end #original ::> dryRunCutoff;
+                    end #derive ::> dryRunCutoff;
+                }
+                #derivation connection {
+                    end ::> brewTime;
+                    end ::> dryRunCutoff;
+                }
+                connection { end ::> notChecked; end ::> elsewhere; }
+            }",
+        ),
+    ]);
+    assert_eq!(
+        reported(&workspace, Severity::Error),
+        [
+            "Could not resolve reference to Feature named 'brewTym'. Did you mean 'CoffeeMachineRequirements::brewTime'?",
+            "Could not resolve reference to Feature named 'heatUpp'. Did you mean 'heatUp'?",
+            "'machine' is not a requirement, so it cannot be an end of a derivation.",
+            "'dryRunCutoff' is the original requirement of this derivation, so it cannot be derived in it too.",
+            "A derivation has one original requirement, its end tagged #original, but this one has 0.",
+            "A derivation has one or more requirements derived from the original, its ends tagged #derive, but this one has none.",
+        ]
+    );
+}
+
+#[test]
+fn checks_only_what_the_ends_name_in_a_derivation_typed_by_a_derivation_def() {
+    // As OMG's RequirementDerivationExample has it: the def's ends carry the roles.
+    let workspace = build(&[(
+        "model.sysml",
+        "package P {
+            private import RequirementDerivation::*;
+            requirement def Req1;
+            requirement def Req1_1;
+            #derivation connection def Req1_Derivation {
+                end #original r1 : Req1;
+                end #derive r1_1 : Req1_1;
+            }
+            requirement req1 : Req1;
+            requirement req1_1 : Req1_1;
+            #derivation connection : Req1_Derivation {
+                end r1 ::> req1;
+                end r1_1 ::> req1_11;
+            }
+        }",
+    )]);
+    assert_eq!(
+        reported(&workspace, Severity::Error),
+        ["Could not resolve reference to Feature named 'req1_11'. Did you mean 'P::req1_1'?"]
+    );
+}
