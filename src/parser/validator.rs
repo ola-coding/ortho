@@ -9,8 +9,8 @@ use super::ast::{Ast, NodeId, Prop, Type};
 use super::scope::Logged;
 use super::workspace::{Diagnostic, Severity};
 use crate::diagrams::requirements::{
-    chain_target, covering, has_verification_case, is_verify, satisfactions, tabled_requirements, verifications,
-    written_chain,
+    chain_target, covering, derivation_role, has_verification_case, is_derivation, is_derivation_end, is_verify,
+    satisfactions, tabled_requirements, verifications, written_chain,
 };
 use crate::diagrams::use_case::drawn_use_cases;
 use crate::model::graph::effective_name;
@@ -105,11 +105,14 @@ pub fn validate(ast: &Ast, root: NodeId, _text: &str, log: &[Logged], gaps: &Gap
             warn_same_id(ast, node, *first, &mut diagnostics);
         }
         match ast[node].ty {
-            Type::ConnectorEnd => check_end_starts_at_accessible_feature(ast, node, &mut diagnostics),
+            Type::ConnectorEnd if !is_unchecked_end_reference(ast, node) => {
+                check_end_starts_at_accessible_feature(ast, node, &mut diagnostics)
+            }
             Type::PackageDecl => check_package_not_named_after_library(ast, node, &mut diagnostics),
             Type::PerformUsage => check_perform_target(ast, node, &mut diagnostics),
             Type::SatisfyUsage => check_satisfied_requirement(ast, node, &mut diagnostics),
             Type::OtherUsage if is_verify(ast, node) => check_verified_requirement(ast, node, &mut diagnostics),
+            _ if is_derivation(ast, node) => check_derivation(ast, node, &mut diagnostics),
             Type::UseCaseDef | Type::UseCaseUsage => check_subject_before_actors(ast, node, &mut diagnostics),
             Type::PartUsage | Type::ActorUsage => check_typed_by_part_definition(ast, node, &mut diagnostics),
             _ => {}
@@ -220,8 +223,60 @@ fn check_verified_requirement(ast: &Ast, verify: NodeId, diagnostics: &mut Vec<D
     check_names_requirement(ast, verify, "verified", diagnostics);
 }
 
+/// A derivation, as the standard library's DerivationConnections defines it: each
+/// of its ends is a requirement, which `end #original ::> name;` names; it has one
+/// original requirement and one or more derived from it; and the original is none of
+/// those derived from it. A derivation typed by a derivation def of the model has
+/// that def's ends, which its own ends redefine, so only what they name is checked.
+fn check_derivation(ast: &Ast, connection: NodeId, diagnostics: &mut Vec<Diagnostic>) {
+    let ends: Vec<NodeId> =
+        ast.children(connection, Prop::Members).filter(|member| ast.flag(*member, Prop::IsEnd)).collect();
+    for end in &ends {
+        check_names_requirement_by(ast, *end, Prop::Referenced, "an end of a derivation", diagnostics);
+    }
+    let typed_by_model = ast[connection].ty == Type::ConnectionUsage
+        && ast.target(connection, Prop::Type).is_some()
+        && ast.text(connection, Prop::Type).is_none_or(|ty| ty.rsplit("::").next() != Some("Derivation"));
+    if typed_by_model {
+        return;
+    }
+    let originals: Vec<NodeId> = ends.iter().copied().filter(|end| derivation_role(ast, *end, "original")).collect();
+    let derived: Vec<NodeId> = ends.iter().copied().filter(|end| derivation_role(ast, *end, "derive")).collect();
+    let mut problem = |message: String| {
+        diagnostics.push(Diagnostic { severity: Severity::Error, offset: ast[connection].offset as usize, message });
+    };
+    if originals.len() != 1 {
+        problem(format!(
+            "A derivation has one original requirement, its end tagged #original, but this one has {}.",
+            originals.len()
+        ));
+    }
+    if derived.is_empty() {
+        problem("A derivation has one or more requirements derived from the original, its ends tagged #derive, but this one has none.".to_string());
+    }
+    let named = |end: NodeId| ast.child(end, Prop::Referenced).and_then(|reference| chain_target(ast, reference));
+    if let Some(original) = originals.first().and_then(|end| named(*end))
+        && derived.iter().any(|end| named(*end) == Some(original))
+    {
+        let name = effective_name(ast, original).unwrap_or("The original requirement");
+        problem(format!("'{name}' is the original requirement of this derivation, so it cannot be derived in it too."));
+    }
+}
+
+/// A reference an end keeps of what it references, `end ::> a.b;`, is checked only
+/// where an end has to resolve: in a derivation.
+fn is_unchecked_end_reference(ast: &Ast, reference: NodeId) -> bool {
+    ast[reference]
+        .parent
+        .is_some_and(|end| ast.child(end, Prop::Referenced) == Some(reference) && !is_derivation_end(ast, end))
+}
+
 fn check_names_requirement(ast: &Ast, usage: NodeId, done: &str, diagnostics: &mut Vec<Diagnostic>) {
-    let Some(end) = ast.child(usage, Prop::Requirement) else {
+    check_names_requirement_by(ast, usage, Prop::Requirement, done, diagnostics);
+}
+
+fn check_names_requirement_by(ast: &Ast, usage: NodeId, prop: Prop, done: &str, diagnostics: &mut Vec<Diagnostic>) {
+    let Some(end) = ast.child(usage, prop) else {
         return;
     };
     let Some(found) = chain_target(ast, end) else {
@@ -237,7 +292,7 @@ fn check_names_requirement(ast: &Ast, usage: NodeId, done: &str, diagnostics: &m
     if !is_requirement {
         diagnostics.push(Diagnostic {
             severity: Severity::Error,
-            offset: offset_of(ast, usage, Prop::Requirement),
+            offset: offset_of(ast, usage, prop),
             message: format!("'{}' is not a requirement, so it cannot be {done}.", written_chain(ast, end)),
         });
     }
@@ -784,7 +839,7 @@ fn is_function(ast: &Ast, node: NodeId) -> bool {
 /// segments, after one that failed, are not reported again.
 fn may_name_nothing(ast: &Ast, logged: &Logged) -> bool {
     let container = logged.reference.node;
-    if ast[container].ty == Type::ImportDecl {
+    if ast[container].ty == Type::ImportDecl || is_unchecked_end_reference(ast, container) {
         return true;
     }
     let index = logged.index.unwrap_or(0);

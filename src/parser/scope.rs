@@ -229,14 +229,18 @@ impl<'a> Linker<'a> {
         format!(" '{owner}' has {listed}.")
     }
 
-    /// For the requirement a `satisfy` or a `verify` names, the requirements of the model named
+    /// For the requirement a `satisfy`, a `verify` or a derivation's end names, the requirements of the model named
     /// closest to it, each by the path that names it from anywhere:
     /// `Did you mean 'Requirements::brewTime.heatUp'?`.
     fn requirement_hint(&self, end: NodeId, text: &str) -> String {
-        let owner = self.ast[end].parent.filter(|owner| {
-            self.ast[*owner].ty == Type::SatisfyUsage || crate::diagrams::requirements::is_verify(self.ast, *owner)
+        use crate::diagrams::requirements::{is_derivation_end, is_verify};
+        let owner = self.ast[end].parent;
+        let names_requirement = owner.is_some_and(|owner| {
+            let named = |prop| self.ast.child(owner, prop) == Some(end);
+            ((self.ast[owner].ty == Type::SatisfyUsage || is_verify(self.ast, owner)) && named(Prop::Requirement))
+                || (is_derivation_end(self.ast, owner) && named(Prop::Referenced))
         });
-        if owner.is_none_or(|owner| self.ast.child(owner, Prop::Requirement) != Some(end)) {
+        if !names_requirement {
             return String::new();
         }
         let mut paths: HashMap<&str, Vec<String>> = HashMap::new();

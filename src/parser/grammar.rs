@@ -1385,6 +1385,13 @@ impl<'a> Parser<'a> {
             }
             "::>" | "references" => {
                 self.pos += 1;
+                // An end's chain is also kept as a reference, which a derivation's
+                // end has to resolve: `end #derive ::> engineMassRequirement;`.
+                if self.ast.flag(n, P::IsEnd) && self.ast.child(n, P::Referenced).is_none() {
+                    let start = self.pos;
+                    self.child(n, P::Referenced, Self::connector_end)?;
+                    self.pos = start;
+                }
                 self.add_chain(n, P::References)
             }
             "=>" | "crosses" => {

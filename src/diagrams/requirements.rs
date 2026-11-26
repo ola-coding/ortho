@@ -121,6 +121,34 @@ pub fn satisfactions(ast: &Ast, roots: &[NodeId]) -> HashMap<NodeId, Vec<(NodeId
     satisfied
 }
 
+/// Whether `connection` is a derivation, as the standard library's
+/// RequirementDerivation and DerivationConnections define it: a connection or a
+/// connection def marked `#derivation`, or typed by `Derivation`.
+pub fn is_derivation(ast: &Ast, connection: NodeId) -> bool {
+    let connects = ast[connection].ty == Type::ConnectionUsage
+        || (ast[connection].ty == Type::OtherDefinition && ast.text(connection, Prop::Kind) == Some("connection"));
+    connects
+        && (ast.texts(connection, Prop::PrefixMetadata).any(|tag| last_name(tag) == "derivation")
+            || ast.text(connection, Prop::Type).is_some_and(|ty| last_name(ty) == "Derivation"))
+}
+
+/// Whether `end` is an end of a derivation.
+pub fn is_derivation_end(ast: &Ast, end: NodeId) -> bool {
+    ast.flag(end, Prop::IsEnd) && ast[end].parent.is_some_and(|connection| is_derivation(ast, connection))
+}
+
+/// Whether a derivation's end is tagged `#original` or `#derive`, which the
+/// library's RequirementDerivation defines.
+pub fn derivation_role(ast: &Ast, end: NodeId, role: &str) -> bool {
+    ast.texts(end, Prop::PrefixMetadata).any(|tag| last_name(tag) == role)
+}
+
+/// A name without what qualifies it, and without a `#`: `#RequirementDerivation::derive` is `derive`.
+fn last_name(name: &str) -> &str {
+    let name = name.strip_prefix('#').unwrap_or(name);
+    name.rsplit("::").next().unwrap_or(name)
+}
+
 /// Whether `node` is a `verify` of a requirement: `verify r;`, or `verify requirement r : R;`.
 pub fn is_verify(ast: &Ast, node: NodeId) -> bool {
     ast[node].ty == Type::OtherUsage && ast.text(node, Prop::Kind) == Some("verify")

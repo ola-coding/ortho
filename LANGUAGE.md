@@ -708,6 +708,7 @@ package SystemVerification {
 | `satisfy name;` in a part def, or `satisfy name by part;` | the part def, or the `part`, under *Satisfied by*, linked to the line that declares it |
 | `verify name;` in the `objective` of a `verification def`, from the standard library's `VerificationCases` | the verification case under *Verified by*, linked to its line, a column the table has once the model has a verification case |
 | `@VerificationMethod { kind = VerificationMethodKind::test; }` in the verification case | its method, in brackets after it: Inspection, Analysis, Demonstration or Test. `kind = (VerificationMethodKind::analyze, VerificationMethodKind::test)` gives two. |
+| `#derivation connection { end #original ::> a; end #derive ::> b; }`, from the standard library's `RequirementDerivation` | nothing yet. Its ends are checked, as below. |
 | `requirement def Name { ... }`, a requirement's `subject`, attributes and constraints | nothing. They load. |
 
 **IDs and names.** A requirement's ID is its short name, which SysML v2 calls
@@ -750,6 +751,34 @@ own `verify`. A `verify` of anything but a requirement is an error, and one
 that names nothing gets *did you mean*. Once a model has a verification case,
 ortho warns of each requirement a table lists that none verifies; a model
 without one gets no warning, since its verification is not planned yet.
+
+**Deriving a requirement.** A requirement derived from another, a part's
+budget from the system's, is written as the standard library's
+`RequirementDerivation` has it: a `#derivation connection` whose end tagged
+`#original` names the requirement it is derived from, and whose ends tagged
+`#derive` name those derived from it.
+
+```sysml
+package Derivations {
+    private import RequirementDerivation::*;
+
+    requirement <'REQ-1'> 'Espresso time';
+    requirement <'REQ-1.1'> 'Heat-up time';
+
+    #derivation connection {
+        end #original ::> 'Espresso time';
+        end #derive ::> 'Heat-up time';
+    }
+}
+```
+
+As the library's `DerivationConnections` defines a derivation, each end names
+a requirement, there is one original and one or more derived, and the original
+is not derived in its own derivation. Anything else is an error, and an end
+that names nothing gets *did you mean*. A derivation typed by a
+`#derivation connection def` of the model has that def's ends, which carry the
+tags, so only what its own ends name is checked. The table does not show
+derivations yet.
 
 ## Parsed, not drawn
 
