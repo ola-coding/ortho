@@ -431,21 +431,12 @@ Done:
   Windows with the project in WSL and on Windows itself.
 - [x] **Security:** `main` protected, Dependabot, and private vulnerability
   reporting.
+- [x] **Found by SysML v2 users:** ortho is listed in mycr0ft/awesome-sysml
+  and daltskin/SysML-v2-Resources. jgsystemsconsulting/awesome-sysml-v2#5 and
+  jgsystemsconsulting/awesome-mbse#30 wait for review and need nothing from us.
 
 Open, in priority order:
 
-- [ ] **Publish the Zed extension:** zed-industries/extensions#8349, opened on
-  2026-11-15, waits for review. Try it on macOS and on a Linux desktop. When
-  Nomograph fixes `dependency A::b to C;`, which their grammar reads only with
-  `from` (nomograph/tree-sitter-sysml#4, reported on 2026-11-17), and a
-  feature chain after `satisfy`, `satisfy a.b;`, which it does not read at all
-  (nomograph/tree-sitter-sysml#5, reported on 2026-11-21), move the pin and
-  drop CI's allowance for both.
-- [ ] **Be found by SysML v2 users.** ortho is listed in mycr0ft/awesome-sysml
-  and daltskin/SysML-v2-Resources; jgsystemsconsulting/awesome-sysml-v2#5 and
-  jgsystemsconsulting/awesome-mbse#30 wait for review. Then a post in the
-  SysML Forum, once Zed publishes the extension. Always say SysML v2, never
-  plain SysML, which reads as v1.
 - [ ] **Requirements as a specification ortho writes,** rather than a
   seventh diagram, from standard SysML:
   `requirement <'REQ-1'> 'Brew time' { doc /* ... */ }`, `@Rationale` and
@@ -483,3 +474,12 @@ Open, in priority order:
   diagrams' `data-file` and in the table's links. Compare the two as one
   folder. The VS Code preview copies the model under its folder's real path,
   so it is not affected.
+- [ ] **Publish the Zed extension:** zed-industries/extensions#8349, opened on
+  2026-11-15, waits for review. Try it on macOS and on a Linux desktop. When
+  Nomograph fixes `dependency A::b to C;`, which their grammar reads only with
+  `from` (nomograph/tree-sitter-sysml#4, reported on 2026-11-17), and a
+  feature chain after `satisfy`, `satisfy a.b;`, which it does not read at all
+  (nomograph/tree-sitter-sysml#5, reported on 2026-11-21), move the pin and
+  drop CI's allowance for both. Last, once Zed publishes the extension, a
+  post in the SysML Forum. Always say SysML v2, never plain SysML, which reads
+  as v1.
