@@ -421,3 +421,94 @@ fn checks_only_what_the_ends_name_in_a_derivation_typed_by_a_derivation_def() {
         ["Could not resolve reference to Feature named 'req1_11'. Did you mean 'P::req1_1'?"]
     );
 }
+
+#[test]
+fn sections_a_table_by_package_and_says_what_each_requirement_is_derived_from() {
+    let workspace = build(&[(
+        "spec/requirements.sysml",
+        "package SystemRequirements {
+            doc /* What the machine shall do. */
+            private import RequirementDerivation::*;
+            requirement <'REQ-1'> 'Mains power' { doc /* The machine shall draw at most 1.5 kW. */ }
+            package 'Part requirements' {
+                doc /* What each part shall do. */
+                requirement <'PART-1'> 'Heater power' { doc /* The heater shall draw at most 1300 W. */ }
+                requirement <'PART-2'> 'Pump power' { doc /* The pump shall draw at most 60 W. */ }
+                #derivation connection {
+                    end #original ::> 'Mains power';
+                    end #derive ::> 'Heater power';
+                    end #derive ::> 'Pump power';
+                }
+            }
+            view 'Requirements' : GridView { expose SystemRequirements; }
+        }",
+    )]);
+    assert_eq!(reported(&workspace, Severity::Error), Vec::<String>::new());
+    let content = &render_views(&workspace, &LIGHT, "spec/diagrams").unwrap().rendered[0].result.content;
+    let expected_tail = "## SystemRequirements
+
+What the machine shall do.
+
+### Mains power
+
+| ID | Statement | Status |
+|:---|:---|:---|
+| REQ-1 | The machine shall draw at most 1.5 kW. | — |
+
+## Part requirements
+
+What each part shall do.
+
+### Heater power
+
+| ID | Statement | Status |
+|:---|:---|:---|
+| PART-1 | The heater shall draw at most 1300 W. | — |
+
+### Pump power
+
+| ID | Statement | Status |
+|:---|:---|:---|
+| PART-2 | The pump shall draw at most 60 W. | — |
+
+## Traceability
+
+| ID | Requirement | Derived from | Satisfied by |
+|:---|:---|:---|:---|
+| [REQ-1](#mains-power) | Mains power | — | — |
+| [PART-1](#heater-power) | Heater power | [REQ-1](#mains-power) | — |
+| [PART-2](#pump-power) | Pump power | [REQ-1](#mains-power) | — |
+";
+    assert!(content.ends_with(expected_tail), "{content}");
+}
+
+#[test]
+fn names_an_original_the_table_does_not_list_and_reads_roles_from_a_derivation_def() {
+    // As OMG's RequirementDerivationExample has it: the def's ends carry the roles.
+    let workspace = build(&[(
+        "model.sysml",
+        "package P {
+            private import RequirementDerivation::*;
+            requirement def Req1;
+            requirement def Req1_1;
+            #derivation connection def Req1_Derivation {
+                end #original r1 : Req1;
+                end #derive r1_1 : Req1_1;
+            }
+            package Top { requirement <'TOP-1'> req1 : Req1; }
+            package Lower {
+                requirement <'LOW-1'> req1_1 : Req1_1;
+                #derivation connection : Req1_Derivation {
+                    end r1 ::> Top::req1;
+                    end r1_1 ::> req1_1;
+                }
+                view 'Lower table' : GridView { expose Lower; }
+            }
+        }",
+    )]);
+    assert_eq!(reported(&workspace, Severity::Error), Vec::<String>::new());
+    let content = &render_views(&workspace, &LIGHT, ".").unwrap().rendered[0].result.content;
+    assert!(content.contains("| [LOW-1](#req1_1) | req1\\_1 | TOP-1 | — |\n"), "{content}");
+    // One package, so no sections.
+    assert!(content.contains("\n## req1\\_1\n"), "{content}");
+}

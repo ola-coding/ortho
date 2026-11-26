@@ -96,6 +96,37 @@ package SystemRequirements {
         @Rationale { text = "It then fits the space of the narrowest standard kitchen cabinet."; }
     }
 
+    // --- one level down: the parts ------------------------------------------
+    // A part's requirement is derived from the machine's, rather than nested in
+    // it: it is how the part's designers meet their share of the machine's. Each
+    // `#derivation connection` names the machine's requirement as its original,
+    // and those derived from it.
+    package 'Part requirements' {
+        doc /* What each part shall do, derived from what the machine shall do. */
+        private import RequirementDerivation::*;
+
+        requirement <'PART-1'> 'Heater power' {
+            doc /* The thermoblock shall draw at most 1300 W. */
+        }
+        requirement <'PART-2'> 'Pump power' {
+            doc /* The pump shall draw at most 60 W. */
+        }
+        requirement <'PART-3'> 'Grind time' {
+            doc /* The grinder shall grind a 16 g dose within 15 s. */
+            @StatusInfo { status = StatusKind::tbc; }
+        }
+
+        #derivation connection {
+            end #original ::> 'Mains power';
+            end #derive ::> 'Heater power';
+            end #derive ::> 'Pump power';
+        }
+        #derivation connection {
+            end #original ::> 'Espresso time';
+            end #derive ::> 'Grind time';
+        }
+    }
+
     view 'Requirements — Coffee Machine' : GridView {
         doc /* What the coffee machine shall do for a household making espresso and
              * cappuccino at home. */

@@ -55,7 +55,7 @@ for (const example of ['coffee-machine', 'survey-drone', 'web-shop']) {
     assert.ok(boxes.length >= 14);
     for (const box of boxes) {
       assert.deepEqual(box.head.map(plainText).slice(0, 2), ['ID', 'Statement']);
-      assert.match(plainText(box.rows[0][0]), /^REQ-\d+(\.\d+)*$/);
+      assert.match(plainText(box.rows[0][0]), /^(REQ|PART)-\d+(\.\d+)*$/);
       assert.match(plainText(box.rows[0][1]), /\bshall\b/);
     }
     const trace = blocks.find((block) => block.type === 'table' && plainText(block.head[1]) === 'Requirement');

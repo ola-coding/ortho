@@ -708,7 +708,8 @@ package SystemVerification {
 | `satisfy name;` in a part def, or `satisfy name by part;` | the part def, or the `part`, under *Satisfied by*, linked to the line that declares it |
 | `verify name;` in the `objective` of a `verification def`, from the standard library's `VerificationCases` | the verification case under *Verified by*, linked to its line, a column the table has once the model has a verification case |
 | `@VerificationMethod { kind = VerificationMethodKind::test; }` in the verification case | its method, in brackets after it: Inspection, Analysis, Demonstration or Test. `kind = (VerificationMethodKind::analyze, VerificationMethodKind::test)` gives two. |
-| `#derivation connection { end #original ::> a; end #derive ::> b; }`, from the standard library's `RequirementDerivation` | nothing yet. Its ends are checked, as below. |
+| a `package` nested in the one the view exposes | a section of its own, headed with the package's name and introduced by its `doc`, once the table has requirements in more than one package. The exposed package's own requirements are a section too, and each requirement's heading goes one level deeper. |
+| `#derivation connection { end #original ::> a; end #derive ::> b; }`, from the standard library's `RequirementDerivation` | `a` under *Derived from* for `b`, linked, a column the table has once the model has a derivation. An original the table does not list is named by its ID, unlinked. |
 | `requirement def Name { ... }`, a requirement's `subject`, attributes and constraints | nothing. They load. |
 
 **IDs and names.** A requirement's ID is its short name, which SysML v2 calls
@@ -777,8 +778,15 @@ a requirement, there is one original and one or more derived, and the original
 is not derived in its own derivation. Anything else is an error, and an end
 that names nothing gets *did you mean*. A derivation typed by a
 `#derivation connection def` of the model has that def's ends, which carry the
-tags, so only what its own ends name is checked. The table does not show
-derivations yet.
+tags, so only what its own ends name is checked.
+
+A derived requirement sits a level below its original, so keep it in a
+package of its own nested in the one the table exposes, `package 'Part
+requirements' { ... }`: the table gives that package a section, and says
+under *Derived from* which requirement each was derived from. A derived
+requirement is satisfied and verified as any other; satisfying its original
+does not satisfy it, nor the other way round. Nesting is not deriving: a
+requirement nested in another is part of it, on its level.
 
 ## Parsed, not drawn
 

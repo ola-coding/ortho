@@ -447,7 +447,7 @@ fn the_preview_draws_the_model_again_as_it_is_typed_and_its_table_opens_lines() 
     assert_eq!(at["file"], "requirements.sysml");
     let line = at["line"].as_u64().unwrap() as usize;
     assert!(text.lines().nth(line - 1).unwrap().contains("<'REQ-5'>"));
-    assert_eq!(typed["requirements"]["byId"].as_object().unwrap().len(), 15);
+    assert_eq!(typed["requirements"]["byId"].as_object().unwrap().len(), 18);
 
     // A link in the table opens the line it names; nothing outside the model.
     let water_tank = std::fs::read_to_string(folder.join("physical.sysml")).unwrap();

@@ -29,6 +29,20 @@ pub struct Row {
     /// the `VerificationMethod` kinds it holds, `test`. Verifying a requirement does not
     /// verify the requirements nested in it: each has its own figure to show.
     pub verified_by: Vec<Verification>,
+    /// The requirements it is derived from: the original of each derivation that
+    /// derives it, as the standard library's DerivationConnections has it, each
+    /// with its ID, or else its name, for a table that does not list it.
+    pub derived_from: Vec<(NodeId, String)>,
+    /// The package it is declared in, which is its section once the table has more than one.
+    pub section: Section,
+}
+
+/// A package a table's requirements are declared in, with its name and its own `doc`.
+#[derive(Clone, PartialEq)]
+pub struct Section {
+    pub package: Option<NodeId>,
+    pub name: String,
+    pub introduction: Vec<String>,
 }
 
 /// A verification case that verifies a requirement.
@@ -76,6 +90,7 @@ pub fn tabled_requirements(ast: &Ast, exposed: &[NodeId]) -> Vec<(NodeId, usize)
 pub fn extract_requirements(ast: &Ast, roots: &[NodeId], exposed: &[NodeId]) -> Vec<Row> {
     let satisfied = satisfactions(ast, roots);
     let verified = verifications(ast, roots);
+    let derived = derivations(ast, roots);
     tabled_requirements(ast, exposed)
         .into_iter()
         .map(|(element, depth)| {
@@ -92,6 +107,16 @@ pub fn extract_requirements(ast: &Ast, roots: &[NodeId], exposed: &[NodeId]) -> 
                 covered_by,
                 status: status(ast, element),
                 verified_by: verified.get(&element).cloned().unwrap_or_default(),
+                derived_from: derived
+                    .get(&element)
+                    .into_iter()
+                    .flatten()
+                    .map(|original| {
+                        let label = ast.text(*original, Prop::ShortName).or(effective_name(ast, *original));
+                        (*original, label.unwrap_or("").to_string())
+                    })
+                    .collect(),
+                section: section(ast, element),
             }
         })
         .collect()
@@ -130,6 +155,64 @@ pub fn is_derivation(ast: &Ast, connection: NodeId) -> bool {
     connects
         && (ast.texts(connection, Prop::PrefixMetadata).any(|tag| last_name(tag) == "derivation")
             || ast.text(connection, Prop::Type).is_some_and(|ty| last_name(ty) == "Derivation"))
+}
+
+/// The package a requirement is declared in, its nested requirements' too.
+fn section(ast: &Ast, requirement: NodeId) -> Section {
+    let package = std::iter::successors(ast[requirement].parent, |node| ast[*node].parent)
+        .find(|node| ast[*node].ty == Type::PackageDecl);
+    Section {
+        package,
+        name: package.and_then(|package| effective_name(ast, package)).unwrap_or("").to_string(),
+        introduction: package.map(|package| documentation(ast, package)).unwrap_or_default(),
+    }
+}
+
+/// Whether the model has a derivation.
+pub fn has_derivation(ast: &Ast, roots: &[NodeId]) -> bool {
+    roots.iter().flat_map(|root| ast.with_all_contents(*root)).any(|node| is_derivation(ast, node))
+}
+
+/// The originals each requirement of the model is derived from, each once, in the
+/// order the derivations are declared. A derivation's end tagged `#original` names
+/// the original, those tagged `#derive` what is derived from it. An end of a
+/// derivation typed by a derivation def takes its tag from the def's end it
+/// redefines, by name, as in OMG's RequirementDerivationExample.
+pub fn derivations(ast: &Ast, roots: &[NodeId]) -> HashMap<NodeId, Vec<NodeId>> {
+    let mut derived: HashMap<NodeId, Vec<NodeId>> = HashMap::new();
+    for connection in roots.iter().flat_map(|root| ast.with_all_contents(*root)) {
+        if !is_derivation(ast, connection) || ast[connection].ty != Type::ConnectionUsage {
+            continue;
+        }
+        let definition = ast.target(connection, Prop::Type);
+        let role = |end: NodeId, role: &str| {
+            derivation_role(ast, end, role)
+                || definition.is_some_and(|definition| {
+                    let name = effective_name(ast, end);
+                    ast.children(definition, Prop::Members).any(|own| {
+                        ast.flag(own, Prop::IsEnd)
+                            && name.is_some()
+                            && effective_name(ast, own) == name
+                            && derivation_role(ast, own, role)
+                    })
+                })
+        };
+        let named = |end: NodeId| ast.child(end, Prop::Referenced).and_then(|reference| chain_target(ast, reference));
+        let ends: Vec<NodeId> =
+            ast.children(connection, Prop::Members).filter(|member| ast.flag(*member, Prop::IsEnd)).collect();
+        let Some(original) = ends.iter().find(|end| role(**end, "original")).and_then(|end| named(*end)) else {
+            continue;
+        };
+        for end in ends.iter().filter(|end| role(**end, "derive")) {
+            if let Some(requirement) = named(*end) {
+                let originals = derived.entry(requirement).or_default();
+                if !originals.contains(&original) {
+                    originals.push(original);
+                }
+            }
+        }
+    }
+    derived
 }
 
 /// Whether `end` is an end of a derivation.
