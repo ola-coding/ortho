@@ -216,12 +216,40 @@ pub fn relative_to_working_folder(path: &str) -> String {
 }
 
 /// A path as seen from the folder `from`, both relative to the working folder unless
-/// absolute, with forward slashes on every system.
+/// absolute, with forward slashes on every system. A path that leaves the folder only
+/// because one of the two is reached through a link, as macOS's `/var` is
+/// `/private/var`, is compared by the folders' real paths instead.
 pub fn relative_path(path: &str, from: &str) -> String {
     let (Ok(path), Ok(working)) = (std::path::absolute(path), std::path::absolute(from)) else {
         return path.replace('\\', "/");
     };
-    let (path, working) = (normal(&path), normal(&working));
+    let named = relative_parts(&path, &working);
+    if !named.starts_with("..") {
+        return named;
+    }
+    let real = relative_parts(&real_path(&path), &real_path(&working));
+    let climbs = |relative: &str| relative.split('/').take_while(|part| *part == "..").count();
+    // Kept as named when the real paths are on different drives, given whole.
+    if !Path::new(&real).is_absolute() && climbs(&real) < climbs(&named) { real } else { named }
+}
+
+/// A path with the links in its folders followed, as far as they exist; the file
+/// itself, and the parts not made yet, kept as named.
+fn real_path(path: &Path) -> PathBuf {
+    let path: PathBuf = normal(path).iter().collect();
+    let mut folder = path.parent();
+    while let Some(existing) = folder {
+        if let Ok(real) = existing.canonicalize() {
+            return real.join(path.strip_prefix(existing).unwrap_or(&path));
+        }
+        folder = existing.parent();
+    }
+    path
+}
+
+/// `path` as seen from the folder `working`, both absolute.
+fn relative_parts(path: &Path, working: &Path) -> String {
+    let (path, working) = (normal(path), normal(working));
     // A file on another drive has no relative path; Node gives it whole.
     if path.first() != working.first() {
         return path.iter().collect::<PathBuf>().to_string_lossy().replace('\\', "/");

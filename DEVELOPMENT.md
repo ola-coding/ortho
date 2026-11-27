@@ -434,6 +434,12 @@ Done:
 - [x] **Found by SysML v2 users:** ortho is listed in mycr0ft/awesome-sysml
   and daltskin/SysML-v2-Resources. jgsystemsconsulting/awesome-sysml-v2#5 and
   jgsystemsconsulting/awesome-mbse#30 wait for review and need nothing from us.
+- [x] **Paths through a link:** a model reached through a link, as macOS's
+  temporary folder `/var/folders/…` is to `/private/var/folders/…`, is named
+  from the working folder in the diagrams' `data-file` and in the table's links,
+  not as `../../var/folders/…`. Where the named path leaves the folder,
+  `relative_path` compares the folders' real paths, and keeps whichever climbs
+  less; a linked folder inside the working folder keeps the name it is reached by.
 
 Open, in priority order:
 
@@ -474,13 +480,6 @@ Open, in priority order:
     there is more than one, introduced by its `doc`, and a *Derived from*
     column once the model has a derivation. The coffee machine has three part
     requirements derived from REQ-9 and REQ-1.
-- [ ] **Paths through a link.** ortho names a model file relative to the folder
-  it runs in, which the system gives by its real path (`relative_path`). A
-  model reached through a link, as macOS's temporary folder `/var/folders/…`
-  is to `/private/var/folders/…`, is then named `../../var/folders/…` in the
-  diagrams' `data-file` and in the table's links. Compare the two as one
-  folder. The VS Code preview copies the model under its folder's real path,
-  so it is not affected.
 - [ ] **Publish the Zed extension:** zed-industries/extensions#8349, opened on
   2026-11-15, waits for review. Try it on macOS and on a Linux desktop. When
   Nomograph fixes `dependency A::b to C;`, which their grammar reads only with
