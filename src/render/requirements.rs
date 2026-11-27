@@ -18,6 +18,9 @@ pub struct Specification<'a> {
     /// Whether the model has a verification case, so that the table says what
     /// verifies each requirement.
     pub verification: bool,
+    /// Whether the model has a derivation, so that the table says what each
+    /// requirement is derived from.
+    pub derivation: bool,
 }
 
 /// The Markdown of a table of requirements. `link` gives where an element is
@@ -29,9 +32,17 @@ pub fn render_requirements_markdown(
 ) -> String {
     let mut anchors = Anchors::default();
     anchors.add(specification.heading);
+    // A section for each package the requirements are declared in, once there is
+    // more than one: a package nested in the one the view exposes is a level below.
+    let sectioned = rows.iter().any(|row| row.section != rows[0].section);
     let headings: Vec<String> = rows.iter().map(plain_heading).collect();
-    let anchor_of: HashMap<NodeId, String> =
-        rows.iter().zip(&headings).map(|(row, heading)| (row.element, anchors.add(heading))).collect();
+    let mut anchor_of: HashMap<NodeId, String> = HashMap::new();
+    for (index, (row, heading)) in rows.iter().zip(&headings).enumerate() {
+        if sectioned && (index == 0 || rows[index - 1].section != row.section) {
+            anchors.add(&row.section.name);
+        }
+        anchor_of.insert(row.element, anchors.add(heading));
+    }
     let label = |row: &Row| row.id.as_deref().or(row.name.as_deref()).unwrap_or("requirement").to_string();
     let cross_reference = |element: NodeId| -> String {
         let row = rows.iter().find(|row| row.element == element);
@@ -67,20 +78,28 @@ pub fn render_requirements_markdown(
     }
     out.push_str(&format!("{summary}\n\n"));
 
-    for (row, heading) in rows.iter().zip(&headings) {
-        let level = "#".repeat((row.depth + 2).min(6));
+    for (index, (row, heading)) in rows.iter().zip(&headings).enumerate() {
+        if sectioned && (index == 0 || rows[index - 1].section != row.section) {
+            out.push_str(&format!("## {}\n\n", escape(&row.section.name)));
+            for paragraph in &row.section.introduction {
+                out.push_str(&format!("{}\n\n", paragraph_text(paragraph)));
+            }
+        }
+        let level = "#".repeat((row.depth + 2 + usize::from(sectioned)).min(6));
         out.push_str(&format!("{level} {}\n\n", escape(heading)));
         out.push_str(&requirement_box(row));
     }
 
     if !rows.is_empty() {
-        if specification.verification {
-            out.push_str(
-                "## Traceability\n\n| ID | Requirement | Satisfied by | Verified by |\n|:---|:---|:---|:---|\n",
-            );
-        } else {
-            out.push_str("## Traceability\n\n| ID | Requirement | Satisfied by |\n|:---|:---|:---|\n");
+        let mut columns = vec!["ID", "Requirement"];
+        if specification.derivation {
+            columns.push("Derived from");
         }
+        columns.push("Satisfied by");
+        if specification.verification {
+            columns.push("Verified by");
+        }
+        out.push_str(&format!("## Traceability\n\n| {} |\n|{}\n", columns.join(" | "), ":---|".repeat(columns.len())));
         for row in rows {
             let anchor = &anchor_of[&row.element];
             let id = row.id.as_deref().map(|id| format!("[{}](#{anchor})", escape(id))).unwrap_or_default();
@@ -98,7 +117,20 @@ pub fn render_requirements_markdown(
             } else {
                 "—".to_string()
             };
-            out.push_str(&format!("| {id} | {indent}{name} | {satisfied_by} |"));
+            out.push_str(&format!("| {id} | {indent}{name} |"));
+            if specification.derivation {
+                let originals: Vec<String> = row
+                    .derived_from
+                    .iter()
+                    .map(|(original, label)| {
+                        let linked = cross_reference(*original);
+                        if linked.is_empty() { escape(label) } else { linked }
+                    })
+                    .collect();
+                let cell = if originals.is_empty() { "—".to_string() } else { originals.join(", ") };
+                out.push_str(&format!(" {cell} |"));
+            }
+            out.push_str(&format!(" {satisfied_by} |"));
             if specification.verification {
                 out.push_str(&format!(" {} |", verified_by(row, link)));
             }

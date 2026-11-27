@@ -228,8 +228,9 @@ the first two beside the model source.
 - **Six views, not every SysML v2 diagram.** States, calculations and
   constraints load, but no view draws them yet
   ([LANGUAGE.md](LANGUAGE.md#parsed-not-drawn)).
-- **Requirements on one level.** The table says what satisfies and what
-  verifies each requirement, not yet what it derives from.
+- **Requirements as a table, not a diagram.** The table says what each
+  requirement is derived from, and what satisfies and verifies it; no view
+  draws requirements as boxes and arrows.
 - **No standard library.** ortho knows the library's names, so a model may
   use them, but does not load it.
 

@@ -3,7 +3,7 @@ use crate::diagrams::deployment::extract_deployment_graph;
 use crate::diagrams::implementation::extract_implementation_graph;
 use crate::diagrams::logical::extract_logical_graph;
 use crate::diagrams::physical::extract_physical_graph;
-use crate::diagrams::requirements::{documentation, extract_requirements, has_verification_case};
+use crate::diagrams::requirements::{documentation, extract_requirements, has_derivation, has_verification_case};
 use crate::diagrams::sequence::extract_sequence_model;
 use crate::diagrams::use_case::extract_use_case_graph;
 use crate::layout::SourceMark;
@@ -126,6 +126,7 @@ fn render_requirements(workspace: &Workspace, view: NodeId, out: &str) -> Render
         source: (name, link_path(file, out)),
         introduction: documentation(ast, view),
         verification: has_verification_case(ast, &roots),
+        derivation: has_derivation(ast, &roots),
     };
     RenderResult {
         content: render_requirements_markdown(&specification, &rows, &link),

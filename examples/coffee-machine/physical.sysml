@@ -63,6 +63,7 @@ package Hardware {
     part def WaterPump {
         perform beverage.prepareWater.pumpWater;
         satisfy 'Espresso time'.'Brew pressure';
+        satisfy 'Part requirements'::'Pump power';
 
         attribute maxPressure : PressureValue = 1.5E6 [Pa];
         port waterIn : ~WaterPort;
@@ -73,6 +74,7 @@ package Hardware {
     part def Thermoblock {
         perform beverage.prepareWater.heatWater;
         satisfy 'Espresso time'.'Heat-up time';
+        satisfy 'Part requirements'::'Heater power';
 
         attribute targetTemperature : CelsiusTemperatureValue = 92 ['°C'];
         port waterIn : ~WaterPort;
@@ -93,6 +95,7 @@ package Hardware {
     part def Grinder {
         perform beverage.prepareCoffee.grindBeans;
         satisfy 'Freshly ground coffee';
+        satisfy 'Part requirements'::'Grind time';
 
         attribute burrs : BurrKind = BurrKind::conicalCeramic;
         port beansIn : ~BeansPort;

@@ -469,8 +469,11 @@ Open, in priority order:
     requirement, one `#original`, one or more `#derive`, and the original not
     derived in it. An end's `::>` is kept as a reference too, checked only in
     a derivation.
-  - [ ] Later: *Derived from*, for a model with requirements on more than one
-    level; sections, from packages nested in the one the table exposes.
+  - [x] *Derived from*, for a model with requirements on more than one level:
+    a section for each package the table's requirements are declared in, once
+    there is more than one, introduced by its `doc`, and a *Derived from*
+    column once the model has a derivation. The coffee machine has three part
+    requirements derived from REQ-9 and REQ-1.
 - [ ] **Paths through a link.** ortho names a model file relative to the folder
   it runs in, which the system gives by its real path (`relative_path`). A
   model reached through a link, as macOS's temporary folder `/var/folders/…`

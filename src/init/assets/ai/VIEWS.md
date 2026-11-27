@@ -179,6 +179,11 @@ to the line that declares it, or the requirement it is satisfied through, and
 the verification cases that show it is met, each with its method: inspection,
 analysis, demonstration or test.
 
+A requirement on a lower level, a part's share of the machine's power, is
+derived from the one above it, not nested in it, and kept in a package of its
+own: the table gives each such package a section, and says what each
+requirement is derived from.
+
 ## References
 
 - Philippe Kruchten, "Architectural Blueprints — The 4+1 View Model of

@@ -38,6 +38,7 @@ package SystemVerification {
         objective {
             verify 'Freshly ground coffee';
             verify 'Dose range';
+            verify 'Part requirements'::'Grind time';
         }
     }
 
@@ -82,6 +83,8 @@ package SystemVerification {
         subject machine : CoffeeMachine;
         objective {
             verify 'Mains power';
+            verify 'Part requirements'::'Heater power';
+            verify 'Part requirements'::'Pump power';
         }
     }
 }

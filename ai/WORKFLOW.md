@@ -23,7 +23,7 @@ Every view is optional, so start where the user's question is. Once two views ex
 - every requirement in a table is satisfied by a module or a part, itself or through a requirement it is nested in;
 - once the model has a verification case, every requirement in a table is verified by one, each nested requirement by its own `verify`.
 
-Three complete models to follow are in https://github.com/ola-coding/ortho/tree/main/examples: a coffee machine and a survey drone, products with hardware and all six views, and a web shop on AWS, software only, with no physical or deployment view. Each has its requirements in `requirements.sysml`, and the verification cases that verify them in `verification.sysml`.
+Three complete models to follow are in https://github.com/ola-coding/ortho/tree/main/examples: a coffee machine and a survey drone, products with hardware and all six views, and a web shop on AWS, software only, with no physical or deployment view. Each has its requirements in `requirements.sysml`, and the verification cases that verify them in `verification.sysml`; the coffee machine also derives part requirements from its own, in a package of their own.
 
 ## Check your work with ortho
 
