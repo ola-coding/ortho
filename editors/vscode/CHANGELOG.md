@@ -2,6 +2,28 @@
 
 The extension has the version of the ortho it carries.
 
+## 0.6.0 (2026-11-27)
+
+- **Status:** each requirement's box ends in a Status column, from
+  `@StatusInfo`, a dash where none is set, and the requirements still TBD, TBR
+  or TBC are listed at the top of the table.
+- **Verified by:** once the model has a verification case, the traceability
+  table names each case that verifies a requirement, linked, with its
+  `@VerificationMethod`. Each example now has a `verification.sysml`.
+- **Derived from:** once the model has a `#derivation connection`, the
+  traceability table names what each requirement is derived from. A table
+  whose requirements are declared in more than one package gives each package
+  a section, introduced by its doc. The coffee machine now has three part
+  requirements, derived from its system requirements.
+- **AI instructions** say how to write status, verification and derivation.
+
+It carries ortho 0.6.0, which since 0.5.0 also checks them: `verify r;` names
+`r`, with *did you mean*, and a requirement no case verifies is warned of once
+the model has a case. The ends of a derivation must name requirements, with
+*did you mean*, and a derivation has one original, one or more derived, and
+the original is not derived in it. A model opened through a link, such as
+macOS's `/var`, is named from the working folder in the links it writes.
+
 ## 0.5.0 (2026-11-22)
 
 - **Requirements:** a `GridView` of requirements is written as a
