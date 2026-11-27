@@ -335,3 +335,31 @@ fn names_the_file_that_declares_a_view_as_seen_from_the_working_folder() {
     let beside = working.parent().unwrap().join("other").join("model.sysml");
     assert_eq!(relative_to_working_folder(&beside.to_string_lossy()), "../other/model.sysml");
 }
+
+#[cfg(unix)]
+#[test]
+fn names_a_file_reached_through_a_link_as_inside_the_working_folder() {
+    // As macOS's /var/folders/… is /private/var/folders/…, the working folder is given by
+    // its real path while the model is named through the link.
+    let base = std::env::temp_dir().join(format!("ortho-link-{}", std::process::id()));
+    let real = base.join("private").join("work");
+    std::fs::create_dir_all(real.join("models")).unwrap();
+    let link = base.join("work");
+    let _ = std::fs::remove_file(&link);
+    std::os::unix::fs::symlink(&real, &link).unwrap();
+    let model = link.join("models").join("model.sysml");
+    let real_text = real.to_string_lossy().into_owned();
+    let model_text = model.to_string_lossy().into_owned();
+    assert_eq!(ortho::pipeline::relative_path(&model_text, &real_text), "models/model.sysml");
+    let diagrams = real.join("diagrams");
+    assert_eq!(ortho::pipeline::relative_path(&model_text, &diagrams.to_string_lossy()), "../models/model.sysml");
+    // A folder inside the working folder that links elsewhere keeps the name it is reached by.
+    let elsewhere = base.join("elsewhere");
+    std::fs::create_dir_all(&elsewhere).unwrap();
+    let shared = real.join("shared");
+    let _ = std::fs::remove_file(&shared);
+    std::os::unix::fs::symlink(&elsewhere, &shared).unwrap();
+    let inside = shared.join("model.sysml").to_string_lossy().into_owned();
+    assert_eq!(ortho::pipeline::relative_path(&inside, &real_text), "shared/model.sysml");
+    std::fs::remove_dir_all(&base).unwrap();
+}
