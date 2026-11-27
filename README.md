@@ -205,7 +205,7 @@ deterministic, so CI can render again and fail if anything changed. In GitHub Ac
     test -z "$(git status --porcelain diagrams)" || { git status diagrams; exit 1; }
 ```
 
-To stay on one version, use `releases/download/v0.5.0/` in place of
+To stay on one version, use `releases/download/v0.6.0/` in place of
 `releases/latest/download/`.
 
 ## Examples
@@ -234,7 +234,7 @@ the first two beside the model source.
 - **No standard library.** ortho knows the library's names, so a model may
   use them, but does not load it.
 
-ortho is young, at version 0.5. The [backlog](DEVELOPMENT.md#backlog) lists
+ortho is young, at version 0.6. The [backlog](DEVELOPMENT.md#backlog) lists
 what comes next, [DEVELOPMENT.md](DEVELOPMENT.md) how ortho works inside, and
 issues are welcome.
 
