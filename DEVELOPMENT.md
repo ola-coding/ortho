@@ -426,6 +426,14 @@ Done:
   resolve; `of` names any definition, as §7.16.1 lets a payload be anything.
   A segment after an action, such as a send action's `receiver` in OMG's
   models, stays unchecked, since it comes from the standard library.
+- [x] **Requirements as a specification ortho writes,** from standard SysML
+  v2, not a seventh diagram: a `GridView` as Markdown beside the SVGs, with a
+  box for each requirement (ID, name, text, rationale, status), the open ones
+  listed at the top, and a traceability table of what each is satisfied by,
+  verified by and derived from, in a section per package. `satisfy`, `verify`
+  and the ends of a `#derivation connection` resolve, with *did you mean*, and
+  are checked as the library defines them. In all three examples, the docs and
+  the AI instructions, and as a tab in the VS Code and browser previews.
 - [x] **Ways in:** `--watch`, the VS Code extension, `ortho lsp` with a live
   preview in the browser, `ortho init`, and the Zed extension, tried on
   Windows with the project in WSL and on Windows itself.
@@ -443,43 +451,6 @@ Done:
 
 Open, in priority order:
 
-- [ ] **Requirements as a specification ortho writes,** rather than a
-  seventh diagram, from standard SysML:
-  `requirement <'REQ-1'> 'Brew time' { doc /* ... */ }`, `@Rationale` and
-  `satisfy 'Brew time' by machine.heater;`.
-  - [x] A `GridView` rendered as Markdown beside the SVGs: a section for each
-    requirement, with its ID, name, text and rationale, then a traceability
-    table of what satisfies each.
-  - [x] Resolve what `satisfy` names, with *did you mean*; warn of a
-    requirement nothing satisfies, and of one without an ID or with another's.
-  - [x] Requirements in the three examples, numbered after OMG's examples,
-    titled in plain words and worded after EARS:
-    `<'REQ-1.2'> 'Brew temperature'`.
-  - [x] README, LANGUAGE.md, VIEWS.md and the AI instructions.
-  - [x] A tab for the table in the VS Code preview, as the document shows on
-    GitHub, in the editor's colours. Clicking a requirement opens its line;
-    the preview renders as you type, faded while the model does not load.
-    *Save all* writes the `.md` too.
-  - [x] The same tab in the browser preview of `ortho lsp`, which Zed opens,
-    drawn as you type too, and *Save all* there writing the `.md`.
-  - [x] Status and *Verified by*: `@StatusInfo { status = StatusKind::tbr; }`
-    as the last column of every box, — where none is set, and the open ones
-    listed at the top; `verify` in a verification case, with its
-    `@VerificationMethod`, as a *Verified by* column in the traceability table
-    once the model has a verification case. `verify r;` names `r`, as the
-    spec's grammar has it, with *did you mean*; a requirement nothing verifies
-    is warned of, each nested one needing its own `verify`. A
-    `verification.sysml` in each example, and assumed figures marked TBR.
-  - [x] Resolve the ends of a `#derivation connection`, with *did you mean*,
-    and check it as the library's DerivationConnections defines it: each end a
-    requirement, one `#original`, one or more `#derive`, and the original not
-    derived in it. An end's `::>` is kept as a reference too, checked only in
-    a derivation.
-  - [x] *Derived from*, for a model with requirements on more than one level:
-    a section for each package the table's requirements are declared in, once
-    there is more than one, introduced by its `doc`, and a *Derived from*
-    column once the model has a derivation. The coffee machine has three part
-    requirements derived from REQ-9 and REQ-1.
 - [ ] **Drill-down views:** click a box to open the view one level down, and
   draw a box that has a view of its own closed in the view above, so a big
   model is read level by level and every level fits landscape A4. SysML v2
