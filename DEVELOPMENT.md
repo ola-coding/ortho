@@ -480,6 +480,47 @@ Open, in priority order:
     there is more than one, introduced by its `doc`, and a *Derived from*
     column once the model has a derivation. The coffee machine has three part
     requirements derived from REQ-9 and REQ-1.
+- [ ] **Drill-down views:** click a box to open the view one level down, and
+  draw a box that has a view of its own closed in the view above, so a big
+  model is read level by level and every level fits landscape A4. SysML v2
+  defines no navigation, but a diagram and each compartment of a box are views
+  that nest (§7.26.5), and a part may list its parts as text, so nothing is
+  invented: the model's own views say where the levels are. Nothing is merged
+  or dropped; each element is drawn in full one level down. The analysis,
+  what other tools do and the mock-up are in
+  [docs/drill-down-views.md](docs/drill-down-views.md). Links come first,
+  since they help on their own and change no drawing.
+  - [ ] **Which view opens a box:** for each element, the other views that
+    expose it: a part usage an `InterconnectionView` exposes,
+    `expose system::drone;` (a feature chain, `system.drone`, is not a
+    qualified name and does not parse), a branch of a function tree, a
+    package. Where two views expose the same element, the one declared first.
+  - [ ] **Links:** such a box gets a small mark in its bottom-right corner, as
+    Cameo and Enterprise Architect mark one, and in the SVG an `<a href>` to
+    the other view's file, so the link works in a browser too. In the VS Code
+    preview and the browser preview of `ortho lsp`, clicking the mark opens
+    that view's tab, and the lower view offers a way back up to the view that
+    links to it. A click anywhere else on a box still opens its line.
+  - [ ] **Settle three questions** before folding, with Ola, on a mock-up:
+    how a connection into a folded part ends on its border (`radio.rf`, the
+    path from the folded part, or the inner port's name alone); whether the
+    printed page needs more than the mark, such as the view's name in the
+    folded box; and whether `expose X::**;`, read as the spec reads it, draws
+    every level anyway.
+  - [ ] **Fold on the physical view:** a part another view exposes is drawn
+    closed, with its parts in a `parts` textual compartment, as §7.11 lists
+    them, the ports that connections from outside reach on its border, and
+    those connections and flows kept. The survey drone splits into the system,
+    the drone and the ground station.
+  - [ ] **Fold on the logical view:** a branch with a view of its own,
+    `expose MakeBeverage::prepareWater;`, is one box with the mark, without
+    its sub-tree.
+  - [ ] **Fold on the implementation and deployment views:** a package with a
+    view of its own is a closed package box listing its modules, its imports
+    kept; a device with one lists what it holds.
+  - [ ] **Docs and checks:** VIEWS.md, LANGUAGE.md's *Keeping a view on one
+    page* and the AI instructions in `ai/` say to add a view per level; the
+    A4 warning suggests it; the examples split their largest views by level.
 - [ ] **Publish the Zed extension:** zed-industries/extensions#8349, opened on
   2026-11-15, waits for review. Try it on macOS and on a Linux desktop. When
   Nomograph fixes `dependency A::b to C;`, which their grammar reads only with
